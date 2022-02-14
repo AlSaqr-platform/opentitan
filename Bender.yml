@@ -1,0 +1,5 @@
+package
+  name: opentitan
+
+dependencies:
+  top_titangrey: { path: "hw/top_titangrey" }
