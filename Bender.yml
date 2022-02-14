@@ -1,5 +1,56 @@
 package:
+
   name: opentitan
 
 dependencies:
-  top_titangrey: { path: "hw/top_titangrey" }
+
+    pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
+    
+    rv_ibex_core  : { path: "hw/top_titangrey/ip/rv_core_ibex/" }
+    tlul          : { path: "hw/top_titangrey/ip/tlul"          }
+    prim          : { path: "hw/top_titangrey/ip/prim"          }
+    rom_ctrl      : { path: "hw/top_titangrey/ip/rom_ctrl"      }
+    kmac          : { path: "hw/top_titangrey/ip/kmac"          }
+    keymgr        : { path: "hw/top_titangrey/ip/keymgr"        }
+    otp_ctrl      : { path: "hw/top_titangrey/ip/otp_ctrl"      }
+    hmac          : { path: "hw/top_titangrey/ip/hmac"          }
+    lc_ctrl       : { path: "hw/top_titangrey/ip/lc_ctrl"       }
+    sram_ctrl     : { path: "hw/top_titangrey/ip/sram_ctrl"     }
+    flash_ctrl    : { path: "hw/top_titangrey/ip/flash_ctrl"    }
+    uart          : { path: "hw/top_titangrey/ip/uart"          }
+    clkmgr        : { path: "hw/top_titangrey/ip/clkmgr"        }
+    sysrst_ctrl   : { path: "hw/top_titangrey/ip/sysrst_ctrl"   }
+    rstmgr        : { path: "hw/top_titangrey/ip/rstmgr"        }
+    pwrmgr        : { path: "hw/top_titangrey/ip/pwrmgr"        }
+    alert_handler : { path: "hw/top_titangrey/ip/alert_handler" }
+    rv_dm         : { path: "hw/top_titangrey/ip/rv_dm"         }
+    rv_plic       : { path: "hw/top_titangrey/ip/rv_plic"       }
+    edn           : { path: "hw/top_titangrey/ip/edn"           }
+    otbn          : { path: "hw/top_titangrey/ip/otbn"          }
+    aes           : { path: "hw/top_titangrey/ip/aes"           }
+    csrng         : { path: "hw/top_titangrey/ip/csrng"         }
+    entropy_src   : { path: "hw/top_titangrey/ip/entropy_src"   }
+    gpio          : { path: "hw/top_titangrey/ip/gpio"          }
+    spi_device    : { path: "hw/top_titangrey/ip/spi_device"    }
+    spi_host      : { path: "hw/top_titangrey/ip/spi_host"      }
+    
+  # prim_generic: { path: "hw/ip/prim_generic"  }
+  
+sources:
+
+    include_dirs:
+      - hw/top_titangrey/tb
+      - hw/top_titangrey/autogen/rtl/autogen
+      - hw/top_titangrey/ip/prim/rtl/
+      
+    files:
+
+      - hw/top_titangrey//ip/prim/rtl/prim_assert.sv
+      - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
+      - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
+      - hw/top_titangrey/tb/prim_generic_ram_2p.sv
+      - hw/top_titangrey/tb/simulator_ctrl.sv
+      - hw/top_titangrey/tb/ram_2p.sv              
+      - hw/top_titangrey/tb/opentitan.sv
+      - hw/top_titangrey/tb/testbench.sv
+
