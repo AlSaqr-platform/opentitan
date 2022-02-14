@@ -26,6 +26,9 @@
 // also kicked off. When the galois multiply stage AND read stage completes, the
 // de-scramble is then kicked off.
 
+`include "prim_assert.sv"
+
+
 module flash_phy_rd import flash_phy_pkg::*; (
   input clk_i,
   input rst_ni,

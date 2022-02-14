@@ -1,0 +1,25 @@
+package:
+  name: hmac
+
+dependencies:
+  prim:      { path: "../ip/prim"     }
+  tlul:      { path: "../ip/tlul"     }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+
+  files:
+
+  - ../prim/rtl/prim_assert.sv
+
+  - rtl/hmac_reg_pkg.sv
+  - rtl/hmac_pkg.sv
+  - rtl/hmac.sv
+  - rtl/hmac_core.sv
+  - rtl/hmac_reg_top.sv
+  - rtl/sha2.sv
+  - rtl/sha2_pad.sv

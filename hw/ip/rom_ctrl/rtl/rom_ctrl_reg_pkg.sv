@@ -115,7 +115,7 @@ package rom_ctrl_reg_pkg;
   parameter logic [3:0] ROM_CTRL_REGS_PERMIT [18] = '{
     4'b 0001, // index[ 0] ROM_CTRL_ALERT_TEST
     4'b 0001, // index[ 1] ROM_CTRL_FATAL_ALERT_CAUSE
-    4'b 1111, // index[ 2] ROM_CTRL_DIGEST_0
+    4'b 0001, // index[ 2] ROM_CTRL_DIGEST_0   modified, must be 1111
     4'b 1111, // index[ 3] ROM_CTRL_DIGEST_1
     4'b 1111, // index[ 4] ROM_CTRL_DIGEST_2
     4'b 1111, // index[ 5] ROM_CTRL_DIGEST_3

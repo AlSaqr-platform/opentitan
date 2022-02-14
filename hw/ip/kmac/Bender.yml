@@ -1,0 +1,37 @@
+package:
+  name: kmac
+
+dependencies:
+  prim: { path: "../ip/prim" }
+  tlul: { path: "../ip/tlul" }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+  - ../keymgr/rtl
+ 
+
+  files:
+  
+  - rtl/sha3_pkg.sv
+  - rtl/kmac_reg_pkg.sv
+  - rtl/kmac_pkg.sv
+  - ../keymgr/rtl/keymgr_reg_pkg.sv
+  - ../keymgr/rtl/keymgr_pkg.sv
+  - ../prim/rtl/prim_assert.sv
+  - rtl/keccak_2share.sv
+  - rtl/keccak_round.sv
+  - rtl/kmac.sv
+  - rtl/kmac_app.sv
+  - rtl/kmac_core.sv
+  - rtl/kmac_entropy.sv
+  - rtl/kmac_errchk.sv
+  - rtl/kmac_msgfifo.sv
+  - rtl/kmac_reg_top.sv
+  - rtl/kmac_staterd.sv
+  - rtl/sha3.sv
+  - rtl/sha3pad.sv
+  

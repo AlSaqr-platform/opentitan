@@ -24,7 +24,7 @@ module prim_rom_adv import prim_rom_pkg::*; #(
   input rom_cfg_t          cfg_i
 );
 
-  prim_rom #(
+  prim_generic_rom #(
     .Width(Width),
     .Depth(Depth),
     .MemInitFile(MemInitFile)

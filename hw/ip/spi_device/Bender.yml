@@ -1,0 +1,32 @@
+package:
+  name: spi_device
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+   
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    
+    - rtl/spi_device_reg_pkg.sv
+    - rtl/spi_device_pkg.sv
+    - rtl/spi_device_reg_top.sv
+    - rtl/spi_cmdparse.sv
+    - rtl/spi_fwm_rxf_ctrl.sv
+    - rtl/spi_fwm_txf_ctrl.sv
+    - rtl/spi_fwmode.sv
+    - rtl/spi_p2s.sv
+    - rtl/spi_passthrough.sv
+    - rtl/spi_readcmd.sv
+    - rtl/spi_s2p.sv
+    - rtl/spid_fifo2sram_adapter.sv
+    - rtl/spid_jedec.sv
+    - rtl/spid_readbuffer.sv
+    - rtl/spid_readsram.sv
+    - rtl/spid_status.sv
+    - rtl/spid_upload.sv
+    - rtl/spi_device.sv

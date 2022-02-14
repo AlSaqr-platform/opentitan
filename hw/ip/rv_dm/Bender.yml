@@ -1,0 +1,23 @@
+package:
+  name: rv_dm
+
+dependencies:
+  prim:      { path: "../prim"     }
+  tlul:      { path: "../tlul"     }
+
+sources:
+  
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rt
+
+  
+  files:
+  - ../prim/rtl/prim_assert.sv
+  
+  - rtl/jtag_pkg.sv
+  - rtl/rv_dm_reg_pkg.sv
+  - rtl/rv_dm_regs_reg_top.sv
+  - rtl/rv_dm_rom_reg_top.sv
+  - rtl/rv_dm.sv

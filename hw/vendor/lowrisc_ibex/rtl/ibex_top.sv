@@ -211,7 +211,7 @@ module ibex_top import ibex_pkg::*; #(
     .DmHaltAddr        ( DmHaltAddr        ),
     .DmExceptionAddr   ( DmExceptionAddr   )
   ) u_ibex_core (
-    .clk_i (clk),
+    .clk_i (clk_i),
     .rst_ni,
 
     .hart_id_i,
@@ -370,10 +370,11 @@ module ibex_top import ibex_pkg::*; #(
 
     for (genvar way = 0; way < IC_NUM_WAYS; way++) begin : gen_rams_inner
       // Tag RAM instantiation
-      prim_ram_1p #(
+      prim_generic_ram_1p #(
         .Width           (TagSizeECC),
         .Depth           (IC_NUM_LINES),
-        .DataBitsPerMask (TagSizeECC)
+        .DataBitsPerMask (TagSizeECC),
+        .MemInitFile     ("/scratch/ciani/opentitan/hw/top_titangrey/example_sw/hello_test.vmem")
       ) tag_bank (
         .clk_i    (clk_i),
         .req_i    (ic_tag_req[way]),

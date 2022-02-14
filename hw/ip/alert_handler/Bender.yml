@@ -1,0 +1,26 @@
+package:
+  name: alert_handler
+
+dependencies:
+  prim:      { path: "../prim"     }
+  tlul:      { path: "../tlul"     }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rt
+
+  files:
+  - ../prim/rtl/prim_assert.sv
+
+  - rtl/alert_pkg.sv
+  - rtl/alert_handler_reg_pkg.sv
+  - rtl/alert_handler_reg_top.sv
+  - rtl/alert_handler_accu.sv
+  - rtl/alert_handler_class.sv
+  - rtl/alert_handler_esc_timer.sv
+  - rtl/alert_handler_ping_timer.sv
+  - rtl/alert_handler_reg_wrap.sv
+  - rtl/alert_handler.sv

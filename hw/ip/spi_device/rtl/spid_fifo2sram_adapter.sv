@@ -8,6 +8,7 @@
   interface. This module does not have a way to manage the FIFO status
   (empty/ full).
 */
+`include "prim_assert.sv"
 
 module spid_fifo2sram_adapter #(
   parameter int unsigned FifoWidth = 8,

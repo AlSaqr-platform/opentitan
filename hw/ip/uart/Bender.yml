@@ -1,0 +1,24 @@
+package:
+  name: uart
+
+dependencies:
+  prim:      { path: "../prim"     }
+  tlul:      { path: "../tlul"     }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+
+  files:
+    - ../prim/rtl/prim_assert.sv
+    
+   
+    - rtl/uart_reg_pkg.sv
+    - rtl/uart_reg_top.sv
+    - rtl/uart_core.sv
+    - rtl/uart_rx.sv
+    - rtl/uart_tx.sv
+    - rtl/uart.sv

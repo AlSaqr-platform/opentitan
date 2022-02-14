@@ -467,7 +467,7 @@ module lc_ctrl_reg_top (
 
   // Subregister 0 of Multireg transition_token
   // R[transition_token_0]: V(True)
-
+   
   prim_subreg_ext #(
     .DW    (32)
   ) u_transition_token_0 (
@@ -480,6 +480,7 @@ module lc_ctrl_reg_top (
     .q      (reg2hw.transition_token[0].q),
     .qs     (transition_token_0_qs)
   );
+
 
   // Subregister 1 of Multireg transition_token
   // R[transition_token_1]: V(True)

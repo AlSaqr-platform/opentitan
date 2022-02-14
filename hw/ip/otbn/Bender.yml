@@ -1,0 +1,37 @@
+package:
+  name: otbn
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+    - ../csrng/rtl/
+
+    files:
+
+    - ../prim/rtl/prim_assert.sv
+
+    - rtl/otbn_pkg.sv
+    - rtl/otbn_reg_pkg.sv
+    - rtl/otbn_reg_top.sv
+    - rtl/otbn_alu_base.sv
+    - rtl/otbn_alu_bignum.sv
+    - rtl/otbn_controller.sv
+    - rtl/otbn_decoder.sv
+    - rtl/otbn_instruction_fetch.sv
+    - rtl/otbn_loop_controller.sv
+    - rtl/otbn_lsu.sv
+    - rtl/otbn_mac_bignum.sv
+    - rtl/otbn_rf_base.sv
+    - rtl/otbn_rf_base_ff.sv
+    - rtl/otbn_rf_base_fpga.sv
+    - rtl/otbn_rf_bignum.sv
+    - rtl/otbn_rf_bignum_ff.sv
+    - rtl/otbn_rf_bignum_fpga.sv
+    - rtl/otbn_rnd.sv
+    - rtl/otbn_scramble_ctrl.sv
+    - rtl/otbn_stack.sv
+    - rtl/otbn_start_stop_control.sv
+    - rtl/otbn_core.sv
+    - rtl/otbn.sv

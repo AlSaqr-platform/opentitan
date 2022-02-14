@@ -5,6 +5,8 @@
 // Serial Peripheral Interface (SPI) Device module.
 //
 
+`include "prim_assert.sv"
+
 module spi_fwm_rxf_ctrl #(
   parameter int unsigned FifoDw = 8,
   parameter int unsigned SramAw = 11,

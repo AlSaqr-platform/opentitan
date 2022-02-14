@@ -13,8 +13,8 @@ module sram_ctrl_reg_top (
   input  tlul_pkg::tl_h2d_t tl_i,
   output tlul_pkg::tl_d2h_t tl_o,
   // To HW
-  output sram_ctrl_reg_pkg::sram_ctrl_reg2hw_t reg2hw, // Write
-  input  sram_ctrl_reg_pkg::sram_ctrl_hw2reg_t hw2reg, // Read
+  output sram_ctrl_reg_pkg::sram_ctrl_regs_reg2hw_t reg2hw, // Write
+  input  sram_ctrl_reg_pkg::sram_ctrl_regs_hw2reg_t hw2reg, // Read
 
   // Integrity check errors
   output logic intg_err_o,
@@ -380,7 +380,7 @@ module sram_ctrl_reg_top (
     addr_hit[3] = (reg_addr == SRAM_CTRL_EXEC_OFFSET);
     addr_hit[4] = (reg_addr == SRAM_CTRL_CTRL_REGWEN_OFFSET);
     addr_hit[5] = (reg_addr == SRAM_CTRL_CTRL_OFFSET);
-    addr_hit[6] = (reg_addr == SRAM_CTRL_ERROR_ADDRESS_OFFSET);
+    addr_hit[6] = '0;
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -388,13 +388,13 @@ module sram_ctrl_reg_top (
   // Check sub-word write is permitted
   always_comb begin
     wr_err = (reg_we &
-              ((addr_hit[0] & (|(SRAM_CTRL_PERMIT[0] & ~reg_be))) |
-               (addr_hit[1] & (|(SRAM_CTRL_PERMIT[1] & ~reg_be))) |
-               (addr_hit[2] & (|(SRAM_CTRL_PERMIT[2] & ~reg_be))) |
-               (addr_hit[3] & (|(SRAM_CTRL_PERMIT[3] & ~reg_be))) |
-               (addr_hit[4] & (|(SRAM_CTRL_PERMIT[4] & ~reg_be))) |
-               (addr_hit[5] & (|(SRAM_CTRL_PERMIT[5] & ~reg_be))) |
-               (addr_hit[6] & (|(SRAM_CTRL_PERMIT[6] & ~reg_be)))));
+              (addr_hit[0] |
+               addr_hit[1] |
+               addr_hit[2] |
+               addr_hit[3] |
+               addr_hit[4] |
+               addr_hit[5] |
+               addr_hit[6]));
   end
   assign alert_test_we = addr_hit[0] & reg_we & !reg_error;
 

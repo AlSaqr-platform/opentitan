@@ -1,0 +1,29 @@
+package:
+
+  name: prim_generic
+  
+sources:
+
+    include_dirs:
+      - rtl
+      
+    files:
+
+      - rtl/prim_generic_buf.sv
+      - rtl/prim_generic_clock_inv.sv
+      - rtl/prim_generic_flash.sv
+      - rtl/prim_generic_flop.sv
+      - rtl/prim_generic_pad_wrapper.sv
+      - rtl/prim_generic_rom.sv
+      - rtl/prim_generic_clock_buf.sv
+      - rtl/prim_generic_clock_mux2.sv
+      - rtl/prim_generic_flop_2sync.sv
+      - rtl/prim_generic_otp.sv
+      - rtl/prim_generic_ram_1p.sv
+      - rtl/prim_generic_usb_diff_rx.sv
+      - rtl/prim_generic_clock_gating.sv
+      - rtl/prim_generic_flash_bank.sv
+      - rtl/prim_generic_flop_en.sv
+      - rtl/prim_generic_pad_attr.sv
+      - rtl/prim_generic_ram_2p.sv
+      - rtl/prim_generic_xor2.sv

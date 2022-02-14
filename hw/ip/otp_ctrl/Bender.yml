@@ -1,0 +1,43 @@
+package:
+
+  name: otp_ctrl
+
+dependencies:
+  prim: { path: "../ip/prim" }
+  tlul: { path: "../ip/tlul" }
+
+sources:
+
+   include_dirs:
+     - rtl
+     - ../prim/rtl
+     - ../tlul/rtl
+     - ../pwrmgr/rtl
+     
+   files:
+
+     - ../pwrmgr/rtl/pwrmgr_pkg.sv
+     - ../prim/rtl/prim_assert.sv
+     - ../../top_earlgrey/ip/ast/rtl/ast_pkg.sv
+     - rtl/otp_ctrl_part_pkg.sv.tpl
+     - rtl/otp_ctrl_reg_pkg.sv
+     - rtl/otp_ctrl_pkg.sv
+  
+     - rtl/otp_ctrl_part_pkg.sv
+     - rtl/otp_ctrl_reg_top.sv
+     
+     - ../prim_generic/rtl/prim_generic_otp.sv
+     - rtl/otp_ctrl_core_reg_top.sv
+     - rtl/otp_ctrl_dai.sv
+     - rtl/otp_ctrl_ecc_reg.sv
+     - rtl/otp_ctrl_kdi.sv
+     - rtl/otp_ctrl_lci.sv
+     - rtl/otp_ctrl_lfsr_timer.sv
+     - rtl/otp_ctrl_part_buf.sv
+     - rtl/otp_ctrl_part_unbuf.sv
+     - rtl/otp_ctrl_prim_reg_top.sv      
+     
+     - rtl/otp_ctrl_scrmbl.sv
+     - rtl/otp_ctrl.sv
+
+

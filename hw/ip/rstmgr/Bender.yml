@@ -1,0 +1,29 @@
+package:
+  name: rstmgr
+
+dependencies:
+  tlul: { path: "../tlul"}
+  prim: { path: "../prim"}
+
+sources:
+
+  include_dirs:
+    - rtl
+    - ../prim/rtl
+    - ../tlul/rtl
+    - ../alert_handelr/rtl
+    
+  files:
+
+    - ../prim/rtl/prim_assert.sv
+    - ../alert_handler/rtl/alert_pkg.sv
+
+    - rtl/rstmgr_pkg.sv
+    - rtl/rstmgr_reg_pkg.sv
+    - rtl/rstmgr_reg_top.sv
+    - rtl/rstmgr_crash_info.sv
+    - rtl/rstmgr_ctrl.sv
+    - rtl/rstmgr_por.sv
+    - rtl/rstmgr.sv
+
+   

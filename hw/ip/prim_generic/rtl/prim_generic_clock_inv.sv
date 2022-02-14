@@ -14,7 +14,7 @@ module prim_generic_clock_inv #(
 );
 
   if (HasScanMode) begin : gen_scan
-    prim_clock_mux2 i_dft_tck_mux (
+    prim_generic_clock_mux2 i_dft_tck_mux (
       .clk0_i ( ~clk_i     ),
       .clk1_i ( clk_i      ), // bypass the inverted clock for testing
       .sel_i  ( scanmode_i ),

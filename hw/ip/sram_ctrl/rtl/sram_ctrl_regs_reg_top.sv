@@ -173,6 +173,8 @@ module sram_ctrl_regs_reg_top (
     .qs     (status_bus_integ_error_qs)
   );
 
+    //   F[bus_integ_error]: 0:0
+  
 
   //   F[init_error]: 1:1
   prim_subreg #(

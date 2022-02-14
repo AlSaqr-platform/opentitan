@@ -1,0 +1,26 @@
+package:
+  name: spi_host
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+   
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    
+    - rtl/spi_host_reg_pkg.sv
+    - rtl/spi_host_reg_top.sv
+    - rtl/spi_host_cmd_pkg.sv
+    - rtl/spi_host_byte_merge.sv
+    - rtl/spi_host_byte_select.sv
+    - rtl/spi_host_command_cdc.sv
+    - rtl/spi_host_data_cdc.sv
+    - rtl/spi_host_fsm.sv
+    - rtl/spi_host_shift_register.sv
+    - rtl/spi_host_window.sv
+    - rtl/spi_host_core.sv
+    - rtl/spi_host.sv

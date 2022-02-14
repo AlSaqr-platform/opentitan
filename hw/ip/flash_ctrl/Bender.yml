@@ -1,0 +1,49 @@
+package:
+  name: flash_ctrl
+
+dependencies:
+  prim:      { path: "../ip/prim"     }
+  tlul:      { path: "../ip/tlul"     }
+  sram_ctrl: { path: "../ip/sram_ctrl"}
+  otp_ctrl:  { path: "../ip/otp_ctrl" }
+  lc_ctrl:   { path: "../ip/lc_ctrl"  }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+  - ../prim_generic/rtl
+
+  files:
+  - ../prim/rtl/prim_assert.sv
+  - ../prim_generic/rtl/prim_generic_ram_1p.sv
+
+ 
+
+  - rtl/flash_ctrl_reg_pkg.sv
+  - rtl/flash_ctrl_pkg.sv
+  - rtl/flash_phy_pkg.sv
+  - rtl/flash_ctrl_arb.sv
+  - rtl/flash_ctrl_core_reg_top.sv
+  - rtl/flash_ctrl_erase.sv
+  - rtl/flash_ctrl_info_cfg.sv
+  - rtl/flash_ctrl_lcmgr.sv
+  #- rtl/flash_ctrl_mem_reg_top.sv
+  #- rtl/flash_ctrl_prim_reg_top.sv
+  - rtl/flash_ctrl_prog.sv
+  - rtl/flash_ctrl_rd.sv
+  - rtl/flash_mp.sv
+  - rtl/flash_mp_data_region_sel.sv
+  - rtl/flash_phy_rd_buffers.sv
+  - rtl/flash_phy_core.sv
+  - rtl/flash_phy_erase.sv
+  - rtl/flash_phy_prog.sv
+  - rtl/flash_phy_scramble.sv
+  - ../prim_generic/rtl/prim_generic_flash_bank.sv
+  - rtl/flash_phy_rd.sv
+
+  - ../prim_generic/rtl/prim_generic_flash.sv
+  - rtl/flash_phy.sv
+  - rtl/flash_ctrl.sv

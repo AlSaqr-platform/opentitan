@@ -68,6 +68,8 @@
 //             - http://www.lightweightcrypto.org/present/present_ches2007.pdf
 //
 
+`include "prim_assert.sv"
+
 module otp_ctrl_scrmbl
   import otp_ctrl_pkg::*;
   import otp_ctrl_part_pkg::*;

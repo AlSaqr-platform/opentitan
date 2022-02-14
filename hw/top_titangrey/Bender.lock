@@ -1,0 +1,232 @@
+---
+packages:
+  aes:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/aes
+    dependencies: []
+  alert_handler:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/alert_handler
+    dependencies:
+      - prim
+      - tlul
+  clkmgr:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/clkmgr
+    dependencies:
+      - prim
+      - tlul
+  common_verification:
+    revision: b616c1a25aea3b76e32dcbed2ec87d057efdcffd
+    version: 0.2.1
+    source:
+      Git: "https://github.com/pulp-platform/common_verification.git"
+    dependencies: []
+  csrng:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/csrng
+    dependencies: []
+  edn:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/edn
+    dependencies: []
+  entropy_src:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/entropy_src
+    dependencies: []
+  flash_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/flash_ctrl
+    dependencies:
+      - lc_ctrl
+      - otp_ctrl
+      - prim
+      - sram_ctrl
+      - tlul
+  gpio:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/gpio
+    dependencies: []
+  hmac:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/hmac
+    dependencies:
+      - prim
+      - tlul
+  ibex:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rv_core_ibex/../../vendor/lowrisc_ibex
+    dependencies:
+      - prim
+      - tech_cells_generic
+  keymgr:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/keymgr
+    dependencies:
+      - kmac
+      - prim
+      - rom_ctrl
+      - tlul
+  kmac:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/kmac
+    dependencies:
+      - prim
+      - tlul
+  lc_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/lc_ctrl
+    dependencies:
+      - otp_ctrl
+      - prim
+      - tlul
+  otbn:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/otbn
+    dependencies: []
+  otp_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/otp_ctrl
+    dependencies:
+      - prim
+      - tlul
+  prim:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/prim
+    dependencies: []
+  pulp_dbg:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../vendor/pulp_riscv_dbg/src
+    dependencies: []
+  pwrmgr:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/pwrmgr
+    dependencies:
+      - prim
+      - tlul
+  rom_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rom_ctrl
+    dependencies:
+      - prim
+      - tlul
+  rstmgr:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rstmgr
+    dependencies:
+      - prim
+      - tlul
+  rv_dm:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rv_dm
+    dependencies:
+      - prim
+      - tlul
+  rv_ibex_core:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rv_core_ibex/
+    dependencies:
+      - ibex
+      - prim
+  rv_plic:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/rv_plic
+    dependencies:
+      - prim
+      - tlul
+  spi_device:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/spi_device
+    dependencies: []
+  spi_host:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/spi_host
+    dependencies: []
+  sram_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/sram_ctrl
+    dependencies:
+      - prim
+      - tlul
+  sysrst_ctrl:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/sysrst_ctrl
+    dependencies:
+      - prim
+      - tlul
+  tech_cells_generic:
+    revision: d21dc2e967fa82b6d7eb103bd07d9cf1e4fad808
+    version: 0.2.7
+    source:
+      Git: "git@github.com:pulp-platform/tech_cells_generic.git"
+    dependencies:
+      - common_verification
+  tlul:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/tlul
+    dependencies:
+      - prim
+  uart:
+    revision: ~
+    version: ~
+    source:
+      Path: /scratch/ciani/opentitan/hw/top_titangrey/../ip/uart
+    dependencies:
+      - prim
+      - tlul

@@ -70,11 +70,13 @@
  * attacks or reliability issues, then SW in RoT can redirect the host system's
  * requests to the other half partitions in the flash device.
  */
+`include "prim_assert.sv"
+
 module spi_passthrough
-  import spi_device_pkg::*;
+    import spi_device_pkg::*;
 #(
-  parameter int unsigned NumCmdInfo = 16
-) (
+  parameter int unsigned NumCmdInfo_ = 16
+)(
   input clk_i,   // SPI input clk
   input rst_ni,  // SPI reset
 
@@ -97,7 +99,7 @@ module spi_passthrough
   input spi_mode_e spi_mode_i,
 
   // Command Info structure
-  input cmd_info_t [NumCmdInfo-1:0] cmd_info_i,
+  input cmd_info_t [NumCmdInfo_-1:0] cmd_info_i,
 
   // SPI in
   //
@@ -127,6 +129,9 @@ module spi_passthrough
   // `cmd_filtered`: indicator of the incoming command filtered out
   output event_cmd_filtered_o
 );
+
+ 
+  
 
   /////////////////
   // Definitions //
@@ -532,7 +537,7 @@ module spi_passthrough
   always_comb begin
     cmd_info_7th_d = {CmdInfoInput, CmdInfoInput};
     if (cmd_7th) begin
-      for(int unsigned i = 0 ; i < NumCmdInfo ; i++) begin
+      for(int unsigned i = 0 ; i < NumCmdInfo_ ; i++) begin
         if (cmd_info_i[i].opcode == {opcode_d[6:0], 1'b1}) begin
           cmd_info_7th_d[1] = cmd_info_i[i];
         end else if (cmd_info_i[i].opcode == {opcode_d[6:0], 1'b0}) begin

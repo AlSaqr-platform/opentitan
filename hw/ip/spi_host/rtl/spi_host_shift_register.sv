@@ -4,6 +4,7 @@
 //
 // Shift Register for Serial Peripheral Interface (SPI) Host IP.
 //
+`include "prim_assert.sv"
 
 module spi_host_shift_register (
   input              clk_i,

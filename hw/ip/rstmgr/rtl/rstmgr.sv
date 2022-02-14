@@ -64,7 +64,7 @@ module rstmgr import rstmgr_pkg::*; (
         .rst_no(rst_por_aon_n[i])
       );
 
-      prim_clock_mux2 #(
+      prim_generic_clock_mux2 #(
         .NoFpgaBufG(1'b1)
       ) u_rst_por_aon_n_mux (
         .clk0_i(rst_por_aon_n[i]),
@@ -92,7 +92,7 @@ module rstmgr import rstmgr_pkg::*; (
 
   rstmgr_reg_top u_reg (
     .clk_i,
-    .rst_ni(local_rst_n),
+    .rst_ni,//(local_rst_n),
     .tl_i,
     .tl_o,
     .reg2hw,
@@ -196,7 +196,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_por_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_por_mux (
     .clk0_i(rst_por_n[DomainAonSel]),
@@ -220,7 +220,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_por_io_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_por_io_mux (
     .clk0_i(rst_por_io_n[DomainAonSel]),
@@ -244,7 +244,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_por_io_div2_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_por_io_div2_mux (
     .clk0_i(rst_por_io_div2_n[DomainAonSel]),
@@ -268,7 +268,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_por_io_div4_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_por_io_div4_mux (
     .clk0_i(rst_por_io_div4_n[DomainAonSel]),
@@ -292,7 +292,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_por_usb_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_por_usb_mux (
     .clk0_i(rst_por_usb_n[DomainAonSel]),
@@ -320,7 +320,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_lc_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_lc_mux (
     .clk0_i(rst_lc_n[Domain0Sel]),
@@ -344,7 +344,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_lc_io_div4_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_lc_io_div4_mux (
     .clk0_i(rst_lc_io_div4_n[Domain0Sel]),
@@ -364,7 +364,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_sys_mux (
     .clk0_i(rst_sys_n[DomainAonSel]),
@@ -383,7 +383,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_sys_mux (
     .clk0_i(rst_sys_n[Domain0Sel]),
@@ -407,7 +407,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_io_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_sys_io_mux (
     .clk0_i(rst_sys_io_n[Domain0Sel]),
@@ -427,7 +427,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_io_div4_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_sys_io_div4_mux (
     .clk0_i(rst_sys_io_div4_n[DomainAonSel]),
@@ -446,7 +446,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_io_div4_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_sys_io_div4_mux (
     .clk0_i(rst_sys_io_div4_n[Domain0Sel]),
@@ -466,7 +466,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_sys_aon_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_sys_aon_mux (
     .clk0_i(rst_sys_aon_n[DomainAonSel]),
@@ -494,7 +494,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_spi_device_n[Domain0Sel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_0_spi_device_mux (
     .clk0_i(rst_spi_device_n[Domain0Sel]),
@@ -514,7 +514,7 @@ module rstmgr import rstmgr_pkg::*; (
     .q_o(rst_usb_n[DomainAonSel])
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_aon_usb_mux (
     .clk0_i(rst_usb_n[DomainAonSel]),

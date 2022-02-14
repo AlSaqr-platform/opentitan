@@ -1,0 +1,17 @@
+package:
+  name: gpio
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+  
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    
+    - rtl/gpio_reg_pkg.sv
+    - rtl/gpio_reg_top.sv
+    - rtl/gpio.sv

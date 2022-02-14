@@ -22,6 +22,9 @@
 //   request - TBD: This should be checked with software.  Hardware could also always behave
 //   as it does in the point above and rely on software to correctly compact the data.
 
+`include "prim_assert.sv"
+
+
 module flash_phy_prog import flash_phy_pkg::*; (
   input clk_i,
   input rst_ni,

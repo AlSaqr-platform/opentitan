@@ -4,6 +4,8 @@
 //
 // Main Life Cycle Controller FSM.
 
+`include "prim_assert.sv"
+
 module lc_ctrl_fsm
   import lc_ctrl_pkg::*;
   import lc_ctrl_state_pkg::*;

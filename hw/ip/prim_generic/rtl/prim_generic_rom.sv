@@ -9,7 +9,7 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   parameter  int Depth       = 2048, // 8kB default
   parameter      MemInitFile = "", // VMEM file to initialize the memory with
 
-  localparam int Aw          = $clog2(Depth)
+  localparam int Aw          =  $clog2(Depth)
 ) (
   input  logic             clk_i,
   input  logic             req_i,

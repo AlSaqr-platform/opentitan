@@ -274,7 +274,7 @@ module flash_phy import flash_ctrl_pkg::*; (
   assign bist_enable_qual = lc_ctrl_pkg::lc_tx_t'(flash_bist_enable_i &
                             lc_nvm_debug_en[FlashBistSel]);
 
-  prim_flash #(
+  prim_generic_flash #(
     .NumBanks(NumBanks),
     .InfosPerBank(InfosPerBank),
     .InfoTypes(InfoTypes),

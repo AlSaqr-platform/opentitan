@@ -1,0 +1,44 @@
+package:
+
+  name: rv_ibex_core
+
+dependencies:
+
+  ibex:         { path: "../../vendor/lowrisc_ibex" }
+  prim:         { path: "../prim" }
+#  prim_generic:         { path: "../prim_generic" }
+
+sources:
+
+    include_dirs:
+      - rtl
+      - ../prim/rtl
+      - ../prim_generic/rtl
+     # - ../prim_generic/rtl
+      - ../dv/sv/dv_utils/
+      - ../../top_earlgrey/rtl
+      - ../../vendor/lowrisc_ibex/rtl
+      - ../pwrmgr/rtl
+      - ../alert_handler/rtl
+      
+    files:
+    
+      - ../../top_earlgrey/rtl/top_pkg.sv
+      - ../prim/rtl/prim_assert.sv
+      - ../tlul/rtl/tlul_pkg.sv
+      - ../../vendor/lowrisc_ibex/rtl/ibex_pkg.sv
+      - ../pwrmgr/rtl/pwrmgr_pkg.sv             #modificato, problemi con il reg_pkg
+      - ../pwrmgr/rtl/pwrmgr_reg_pkg.sv
+      - ../../vendor/lowrisc_ibex/rtl/ibex_icache.sv
+      - ../prim/rtl/prim_flop_2sync.sv
+      - ../prim/rtl/prim_flop.sv
+      - ../prim_generic/rtl/prim_generic_ram_1p.sv
+      - ../alert_handler/rtl/alert_handler_reg_pkg.sv
+
+
+      - rtl/rv_core_ibex_pkg.sv
+      - rtl/rv_core_ibex_reg_pkg.sv
+      - rtl/rv_core_ibex_cfg_reg_top.sv
+      - rtl/rv_core_addr_trans.sv
+#     - rtl/rv_core_ibex_peri.sv  
+      - rtl/rv_core_ibex.sv

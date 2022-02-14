@@ -1,0 +1,44 @@
+package:
+  name: lc_ctrl
+
+dependencies:
+  prim:      { path: "../ip/prim"     }
+  tlul:      { path: "../ip/tlul"     }
+  otp_ctrl:  { path: "../ip/otp_ctrl" }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim_generic/rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+  - ../pwrmgr/rtl
+  - ../alert_handler/rtl
+  - ../rv_dm/rtl
+  - ../../vendor/pulp_riscv_dbg/src/
+  files:
+
+  - ../prim/rtl/prim_assert.sv
+  - ../../vendor/pulp_riscv_dbg/src/dm_pkg.sv
+  - ../../vendor/pulp_riscv_dbg/src/dmi_jtag.sv
+  - ../../vendor/pulp_riscv_dbg/src/dmi_jtag_tap.sv
+  - ../../vendor/pulp_riscv_dbg/src/dmi_cdc.sv
+  - ../rv_dm/rtl/jtag_pkg.sv
+  - ../prim_generic/rtl/prim_generic_clock_inv.sv
+  - ../pwrmgr/rtl/pwrmgr_pkg.sv
+  - ../prim_generic/rtl/prim_generic_clock_mux2.sv
+  - ../alert_handler/rtl/alert_handler_reg_pkg.sv
+
+  - rtl/lc_ctrl_reg_pkg.sv
+  - rtl/lc_ctrl_reg_top.sv
+  - rtl/lc_ctrl_pkg.sv
+  
+  - rtl/lc_ctrl_fsm.sv
+  - rtl/lc_ctrl_kmac_if.sv
+  - rtl/lc_ctrl_signal_decode.sv
+  - rtl/lc_ctrl_state_decode.sv
+  - rtl/lc_ctrl_state_pkg.sv
+  - rtl/lc_ctrl_state_pkg.sv.tpl
+  - rtl/lc_ctrl_state_transition.sv
+  - rtl/lc_ctrl.sv

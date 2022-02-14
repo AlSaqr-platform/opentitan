@@ -1,0 +1,42 @@
+package:
+  name: keymgr
+
+dependencies:
+  prim:      { path: "../prim"     }
+  tlul:      { path: "../tlul"     }
+  kmac:      { path: "../kmac"     }
+  rom_ctrl:  { path: "../rom_ctrl" }
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+  - ../rom_ctrl/rtl
+  - ../otp_ctrl/rtl
+  - ../flash_ctrl/rtl
+  - ../rv_dm/rtl
+
+  files:
+  
+  
+  - ../prim/rtl/prim_assert.sv
+
+  - ../rv_dm/rtl/jtag_pkg.sv
+  - ../otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
+  - ../otp_ctrl/rtl/otp_ctrl_pkg.sv
+  - ../flash_ctrl/rtl/flash_ctrl_reg_pkg.sv
+  - ../flash_ctrl/rtl/flash_ctrl_pkg.sv
+
+ 
+  - rtl/keymgr_reg_pkg.sv
+  - rtl/keymgr_pkg.sv
+  - rtl/keymgr.sv
+  - rtl/keymgr_cfg_en.sv
+  - rtl/keymgr_ctrl.sv
+  - rtl/keymgr_input_checks.sv
+  - rtl/keymgr_kmac_if.sv
+  - rtl/keymgr_reg_top.sv
+  - rtl/keymgr_reseed_ctrl.sv
+  - rtl/keymgr_sideload_key.sv
+  - rtl/keymgr_sideload_key_ctrl.sv

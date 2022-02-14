@@ -334,7 +334,7 @@ module rv_core_ibex
     .rvfi_mem_wdata,
 `endif
 
-    .fetch_enable_i   (lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),
+    .fetch_enable_i   (1'b1),//lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),
     .alert_minor_o    (alert_minor),
     .alert_major_o    (alert_major),
     .core_sleep_o     (pwrmgr_o.core_sleeping)
@@ -373,10 +373,10 @@ module rv_core_ibex
     .rdata_intg_o (instr_rdata_intg),
     .err_o        (instr_err),
     .intg_err_o   (ibus_intg_err),
-    .tl_o         (tl_i_ibex2fifo),
-    .tl_i         (tl_i_fifo2ibex)
+    .tl_o         (corei_tl_h_o),
+    .tl_i         (corei_tl_h_i)
   );
-
+/*
   tlul_fifo_sync #(
     .ReqPass(FifoPass),
     .RspPass(FifoPass),
@@ -393,7 +393,7 @@ module rv_core_ibex
     .spare_req_o (),
     .spare_rsp_i (1'b0),
     .spare_rsp_o ());
-
+*/
   logic [31:0] data_addr_trans;
   rv_core_addr_trans #(
     .AddrWidth(32),
@@ -424,11 +424,11 @@ module rv_core_ibex
     .rdata_intg_o (data_rdata_intg),
     .err_o        (data_err),
     .intg_err_o   (dbus_intg_err),
-    .tl_o         (tl_d_ibex2fifo),
-    .tl_i         (tl_d_fifo2ibex)
+    .tl_o         (cored_tl_h_o),
+    .tl_i         (cored_tl_h_i)
   );
-
-  tlul_fifo_sync #(
+/*
+ tlul_fifo_sync #(
     .ReqPass(FifoPass),
     .RspPass(FifoPass),
     .ReqDepth(FifoDepth),
@@ -438,13 +438,13 @@ module rv_core_ibex
     .rst_ni,
     .tl_h_i      (tl_d_ibex2fifo),
     .tl_h_o      (tl_d_fifo2ibex),
-    .tl_d_o      (tl_d_o_int),
-    .tl_d_i      (tl_d_i_int),
+    .tl_d_o      (cored_tl_h_o),
+    .tl_d_i      (cored_tl_h_i),
     .spare_req_i (1'b0),
     .spare_req_o (),
     .spare_rsp_i (1'b0),
     .spare_rsp_o ());
-
+*/
   //
   // Interception point for connecting simulation SRAM by disconnecting the tl_d output. The
   // disconnection is done only if `SYNTHESIS is NOT defined AND `RV_CORE_IBEX_SIM_SRAM is
@@ -456,8 +456,8 @@ module rv_core_ibex
   illegal_preprocessor_branch_taken u_illegal_preprocessor_branch_taken();
 `endif
 `else
-  assign cored_tl_h_o = tl_d_o_int;
-  assign tl_d_i_int = cored_tl_h_i;
+//assign cored_tl_h_o = tl_d_o_int;
+//assign tl_d_i_int = cored_tl_h_i;
 `endif
 
 `ifdef RVFI

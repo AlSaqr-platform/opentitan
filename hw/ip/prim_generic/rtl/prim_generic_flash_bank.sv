@@ -370,7 +370,7 @@ module prim_generic_flash_bank #(
   logic [InfoTypes-1:0][MemWidth-1:0] rd_nom_data_info;
   logic [InfoTypes-1:0][MetaDataWidth-1:0] rd_meta_data_info;
 
-  prim_ram_1p #(
+  prim_generic_ram_1p #(
     .Width(MemWidth),
     .Depth(WordsPerBank),
     .DataBitsPerMask(MemWidth)
@@ -385,7 +385,7 @@ module prim_generic_flash_bank #(
     .cfg_i    ('0)
   );
 
-  prim_ram_1p #(
+  prim_generic_ram_1p #(
     .Width(MetaDataWidth),
     .Depth(WordsPerBank),
     .DataBitsPerMask(MetaDataWidth)
@@ -407,7 +407,7 @@ module prim_generic_flash_bank #(
                           (mem_part == flash_ctrl_pkg::FlashPartInfo) &
                           (mem_info_sel == info_type);
 
-    prim_ram_1p #(
+    prim_generic_ram_1p #(
       .Width(MemWidth),
       .Depth(WordsPerInfoBank),
       .DataBitsPerMask(MemWidth)
@@ -422,7 +422,7 @@ module prim_generic_flash_bank #(
       .cfg_i    ('0)
     );
 
-    prim_ram_1p #(
+    prim_generic_ram_1p #(
       .Width(MetaDataWidth),
       .Depth(WordsPerInfoBank),
       .DataBitsPerMask(MetaDataWidth)

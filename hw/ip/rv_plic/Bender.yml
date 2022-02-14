@@ -1,0 +1,22 @@
+package:
+  name: rv_plic
+
+dependencies:
+    tlul: { path: "../tlul"}
+    prim: { path: "../prim"}
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    
+    - rtl/rv_plic_reg_pkg.sv
+    - rtl/rv_plic_reg_top.sv
+    - rtl/rv_plic_gateway.sv
+    - rtl/rv_plic_target.sv
+    - rtl/rv_plic.sv

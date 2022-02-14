@@ -1,0 +1,23 @@
+package:
+  name: edn
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+    - ../csrng/rtl/
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    - ../csrng/rtl/csrng_pkg.sv
+    
+    - rtl/edn_pkg.sv
+    - rtl/edn_reg_pkg.sv
+    - rtl/edn_reg_top.sv
+    - rtl/edn_ack_sm.sv
+    - rtl/edn_core.sv
+    - rtl/edn_field_en.sv
+    - rtl/edn_main_sm.sv
+    - rtl/edn.sv

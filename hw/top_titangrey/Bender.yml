@@ -1,0 +1,55 @@
+package:
+
+  name: top_titangrey
+
+dependencies:
+
+    pulp_dbg      : { path: "../vendor/pulp_riscv_dbg/src" }
+    
+    rv_ibex_core  : { path: "../ip/rv_core_ibex/" }
+    tlul          : { path: "../ip/tlul"          }
+    prim          : { path: "../ip/prim"          }
+    rom_ctrl      : { path: "../ip/rom_ctrl"      }
+    kmac          : { path: "../ip/kmac"          }
+    keymgr        : { path: "../ip/keymgr"        }
+    otp_ctrl      : { path: "../ip/otp_ctrl"      }
+    hmac          : { path: "../ip/hmac"          }
+    lc_ctrl       : { path: "../ip/lc_ctrl"       }
+    sram_ctrl     : { path: "../ip/sram_ctrl"     }
+    flash_ctrl    : { path: "../ip/flash_ctrl"    }
+    uart          : { path: "../ip/uart"          }
+    clkmgr        : { path: "../ip/clkmgr"        }
+    sysrst_ctrl   : { path: "../ip/sysrst_ctrl"   }
+    rstmgr        : { path: "../ip/rstmgr"        }
+    pwrmgr        : { path: "../ip/pwrmgr"        }
+    alert_handler : { path: "../ip/alert_handler" }
+    rv_dm         : { path: "../ip/rv_dm"         }
+    rv_plic       : { path: "../ip/rv_plic"       }
+    edn           : { path: "../ip/edn"           }
+    otbn          : { path: "../ip/otbn"          }
+    aes           : { path: "../ip/aes"           }
+    csrng         : { path: "../ip/csrng"         }
+    entropy_src   : { path: "../ip/entropy_src"   }
+    gpio          : { path: "../ip/gpio"          }
+    spi_device    : { path: "../ip/spi_device"    }
+    spi_host      : { path: "../ip/spi_host"      }
+    
+  # prim_generic: { path: "../ip/prim_generic"  }
+  
+sources:
+
+    include_dirs:
+      - tb
+      - autogen/rtl/autogen
+      - ../ip/prim/rtl/
+      
+    files:
+
+      - ../ip/prim/rtl/prim_assert.sv
+      - autogen/rtl/autogen/tl_main_pkg.sv
+      - autogen/rtl/autogen/xbar_main.sv
+      - tb/prim_generic_ram_2p.sv
+      - tb/simulator_ctrl.sv
+      - tb/ram_2p.sv              
+      - tb/opentitan.sv
+      - tb/testbench.sv

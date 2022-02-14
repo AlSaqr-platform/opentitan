@@ -47,7 +47,7 @@ module rstmgr_ctrl
     .q_o(rst_aon_n_premux)
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_rst_aon_mux (
     .clk0_i(rst_aon_n_premux),
@@ -72,7 +72,7 @@ module rstmgr_ctrl
       .q_o(rst_pd_nq[i])
     );
 
-    prim_clock_mux2 #(
+    prim_generic_clock_mux2 #(
       .NoFpgaBufG(1'b1)
     ) u_rst_pd_mux (
       .clk0_i(rst_pd_nq[i]),

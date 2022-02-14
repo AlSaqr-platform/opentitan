@@ -54,8 +54,8 @@ module sram_ctrl_ram_reg_top (
     .tl_o(tl_o)
   );
 
-  tlul_pkg::tl_h2d_t tl_socket_h2d [0];
-  tlul_pkg::tl_d2h_t tl_socket_d2h [0];
+  tlul_pkg::tl_h2d_t tl_socket_h2d ;
+  tlul_pkg::tl_d2h_t tl_socket_d2h ;
 
   logic [0:0] reg_steer;
 
@@ -66,12 +66,12 @@ module sram_ctrl_ram_reg_top (
     .N          (0),
     .HReqPass   (1'b1),
     .HRspPass   (1'b1),
-    .DReqPass   ({0{1'b1}}),
-    .DRspPass   ({0{1'b1}}),
+    .DReqPass   (1'b1),
+    .DRspPass   (1'b1),
     .HReqDepth  (4'h0),
     .HRspDepth  (4'h0),
-    .DReqDepth  ({0{4'h0}}),
-    .DRspDepth  ({0{4'h0}})
+    .DReqDepth  (4'h0),
+    .DRspDepth  (4'h0)
   ) u_socket (
     .clk_i  (clk_i),
     .rst_ni (rst_ni),

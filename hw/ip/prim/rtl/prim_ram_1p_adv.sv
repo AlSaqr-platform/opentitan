@@ -84,7 +84,7 @@ module prim_ram_1p_adv import prim_ram_1p_pkg::*; #(
   logic [TotalWidth-1:0]   rdata_sram ;
   logic [1:0]              rerror_q, rerror_d ;
 
-  prim_ram_1p #(
+  prim_generic_ram_1p #(
     .MemInitFile     (MemInitFile),
 
     .Width           (TotalWidth),

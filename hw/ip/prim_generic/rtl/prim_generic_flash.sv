@@ -157,7 +157,7 @@ module prim_generic_flash #(
     .rerror_i('0)
   );
 
-  prim_ram_1p #(
+  prim_generic_ram_1p #(
     .Width(32),
     .Depth(CfgRegs)
   ) u_cfg_ram (

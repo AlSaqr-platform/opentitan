@@ -14,6 +14,9 @@
 // Verilog parameter
 //   MAX_PRIO: Maximum value of interrupt priority
 
+`include "prim_assert.sv"
+
+
 module rv_plic import rv_plic_reg_pkg::*; #(
   parameter logic [NumAlerts-1:0] AlertAsyncOn = {NumAlerts{1'b1}},
   // derived parameter

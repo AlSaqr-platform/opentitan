@@ -6,6 +6,8 @@
 // The ROM checker FSM module
 //
 
+`include "prim_assert.sv"
+
 module rom_ctrl_fsm
   import prim_util_pkg::vbits;
 #(

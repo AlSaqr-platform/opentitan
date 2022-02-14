@@ -129,7 +129,7 @@ module clkmgr import clkmgr_pkg::*; (
     end
   end
 
-  assign pwr_o.roots_en = roots_en_q2;
+  assign pwr_o.clk_status = roots_en_q2;
 
   ////////////////////////////////////////////////////
   // Clocks with only root gate

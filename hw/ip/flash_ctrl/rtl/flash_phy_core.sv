@@ -9,6 +9,8 @@
 // scramble, ECC, security and arbitration logic.
 // Most of the items are TODO, at the moment only arbitration logic exists.
 
+`include "prim_assert.sv"
+
 module flash_phy_core import flash_phy_pkg::*; #(
   parameter int unsigned ArbCnt = 4
 ) (

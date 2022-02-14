@@ -464,7 +464,7 @@ module dm_mem #(
     endcase
   end
 
-  logic [63:0] rom_addr;
+  logic [64:0] rom_addr;
   assign rom_addr = 64'(addr_i);
 
   // Depending on whether the debug module is located
@@ -473,8 +473,9 @@ module dm_mem #(
   // For all other cases we need to set aside
   // two registers per hart, hence we also need
   // two scratch registers.
+    
   if (HasSndScratch) begin : gen_rom_snd_scratch
-    debug_rom i_debug_rom (
+    prim_generic_rom i_debug_rom (
       .clk_i,
       .req_i,
       .addr_i  ( rom_addr  ),

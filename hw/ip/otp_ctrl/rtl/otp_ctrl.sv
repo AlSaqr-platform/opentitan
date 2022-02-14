@@ -683,7 +683,7 @@ module otp_ctrl
   assign cio_test_o = (lc_dft_en[2] == lc_ctrl_pkg::On) ? otp_test_vect : '0;
   assign cio_test_en_o = (lc_dft_en[2] == lc_ctrl_pkg::On) ? {OtpTestVectWidth{1'b1}} : '0;
 
-  prim_otp #(
+  prim_generic_otp #(
     .Width            ( OtpWidth            ),
     .Depth            ( OtpDepth            ),
     .SizeWidth        ( OtpSizeWidth        ),

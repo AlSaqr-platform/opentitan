@@ -1,0 +1,23 @@
+package:
+  name: clkmgr
+
+dependencies:
+  prim:      { path: "../ip/prim"     }
+  tlul:      { path: "../ip/tlul"     }
+
+sources:
+
+  include_dirs:
+  - rtl
+  - ../prim/rtl
+  - ../tlul/rtl
+  - ../pwrmgr/rtl
+
+  files:
+
+  - ../pwrmgr/rtl/pwrmgr_pkg.sv
+  - rtl/clkmgr_reg_pkg.sv
+  - rtl/clkmgr_pkg.sv
+  - rtl/clkmgr_reg_top.sv
+  - rtl/clkmgr_byp.sv
+  - rtl/clkmgr.sv

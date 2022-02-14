@@ -37,7 +37,7 @@ module rstmgr_por #(
     .q_o(rst_root_n_pre_mux)
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_rst_root_mux (
     .clk0_i(rst_root_n_pre_mux),
@@ -58,7 +58,7 @@ module rstmgr_por #(
   // The stable is a vote of all filter stages.
   // Only when all the stages agree is the reset considered stable and count allowed.
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_rst_clean_mux (
     .clk0_i(rst_filter_n[FilterStages-1]),
@@ -96,7 +96,7 @@ module rstmgr_por #(
     .q_o(rst_nq)
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_rst_out_mux (
     .clk0_i(rst_nq),

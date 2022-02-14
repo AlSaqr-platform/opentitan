@@ -50,10 +50,10 @@ module prim_esc_receiver
   input           rst_ni,
   // escalation enable
   output logic    esc_en_o,
-  // escalation / ping response
-  output esc_rx_t esc_rx_o,
   // escalation output diff pair
-  input esc_tx_t  esc_tx_i
+  input esc_tx_t  esc_tx_i,
+  // escalation / ping response
+  output esc_rx_t esc_rx_o
 );
 
   /////////////////////////////////

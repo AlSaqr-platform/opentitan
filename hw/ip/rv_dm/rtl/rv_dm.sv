@@ -398,7 +398,7 @@ module rv_dm
 
   logic tck_muxed;
   logic trst_n_muxed;
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_prim_clock_mux2 (
     .clk0_i(jtag_i.tck),
@@ -407,7 +407,7 @@ module rv_dm
     .clk_o (tck_muxed)
   );
 
-  prim_clock_mux2 #(
+  prim_generic_clock_mux2 #(
     .NoFpgaBufG(1'b1)
   ) u_prim_rst_n_mux2 (
     .clk0_i(jtag_i.trst_n),

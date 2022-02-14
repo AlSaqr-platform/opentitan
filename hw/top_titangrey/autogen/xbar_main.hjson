@@ -1,0 +1,342 @@
+// Copyright lowRISC contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+{
+  name: "main",
+  clock: "clk_main_i",
+  clock_connections: {
+    clk_main_i:   "main"
+  }
+  reset: "rst_main_ni",
+  reset_connections: {
+    rst_main_ni:   "main"
+  }
+  nodes: [
+    { name: "core_instr",
+      type: "host",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni"
+      xbar: false
+    },
+    { name: "core_data",
+      type: "host",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni"
+      xbar: false
+    },
+    { name: "data_mem",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x00100000",
+        size_byte: "0x00100000"
+      }]
+      xbar: false
+    },
+    { name: "sim_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x20000",
+        size_byte: "0x01000"
+      }]
+      xbar: false
+    }
+    { name: "rom_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x411E0000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+      { name: "kmac",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41120000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "keymgr",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41130000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "otp_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40130000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "hmac",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41110000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "lc_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40140000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "sram_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x411C0000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "flash_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41000000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "uart",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40000000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "clkmgr",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40420000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "sysrst_ctrl",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40430000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "rstmgr",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40410000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "pwrmgr",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40400000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "alert_handler",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40150000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "rv_dm",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41200000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "rv_plic",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41010000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "edn",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41170000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "otbn",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x411D0000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "aes",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41100000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "csrng",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41150000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "entropy_src",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x41160000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "gpio",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40040000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "spi_device",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40050000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "spi_host",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x40060000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+    { name: "instr_mem",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+       addr_range: [{
+        base_addr: "0x30120000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
+ 
+  ],
+  connections: {
+    core_instr: ["instr_mem"],
+    core_data : ["data_mem",
+                 "sim_ctrl"   , "rom_ctrl"   , "kmac",
+                 "keymgr"     , "otp_ctrl"   , "hmac",
+                 "lc_ctrl"    , "sram_ctrl"  , "flash_ctrl",
+                 "uart"       , "clkmgr"     , "sysrst_ctrl"
+                 "rstmgr"     , "pwrmgr"     , "alert_handler",
+                 "rv_dm"      , "rv_plic"    , "edn",
+                 "otbn"       , "aes"        , "csrng",
+                 "entropy_src", "gpio"       , "spi_device",
+                 "spi_host"     ]
+  }
+}

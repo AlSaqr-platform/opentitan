@@ -607,8 +607,8 @@ module hmac_reg_top (
     .rst_ni  (rst_ni),
 
     // from register interface
-    .we     (1'b0),
-    .wd     ('0),
+    .we     (1'b0), 
+    .wd     (),
 
     // from internal hardware
     .de     (hw2reg.err_code.de),

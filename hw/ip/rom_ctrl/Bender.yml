@@ -1,0 +1,30 @@
+package:
+  name: rom_ctrl
+
+dependencies:
+
+  prim:         { path: "../prim"          }
+  tlul:         { path: "../ip/tlul"       }
+sources:
+
+  include_dirs:
+    - ../prim/rtl
+    - ../tlul/rtl
+    - ../kmac/rtl
+    - rtl
+
+  files:
+    - ../prim/rtl/prim_assert.sv
+    - ../kmac/rtl/sha3_pkg.sv
+    - rtl/rom_ctrl_pkg.sv
+    - ../kmac/rtl/kmac_pkg.sv
+    - rtl/rom_ctrl_reg_pkg.sv
+    - rtl/rom_ctrl.sv
+    - rtl/rom_ctrl_compare.sv
+    - rtl/rom_ctrl_counter.sv
+
+    - rtl/rom_ctrl_mux.sv
+    - rtl/rom_ctrl_regs_reg_top.sv
+    - rtl/rom_ctrl_rom_reg_top.sv
+    - rtl/rom_ctrl_fsm.sv
+    - rtl/rom_ctrl_scrambled_rom.sv
