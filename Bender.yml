@@ -41,8 +41,10 @@ export_include_dirs:
       - hw/top_titangrey/tb
       - hw/top_titangrey/autogen/rtl/autogen
       - hw/ip/prim/rtl/
+      - hw/ip/tlul/rtl/
 
 sources:
+      - hw/ip/tlul/rtl/tlul_pkg.sv
       - hw/ip/prim/rtl/prim_assert.sv
       - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
       - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
