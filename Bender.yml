@@ -49,10 +49,14 @@ sources:
  - hw/top_earlgrey/rtl/top_pkg.sv
  - hw/ip/tlul/rtl/tlul_pkg.sv
  - hw/ip/prim/rtl/prim_assert.sv
+ - hw/ip/lc_ctrl/rtl/lc_ctrl_pkg.sv
+ 
  - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
  - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
  - hw/top_titangrey/tb/prim_generic_ram_2p.sv
  - hw/top_titangrey/tb/simulator_ctrl.sv
- - hw/top_titangrey/tb/ram_2p.sv              
+ - hw/top_titangrey/tb/ram_2p.sv
+ 
  - hw/top_titangrey/tb/opentitan.sv
+
  - hw/top_titangrey/tb/testbench.sv
