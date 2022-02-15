@@ -4,4 +4,52 @@ package:
 
 dependencies:
 
-    top_titangrey     : { path: "hw/top_titangrey" }
+    pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
+
+    rv_ibex_core  : { path: "hw/ip/rv_core_ibex/" }
+    tlul          : { path: "hw/ip/tlul"          }
+    prim          : { path: "hw/ip/prim"          }
+    rom_ctrl      : { path: "hw/ip/rom_ctrl"      }
+    kmac          : { path: "hw/ip/kmac"          }
+    keymgr        : { path: "hw/ip/keymgr"        }
+    otp_ctrl      : { path: "hw/ip/otp_ctrl"      }
+    hmac          : { path: "hw/ip/hmac"          }
+    lc_ctrl       : { path: "hw/ip/lc_ctrl"       }
+    sram_ctrl     : { path: "hw/ip/sram_ctrl"     }
+    flash_ctrl    : { path: "hw/ip/flash_ctrl"    }
+    uart          : { path: "hw/ip/uart"          }
+    clkmgr        : { path: "hw/ip/clkmgr"        }
+    sysrst_ctrl   : { path: "hw/ip/sysrst_ctrl"   }
+    rstmgr        : { path: "hw/ip/rstmgr"        }
+    pwrmgr        : { path: "hw/ip/pwrmgr"        }
+    alert_handler : { path: "hw/ip/alert_handler" }
+    rv_dm         : { path: "hw/ip/rv_dm"         }
+    rv_plic       : { path: "hw/ip/rv_plic"       }
+    edn           : { path: "hw/ip/edn"           }
+    otbn          : { path: "hw/ip/otbn"          }
+    aes           : { path: "hw/ip/aes"           }
+    csrng         : { path: "hw/ip/csrng"         }
+    entropy_src   : { path: "hw/ip/entropy_src"   }
+    gpio          : { path: "hw/ip/gpio"          }
+    spi_device    : { path: "hw/ip/spi_device"    }
+    spi_host      : { path: "hw/ip/spi_host"      }
+
+  # prim_generic: { path: "../ip/prim_generic"  }
+
+sources:
+
+    include_dirs:
+      - hw/top_titangrey/tb
+      - hw/top_titangrey/autogen/rtl/autogen
+      - hw/ip/prim/rtl/
+
+    files:
+
+      - hw/ip/prim/rtl/prim_assert.sv
+      - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
+      - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
+      - hw/top_titangrey/tb/prim_generic_ram_2p.sv
+      - hw/top_titangrey/tb/simulator_ctrl.sv
+      - hw/top_titangrey/tb/ram_2p.sv              
+      - hw/top_titangrey/tb/opentitan.sv
+      - hw/top_titangrey/tb/testbench.sv
