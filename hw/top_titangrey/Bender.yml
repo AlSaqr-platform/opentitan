@@ -34,14 +34,8 @@ dependencies:
     spi_device    : { path: "../ip/spi_device"    }
     spi_host      : { path: "../ip/spi_host"      }
     
-  # prim_generic: { path: "../ip/prim_generic"  }
+  # prim_generic  : { path: "../ip/prim_generic"  }
   
-
-export_include_dirs:
-      - tb
-      - autogen/rtl/autogen
-      - ../ip/prim/rtl/
-      
 sources:
 
       - ../ip/prim/rtl/prim_assert.sv

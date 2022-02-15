@@ -37,11 +37,11 @@ dependencies:
   # prim_generic: { path: "../ip/prim_generic"  }
 
 
-export_include_dirs:
-      - hw/top_titangrey/tb
-      - hw/top_titangrey/autogen/rtl/autogen
-      - hw/ip/prim/rtl/
-      - hw/ip/tlul/rtl/
+#export_include_dirs:
+ #     - hw/top_titangrey/tb
+ #     - hw/top_titangrey/autogen/rtl/autogen
+  #    - hw/ip/prim/rtl/
+   #   - hw/ip/tlul/rtl/
 
 sources:
       - hw/ip/tlul/rtl/tlul_pkg.sv
