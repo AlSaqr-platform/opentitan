@@ -6,15 +6,13 @@ dependencies:
 
   prim:         { path: "../prim" }
   
-sources:
-
-    include_dirs:
+export_include_dirs:
 
       - rtl
       - ../prim/rtl
       - ../../top_earlgrey/rtl
       
-    files:
+sources:
 
       - ../prim/rtl/prim_assert.sv
       - ../../top_earlgrey/rtl/top_pkg.sv

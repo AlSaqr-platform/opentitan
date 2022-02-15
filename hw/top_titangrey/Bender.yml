@@ -36,14 +36,13 @@ dependencies:
     
   # prim_generic: { path: "../ip/prim_generic"  }
   
-sources:
 
-    include_dirs:
+export_include_dirs:
       - tb
       - autogen/rtl/autogen
       - ../ip/prim/rtl/
       
-    files:
+sources:
 
       - ../ip/prim/rtl/prim_assert.sv
       - autogen/rtl/autogen/tl_main_pkg.sv
