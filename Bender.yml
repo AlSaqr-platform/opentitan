@@ -4,35 +4,6 @@ package:
 
 dependencies:
 
- prim          : { path: "hw/ip/prim"          }
- tlul          : { path: "hw/ip/tlul"          }
- pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
- rv_ibex_core  : { path: "hw/ip/rv_core_ibex" }
- rom_ctrl      : { path: "hw/ip/rom_ctrl"      }
- kmac          : { path: "hw/ip/kmac"          }
- keymgr        : { path: "hw/ip/keymgr"        }
- otp_ctrl      : { path: "hw/ip/otp_ctrl"      }
- hmac          : { path: "hw/ip/hmac"          }
- lc_ctrl       : { path: "hw/ip/lc_ctrl"       }
- sram_ctrl     : { path: "hw/ip/sram_ctrl"     }
- flash_ctrl    : { path: "hw/ip/flash_ctrl"    }
- uart          : { path: "hw/ip/uart"          }
- clkmgr        : { path: "hw/ip/clkmgr"        }
- sysrst_ctrl   : { path: "hw/ip/sysrst_ctrl"   }
- rstmgr        : { path: "hw/ip/rstmgr"        }
- pwrmgr        : { path: "hw/ip/pwrmgr"        }
- alert_handler : { path: "hw/ip/alert_handler" }
- rv_dm         : { path: "hw/ip/rv_dm"         }
- rv_plic       : { path: "hw/ip/rv_plic"       }
- edn           : { path: "hw/ip/edn"           }
- otbn          : { path: "hw/ip/otbn"          }
- aes           : { path: "hw/ip/aes"           }
- csrng         : { path: "hw/ip/csrng"         }
- entropy_src   : { path: "hw/ip/entropy_src"   }
- gpio          : { path: "hw/ip/gpio"          }
- spi_device    : { path: "hw/ip/spi_device"    }
- spi_host      : { path: "hw/ip/spi_host"      }
- # prim_generic: { path: "../ip/prim_generic"  }
 
 
 export_include_dirs:
