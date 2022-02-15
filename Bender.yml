@@ -4,11 +4,10 @@ package:
 
 dependencies:
 
+ prim          : { path: "hw/ip/prim"          }
  tlul          : { path: "hw/ip/tlul"          }
  pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
  rv_ibex_core  : { path: "hw/ip/rv_core_ibex" }
-
- prim          : { path: "hw/ip/prim"          }
  rom_ctrl      : { path: "hw/ip/rom_ctrl"      }
  kmac          : { path: "hw/ip/kmac"          }
  keymgr        : { path: "hw/ip/keymgr"        }
