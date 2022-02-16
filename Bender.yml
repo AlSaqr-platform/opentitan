@@ -2,8 +2,7 @@ package:
 
   name: opentitan
 
-  authors:
-    - "Maicol Ciani"
+
 
 dependencies:
 
@@ -38,3 +37,28 @@ dependencies:
  # prim_generic: { path: "../ip/prim_generic"  }
 
 
+export_include_dirs:
+      - hw/top_titangrey/tb
+      - hw/top_titangrey/autogen/rtl/autogen
+      - hw/ip/prim/rtl/
+      - hw/ip/tlul/rtl/
+      - hw/top_earlgrey/rtl/
+
+sources:
+ - hw/ip/prim/rtl/prim_secded_39_32_enc.sv
+ - hw/ip/prim/rtl/prim_secded_64_57_enc.sv
+ - hw/ip/prim/rtl/prim_secded_pkg.sv
+ - hw/top_earlgrey/rtl/top_pkg.sv
+ - hw/ip/tlul/rtl/tlul_pkg.sv
+ - hw/ip/prim/rtl/prim_assert.sv
+ - hw/ip/lc_ctrl/rtl/lc_ctrl_pkg.sv
+ 
+ - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
+ - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
+ - hw/top_titangrey/tb/prim_generic_ram_2p.sv
+ - hw/top_titangrey/tb/simulator_ctrl.sv
+ - hw/top_titangrey/tb/ram_2p.sv
+ 
+ - hw/top_titangrey/tb/opentitan.sv
+
+ - hw/top_titangrey/tb/testbench.sv
