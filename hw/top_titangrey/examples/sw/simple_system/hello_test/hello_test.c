@@ -6,8 +6,11 @@
 #include <stdbool.h>
 
 int main(int argc, char **argv) {
-
+  
+  int  volatile * p_reg;
+  bool volatile * p_reg_bool;
   bool bit   = true;
+  /*
   char msg1  = '1';
   char msg2  = '2';
   char msg3  = '3';
@@ -231,7 +234,12 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("gpio  - failed\n");}
+  */
+
+  p_reg_bool =(bool *) 0x411D0004;
+ *p_reg_bool = bit;
   
+ 
   
   sim_halt();                
   return 0;
