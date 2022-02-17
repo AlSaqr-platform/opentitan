@@ -51,7 +51,7 @@ module opentitan (
   parameter int unsigned RvCoreIbexDmHaltAddr = 32'h00100000;
   parameter int unsigned RvCoreIbexDmExceptionAddr  =32'h00100000;
   parameter bit RvCoreIbexPipeLine = 1'b0;
-  parameter SRAMInitFile = "/scratch/ciani/test_cva6/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_testhello_test.vmem";
+  parameter SRAMInitFile = "../examples/sw/simple_system/hello_test/hello_test.vmem";
 
   
 
@@ -372,7 +372,7 @@ module opentitan (
   enum {HIGH, VALIDATE, LOW} state, next_state;
 
   always_ff @(posedge clk_sys, negedge rst_sys_n) begin
-		if(rst_sys == 0)
+		if(rst_sys_n == 0)
 			state <= LOW;
 		else
 	    state <= next_state;
@@ -386,7 +386,7 @@ module opentitan (
 			LOW:      if(core2test.a_valid)
 						      next_state = VALIDATE;
 					      else
-					       	next_state = IDLE; 
+					       	next_state = LOW; 
 
 			VALIDATE:	begin
 				        next_state = HIGH;
@@ -395,13 +395,13 @@ module opentitan (
 
 			HIGH:	    trigger  = 1'b1;
       
-			default:  next_state = IDLE;
+			default:  next_state = LOW;
       
 		endcase
 	end // always_comb
 
-  assign core2test.d_error = 1'b0;
-  assign test_reset = register;
+  assign test2core.d_error = 1'b0;
+  assign test_reset = trigger;
    
    
 
