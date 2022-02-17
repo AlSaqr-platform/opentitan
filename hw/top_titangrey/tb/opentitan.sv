@@ -51,7 +51,7 @@ module opentitan (
   parameter int unsigned RvCoreIbexDmHaltAddr = 32'h00100000;
   parameter int unsigned RvCoreIbexDmExceptionAddr  =32'h00100000;
   parameter bit RvCoreIbexPipeLine = 1'b0;
-  parameter SRAMInitFile = "../examples/sw/simple_system/hello_test/hello_test.vmem";
+  parameter SRAMInitFile = "/scratch/ciani/test_cva6/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
 
   
 

@@ -236,11 +236,11 @@ int main(int argc, char **argv) {
   else{ puts("gpio  - failed\n");}
   */
 
-  p_reg_bool =(bool *) 0x411D0004;
+  p_reg_bool =(bool *) 0x50000000;
  *p_reg_bool = bit;
   
- 
+ while(1);
   
-  sim_halt();                
+ //sim_halt();                
   return 0;
 }
