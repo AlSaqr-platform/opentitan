@@ -32,6 +32,7 @@ package tl_main_pkg;
   localparam logic [31:0] ADDR_SPACE_GPIO          = 32'h 40040000;
   localparam logic [31:0] ADDR_SPACE_SPI_DEVICE    = 32'h 40050000;
   localparam logic [31:0] ADDR_SPACE_SPI_HOST      = 32'h 40060000;
+  localparam logic [31:0] ADDR_SPACE_TESTRST       = 32'h 50000000;
   localparam logic [31:0] ADDR_SPACE_INSTR_MEM     = 32'h 30120000;
 
   localparam logic [31:0] ADDR_MASK_DATA_MEM      = 32'h 000fffff;
@@ -60,10 +61,11 @@ package tl_main_pkg;
   localparam logic [31:0] ADDR_MASK_GPIO          = 32'h 00000fff;
   localparam logic [31:0] ADDR_MASK_SPI_DEVICE    = 32'h 00000fff;
   localparam logic [31:0] ADDR_MASK_SPI_HOST      = 32'h 00000fff;
+  localparam logic [31:0] ADDR_MASK_TESTRST       = 32'h 00000fff;
   localparam logic [31:0] ADDR_MASK_INSTR_MEM     = 32'h 00000fff;
 
   localparam int N_HOST   = 2;
-  localparam int N_DEVICE = 27;
+  localparam int N_DEVICE = 28;
 
   typedef enum int {
     TlDataMem = 0,
@@ -92,7 +94,8 @@ package tl_main_pkg;
     TlGpio = 23,
     TlSpiDevice = 24,
     TlSpiHost = 25,
-    TlInstrMem = 26
+    TlTestrst = 26,
+    TlInstrMem = 27
   } tl_device_e;
 
   typedef enum int {

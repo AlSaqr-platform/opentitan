@@ -313,6 +313,17 @@
       }]
       xbar: false
     }
+    { name: "testrst",
+      type: "device",
+      stub: false,
+      clock: "clk_main_i",
+      reset: "rst_main_ni",
+      addr_range: [{
+        base_addr: "0x50000000",
+        size_byte: "0x00001000"
+      }]
+      xbar: false
+    }
     { name: "instr_mem",
       type: "device",
       stub: false,
@@ -337,6 +348,6 @@
                  "rv_dm"      , "rv_plic"    , "edn",
                  "otbn"       , "aes"        , "csrng",
                  "entropy_src", "gpio"       , "spi_device",
-                 "spi_host"     ]
+                 "spi_host"   , "testrst"     ]
   }
 }

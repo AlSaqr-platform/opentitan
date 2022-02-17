@@ -44,4 +44,5 @@ initial force dut.rst_main_ni = rst_n;
 `CONNECT_TL_DEVICE_IF(gpio, dut, clk_main_i, rst_n)
 `CONNECT_TL_DEVICE_IF(spi_device, dut, clk_main_i, rst_n)
 `CONNECT_TL_DEVICE_IF(spi_host, dut, clk_main_i, rst_n)
+`CONNECT_TL_DEVICE_IF(testrst, dut, clk_main_i, rst_n)
 `CONNECT_TL_DEVICE_IF(instr_mem, dut, clk_main_i, rst_n)

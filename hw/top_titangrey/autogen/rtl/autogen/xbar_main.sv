@@ -9,7 +9,7 @@
 // core_instr
 //   -> instr_mem
 // core_data
-//   -> s1n_29
+//   -> s1n_30
 //     -> data_mem
 //     -> sim_ctrl
 //     -> rom_ctrl
@@ -36,6 +36,7 @@
 //     -> gpio
 //     -> spi_device
 //     -> spi_host
+//     -> testrst
 
 module xbar_main (
   input clk_main_i,
@@ -100,6 +101,8 @@ module xbar_main (
   input  tlul_pkg::tl_d2h_t tl_spi_device_i,
   output tlul_pkg::tl_h2d_t tl_spi_host_o,
   input  tlul_pkg::tl_d2h_t tl_spi_host_i,
+  output tlul_pkg::tl_h2d_t tl_testrst_o,
+  input  tlul_pkg::tl_d2h_t tl_testrst_i,
   output tlul_pkg::tl_h2d_t tl_instr_mem_o,
   input  tlul_pkg::tl_d2h_t tl_instr_mem_i,
 
@@ -114,208 +117,215 @@ module xbar_main (
   lc_ctrl_pkg::lc_tx_t unused_scanmode;
   assign unused_scanmode = scanmode_i;
 
-  tl_h2d_t tl_s1n_29_us_h2d ;
-  tl_d2h_t tl_s1n_29_us_d2h ;
+  tl_h2d_t tl_s1n_30_us_h2d ;
+  tl_d2h_t tl_s1n_30_us_d2h ;
 
 
-  tl_h2d_t tl_s1n_29_ds_h2d [26];
-  tl_d2h_t tl_s1n_29_ds_d2h [26];
+  tl_h2d_t tl_s1n_30_ds_h2d [27];
+  tl_d2h_t tl_s1n_30_ds_d2h [27];
 
   // Create steering signal
-  logic [4:0] dev_sel_s1n_29;
+  logic [4:0] dev_sel_s1n_30;
 
 
 
   assign tl_instr_mem_o = tl_core_instr_i;
   assign tl_core_instr_o = tl_instr_mem_i;
 
-  assign tl_data_mem_o = tl_s1n_29_ds_h2d[0];
-  assign tl_s1n_29_ds_d2h[0] = tl_data_mem_i;
+  assign tl_data_mem_o = tl_s1n_30_ds_h2d[0];
+  assign tl_s1n_30_ds_d2h[0] = tl_data_mem_i;
 
-  assign tl_sim_ctrl_o = tl_s1n_29_ds_h2d[1];
-  assign tl_s1n_29_ds_d2h[1] = tl_sim_ctrl_i;
+  assign tl_sim_ctrl_o = tl_s1n_30_ds_h2d[1];
+  assign tl_s1n_30_ds_d2h[1] = tl_sim_ctrl_i;
 
-  assign tl_rom_ctrl_o = tl_s1n_29_ds_h2d[2];
-  assign tl_s1n_29_ds_d2h[2] = tl_rom_ctrl_i;
+  assign tl_rom_ctrl_o = tl_s1n_30_ds_h2d[2];
+  assign tl_s1n_30_ds_d2h[2] = tl_rom_ctrl_i;
 
-  assign tl_kmac_o = tl_s1n_29_ds_h2d[3];
-  assign tl_s1n_29_ds_d2h[3] = tl_kmac_i;
+  assign tl_kmac_o = tl_s1n_30_ds_h2d[3];
+  assign tl_s1n_30_ds_d2h[3] = tl_kmac_i;
 
-  assign tl_keymgr_o = tl_s1n_29_ds_h2d[4];
-  assign tl_s1n_29_ds_d2h[4] = tl_keymgr_i;
+  assign tl_keymgr_o = tl_s1n_30_ds_h2d[4];
+  assign tl_s1n_30_ds_d2h[4] = tl_keymgr_i;
 
-  assign tl_otp_ctrl_o = tl_s1n_29_ds_h2d[5];
-  assign tl_s1n_29_ds_d2h[5] = tl_otp_ctrl_i;
+  assign tl_otp_ctrl_o = tl_s1n_30_ds_h2d[5];
+  assign tl_s1n_30_ds_d2h[5] = tl_otp_ctrl_i;
 
-  assign tl_hmac_o = tl_s1n_29_ds_h2d[6];
-  assign tl_s1n_29_ds_d2h[6] = tl_hmac_i;
+  assign tl_hmac_o = tl_s1n_30_ds_h2d[6];
+  assign tl_s1n_30_ds_d2h[6] = tl_hmac_i;
 
-  assign tl_lc_ctrl_o = tl_s1n_29_ds_h2d[7];
-  assign tl_s1n_29_ds_d2h[7] = tl_lc_ctrl_i;
+  assign tl_lc_ctrl_o = tl_s1n_30_ds_h2d[7];
+  assign tl_s1n_30_ds_d2h[7] = tl_lc_ctrl_i;
 
-  assign tl_sram_ctrl_o = tl_s1n_29_ds_h2d[8];
-  assign tl_s1n_29_ds_d2h[8] = tl_sram_ctrl_i;
+  assign tl_sram_ctrl_o = tl_s1n_30_ds_h2d[8];
+  assign tl_s1n_30_ds_d2h[8] = tl_sram_ctrl_i;
 
-  assign tl_flash_ctrl_o = tl_s1n_29_ds_h2d[9];
-  assign tl_s1n_29_ds_d2h[9] = tl_flash_ctrl_i;
+  assign tl_flash_ctrl_o = tl_s1n_30_ds_h2d[9];
+  assign tl_s1n_30_ds_d2h[9] = tl_flash_ctrl_i;
 
-  assign tl_uart_o = tl_s1n_29_ds_h2d[10];
-  assign tl_s1n_29_ds_d2h[10] = tl_uart_i;
+  assign tl_uart_o = tl_s1n_30_ds_h2d[10];
+  assign tl_s1n_30_ds_d2h[10] = tl_uart_i;
 
-  assign tl_clkmgr_o = tl_s1n_29_ds_h2d[11];
-  assign tl_s1n_29_ds_d2h[11] = tl_clkmgr_i;
+  assign tl_clkmgr_o = tl_s1n_30_ds_h2d[11];
+  assign tl_s1n_30_ds_d2h[11] = tl_clkmgr_i;
 
-  assign tl_sysrst_ctrl_o = tl_s1n_29_ds_h2d[12];
-  assign tl_s1n_29_ds_d2h[12] = tl_sysrst_ctrl_i;
+  assign tl_sysrst_ctrl_o = tl_s1n_30_ds_h2d[12];
+  assign tl_s1n_30_ds_d2h[12] = tl_sysrst_ctrl_i;
 
-  assign tl_rstmgr_o = tl_s1n_29_ds_h2d[13];
-  assign tl_s1n_29_ds_d2h[13] = tl_rstmgr_i;
+  assign tl_rstmgr_o = tl_s1n_30_ds_h2d[13];
+  assign tl_s1n_30_ds_d2h[13] = tl_rstmgr_i;
 
-  assign tl_pwrmgr_o = tl_s1n_29_ds_h2d[14];
-  assign tl_s1n_29_ds_d2h[14] = tl_pwrmgr_i;
+  assign tl_pwrmgr_o = tl_s1n_30_ds_h2d[14];
+  assign tl_s1n_30_ds_d2h[14] = tl_pwrmgr_i;
 
-  assign tl_alert_handler_o = tl_s1n_29_ds_h2d[15];
-  assign tl_s1n_29_ds_d2h[15] = tl_alert_handler_i;
+  assign tl_alert_handler_o = tl_s1n_30_ds_h2d[15];
+  assign tl_s1n_30_ds_d2h[15] = tl_alert_handler_i;
 
-  assign tl_rv_dm_o = tl_s1n_29_ds_h2d[16];
-  assign tl_s1n_29_ds_d2h[16] = tl_rv_dm_i;
+  assign tl_rv_dm_o = tl_s1n_30_ds_h2d[16];
+  assign tl_s1n_30_ds_d2h[16] = tl_rv_dm_i;
 
-  assign tl_rv_plic_o = tl_s1n_29_ds_h2d[17];
-  assign tl_s1n_29_ds_d2h[17] = tl_rv_plic_i;
+  assign tl_rv_plic_o = tl_s1n_30_ds_h2d[17];
+  assign tl_s1n_30_ds_d2h[17] = tl_rv_plic_i;
 
-  assign tl_edn_o = tl_s1n_29_ds_h2d[18];
-  assign tl_s1n_29_ds_d2h[18] = tl_edn_i;
+  assign tl_edn_o = tl_s1n_30_ds_h2d[18];
+  assign tl_s1n_30_ds_d2h[18] = tl_edn_i;
 
-  assign tl_otbn_o = tl_s1n_29_ds_h2d[19];
-  assign tl_s1n_29_ds_d2h[19] = tl_otbn_i;
+  assign tl_otbn_o = tl_s1n_30_ds_h2d[19];
+  assign tl_s1n_30_ds_d2h[19] = tl_otbn_i;
 
-  assign tl_aes_o = tl_s1n_29_ds_h2d[20];
-  assign tl_s1n_29_ds_d2h[20] = tl_aes_i;
+  assign tl_aes_o = tl_s1n_30_ds_h2d[20];
+  assign tl_s1n_30_ds_d2h[20] = tl_aes_i;
 
-  assign tl_csrng_o = tl_s1n_29_ds_h2d[21];
-  assign tl_s1n_29_ds_d2h[21] = tl_csrng_i;
+  assign tl_csrng_o = tl_s1n_30_ds_h2d[21];
+  assign tl_s1n_30_ds_d2h[21] = tl_csrng_i;
 
-  assign tl_entropy_src_o = tl_s1n_29_ds_h2d[22];
-  assign tl_s1n_29_ds_d2h[22] = tl_entropy_src_i;
+  assign tl_entropy_src_o = tl_s1n_30_ds_h2d[22];
+  assign tl_s1n_30_ds_d2h[22] = tl_entropy_src_i;
 
-  assign tl_gpio_o = tl_s1n_29_ds_h2d[23];
-  assign tl_s1n_29_ds_d2h[23] = tl_gpio_i;
+  assign tl_gpio_o = tl_s1n_30_ds_h2d[23];
+  assign tl_s1n_30_ds_d2h[23] = tl_gpio_i;
 
-  assign tl_spi_device_o = tl_s1n_29_ds_h2d[24];
-  assign tl_s1n_29_ds_d2h[24] = tl_spi_device_i;
+  assign tl_spi_device_o = tl_s1n_30_ds_h2d[24];
+  assign tl_s1n_30_ds_d2h[24] = tl_spi_device_i;
 
-  assign tl_spi_host_o = tl_s1n_29_ds_h2d[25];
-  assign tl_s1n_29_ds_d2h[25] = tl_spi_host_i;
+  assign tl_spi_host_o = tl_s1n_30_ds_h2d[25];
+  assign tl_s1n_30_ds_d2h[25] = tl_spi_host_i;
 
-  assign tl_s1n_29_us_h2d = tl_core_data_i;
-  assign tl_core_data_o = tl_s1n_29_us_d2h;
+  assign tl_testrst_o = tl_s1n_30_ds_h2d[26];
+  assign tl_s1n_30_ds_d2h[26] = tl_testrst_i;
+
+  assign tl_s1n_30_us_h2d = tl_core_data_i;
+  assign tl_core_data_o = tl_s1n_30_us_d2h;
 
   always_comb begin
     // default steering to generate error response if address is not within the range
-    dev_sel_s1n_29 = 5'd26;
-    if ((tl_s1n_29_us_h2d.a_address &
+    dev_sel_s1n_30 = 5'd27;
+    if ((tl_s1n_30_us_h2d.a_address &
          ~(ADDR_MASK_DATA_MEM)) == ADDR_SPACE_DATA_MEM) begin
-      dev_sel_s1n_29 = 5'd0;
+      dev_sel_s1n_30 = 5'd0;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_SIM_CTRL)) == ADDR_SPACE_SIM_CTRL) begin
-      dev_sel_s1n_29 = 5'd1;
+      dev_sel_s1n_30 = 5'd1;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_ROM_CTRL)) == ADDR_SPACE_ROM_CTRL) begin
-      dev_sel_s1n_29 = 5'd2;
+      dev_sel_s1n_30 = 5'd2;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_KMAC)) == ADDR_SPACE_KMAC) begin
-      dev_sel_s1n_29 = 5'd3;
+      dev_sel_s1n_30 = 5'd3;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_KEYMGR)) == ADDR_SPACE_KEYMGR) begin
-      dev_sel_s1n_29 = 5'd4;
+      dev_sel_s1n_30 = 5'd4;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_OTP_CTRL)) == ADDR_SPACE_OTP_CTRL) begin
-      dev_sel_s1n_29 = 5'd5;
+      dev_sel_s1n_30 = 5'd5;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_HMAC)) == ADDR_SPACE_HMAC) begin
-      dev_sel_s1n_29 = 5'd6;
+      dev_sel_s1n_30 = 5'd6;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_LC_CTRL)) == ADDR_SPACE_LC_CTRL) begin
-      dev_sel_s1n_29 = 5'd7;
+      dev_sel_s1n_30 = 5'd7;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_SRAM_CTRL)) == ADDR_SPACE_SRAM_CTRL) begin
-      dev_sel_s1n_29 = 5'd8;
+      dev_sel_s1n_30 = 5'd8;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_FLASH_CTRL)) == ADDR_SPACE_FLASH_CTRL) begin
-      dev_sel_s1n_29 = 5'd9;
+      dev_sel_s1n_30 = 5'd9;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_UART)) == ADDR_SPACE_UART) begin
-      dev_sel_s1n_29 = 5'd10;
+      dev_sel_s1n_30 = 5'd10;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_CLKMGR)) == ADDR_SPACE_CLKMGR) begin
-      dev_sel_s1n_29 = 5'd11;
+      dev_sel_s1n_30 = 5'd11;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_SYSRST_CTRL)) == ADDR_SPACE_SYSRST_CTRL) begin
-      dev_sel_s1n_29 = 5'd12;
+      dev_sel_s1n_30 = 5'd12;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_RSTMGR)) == ADDR_SPACE_RSTMGR) begin
-      dev_sel_s1n_29 = 5'd13;
+      dev_sel_s1n_30 = 5'd13;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_PWRMGR)) == ADDR_SPACE_PWRMGR) begin
-      dev_sel_s1n_29 = 5'd14;
+      dev_sel_s1n_30 = 5'd14;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_ALERT_HANDLER)) == ADDR_SPACE_ALERT_HANDLER) begin
-      dev_sel_s1n_29 = 5'd15;
+      dev_sel_s1n_30 = 5'd15;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_RV_DM)) == ADDR_SPACE_RV_DM) begin
-      dev_sel_s1n_29 = 5'd16;
+      dev_sel_s1n_30 = 5'd16;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_RV_PLIC)) == ADDR_SPACE_RV_PLIC) begin
-      dev_sel_s1n_29 = 5'd17;
+      dev_sel_s1n_30 = 5'd17;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_EDN)) == ADDR_SPACE_EDN) begin
-      dev_sel_s1n_29 = 5'd18;
+      dev_sel_s1n_30 = 5'd18;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_OTBN)) == ADDR_SPACE_OTBN) begin
-      dev_sel_s1n_29 = 5'd19;
+      dev_sel_s1n_30 = 5'd19;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_AES)) == ADDR_SPACE_AES) begin
-      dev_sel_s1n_29 = 5'd20;
+      dev_sel_s1n_30 = 5'd20;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_CSRNG)) == ADDR_SPACE_CSRNG) begin
-      dev_sel_s1n_29 = 5'd21;
+      dev_sel_s1n_30 = 5'd21;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_ENTROPY_SRC)) == ADDR_SPACE_ENTROPY_SRC) begin
-      dev_sel_s1n_29 = 5'd22;
+      dev_sel_s1n_30 = 5'd22;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_GPIO)) == ADDR_SPACE_GPIO) begin
-      dev_sel_s1n_29 = 5'd23;
+      dev_sel_s1n_30 = 5'd23;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_SPI_DEVICE)) == ADDR_SPACE_SPI_DEVICE) begin
-      dev_sel_s1n_29 = 5'd24;
+      dev_sel_s1n_30 = 5'd24;
 
-    end else if ((tl_s1n_29_us_h2d.a_address &
+    end else if ((tl_s1n_30_us_h2d.a_address &
                   ~(ADDR_MASK_SPI_HOST)) == ADDR_SPACE_SPI_HOST) begin
-      dev_sel_s1n_29 = 5'd25;
+      dev_sel_s1n_30 = 5'd25;
+
+    end else if ((tl_s1n_30_us_h2d.a_address &
+                  ~(ADDR_MASK_TESTRST)) == ADDR_SPACE_TESTRST) begin
+      dev_sel_s1n_30 = 5'd26;
 end
   end
 
@@ -324,17 +334,17 @@ end
   tlul_socket_1n #(
     .HReqDepth (4'h0),
     .HRspDepth (4'h0),
-    .DReqDepth (104'h0),
-    .DRspDepth (104'h0),
-    .N         (26)
-  ) u_s1n_29 (
+    .DReqDepth (108'h0),
+    .DRspDepth (108'h0),
+    .N         (27)
+  ) u_s1n_30 (
     .clk_i        (clk_main_i),
     .rst_ni       (rst_main_ni),
-    .tl_h_i       (tl_s1n_29_us_h2d),
-    .tl_h_o       (tl_s1n_29_us_d2h),
-    .tl_d_o       (tl_s1n_29_ds_h2d),
-    .tl_d_i       (tl_s1n_29_ds_d2h),
-    .dev_select_i (dev_sel_s1n_29)
+    .tl_h_i       (tl_s1n_30_us_h2d),
+    .tl_h_o       (tl_s1n_30_us_d2h),
+    .tl_d_o       (tl_s1n_30_ds_h2d),
+    .tl_d_i       (tl_s1n_30_ds_d2h),
+    .dev_select_i (dev_sel_s1n_30)
   );
 
 endmodule

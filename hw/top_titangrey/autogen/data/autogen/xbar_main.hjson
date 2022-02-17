@@ -183,6 +183,12 @@
     }
     { struct: "tl"
       type:   "req_rsp"
+      name:   "tl_testrst"
+      act:    "req"
+      package: "tlul_pkg"
+    }
+    { struct: "tl"
+      type:   "req_rsp"
       name:   "tl_instr_mem"
       act:    "req"
       package: "tlul_pkg"

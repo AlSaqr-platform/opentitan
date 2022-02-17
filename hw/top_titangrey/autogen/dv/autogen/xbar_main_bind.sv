@@ -176,6 +176,12 @@ module xbar_main_bind;
     .h2d    (tl_spi_host_o),
     .d2h    (tl_spi_host_i)
   );
+  bind xbar_main tlul_assert #(.EndpointType("Host")) tlul_assert_device_testrst (
+    .clk_i  (clk_main_i),
+    .rst_ni (rst_main_ni),
+    .h2d    (tl_testrst_o),
+    .d2h    (tl_testrst_i)
+  );
   bind xbar_main tlul_assert #(.EndpointType("Host")) tlul_assert_device_instr_mem (
     .clk_i  (clk_main_i),
     .rst_ni (rst_main_ni),

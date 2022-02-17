@@ -85,6 +85,9 @@ tl_device_t xbar_devices[$] = '{
     '{"spi_host", '{
         '{32'h40060000, 32'h40060fff}
     }},
+    '{"testrst", '{
+        '{32'h50000000, 32'h50000fff}
+    }},
     '{"instr_mem", '{
         '{32'h30120000, 32'h30120fff}
 }}};
@@ -119,5 +122,6 @@ tl_host_t xbar_hosts[$] = '{
         "entropy_src",
         "gpio",
         "spi_device",
-        "spi_host"}}
+        "spi_host",
+        "testrst"}}
 };
