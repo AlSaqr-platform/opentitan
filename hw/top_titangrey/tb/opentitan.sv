@@ -24,7 +24,8 @@
 module opentitan (
 
     input logic clk_sys,
-    input logic rst_sys_n
+    input logic rst_sys_n,
+    output logic test_reset
                   
   );
 
@@ -50,7 +51,7 @@ module opentitan (
   parameter int unsigned RvCoreIbexDmHaltAddr = 32'h00100000;
   parameter int unsigned RvCoreIbexDmExceptionAddr  =32'h00100000;
   parameter bit RvCoreIbexPipeLine = 1'b0;
-  parameter SRAMInitFile = "/scratch/ciani/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
+  parameter SRAMInitFile = "/scratch/ciani/test_cva6/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_testhello_test.vmem";
 
   
 
@@ -147,6 +148,11 @@ module opentitan (
               
   tlul_pkg::tl_h2d_t  core2shost;
   tlul_pkg::tl_d2h_t  shost2core;
+   
+  tlul_pkg::tl_h2d_t  core2test;
+  tlul_pkg::tl_d2h_t  test2core;
+
+   
    
    
   typedef enum logic[1:0] {
@@ -357,6 +363,47 @@ module opentitan (
       .rvalid_o  (device_rvalid[SimCtrl]),
       .rdata_o   (device_rdata[SimCtrl])
     );
+
+
+ // Test Reset to provide as output to alsaqr to start the boot
+
+  logic trigger;
+   
+  enum {HIGH, VALIDATE, LOW} state, next_state;
+
+  always_ff @(posedge clk_sys, negedge rst_sys_n) begin
+		if(rst_sys == 0)
+			state <= LOW;
+		else
+	    state <= next_state;
+	end
+   
+  always_comb begin
+	    trigger = 1'b0;
+      test2core.d_valid = 1'b0; 
+		case(state)
+      
+			LOW:      if(core2test.a_valid)
+						      next_state = VALIDATE;
+					      else
+					       	next_state = IDLE; 
+
+			VALIDATE:	begin
+				        next_state = HIGH;
+                test2core.d_valid = 1'b1;
+                end
+
+			HIGH:	    trigger  = 1'b1;
+      
+			default:  next_state = IDLE;
+      
+		endcase
+	end // always_comb
+
+  assign core2test.d_error = 1'b0;
+  assign test_reset = register;
+   
+   
 
   rom_ctrl u_rom (
       .clk_i     (clk_sys),
@@ -622,6 +669,9 @@ module opentitan (
 
       .tl_spi_host_o      (core2shost),
       .tl_spi_host_i      (shost2core),
+
+      .tl_testrst_o       (core2test),
+      .tl_testrst_i       (test2core),
 
           
                    
