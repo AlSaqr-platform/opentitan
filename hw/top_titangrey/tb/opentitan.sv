@@ -51,7 +51,7 @@ module opentitan (
   parameter int unsigned RvCoreIbexDmHaltAddr = 32'h00100000;
   parameter int unsigned RvCoreIbexDmExceptionAddr  =32'h00100000;
   parameter bit RvCoreIbexPipeLine = 1'b0;
-  parameter SRAMInitFile = "/scratch/ciani/test_cva6/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
+  parameter SRAMInitFile = "../examples/sw/simple_system/hello_test/hello_test.vmem";
 
   
 
@@ -366,10 +366,12 @@ module opentitan (
 
 
  // Test Reset to provide as output to alsaqr to start the boot
-
+ 
   logic trigger;
-   
-  enum {HIGH, VALIDATE, LOW} state, next_state;
+  logic [31:0] count;
+  logic t_enable;
+ 
+  enum {HIGH, LOW} state, next_state;
 
   always_ff @(posedge clk_sys, negedge rst_sys_n) begin
 		if(rst_sys_n == 0)
@@ -379,30 +381,40 @@ module opentitan (
 	end
    
   always_comb begin
-	    trigger = 1'b0;
-      test2core.d_valid = 1'b0; 
+	    
+    trigger = 1'b0;
+    t_enable = 1'b1;
+     
 		case(state)
       
-			LOW:      if(core2test.a_valid)
-						      next_state = VALIDATE;
-					      else
-					       	next_state = LOW; 
+			LOW:      if(count == 31'b100000)
+						      next_state = HIGH;
+					      else 					      
+                	next_state = LOW;
 
-			VALIDATE:	begin
-				        next_state = HIGH;
-                test2core.d_valid = 1'b1;
+		  HIGH:     begin
+	              trigger = 1'b1;                
+                t_enable = 1'b0;
                 end
-
-			HIGH:	    trigger  = 1'b1;
       
 			default:  next_state = LOW;
       
 		endcase
 	end // always_comb
 
-  assign test2core.d_error = 1'b0;
   assign test_reset = trigger;
-   
+  
+
+	always_ff @(posedge clk_sys, negedge rst_sys_n)
+	begin
+		if(rst_sys_n == 0)
+			  count <= 'b0;
+		else
+			if(t_enable)
+				count <= count + 1;
+			else	
+				count <= 'b0;
+	end
    
 
   rom_ctrl u_rom (

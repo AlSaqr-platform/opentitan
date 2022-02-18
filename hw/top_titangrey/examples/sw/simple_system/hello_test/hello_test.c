@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
   int  volatile * p_reg;
   bool volatile * p_reg_bool;
   bool bit   = true;
-  /*
+  
   char msg1  = '1';
   char msg2  = '2';
   char msg3  = '3';
@@ -29,8 +29,7 @@ int main(int argc, char **argv) {
   char msg16 = 'G';
   
   puts("Test software:\n");
-  int  volatile * p_reg;
-  bool volatile * p_reg_bool;
+
   ///////////////////////////////////////////////////////////////  
   p_reg =(int *) 0x411E0008;
  *p_reg = msg1;
@@ -234,13 +233,9 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("gpio  - failed\n");}
-  */
-
-  p_reg_bool =(bool *) 0x50000000;
- *p_reg_bool = bit;
+ 
+  while(1);
   
- while(1);
-  
- //sim_halt();                
+  //sim_halt();                
   return 0;
 }
