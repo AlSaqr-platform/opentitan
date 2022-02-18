@@ -25,7 +25,7 @@ dependencies:
  pwrmgr        : { path: "hw/ip/pwrmgr"        }
  alert_handler : { path: "hw/ip/alert_handler" }
  rv_dm         : { path: "hw/ip/rv_dm"         }
- rv_plic       : { path: "hw/ip/rv_plic"       }
+ ot_rv_plic    : { path: "hw/ip/rv_plic"       }
  edn           : { path: "hw/ip/edn"           }
  otbn          : { path: "hw/ip/otbn"          }
  aes           : { path: "hw/ip/aes"           }
