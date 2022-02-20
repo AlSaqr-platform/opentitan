@@ -19,7 +19,7 @@ The architecture under test actually is not the complete earlgray architecture. 
 Moreover, the ips are not actually instantiated as they are in the ref arch, they are just instantiated, provided of clk and rst, provided of a connection to the Tile Link Crossbar (autogenerate by .py script starting form a hjson file.
 So a TO DO surely is: implement completely the earlgrey arch with only the useful ips, so making all the intermodule connections and eventual multiple instantiation like uart0 uart1 and so on.
 Below a block scheme of the current architecture is shown.
-![alt text](current architecture.png)
+![alt text](RTL.png)
 
 ## Test setup
 
