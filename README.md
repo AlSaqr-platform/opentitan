@@ -64,3 +64,4 @@ After few minutes, the test will be over and the software will loop into a while
 - Modify the .sh script to automatically run the commands to Questasim and merge it to start script in order to run a single command to run the simulation
 - Change the software, the while(1) instead of the halt command is just to avoid that the code stops the simulation while running concurrently with ariane into the Alsaqr repo
 - Implement the full earlgrey architecture 
+- Generate a register file compliant with the flow used to generate the regs files for the ips to command the test reset from software.
