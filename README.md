@@ -60,3 +60,7 @@ source start.tcl
 ```
 After few minutes, the test will be over and the software will loop into a while(1). At this point it is needed a break command from questasim. To check if everything went well, check the ibex_simple_system.log file that should present all the prints with all the outcomes of each test (it is removed everytime run_compile.sh is run, so it will be always up to date with your current simulation).
 
+## TO DO:
+- Modify the .sh script to automatically run the commands to Questasim and merge it to start script in order to run a single command to run the simulation
+- Change the software, the while(1) instead of the halt command is just to avoid that the code stops the simulation while running concurrently with ariane into the Alsaqr repo
+- Implement the full earlgrey architecture 
