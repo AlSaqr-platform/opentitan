@@ -2,14 +2,13 @@ package:
 
   name: opentitan
 
-  authors:
-    - "Maicol Ciani"
+
 
 dependencies:
 
  prim          : { path: "hw/ip/prim"          }
  tlul          : { path: "hw/ip/tlul"          }
- pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
+# pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
  rv_ibex_core  : { path: "hw/ip/rv_core_ibex" }
  rom_ctrl      : { path: "hw/ip/rom_ctrl"      }
  kmac          : { path: "hw/ip/kmac"          }
@@ -26,7 +25,7 @@ dependencies:
  pwrmgr        : { path: "hw/ip/pwrmgr"        }
  alert_handler : { path: "hw/ip/alert_handler" }
  rv_dm         : { path: "hw/ip/rv_dm"         }
- rv_plic       : { path: "hw/ip/rv_plic"       }
+ ot_rv_plic    : { path: "hw/ip/rv_plic"       }
  edn           : { path: "hw/ip/edn"           }
  otbn          : { path: "hw/ip/otbn"          }
  aes           : { path: "hw/ip/aes"           }
