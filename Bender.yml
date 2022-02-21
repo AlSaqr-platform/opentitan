@@ -49,7 +49,8 @@ export_include_dirs:
 sources:
 
 ####### prim
-      
+
+      - hw/top_earlgrey/rtl/top_pkg.sv       
       - hw/ip/prim/rtl/prim_assert.sv
       - hw/ip/prim/rtl/prim_clock_mux2.sv
       - hw/ip/prim/rtl/prim_clock_inv.sv
@@ -158,7 +159,7 @@ sources:
 
 ##### TLUL
 
-      - hw/ip/tlul/../top_earlgrey/rtl/top_pkg.sv
+
       
       - hw/ip/tlul/rtl/tlul_pkg.sv  
       - hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
@@ -180,6 +181,28 @@ sources:
       - hw/ip/tlul/rtl/tlul_fifo_sync.sv
       - hw/ip/tlul/rtl/tlul_fifo_async.sv
       - hw/ip/tlul/rtl/tlul_adapter_sram.sv
+
+##### rv_core_ibex
+    
+      - hw/ip/rv_ibex_core/../../top_earlgrey/rtl/top_pkg.sv
+      - hw/ip/rv_ibex_core/../prim/rtl/prim_assert.sv
+      - hw/ip/rv_ibex_core/../tlul/rtl/tlul_pkg.sv
+      - hw/ip/rv_ibex_core/../../vendor/lowrisc_ibex/rtl/ibex_pkg.sv
+      - hw/ip/rv_ibex_core/../pwrmgr/rtl/pwrmgr_pkg.sv              #modificato, problemi con il reg_pkg
+      - hw/ip/rv_ibex_core/../pwrmgr/rtl/pwrmgr_reg_pkg.sv
+      - hw/ip/rv_ibex_core/../../vendor/lowrisc_ibex/rtl/ibex_icache.sv
+      - hw/ip/rv_ibex_core/../prim/rtl/prim_flop_2sync.sv
+      - hw/ip/rv_ibex_core/../prim/rtl/prim_flop.sv
+      - hw/ip/rv_ibex_core/../prim_generic/rtl/prim_generic_ram_1p.sv
+      - hw/ip/rv_ibex_core/../alert_handler/rtl/alert_handler_reg_pkg.sv
+
+
+      - hw/ip/rv_ibex_core/rtl/rv_core_ibex_pkg.sv
+      - hw/ip/rv_ibex_core/rtl/rv_core_ibex_reg_pkg.sv
+      - hw/ip/rv_ibex_core/rtl/rv_core_ibex_cfg_reg_top.sv
+      - hw/ip/rv_ibex_core/rtl/rv_core_addr_trans.sv
+#     - hw/ip/rv_ibex_core/rtl/rv_core_ibex_peri.sv  
+      - hw/ip/rv_ibex_core/rtl/rv_core_ibex.sv
       
 
 
