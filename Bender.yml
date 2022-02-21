@@ -158,7 +158,7 @@ sources:
 
 ##### TLUL
 
-      - hw/ip/tlul/../../top_earlgrey/rtl/top_pkg.sv
+      - hw/ip/tlul/../top_earlgrey/rtl/top_pkg.sv
       
       - hw/ip/tlul/rtl/tlul_pkg.sv  
       - hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
