@@ -73,14 +73,10 @@ sources:
       - hw/ip/prim_generic/rtl/prim_generic_flop.sv
       - hw/ip/prim_generic/rtl/prim_generic_rom.sv
       - hw/ip/prim_generic/rtl/prim_generic_ram_1p.sv
-      
-
       - hw/ip/entropy_src/rtl/entropy_src_pkg.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_pkg.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_pkg.sv
       - hw/ip/edn/rtl/edn_pkg.sv
-      
-
       - hw/ip/prim/rtl/prim_multibit_sync.sv
       - hw/ip/prim/rtl/prim_secded_22_16_dec.sv
       - hw/ip/prim/rtl/prim_slicer.sv
@@ -161,8 +157,8 @@ sources:
 
 ##### TLUL
 
-
-      
+      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
+      - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
       - hw/ip/tlul/rtl/tlul_pkg.sv  
       - hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
       - hw/ip/tlul/rtl/tlul_data_integ_enc.sv
@@ -189,8 +185,6 @@ sources:
       - hw/dv/sv/dv_utils/dv_fcov_macros.svh
       - hw/vendor/lowrisc_ibex/rtl/ibex_pkg.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_register_file_ff.sv
-      
-     
       - hw/vendor/lowrisc_ibex/rtl/ibex_alu.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_compressed_decoder.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_controller.sv
@@ -204,26 +198,21 @@ sources:
       - hw/vendor/lowrisc_ibex/rtl/ibex_pmp.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_tracer_pkg.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_wb_stage.sv
-      
       - hw/vendor/lowrisc_ibex/rtl/ibex_cs_registers.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_ex_block.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_id_stage.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_prefetch_buffer.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_tracer.sv
-      
       - hw/vendor/lowrisc_ibex/rtl/ibex_if_stage.sv
-      
       - hw/vendor/lowrisc_ibex/rtl/ibex_core.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_top.sv
 
 ##### rv_core_ibex wrapper
 
-      - hw/vendor/lowrisc_ibex/rtl/ibex_pkg.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv   #modificato, problemi con il reg_pkg
       - hw/ip/pwrmgr/rtl/pwrmgr_reg_pkg.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_icache.sv      
       - hw/ip/alert_handler/rtl/alert_handler_reg_pkg.sv
-
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_pkg.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_reg_pkg.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_cfg_reg_top.sv
@@ -274,8 +263,6 @@ sources:
 
 ##### pwrmgr
 
-      - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv
-      - hw/ip/pwrmgr/rtl/pwrmgr_reg_pkg.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_reg_top.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_cdc.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_cdc_pulse.sv
@@ -287,14 +274,8 @@ sources:
 ##### keymgr
 
       - hw/ip/rv_dm/rtl/jtag_pkg.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_reg_pkg.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_pkg.sv
-
-      - hw/ip/keymgr/rtl/keymgr_reg_pkg.sv
-      - hw/ip/keymgr/rtl/keymgr_pkg.sv
-     
       - hw/ip/keymgr/rtl/keymgr_cfg_en.sv
       - hw/ip/keymgr/rtl/keymgr_ctrl.sv
       - hw/ip/keymgr/rtl/keymgr_input_checks.sv
@@ -307,15 +288,10 @@ sources:
 
 ##### otp_ctrl
 
-      - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv
       - hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv.tpl
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
-  
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_top.sv
-     
       - hw/ip/prim_generic/rtl/prim_generic_otp.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_core_reg_top.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_dai.sv
@@ -326,12 +302,10 @@ sources:
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_buf.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_unbuf.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_prim_reg_top.sv      
-     
       - hw/ip/otp_ctrl/rtl/otp_ctrl_scrmbl.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl.sv
 
 ##### hmac
-
 
       - hw/ip/hmac/rtl/hmac_reg_pkg.sv
       - hw/ip/hmac/rtl/hmac_pkg.sv
@@ -343,19 +317,14 @@ sources:
 
 ##### lc_ctrl
 
-
       - hw/ip/prim_generic/rtl/prim_generic_clock_inv.sv
       - hw/ip/prim_generic/rtl/prim_generic_clock_mux2.sv
-
       - hw/ip/lc_ctrl/rtl/lc_ctrl_reg_pkg.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_reg_top.sv
-      - hw/ip/lc_ctrl/rtl/lc_ctrl_pkg.sv
-  
       - hw/ip/lc_ctrl/rtl/lc_ctrl_fsm.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_kmac_if.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_signal_decode.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_decode.sv
-      - hw/ip/lc_ctrl/rtl/lc_ctrl_state_pkg.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_pkg.sv.tpl
       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_transition.sv
       - hw/ip/lc_ctrl/rtl/lc_ctrl.sv
@@ -369,10 +338,6 @@ sources:
 
 #### flash_ctrl
 
-      - hw/ip/prim_generic/rtl/prim_generic_ram_1p.sv
-
-      - hw/ip/flash_ctrl/rtl/flash_ctrl_reg_pkg.sv
-      - hw/ip/flash_ctrl/rtl/flash_ctrl_pkg.sv
       - hw/ip/flash_ctrl/rtl/flash_phy_pkg.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_arb.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_core_reg_top.sv
@@ -390,7 +355,6 @@ sources:
       - hw/ip/flash_ctrl/rtl/flash_phy_scramble.sv
       - hw/ip/prim_generic/rtl/prim_generic_flash_bank.sv
       - hw/ip/flash_ctrl/rtl/flash_phy_rd.sv
-
       - hw/ip/prim_generic/rtl/prim_generic_flash.sv
       - hw/ip/flash_ctrl/rtl/flash_phy.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl.sv
@@ -428,11 +392,9 @@ sources:
       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_ulpfsm.sv
       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl.sv
 
-
 ##### alert_handler
 
       - hw/ip/alert_handler/rtl/alert_pkg.sv
-      - hw/ip/alert_handler/rtl/alert_handler_reg_pkg.sv
       - hw/ip/alert_handler/rtl/alert_handler_reg_top.sv
       - hw/ip/alert_handler/rtl/alert_handler_accu.sv
       - hw/ip/alert_handler/rtl/alert_handler_class.sv
@@ -440,7 +402,6 @@ sources:
       - hw/ip/alert_handler/rtl/alert_handler_ping_timer.sv
       - hw/ip/alert_handler/rtl/alert_handler_reg_wrap.sv
       - hw/ip/alert_handler/rtl/alert_handler.sv
-
 
 ##### rstmgr
 
@@ -452,17 +413,8 @@ sources:
       - hw/ip/rstmgr/rtl/rstmgr_por.sv
       - hw/ip/rstmgr/rtl/rstmgr.sv
 
-##### clkmgr
-
-      - hw/ip/clkmgr/rtl/clkmgr_reg_pkg.sv
-      - hw/ip/clkmgr/rtl/clkmgr_pkg.sv
-      - hw/ip/clkmgr/rtl/clkmgr_reg_top.sv
-      - hw/ip/clkmgr/rtl/clkmgr_byp.sv
-      - hw/ip/clkmgr/rtl/clkmgr.sv
-
 ##### rv_dm
 
-      - hw/ip/rv_dm/rtl/jtag_pkg.sv
       - hw/ip/rv_dm/rtl/rv_dm_reg_pkg.sv
       - hw/ip/rv_dm/rtl/rv_dm_regs_reg_top.sv
       - hw/ip/rv_dm/rtl/rv_dm_rom_reg_top.sv
@@ -497,7 +449,6 @@ sources:
       - hw/ip/aes/rtl/aes_core.sv
       - hw/ip/aes/rtl/aes.sv
       
-
 ##### csrng
 
       - hw/ip/csrng/rtl/csrng_reg_pkg.sv
@@ -516,8 +467,6 @@ sources:
 
 ##### edn
 
-   
-      - hw/ip/edn/rtl/edn_pkg.sv
       - hw/ip/edn/rtl/edn_reg_pkg.sv
       - hw/ip/edn/rtl/edn_reg_top.sv
       - hw/ip/edn/rtl/edn_ack_sm.sv
@@ -554,9 +503,7 @@ sources:
 
 ##### entropy_src
 
-
       - hw/ip/entropy_src/rtl/entropy_src_reg_pkg.sv
-      - hw/ip/entropy_src/rtl/entropy_src_pkg.sv
       - hw/ip/entropy_src/rtl/entropy_src_reg_top.sv
       - hw/ip/entropy_src/rtl/entropy_src_ack_sm.sv
       - hw/ip/entropy_src/rtl/entropy_src_adaptp_ht.sv
@@ -599,7 +546,6 @@ sources:
 
 ##### spi_host
 
-   
       - hw/ip/spi_host/rtl/spi_host_reg_pkg.sv
       - hw/ip/spi_host/rtl/spi_host_reg_top.sv
       - hw/ip/spi_host/rtl/spi_host_cmd_pkg.sv
@@ -613,15 +559,12 @@ sources:
       - hw/ip/spi_host/rtl/spi_host_core.sv
       - hw/ip/spi_host/rtl/spi_host.sv
 
-
 ##### top module
-
  
       - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
       - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
       - hw/top_titangrey/tb/prim_generic_ram_2p.sv
       - hw/top_titangrey/tb/simulator_ctrl.sv
       - hw/top_titangrey/tb/ram_2p.sv
-
       - hw/top_titangrey/tb/opentitan.sv
       - hw/top_titangrey/tb/testbench.sv
