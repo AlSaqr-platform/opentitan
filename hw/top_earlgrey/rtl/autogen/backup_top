@@ -1095,7 +1095,7 @@ module top_earlgrey #(
       .rst_ni (rstmgr_aon_resets.rst_spi_host1_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host1_core_n[rstmgr_pkg::Domain0Sel])
   );
-/*
+
   i2c #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[8:8])
   ) u_i2c0 (
@@ -1256,7 +1256,7 @@ module top_earlgrey #(
       // Clock and reset connections
       .clk_i (clkmgr_aon_clocks.clk_io_div4_peri),
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel])
-  );*/
+  );
 
   rv_timer #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[12:12])
@@ -1276,7 +1276,7 @@ module top_earlgrey #(
       .clk_i (clkmgr_aon_clocks.clk_io_div4_timers),
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel])
   );
-/*
+
   usbdev #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[13:13])
   ) u_usbdev (
@@ -1348,7 +1348,7 @@ module top_earlgrey #(
       .rst_ni (rstmgr_aon_resets.rst_usb_n[rstmgr_pkg::Domain0Sel]),
       .rst_aon_ni (rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::Domain0Sel]),
       .rst_usb_48mhz_ni (rstmgr_aon_resets.rst_usbif_n[rstmgr_pkg::Domain0Sel])
-  );*/
+  );
 
   otp_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[16:14]),
@@ -1663,8 +1663,8 @@ module top_earlgrey #(
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_aon_ni (rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::DomainAonSel])
   );
-/*
-  adcctrl #(
+
+  adc_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[24:24])
   ) u_adc_ctrl_aon (
 
@@ -1708,7 +1708,7 @@ module top_earlgrey #(
       .clk_core_i (clkmgr_aon_clocks.clk_aon_powerup),
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_core_ni (rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::DomainAonSel])
-  );*/
+  );
 
   pinmux #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[26:26]),
@@ -1794,7 +1794,7 @@ module top_earlgrey #(
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_aon_ni (rstmgr_aon_resets.rst_lc_aon_n[rstmgr_pkg::DomainAonSel])
   );
-/*
+
   sensor_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[40:28])
   ) u_sensor_ctrl_aon (
@@ -1830,7 +1830,7 @@ module top_earlgrey #(
       // Clock and reset connections
       .clk_i (clkmgr_aon_clocks.clk_io_div4_secure),
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel])
-  );*/
+  );
 
   sram_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[41:41]),

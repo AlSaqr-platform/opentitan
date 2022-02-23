@@ -588,9 +588,14 @@ module opentitan (
       .tl_i      (core2shost),
       .tl_o      (shost2core)
    );
+
+ rv_timer u_timer ();
+ aon_timer u_aon_timer ();
+ pinmux u_pinmux ();
+   
                   
                   
-  xbar_main u_xbar (
+ xbar_main u_xbar (
             
       .clk_main_i         (clk_sys),
       .rst_main_ni        (rst_sys_n),
