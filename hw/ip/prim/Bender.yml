@@ -118,5 +118,7 @@ sources:
       - rtl/prim_edn_req.sv
       - rtl/prim_msb_extend.sv
       - rtl/prim_ram_2p.sv
+      - rtl/prim_pad_attr.sv
+      
 
 

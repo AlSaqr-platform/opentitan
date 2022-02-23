@@ -33,6 +33,9 @@ dependencies:
     gpio          : { path: "../ip/gpio"          }
     spi_device    : { path: "../ip/spi_device"    }
     spi_host      : { path: "../ip/spi_host"      }
+    aon_timer     : { path: "../ip/aon_timer"     }
+    rv_timer      : { path: "../ip/rv_timer"      }
+    pinmux        : { path: "../ip/pinmux"        }
     
   # prim_generic  : { path: "../ip/prim_generic"  }
   

@@ -1,0 +1,18 @@
+package:
+  name: aon_timer
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../prim/rtl/
+    
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+
+    - rtl/aon_timer_reg_pkg.sv  
+    - rtl/aon_timer_reg_top.sv
+    - rtl/aon_timer_core.sv
+    - rtl/aon_timer.sv

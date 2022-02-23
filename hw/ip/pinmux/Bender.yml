@@ -1,0 +1,25 @@
+package:
+  name: pinmux
+
+sources:
+
+    include_dirs:
+    - rtl
+    - ../usbdev/rtl/
+    - ../prim/rtl/
+    
+
+    files:
+    
+    - ../prim/rtl/prim_assert.sv
+    - ../usbdev/rtl/usbdev_pkg.sv    
+    - ../usbdev/rtl/usbdev_aon_wake.sv
+    
+    - rtl/pinmux_reg_pkg.sv
+    - rtl/pinmux_reg_top.sv
+    - rtl/pinmux_pkg.sv
+    - rtl/pinmux_jtag_breakout.sv 
+    - rtl/pinmux_jtag_buf.sv
+    - rtl/pinmux_strap_sampling.sv
+    - rtl/pinmux_wkup.sv
+    - rtl/pinmux.sv
