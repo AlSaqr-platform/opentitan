@@ -8,13 +8,13 @@ sources:
 
 
   include_dirs:
-  - ../../../ip/prim_generic/rtl
-  - ../../../ip/prim/rtl
+ 
 
   files:
+  
   - ../../../ip/prim/rtl/prim_assert.sv
-  - ../../../ip/prim/rtl/prim_util_memload.svh
-  - ../../../ip/prim_generic/rtl/prim_generic_rom.sv
+  - ../debug_rom/debug_rom.sv
+  - ../debug_rom/debug_rom_one_scratch.sv
   - dm_pkg.sv
   - dm_obi_top.sv
   - dm_sba.sv

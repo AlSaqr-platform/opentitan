@@ -1,10 +1,10 @@
 /* Copyright 2018 ETH Zurich and University of Bologna.
 * Copyright and related rights are licensed under the Solderpad Hardware
-* License, Version 0.51 (the “License”); you may not use this file except in
+* License, Version 0.51 (the License); you may not use this file except in
 * compliance with the License.  You may obtain a copy of the License at
 * http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
 * or agreed to in writing, software, hardware and materials distributed under
-* this License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR
+* this License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR
 * CONDITIONS OF ANY KIND, either express or implied. See the License for the
 * specific language governing permissions and limitations under the License.
 *
@@ -464,7 +464,7 @@ module dm_mem #(
     endcase
   end
 
-  logic [64:0] rom_addr;
+  logic [63:0] rom_addr;
   assign rom_addr = 64'(addr_i);
 
   // Depending on whether the debug module is located
@@ -473,9 +473,8 @@ module dm_mem #(
   // For all other cases we need to set aside
   // two registers per hart, hence we also need
   // two scratch registers.
-    
   if (HasSndScratch) begin : gen_rom_snd_scratch
-    prim_generic_rom i_debug_rom (
+    debug_rom i_debug_rom (
       .clk_i,
       .req_i,
       .addr_i  ( rom_addr  ),

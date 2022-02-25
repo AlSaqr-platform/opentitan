@@ -6,6 +6,7 @@ dependencies:
 
     pulp_dbg      : { path: "../vendor/pulp_riscv_dbg/src"      }
     
+
     rv_ibex_core  : { path: "../ip/rv_core_ibex/"               }
     tlul          : { path: "../ip/tlul"                        }
     prim          : { path: "../ip/prim"                        }
@@ -46,18 +47,20 @@ dependencies:
 sources:
 
       - ../ip/prim/rtl/prim_assert.sv
-     # - autogen/rtl/autogen/tl_main_pkg.sv
-     # - autogen/rtl/autogen/xbar_main.sv
-     # - tb/prim_generic_ram_2p.sv
-     # - tb/simulator_ctrl.sv
-     # - tb/ram_2p.sv              
-     # - tb/opentitan.sv
-      - ../top_earlgrey/ip/xbar_main/rtl/autogen/tl_main_pkg.sv
-      - ../top_earlgrey/ip/xbar_main/rtl/autogen/xbar_main.sv
-      - ../top_earlgrey/ip/xbar_peri/rtl/autogen/tl_peri_pkg.sv
-      - ../top_earlgrey/ip/xbar_peri/rtl/autogen/xbar_peri.sv
-      - ../top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
-      - ../top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
-      - ../top_earlgrey/rtl/autogen/top_earlgrey.sv
+    
+      #- ../top_earlgrey/ip/xbar_main/rtl/autogen/tl_main_pkg.sv
+      #- ../top_earlgrey/ip/xbar_main/rtl/autogen/xbar_main.sv
+      #- ../top_earlgrey/ip/xbar_peri/rtl/autogen/tl_peri_pkg.sv
+      #- ../top_earlgrey/ip/xbar_peri/rtl/autogen/xbar_peri.sv
+      #- ../top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
+      #- ../top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
+      #- ../top_earlgrey/rtl/autogen/top_earlgrey.sv
+
+      - autogen/rtl/autogen/tl_main_pkg.sv
+      - autogen/rtl/autogen/xbar_main.sv
+      - tb/prim_generic_ram_2p.sv
+      - tb/simulator_ctrl.sv
+      - tb/ram_2p.sv              
+      - tb/opentitan.sv
       
       - tb/testbench.sv

@@ -16,8 +16,9 @@ module testbench ();
     #1 clk_sys = 1'b1;
    end
 
-  top_earlgrey u_RoT (
-    .clk_main_i (clk_sys)
- );
+  opentitan u_RoT (
+    .clk_sys,
+    .rst_sys_n 
+);
 
 endmodule
