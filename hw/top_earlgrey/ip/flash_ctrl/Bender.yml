@@ -1,0 +1,23 @@
+package:
+  name: flash_ctrl
+
+sources:
+
+    include_dirs:
+    - rtl/autogen
+    - ../../../ip/prim/rtl/
+    
+
+    files:
+
+    - ../../../ip/prim/rtl/prim_assert.sv
+    - ../../../ip/rv_dm/rtl/jtag_pkg.sv
+  
+    - rtl/autogen/flash_ctrl_reg_pkg.sv
+    - rtl/autogen/flash_ctrl_pkg.sv
+    - rtl/autogen/flash_ctrl_core_reg_top.sv
+    #- rtl/autogen/flash_ctrl_prim_reg_top.sv
+    #- rtl/autogen/flash_ctrl_mem_reg_top.sv
+    - rtl/autogen/flash_ctrl.sv
+    
+   

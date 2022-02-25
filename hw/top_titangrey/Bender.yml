@@ -4,48 +4,60 @@ package:
 
 dependencies:
 
-    pulp_dbg      : { path: "../vendor/pulp_riscv_dbg/src" }
+    pulp_dbg      : { path: "../vendor/pulp_riscv_dbg/src"      }
     
-    rv_ibex_core  : { path: "../ip/rv_core_ibex/" }
-    tlul          : { path: "../ip/tlul"          }
-    prim          : { path: "../ip/prim"          }
-    rom_ctrl      : { path: "../ip/rom_ctrl"      }
-    kmac          : { path: "../ip/kmac"          }
-    keymgr        : { path: "../ip/keymgr"        }
-    otp_ctrl      : { path: "../ip/otp_ctrl"      }
-    hmac          : { path: "../ip/hmac"          }
-    lc_ctrl       : { path: "../ip/lc_ctrl"       }
-    sram_ctrl     : { path: "../ip/sram_ctrl"     }
-    flash_ctrl    : { path: "../ip/flash_ctrl"    }
-    uart          : { path: "../ip/uart"          }
-    clkmgr        : { path: "../ip/clkmgr"        }
-    sysrst_ctrl   : { path: "../ip/sysrst_ctrl"   }
-    rstmgr        : { path: "../ip/rstmgr"        }
-    pwrmgr        : { path: "../ip/pwrmgr"        }
-    alert_handler : { path: "../ip/alert_handler" }
-    rv_dm         : { path: "../ip/rv_dm"         }
-    rv_plic       : { path: "../ip/rv_plic"       }
-    edn           : { path: "../ip/edn"           }
-    otbn          : { path: "../ip/otbn"          }
-    aes           : { path: "../ip/aes"           }
-    csrng         : { path: "../ip/csrng"         }
-    entropy_src   : { path: "../ip/entropy_src"   }
-    gpio          : { path: "../ip/gpio"          }
-    spi_device    : { path: "../ip/spi_device"    }
-    spi_host      : { path: "../ip/spi_host"      }
-    aon_timer     : { path: "../ip/aon_timer"     }
-    rv_timer      : { path: "../ip/rv_timer"      }
-    pinmux        : { path: "../ip/pinmux"        }
+    rv_ibex_core  : { path: "../ip/rv_core_ibex/"               }
+    tlul          : { path: "../ip/tlul"                        }
+    prim          : { path: "../ip/prim"                        }
+    rom_ctrl      : { path: "../ip/rom_ctrl"                    }
+    kmac          : { path: "../ip/kmac"                        }
+    keymgr        : { path: "../ip/keymgr"                      }
+    otp_ctrl      : { path: "../ip/otp_ctrl"                    }
+    hmac          : { path: "../ip/hmac"                        }
+    lc_ctrl       : { path: "../ip/lc_ctrl"                     }
+    sram_ctrl     : { path: "../ip/sram_ctrl"                   }
+    flash_ctrl    : { path: "../ip/flash_ctrl"                  }
+    uart          : { path: "../ip/uart"                        }
+    clkmgr        : { path: "../ip/clkmgr"                      }   
+    sysrst_ctrl   : { path: "../ip/sysrst_ctrl"                 }
+    rstmgr        : { path: "../ip/rstmgr"                      }   
+    pwrmgr        : { path: "../ip/pwrmgr"                      }
+    alert_handler : { path: "../ip/alert_handler"               }
+    rv_dm         : { path: "../ip/rv_dm"                       }
+    rv_plic       : { path: "../ip/rv_plic"                     }
+    edn           : { path: "../ip/edn"                         }
+    otbn          : { path: "../ip/otbn"                        }
+    aes           : { path: "../ip/aes"                         }
+    csrng         : { path: "../ip/csrng"                       }
+    entropy_src   : { path: "../ip/entropy_src"                 }
+    gpio          : { path: "../ip/gpio"                        }
+    spi_device    : { path: "../ip/spi_device"                  }
+    spi_host      : { path: "../ip/spi_host"                    }
+    aon_timer     : { path: "../ip/aon_timer"                   }
+    rv_timer      : { path: "../ip/rv_timer"                    }
+    pinmux        : { path: "../ip/pinmux"                      }
     
-  # prim_generic  : { path: "../ip/prim_generic"  }
+  #  autogen_pinmux        : { path: "../top_earlgrey/ip/pinmux"         }
+  #  autogen_pwrmgr        : { path: "../top_earlgrey/ip/pwrmgr"         }
+  #  autogen_rstmgr        : { path: "../top_earlgrey/ip/rstmgr"         }
+  #  autogen_clkmgr        : { path: "../top_earlgrey/ip/clkmgr"         }
+  #  autogen_flash_ctrl    : { path: "../top_earlgrey/ip/flash_ctrl"     }
   
 sources:
 
       - ../ip/prim/rtl/prim_assert.sv
-      - autogen/rtl/autogen/tl_main_pkg.sv
-      - autogen/rtl/autogen/xbar_main.sv
-      - tb/prim_generic_ram_2p.sv
-      - tb/simulator_ctrl.sv
-      - tb/ram_2p.sv              
-      - tb/opentitan.sv
+     # - autogen/rtl/autogen/tl_main_pkg.sv
+     # - autogen/rtl/autogen/xbar_main.sv
+     # - tb/prim_generic_ram_2p.sv
+     # - tb/simulator_ctrl.sv
+     # - tb/ram_2p.sv              
+     # - tb/opentitan.sv
+      - ../top_earlgrey/ip/xbar_main/rtl/autogen/tl_main_pkg.sv
+      - ../top_earlgrey/ip/xbar_main/rtl/autogen/xbar_main.sv
+      - ../top_earlgrey/ip/xbar_peri/rtl/autogen/tl_peri_pkg.sv
+      - ../top_earlgrey/ip/xbar_peri/rtl/autogen/xbar_peri.sv
+      - ../top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
+      - ../top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
+      - ../top_earlgrey/rtl/autogen/top_earlgrey.sv
+      
       - tb/testbench.sv

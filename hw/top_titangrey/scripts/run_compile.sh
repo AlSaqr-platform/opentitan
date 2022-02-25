@@ -7,4 +7,4 @@ make clean
 bender update
 make scripts/compile.tcl
 cd scripts
-vsim
+

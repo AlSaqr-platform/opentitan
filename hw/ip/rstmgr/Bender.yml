@@ -18,12 +18,11 @@ sources:
     - ../prim/rtl/prim_assert.sv
     - ../alert_handler/rtl/alert_pkg.sv
 
-    - rtl/rstmgr_pkg.sv
-    - rtl/rstmgr_reg_pkg.sv
-    - rtl/rstmgr_reg_top.sv
+    - ../../top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_pkg.sv
+    - ../../top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_reg_pkg.sv
+    - ../../top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_reg_top.sv
     - rtl/rstmgr_crash_info.sv
     - rtl/rstmgr_ctrl.sv
     - rtl/rstmgr_por.sv
-    - rtl/rstmgr.sv
-
+    - ../../top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr.sv
    

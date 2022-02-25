@@ -70,6 +70,7 @@ sources:
       - rtl/prim_subreg_ext_async.sv
       - rtl/prim_assert_dummy_macros.svh
       - rtl/prim_filter_ctr.sv
+      - rtl/prim_ram_1p.sv
       - rtl/prim_prince.sv
       - rtl/prim_secded_64_57_dec.sv
       - rtl/prim_subreg_ext.sv

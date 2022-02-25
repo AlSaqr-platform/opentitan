@@ -1,0 +1,20 @@
+package:
+
+  name: rstmgr
+
+sources:
+
+    include_dirs:
+    - rtl/autogen
+    - ../../../ip/prim/rtl/
+    
+
+    files:
+
+    - ../../../ip/prim/rtl/prim_assert.sv
+
+  
+    - rtl/autogen/rstmgr_reg_pkg.sv
+    - rtl/autogen/rstmgr_reg_top.sv
+    - rtl/autogen/rstmgr_pkg.sv
+    - rtl/autogen/rstmgr.sv

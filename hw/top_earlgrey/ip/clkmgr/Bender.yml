@@ -1,0 +1,19 @@
+package:
+  name: clkmgr
+
+sources:
+
+    include_dirs:
+    - rtl/autogen
+    - ../../../ip/prim/rtl/
+    
+
+    files:
+
+    - ../../../ip/prim/rtl/prim_assert.sv
+
+  
+    - rtl/autogen/clkmgr_reg_pkg.sv
+    - rtl/autogen/clkmgr_reg_top.sv
+    - rtl/autogen/clkmgr_pkg.sv
+    - rtl/autogen/clkmgr.sv

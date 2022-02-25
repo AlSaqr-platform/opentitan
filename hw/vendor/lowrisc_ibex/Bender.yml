@@ -68,6 +68,7 @@ sources:
       - rtl/ibex_pkg.sv
       - rtl/ibex_register_file_ff.sv
       - ../../ip/prim/rtl/prim_assert.sv
+      - ../../ip/prim/rtl/prim_ram_1p.sv
       - ../../ip/prim/rtl/prim_clock_gating.sv
       # Level 1
       - rtl/ibex_alu.sv
@@ -84,6 +85,8 @@ sources:
       - rtl/ibex_tracer_pkg.sv
       - rtl/ibex_wb_stage.sv
       # Level 2
+      - rtl/ibex_dummy_instr.sv
+      - rtl/ibex_lockstep.sv
       - rtl/ibex_cs_registers.sv
       - rtl/ibex_ex_block.sv
       - rtl/ibex_id_stage.sv
