@@ -16,6 +16,7 @@ sources:
      
    files:
 
+     - ../../top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_pkg.sv
      - ../pwrmgr/rtl/pwrmgr_pkg.sv
      - ../prim/rtl/prim_assert.sv
      - ../../top_earlgrey/ip/ast/rtl/ast_pkg.sv

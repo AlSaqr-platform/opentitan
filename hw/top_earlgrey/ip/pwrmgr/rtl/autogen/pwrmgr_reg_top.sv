@@ -1013,7 +1013,7 @@ module pwrmgr_reg_top (
     addr_hit[ 0] = (reg_addr == PWRMGR_INTR_STATE_OFFSET);
     addr_hit[ 1] = (reg_addr == PWRMGR_INTR_ENABLE_OFFSET);
     addr_hit[ 2] = (reg_addr == PWRMGR_INTR_TEST_OFFSET);
-    addr_hit[ 3] = (reg_addr == PWRMGR_ALERT_TEST_OFFSET);
+    addr_hit[ 3] = (reg_addr == 6'h c);//PWRMGR_ALERT_TEST_OFFSET);
     addr_hit[ 4] = (reg_addr == PWRMGR_CTRL_CFG_REGWEN_OFFSET);
     addr_hit[ 5] = (reg_addr == PWRMGR_CONTROL_OFFSET);
     addr_hit[ 6] = (reg_addr == PWRMGR_CFG_CDC_SYNC_OFFSET);
@@ -1023,7 +1023,7 @@ module pwrmgr_reg_top (
     addr_hit[10] = (reg_addr == PWRMGR_RESET_EN_REGWEN_OFFSET);
     addr_hit[11] = (reg_addr == PWRMGR_RESET_EN_OFFSET);
     addr_hit[12] = (reg_addr == PWRMGR_RESET_STATUS_OFFSET);
-    addr_hit[13] = (reg_addr == PWRMGR_ESCALATE_RESET_STATUS_OFFSET);
+    addr_hit[13] = (reg_addr == 6'h 34);//PWRMGR_ESCALATE_RESET_STATUS_OFFSET);
     addr_hit[14] = (reg_addr == PWRMGR_WAKE_INFO_CAPTURE_DIS_OFFSET);
     addr_hit[15] = (reg_addr == PWRMGR_WAKE_INFO_OFFSET);
   end

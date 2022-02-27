@@ -7,7 +7,7 @@
 
 package pwrmgr_pkg;
 
-  parameter int NumAlerts = 2;
+  parameter int NumAlerts = 1;
    
   // global constant
   parameter int ALWAYS_ON_DOMAIN = 0;
@@ -16,8 +16,8 @@ package pwrmgr_pkg;
   parameter int PowerDomains = 2; // this needs to be a topgen populated number, or from topcfg?
 
   // variables referenced only by pwrmgr
-  //localparam int TotalWakeWidth = pwrmgr_reg_pkg::NumWkups + 2; // Abort and fall through are added
-  localparam int TotalWakeWidth = 3;
+  localparam int TotalWakeWidth = pwrmgr_reg_pkg::NumWkups + 2; // Abort and fall through are added
+  //localparam int TotalWakeWidth = 3;
    
   //// The following structs should eventually be relocated to other modules.
   //typedef enum logic [1:0] {
@@ -157,9 +157,9 @@ package pwrmgr_pkg;
 
   // peripherals to pwrmgr
   typedef struct packed {
-    logic wakeups;
-    // reset requests include external requests + escalation reset
-    logic [1:0] rstreqs;
+    logic [pwrmgr_reg_pkg::NumWkups-1:0] wakeups;
+    // reset requests include external requests + escalatio
+    logic [pwrmgr_reg_pkg::NumRstReqs:0] rstreqs;
   } pwr_peri_t;
 
   // power-up causes

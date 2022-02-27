@@ -10,6 +10,8 @@ module testbench ();
   
   end
 
+  //lc_ctrl_pkg::lc_tx_t scanmode;
+   
    
   always begin
     #1 clk_sys = 1'b0;
@@ -17,8 +19,16 @@ module testbench ();
    end
 
   opentitan u_RoT (
-    .clk_sys,
-    .rst_sys_n 
+                   
+    .scan_rst_ni (rst_sys_n),
+    .scan_en_i (1'b1),
+    .scanmode_i (lc_ctrl_pkg::On),
+                   
+    .por_n_i (rst_sys_n),
+    .clk_main_i (clk_sys),
+    .clk_io_i(clk_sys),
+    .clk_usb_i(clk_sys),
+    .clk_aon_i(clk_sys) 
 );
 
 endmodule

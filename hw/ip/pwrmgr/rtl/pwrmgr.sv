@@ -55,8 +55,8 @@ module pwrmgr
   output lc_ctrl_pkg::lc_tx_t fetch_en_o,
 
   // peripherals wakeup and reset requests
-  input  [NumWkups-1:0] wakeups_i,
-  input  [NumRstReqs-1:0] rstreqs_i,
+  input  [4:0] wakeups_i,//NumWkups
+  input  [1:0] rstreqs_i,//NumRstReqs
 
   // pinmux and other peripherals
   output logic strap_o,
@@ -187,12 +187,12 @@ module pwrmgr
   ////////////////////////////
   ///  alerts
   ////////////////////////////
-/*
+
   assign alert_test = {
     reg2hw.alert_test.q &
     reg2hw.alert_test.qe
-  };*/
-  assign alert_test = 1'b0;
+  };
+  //assign alert_test = 1'b0;
    
    
 
@@ -309,7 +309,7 @@ module pwrmgr
 
   for (genvar i = 0; i < NumWkups; i++) begin : gen_wakeup_status
     assign hw2reg.wake_status[i].de = 1'b1;
-    assign hw2reg.wake_status[i].d  = peri_reqs_masked.wakeups;
+    assign hw2reg.wake_status[i].d  = peri_reqs_masked.wakeups[i];
   end
 
   for (genvar i = 0; i < NumRstReqs; i++) begin : gen_reset_status
@@ -317,9 +317,9 @@ module pwrmgr
     assign hw2reg.reset_status[i].d  = peri_reqs_masked.rstreqs[i];
   end
 
-  /*assign hw2reg.escalate_reset_status.de = 1'b1;
+  assign hw2reg.escalate_reset_status.de = 1'b1;
   assign hw2reg.escalate_reset_status.d = peri_reqs_masked.rstreqs[NumRstReqs];
-*/
+
 
   ////////////////////////////
   ///  clk_slow FSM

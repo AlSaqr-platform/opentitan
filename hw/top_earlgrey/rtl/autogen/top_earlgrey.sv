@@ -2346,6 +2346,9 @@ module top_earlgrey #(
   );
 
   rv_core_ibex #(
+
+
+                 
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[69:66]),
     .RndCnstLfsrSeed(RndCnstRvCoreIbexLfsrSeed),
     .RndCnstLfsrPerm(RndCnstRvCoreIbexLfsrPerm),

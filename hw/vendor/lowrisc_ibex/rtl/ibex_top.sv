@@ -374,7 +374,7 @@ module ibex_top import ibex_pkg::*; #(
         .Width           (TagSizeECC),
         .Depth           (IC_NUM_LINES),
         .DataBitsPerMask (TagSizeECC),
-        .MemInitFile     ("/scratch/ciani/opentitan/hw/top_titangrey/example_sw/hello_test.vmem")
+        .MemInitFile     ("")
       ) tag_bank (
         .clk_i    (clk_i),
         .req_i    (ic_tag_req[way]),

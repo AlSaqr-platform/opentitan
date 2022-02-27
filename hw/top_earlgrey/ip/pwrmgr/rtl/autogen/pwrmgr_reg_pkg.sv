@@ -14,7 +14,7 @@ package pwrmgr_reg_pkg;
   parameter int USB_WKUP_REQ_IDX = 3;
   parameter int AON_TIMER_WKUP_REQ_IDX = 4;
   parameter int NumRstReqs = 2;
-  parameter int NumAlerts = 1;
+  //parameter int NumAlerts = 1;
 
   // Address widths within the block
   parameter int BlockAw = 6;

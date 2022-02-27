@@ -16,9 +16,10 @@ sources:
   
   - ../prim/rtl/prim_assert.sv
 
+ 
+  - ../../top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_pkg.sv
+  - ../../top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_top.sv
   - rtl/pwrmgr_pkg.sv
-  - rtl/pwrmgr_reg_pkg.sv
-  - rtl/pwrmgr_reg_top.sv
   - rtl/pwrmgr_cdc.sv
   - rtl/pwrmgr_cdc_pulse.sv
   - rtl/pwrmgr_fsm.sv

@@ -13,6 +13,7 @@ dependencies:
     rom_ctrl      : { path: "../ip/rom_ctrl"                    }
     kmac          : { path: "../ip/kmac"                        }
     keymgr        : { path: "../ip/keymgr"                      }
+    pwrmgr        : { path: "../ip/pwrmgr"                      }
     otp_ctrl      : { path: "../ip/otp_ctrl"                    }
     hmac          : { path: "../ip/hmac"                        }
     lc_ctrl       : { path: "../ip/lc_ctrl"                     }
@@ -22,7 +23,6 @@ dependencies:
     clkmgr        : { path: "../ip/clkmgr"                      }   
     sysrst_ctrl   : { path: "../ip/sysrst_ctrl"                 }
     rstmgr        : { path: "../ip/rstmgr"                      }   
-    pwrmgr        : { path: "../ip/pwrmgr"                      }
     alert_handler : { path: "../ip/alert_handler"               }
     rv_dm         : { path: "../ip/rv_dm"                       }
     rv_plic       : { path: "../ip/rv_plic"                     }
@@ -48,16 +48,16 @@ sources:
 
       - ../ip/prim/rtl/prim_assert.sv
     
-      #- ../top_earlgrey/ip/xbar_main/rtl/autogen/tl_main_pkg.sv
-      #- ../top_earlgrey/ip/xbar_main/rtl/autogen/xbar_main.sv
-      #- ../top_earlgrey/ip/xbar_peri/rtl/autogen/tl_peri_pkg.sv
-      #- ../top_earlgrey/ip/xbar_peri/rtl/autogen/xbar_peri.sv
-      #- ../top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
-      #- ../top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
+      - crossbar/xbar_main/rtl/autogen/tl_main_pkg.sv
+      - crossbar/xbar_main/rtl/autogen/xbar_main.sv
+      - crossbar/xbar_peri/rtl/autogen/tl_peri_pkg.sv
+      - crossbar/xbar_peri/rtl/autogen/xbar_peri.sv
+      - ../top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
+      - ../top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
       #- ../top_earlgrey/rtl/autogen/top_earlgrey.sv
 
-      - autogen/rtl/autogen/tl_main_pkg.sv
-      - autogen/rtl/autogen/xbar_main.sv
+      #- autogen/rtl/autogen/tl_main_pkg.sv
+      #- autogen/rtl/autogen/xbar_main.sv
       - tb/prim_generic_ram_2p.sv
       - tb/simulator_ctrl.sv
       - tb/ram_2p.sv              
