@@ -71,10 +71,10 @@ module opentitan #(
   parameter bit SecAesSkipPRNGReseeding = 1'b0,
   // parameters for hmac
   // parameters for kmac
-  parameter bit KmacEnMasking = 1,
+  parameter bit KmacEnMasking = 1'b0, //1,
   parameter int KmacReuseShare = 0,
   // parameters for keymgr
-  parameter bit KeymgrKmacEnMasking = 1,
+  parameter bit KeymgrKmacEnMasking = 1'b0,//1,
   // parameters for csrng
   parameter aes_pkg::sbox_impl_e CsrngSBoxImpl = aes_pkg::SBoxImplCanright,
   // parameters for entropy_src
@@ -88,7 +88,7 @@ module opentitan #(
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
   parameter RomCtrlBootRomInitFile = "../examples/sw/simple_system/hello_test/hello_test.vmem",
-  parameter bit SecRomCtrlDisableScrambling = 1'b0,
+  parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1,
   parameter int unsigned RvCoreIbexPMPGranularity = 0,
@@ -112,15 +112,29 @@ module opentitan #(
       tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0],
   parameter bit RvCoreIbexPipeLine = 0
 ) (
-
-  // Multiplexed I/O
-  input [46:0]        mio_in_i,
-  output logic [46:0] mio_out_o,
-  output logic [46:0] mio_oe_o,
-  // Dedicated I/O
-  input [23:0]        dio_in_i,
-  output logic [23:0] dio_out_o,
-  output logic [23:0] dio_oe_o,
+  
+  // spi_device
+  input  logic        cio_spi_device_sck_p2d,
+  input  logic        cio_spi_device_csb_p2d,
+  input  logic [3:0]  cio_spi_device_sd_p2d,
+  output logic [3:0]  cio_spi_device_sd_d2p,
+  output logic [3:0]  cio_spi_device_sd_en_d2p,
+  // spi_host0
+  input  logic [3:0]  cio_spi_host0_sd_p2d,
+  output logic        cio_spi_host0_sck_d2p,
+  output logic        cio_spi_host0_sck_en_d2p,
+  output logic        cio_spi_host0_csb_d2p,
+  output logic        cio_spi_host0_csb_en_d2p,
+  output logic [3:0]  cio_spi_host0_sd_d2p,
+  output logic [3:0]  cio_spi_host0_sd_en_d2p,
+  // spi_host1
+  input  logic [3:0]  cio_spi_host1_sd_p2d,
+  output logic        cio_spi_host1_sck_d2p,
+  output logic        cio_spi_host1_sck_en_d2p,
+  output logic        cio_spi_host1_csb_d2p,
+  output logic        cio_spi_host1_csb_en_d2p,
+  output logic [3:0]  cio_spi_host1_sd_d2p,
+  output logic [3:0]  cio_spi_host1_sd_en_d2p,
 
   // pad attributes to padring
   output              prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NMioPads-1:0] mio_attr_o,
@@ -128,69 +142,69 @@ module opentitan #(
 
 
   // Inter-module Signal External type
-  output              ast_pkg::adc_ast_req_t                 adc_req_o,
-  input               ast_pkg::adc_ast_rsp_t                 adc_rsp_i,
-  input               edn_pkg::edn_req_t                     ast_edn_req_i,
+  output              ast_pkg::adc_ast_req_t adc_req_o,
+  input               ast_pkg::adc_ast_rsp_t adc_rsp_i,
+  input               edn_pkg::edn_req_t ast_edn_req_i,
   
-  output              edn_pkg::edn_rsp_t                     ast_edn_rsp_o,
-  output              lc_ctrl_pkg::lc_tx_t                   ast_lc_dft_en_o,
+  output              edn_pkg::edn_rsp_t ast_edn_rsp_o,
+  output              lc_ctrl_pkg::lc_tx_t ast_lc_dft_en_o,
   
-  input               prim_ram_1p_pkg::ram_1p_cfg_t          ram_1p_cfg_i,
-  input               prim_ram_2p_pkg::ram_2p_cfg_t          ram_2p_cfg_i,
-  input               prim_rom_pkg::rom_cfg_t                rom_cfg_i,
+  input               prim_ram_1p_pkg::ram_1p_cfg_t ram_1p_cfg_i,
+  input               prim_ram_2p_pkg::ram_2p_cfg_t ram_2p_cfg_i,
+  input               prim_rom_pkg::rom_cfg_t rom_cfg_i,
   
-  input logic                                                clk_main_i,
-  input logic                                                clk_io_i,
-  input logic                                                clk_usb_i,
-  input logic                                                clk_aon_i,
-  output logic                                               clk_main_jitter_en_o,
+  input logic         clk_main_i,
+  input logic         clk_io_i,
+  input logic         clk_usb_i,
+  input logic         clk_aon_i,
+  output logic        clk_main_jitter_en_o,
   
-  output              lc_ctrl_pkg::lc_tx_t                   ast_clk_byp_req_o,
-  input               lc_ctrl_pkg::lc_tx_t                   ast_clk_byp_ack_i,
+  output              lc_ctrl_pkg::lc_tx_t ast_clk_byp_req_o,
+  input               lc_ctrl_pkg::lc_tx_t ast_clk_byp_ack_i,
   
-  output              ast_pkg::ast_dif_t                     flash_alert_o,
-  input               lc_ctrl_pkg::lc_tx_t                   flash_bist_enable_i,
-  input logic                                                flash_power_down_h_i,
-  input logic                                                flash_power_ready_h_i,
-  inout [1:0]                                                flash_test_mode_a_io,
-  inout                                                      flash_test_voltage_h_io,
+  output              ast_pkg::ast_dif_t flash_alert_o,
+  input               lc_ctrl_pkg::lc_tx_t flash_bist_enable_i,
+  input logic         flash_power_down_h_i,
+  input logic         flash_power_ready_h_i,
+  inout [1:0]         flash_test_mode_a_io,
+  inout               flash_test_voltage_h_io,
   
   output              entropy_src_pkg::entropy_src_rng_req_t es_rng_req_o,
   input               entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp_i,
-  output logic                                               es_rng_fips_o,
+  output logic        es_rng_fips_o,
   
-  output              tlul_pkg::tl_h2d_t                     ast_tl_req_o,
-  input               tlul_pkg::tl_d2h_t                     ast_tl_rsp_i,
+  output              tlul_pkg::tl_h2d_t ast_tl_req_o,
+  input               tlul_pkg::tl_d2h_t ast_tl_rsp_i,
   
-  output              pinmux_pkg::dft_strap_test_req_t       dft_strap_test_o,
-  input logic                                                dft_hold_tap_sel_i,
+  output              pinmux_pkg::dft_strap_test_req_t dft_strap_test_o,
+  input logic         dft_hold_tap_sel_i,
   
-  output              pwrmgr_pkg::pwr_ast_req_t              pwrmgr_ast_req_o,
-  input               pwrmgr_pkg::pwr_ast_rsp_t              pwrmgr_ast_rsp_i,
+  output              pwrmgr_pkg::pwr_ast_req_t pwrmgr_ast_req_o,
+  input               pwrmgr_pkg::pwr_ast_rsp_t pwrmgr_ast_rsp_i,
   
-  output              otp_ctrl_pkg::otp_ast_req_t            otp_ctrl_otp_ast_pwr_seq_o,
-  input               otp_ctrl_pkg::otp_ast_rsp_t            otp_ctrl_otp_ast_pwr_seq_h_i,
-  inout                                                      otp_ext_voltage_h_io,
-  output              ast_pkg::ast_dif_t                     otp_alert_o,
+  output              otp_ctrl_pkg::otp_ast_req_t otp_ctrl_otp_ast_pwr_seq_o,
+  input               otp_ctrl_pkg::otp_ast_rsp_t otp_ctrl_otp_ast_pwr_seq_h_i,
+  inout               otp_ext_voltage_h_io,
+  output              ast_pkg::ast_dif_t otp_alert_o,
   
-  input logic                                                por_n_i,
+  input logic         por_n_i,
   
-  input               ast_pkg::ast_alert_req_t               sensor_ctrl_ast_alert_req_i,
-  output              ast_pkg::ast_alert_rsp_t               sensor_ctrl_ast_alert_rsp_o,
-  input               ast_pkg::ast_status_t                  sensor_ctrl_ast_status_i,
-  input logic [8:0]                                          ast2pinmux_i,
-  input logic                                                ast_init_done_i,
+  input               ast_pkg::ast_alert_req_t sensor_ctrl_ast_alert_req_i,
+  output              ast_pkg::ast_alert_rsp_t sensor_ctrl_ast_alert_rsp_o,
+  input               ast_pkg::ast_status_t sensor_ctrl_ast_status_i,
+  input logic [8:0]   ast2pinmux_i,
+  input logic         ast_init_done_i,
   
-  output logic                                               usbdev_usb_ref_val_o,
-  output logic                                               usbdev_usb_ref_pulse_o,
+  output logic        usbdev_usb_ref_val_o,
+  output logic        usbdev_usb_ref_pulse_o,
   
-  output              clkmgr_pkg::clkmgr_ast_out_t           clks_ast_o,
-  output              rstmgr_pkg::rstmgr_ast_out_t           rsts_ast_o,
+  output              clkmgr_pkg::clkmgr_ast_out_t clks_ast_o,
+  output              rstmgr_pkg::rstmgr_ast_out_t rsts_ast_o,
 
 
-  input                                                      scan_rst_ni, // reset used for test mode
-  input                                                      scan_en_i,
-  input                                                      lc_ctrl_pkg::lc_tx_t scanmode_i   // lc_ctrl_pkg::On for Scan
+  input               scan_rst_ni, // reset used for test mode
+  input               scan_en_i,
+  input               lc_ctrl_pkg::lc_tx_t scanmode_i   // lc_ctrl_pkg::On for Scan
    
   );
 
@@ -240,28 +254,7 @@ module opentitan #(
   logic [31:0] cio_gpio_gpio_p2d;
   logic [31:0] cio_gpio_gpio_d2p;
   logic [31:0] cio_gpio_gpio_en_d2p;
-  // spi_device
-  logic        cio_spi_device_sck_p2d;
-  logic        cio_spi_device_csb_p2d;
-  logic [3:0]  cio_spi_device_sd_p2d;
-  logic [3:0]  cio_spi_device_sd_d2p;
-  logic [3:0]  cio_spi_device_sd_en_d2p;
-  // spi_host0
-  logic [3:0]  cio_spi_host0_sd_p2d;
-  logic        cio_spi_host0_sck_d2p;
-  logic        cio_spi_host0_sck_en_d2p;
-  logic        cio_spi_host0_csb_d2p;
-  logic        cio_spi_host0_csb_en_d2p;
-  logic [3:0]  cio_spi_host0_sd_d2p;
-  logic [3:0]  cio_spi_host0_sd_en_d2p;
-  // spi_host1
-  logic [3:0]  cio_spi_host1_sd_p2d;
-  logic        cio_spi_host1_sck_d2p;
-  logic        cio_spi_host1_sck_en_d2p;
-  logic        cio_spi_host1_csb_d2p;
-  logic        cio_spi_host1_csb_en_d2p;
-  logic [3:0]  cio_spi_host1_sd_d2p;
-  logic [3:0]  cio_spi_host1_sd_en_d2p;
+  
   // i2c0
   logic        cio_i2c0_sda_p2d;
   logic        cio_i2c0_scl_p2d;
@@ -320,7 +313,7 @@ module opentitan #(
   logic [7:0]  cio_otp_ctrl_test_d2p;
   logic [7:0]  cio_otp_ctrl_test_en_d2p;
   // lc_ctrl
-  // alert_handler
+  // alerthandler
   // pwrmgr_aon
   // rstmgr_aon
   // clkmgr_aon
@@ -556,7 +549,7 @@ module opentitan #(
   logic           device_we     [NrDevices];
   logic [ 3:0]    device_be     [NrDevices];
   logic [31:0]    device_wdata  [NrDevices];
-  logic           device_rvalid [NrDevices];
+  logic           device_rvalid [NrDevices]; 
   logic [31:0]    device_rdata  [NrDevices];
   logic           device_err    [NrDevices];
    
@@ -580,6 +573,8 @@ module opentitan #(
 
 // protocol conversion for the simctrl and ram, not opentitan ips so not implementing tile link
 // instructions interface
+
+    tlul_pkg::tl_d_user_t                  tieoff;
    
     assign instr_req                       = core2instr.a_valid;
     assign instr_addr                      = core2instr.a_address;
@@ -587,13 +582,13 @@ module opentitan #(
     assign instr2core.d_data               = instr_rdata;
     assign instr2core.a_ready              = 1'b1;
     assign instr2core.d_error              = instr_err;
- // assign instr2core.d_opcode             = core2instr.a_opcode;  
+    assign instr2core.d_opcode             = tlul_pkg::AccessAckData;  
     assign instr2core.d_param              = core2instr.a_param;
     assign instr2core.d_size               = core2instr.a_size;
     assign instr2core.d_source             = core2instr.a_source;
- // assign instr2core.d_sink               = core2instr.a_sink;
- // assign instr2core.d_user               = core2instr.a_user;
- // assign instr2core.d_user.data_intg     = 'b0;
+    assign instr2core.d_sink               = '0;
+    assign instr2core.d_user               = TL_D_USER_DEFAULT;
+ 
 
 
   
@@ -612,7 +607,8 @@ module opentitan #(
     assign simctrl2core.d_param            = core2simctrl.a_param;
     assign simctrl2core.d_size             = core2simctrl.a_size;
     assign simctrl2core.d_source           = core2simctrl.a_source;
-//  assign simctrl2core.d_user             = core2simctrl.a_user;
+    assign simctrl2core.d_user             = TL_D_USER_DEFAULT;
+    assign simctrl2core.d_sink               = '0;
  
 
 
@@ -631,7 +627,9 @@ module opentitan #(
     assign ram2core.d_param                = core2ram.a_param;
     assign ram2core.d_size                 = core2ram.a_size;
     assign ram2core.d_source               = core2ram.a_source;
- // assign ram2core.d_user                 = core2ram.a_user;
+    assign ram2core.d_user                 = TL_D_USER_DEFAULT;
+    assign ram2core.d_sink                 = '0;
+   
    
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
@@ -858,9 +856,10 @@ module opentitan #(
   otp_ctrl_pkg::otp_device_id_t       keymgr_otp_device_id;
   otp_ctrl_pkg::otp_en_t       sram_ctrl_main_otp_en_sram_ifetch;
 
-
+  edn_pkg::edn_req_t ast_tieoff;
+ 
   // define mixed connection to port
-  assign edn0_edn_req[2] = ast_edn_req_i;
+  assign edn0_edn_req[2] = 1'b0;//ast_edn_req_i;
   assign ast_edn_rsp_o = edn0_edn_rsp[2];
   assign ast_lc_dft_en_o = lc_ctrl_lc_dft_en;
   assign ast_ram_1p_cfg = ram_1p_cfg_i;
@@ -1081,8 +1080,8 @@ uart #(
       .intr_rx_timeout_o    (intr_uart0_rx_timeout),
       .intr_rx_parity_err_o (intr_uart0_rx_parity_err),
       // [0]: fatal_fault
-      .alert_tx_o  ( alert_tx[0:0] ),
-      .alert_rx_i  ( alert_rx[0:0] ),
+      .alert_tx_o  ( alert_tx[0] ),
+      .alert_rx_i  ( alert_rx[0] ),
 
       // Inter-module signals
       .tl_i(uart0_tl_req),
@@ -1206,8 +1205,8 @@ uart #(
       // Interrupt
       .intr_gpio_o (intr_gpio_gpio),
       // [4]: fatal_fault
-      .alert_tx_o  ( alert_tx[4:4] ),
-      .alert_rx_i  ( alert_rx[4:4] ),
+      .alert_tx_o  ( alert_tx[4] ),
+      .alert_rx_i  ( alert_rx[4] ),
 
       // Inter-module signals
       .tl_i(gpio_tl_req),
@@ -1239,8 +1238,8 @@ uart #(
       .intr_rxoverflow_o  (intr_spi_device_rxoverflow),
       .intr_txunderflow_o (intr_spi_device_txunderflow),
       // [5]: fatal_fault
-      .alert_tx_o  ( alert_tx[5:5] ),
-      .alert_rx_i  ( alert_rx[5:5] ),
+      .alert_tx_o  ( alert_tx[5] ),
+      .alert_rx_i  ( alert_rx[5] ),
 
       // Inter-module signals
       .ram_cfg_i(ast_ram_2p_cfg),
@@ -1277,8 +1276,8 @@ uart #(
       .intr_error_o     (intr_spi_host0_error),
       .intr_spi_event_o (intr_spi_host0_spi_event),
       // [6]: fatal_fault
-      .alert_tx_o  ( alert_tx[6:6] ),
-      .alert_rx_i  ( alert_rx[6:6] ),
+      .alert_tx_o  ( alert_tx[6] ),
+      .alert_rx_i  ( alert_rx[6] ),
 
       // Inter-module signals
       .passthrough_i(spi_device_passthrough_req),
@@ -1293,7 +1292,7 @@ uart #(
       .rst_ni (rstmgr_aon_resets.rst_spi_host0_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host0_core_n[rstmgr_pkg::Domain0Sel])
   );
-
+/*
   spi_host #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[7:7])
   ) u_spi_host1 (
@@ -1328,7 +1327,7 @@ uart #(
       .clk_core_i (clkmgr_aon_clocks.clk_io_div2_peri),
       .rst_ni (rstmgr_aon_resets.rst_spi_host1_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host1_core_n[rstmgr_pkg::Domain0Sel])
-  );
+  );*/
 /*
   i2c #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[8:8])
@@ -1499,8 +1498,8 @@ uart #(
       // Interrupt
       .intr_timer_expired_0_0_o (intr_rv_timer_timer_expired_0_0),
       // [12]: fatal_fault
-      .alert_tx_o  ( alert_tx[12:12] ),
-      .alert_rx_i  ( alert_rx[12:12] ),
+      .alert_tx_o  ( alert_tx[12] ),
+      .alert_rx_i  ( alert_rx[12] ),
 
       // Inter-module signals
       .tl_i(rv_timer_tl_req),
@@ -1783,8 +1782,8 @@ uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[21:21])
   ) u_rstmgr_aon (
       // [21]: fatal_fault
-      .alert_tx_o  ( alert_tx[21:21] ),
-      .alert_rx_i  ( alert_rx[21:21] ),
+      .alert_tx_o  ( alert_tx[21] ),
+      .alert_rx_i  ( alert_rx[21] ),
 
       // Inter-module signals
       .por_n_i(por_n_i),
@@ -1816,8 +1815,8 @@ uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[22:22])
   ) u_clkmgr_aon (
       // [22]: fatal_fault
-      .alert_tx_o  ( alert_tx[22:22] ),
-      .alert_rx_i  ( alert_rx[22:22] ),
+      .alert_tx_o  ( alert_tx[22] ),
+      .alert_rx_i  ( alert_rx[22] ),
 
       // Inter-module signals
       .clocks_o(clkmgr_aon_clocks),
@@ -1883,8 +1882,8 @@ uart #(
       // Interrupt
       .intr_sysrst_ctrl_o (intr_sysrst_ctrl_aon_sysrst_ctrl),
       // [23]: fatal_fault
-      .alert_tx_o  ( alert_tx[23:23] ),
-      .alert_rx_i  ( alert_rx[23:23] ),
+      .alert_tx_o  ( alert_tx[23] ),
+      .alert_rx_i  ( alert_rx[23] ),
 
       // Inter-module signals
       .aon_sysrst_ctrl_wkup_req_o(pwrmgr_aon_wakeups[0]),
@@ -1944,7 +1943,7 @@ uart #(
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_core_ni (rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::DomainAonSel])
   );*/
-
+/*
   pinmux #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[26:26]),
     .TargetCfg(PinmuxAonTargetCfg)
@@ -1964,8 +1963,8 @@ uart #(
       .dft_jtag_i(pinmux_aon_dft_jtag_rsp),
       .dft_strap_test_o(dft_strap_test_o),
       .dft_hold_tap_sel_i(dft_hold_tap_sel_i),
-      .sleep_en_i(pwrmgr_aon_low_power),
-      .strap_en_i(pwrmgr_aon_strap),
+      .sleep_en_i(1'b0),//pwrmgr_aon_low_power),
+      .strap_en_i(1'b1),//pwrmgr_aon_strap),
       .aon_wkup_req_o(pwrmgr_aon_wakeups[2]),
       .usb_wkup_req_o(pwrmgr_aon_wakeups[3]),
       .usb_out_of_rst_i(usbdev_usb_out_of_rst),
@@ -2001,7 +2000,7 @@ uart #(
       .clk_aon_i (clkmgr_aon_clocks.clk_aon_powerup),
       .rst_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_aon_ni (rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::DomainAonSel])
-  );
+  );*/
 
   aon_timer #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[27:27])
@@ -2011,8 +2010,8 @@ uart #(
       .intr_wkup_timer_expired_o (intr_aon_timer_aon_wkup_timer_expired),
       .intr_wdog_timer_bark_o    (intr_aon_timer_aon_wdog_timer_bark),
       // [27]: fatal_fault
-      .alert_tx_o  ( alert_tx[27:27] ),
-      .alert_rx_i  ( alert_rx[27:27] ),
+      .alert_tx_o  ( alert_tx[27] ),
+      .alert_rx_i  ( alert_rx[27] ),
 
       // Inter-module signals
       .nmi_wdog_timer_bark_o(aon_timer_aon_nmi_wdog_timer_bark),
@@ -2077,8 +2076,8 @@ uart #(
     .InstrExec(SramCtrlRetAonInstrExec)
   ) u_sram_ctrl_ret_aon (
       // [41]: fatal_error
-      .alert_tx_o  ( alert_tx[41:41] ),
-      .alert_rx_i  ( alert_rx[41:41] ),
+      .alert_tx_o  ( alert_tx[41] ),
+      .alert_rx_i  ( alert_rx[41] ),
 
       // Inter-module signals
       .sram_otp_key_o(otp_ctrl_sram_otp_key_req[1]),
@@ -2173,8 +2172,8 @@ uart #(
     .IdcodeValue(RvDmIdcodeValue)
   ) u_rv_dm (
       // [46]: fatal_fault
-      .alert_tx_o  ( alert_tx[46:46] ),
-      .alert_rx_i  ( alert_rx[46:46] ),
+      .alert_tx_o  ( alert_tx[46] ),
+      .alert_rx_i  ( alert_rx[46] ),
 
       // Inter-module signals
       .jtag_i(pinmux_aon_rv_jtag_req),
@@ -2202,8 +2201,8 @@ uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[47:47])
   ) u_rv_plic (
       // [47]: fatal_fault
-      .alert_tx_o  ( alert_tx[47:47] ),
-      .alert_rx_i  ( alert_rx[47:47] ),
+      .alert_tx_o  ( alert_tx[47] ),
+      .alert_rx_i  ( alert_rx[47] ),
 
       // Inter-module signals
       .irq_o(rv_plic_irq),
@@ -2262,8 +2261,8 @@ uart #(
       .intr_fifo_empty_o (intr_hmac_fifo_empty),
       .intr_hmac_err_o   (intr_hmac_hmac_err),
       // [50]: fatal_fault
-      .alert_tx_o  ( alert_tx[50:50] ),
-      .alert_rx_i  ( alert_rx[50:50] ),
+      .alert_tx_o  ( alert_tx[50] ),
+      .alert_rx_i  ( alert_rx[50] ),
 
       // Inter-module signals
       .idle_o(clkmgr_aon_idle[1]),
@@ -2287,8 +2286,8 @@ uart #(
       .intr_fifo_empty_o (intr_kmac_fifo_empty),
       .intr_kmac_err_o   (intr_kmac_kmac_err),
       // [51]: fatal_fault
-      .alert_tx_o  ( alert_tx[51:51] ),
-      .alert_rx_i  ( alert_rx[51:51] ),
+      .alert_tx_o  ( alert_tx[51] ),
+      .alert_rx_i  ( alert_rx[51] ),
 
       // Inter-module signals
       .keymgr_key_i(keymgr_kmac_key),
@@ -2488,8 +2487,8 @@ uart #(
     .InstrExec(SramCtrlMainInstrExec)
   ) u_sram_ctrl_main (
       // [62]: fatal_error
-      .alert_tx_o  ( alert_tx[62:62] ),
-      .alert_rx_i  ( alert_rx[62:62] ),
+      .alert_tx_o  ( alert_tx[62] ),
+      .alert_rx_i  ( alert_rx[62] ),
 
       // Inter-module signals
       .sram_otp_key_o(otp_ctrl_sram_otp_key_req[0]),
@@ -2558,8 +2557,8 @@ uart #(
     .SecDisableScrambling(SecRomCtrlDisableScrambling)
   ) u_rom_ctrl (
       // [65]: fatal
-      .alert_tx_o  ( alert_tx[65:65] ),
-      .alert_rx_i  ( alert_rx[65:65] ),
+      .alert_tx_o  ( alert_tx[65] ),
+      .alert_rx_i  ( alert_rx[65] ),
 
       // Inter-module signals
       .rom_cfg_i(ast_rom_cfg),
@@ -2627,8 +2626,8 @@ uart #(
       .pwrmgr_cpu_en_i(pwrmgr_aon_fetch_en),
       .pwrmgr_o(rv_core_ibex_pwrmgr),
       .nmi_wdog_i(aon_timer_aon_nmi_wdog_timer_bark),
-      .corei_tl_h_o(core2instr),//main_tl_rv_core_ibex__corei_req),//
-      .corei_tl_h_i(instr2core),//main_tl_rv_core_ibex__corei_rsp),//
+      .corei_tl_h_o(main_tl_rv_core_ibex__corei_req),//core2instr),//
+      .corei_tl_h_i(main_tl_rv_core_ibex__corei_rsp),//instr2core),//
       .cored_tl_h_o(main_tl_rv_core_ibex__cored_req),
       .cored_tl_h_i(main_tl_rv_core_ibex__cored_rsp),
       .cfg_tl_d_i(rv_core_ibex_cfg_tl_d_req),
@@ -2811,8 +2810,8 @@ uart #(
     .tl_rv_core_ibex__cored_i(main_tl_rv_core_ibex__cored_req),
     .tl_rv_core_ibex__cored_o(main_tl_rv_core_ibex__cored_rsp),
 
-    //.tl_instr_mem_i(instr2core),
-    //.tl_instr_mem_o(core2instr),
+    .tl_instr_mem_i(instr2core),
+    .tl_instr_mem_o(core2instr),
 
     .tl_ram_2p_i(ram2core),
     .tl_ram_2p_o(core2ram),
@@ -2911,11 +2910,11 @@ uart #(
     // port: tl_spi_host0
     .tl_spi_host0_o(spi_host0_tl_req),
     .tl_spi_host0_i(spi_host0_tl_rsp),
-
+/*
     // port: tl_spi_host1
     .tl_spi_host1_o(spi_host1_tl_req),
     .tl_spi_host1_i(spi_host1_tl_rsp),
-
+*/
     .scanmode_i
   );
    
@@ -2942,7 +2941,7 @@ uart #(
     // port: tl_uart3
     .tl_uart3_o(uart3_tl_req),
     .tl_uart3_i(uart3_tl_rsp),
-
+/*
     // port: tl_i2c0
     .tl_i2c0_o(i2c0_tl_req),
     .tl_i2c0_i(i2c0_tl_rsp),
@@ -2962,7 +2961,7 @@ uart #(
     // port: tl_pwm_aon
     .tl_pwm_aon_o(pwm_aon_tl_req),
     .tl_pwm_aon_i(pwm_aon_tl_rsp),
-
+*/
     // port: tl_gpio
     .tl_gpio_o(gpio_tl_req),
     .tl_gpio_i(gpio_tl_rsp),
@@ -2974,11 +2973,11 @@ uart #(
     // port: tl_rv_timer
     .tl_rv_timer_o(rv_timer_tl_req),
     .tl_rv_timer_i(rv_timer_tl_rsp),
-
+/*
     // port: tl_usbdev
     .tl_usbdev_o(usbdev_tl_req),
     .tl_usbdev_i(usbdev_tl_rsp),
-
+*/
     // port: tl_pwrmgr_aon
     .tl_pwrmgr_aon_o(pwrmgr_aon_tl_req),
     .tl_pwrmgr_aon_i(pwrmgr_aon_tl_rsp),
@@ -2990,11 +2989,11 @@ uart #(
     // port: tl_clkmgr_aon
     .tl_clkmgr_aon_o(clkmgr_aon_tl_req),
     .tl_clkmgr_aon_i(clkmgr_aon_tl_rsp),
-
+/*
     // port: tl_pinmux_aon
     .tl_pinmux_aon_o(pinmux_aon_tl_req),
     .tl_pinmux_aon_i(pinmux_aon_tl_rsp),
-
+*/
     // port: tl_otp_ctrl__core
     .tl_otp_ctrl__core_o(otp_ctrl_core_tl_req),
     .tl_otp_ctrl__core_i(otp_ctrl_core_tl_rsp),
@@ -3030,7 +3029,7 @@ uart #(
     // port: tl_sysrst_ctrl_aon
     .tl_sysrst_ctrl_aon_o(sysrst_ctrl_aon_tl_req),
     .tl_sysrst_ctrl_aon_i(sysrst_ctrl_aon_tl_rsp),
-
+/*
     // port: tl_adc_ctrl_aon
     .tl_adc_ctrl_aon_o(adc_ctrl_aon_tl_req),
     .tl_adc_ctrl_aon_i(adc_ctrl_aon_tl_rsp),
@@ -3038,7 +3037,7 @@ uart #(
     // port: tl_ast
     .tl_ast_o(ast_tl_req_o),
     .tl_ast_i(ast_tl_rsp_i),
-
+*/
 
     .scanmode_i
   );
@@ -3095,10 +3094,10 @@ uart #(
   assign cio_flash_ctrl_tms_p2d = mio_p2d[MioInFlashCtrlTms];
   assign cio_flash_ctrl_tdi_p2d = mio_p2d[MioInFlashCtrlTdi];
   assign cio_sysrst_ctrl_aon_ac_present_p2d = mio_p2d[MioInSysrstCtrlAonAcPresent];
-  assign cio_sysrst_ctrl_aon_key0_in_p2d = mio_p2d[MioInSysrstCtrlAonKey0In];
-  assign cio_sysrst_ctrl_aon_key1_in_p2d = mio_p2d[MioInSysrstCtrlAonKey1In];
-  assign cio_sysrst_ctrl_aon_key2_in_p2d = mio_p2d[MioInSysrstCtrlAonKey2In];
-  assign cio_sysrst_ctrl_aon_pwrb_in_p2d = mio_p2d[MioInSysrstCtrlAonPwrbIn];
+  assign cio_sysrst_ctrl_aon_key0_in_p2d = 1'b0;//mio_p2d[MioInSysrstCtrlAonKey0In];
+  assign cio_sysrst_ctrl_aon_key1_in_p2d = 1'b0;//mio_p2d[MioInSysrstCtrlAonKey1In];
+  assign cio_sysrst_ctrl_aon_key2_in_p2d = 1'b0;//mio_p2d[MioInSysrstCtrlAonKey2In];
+  assign cio_sysrst_ctrl_aon_pwrb_in_p2d = 1'b0;//mio_p2d[MioInSysrstCtrlAonPwrbIn];
   assign cio_sysrst_ctrl_aon_lid_open_p2d = mio_p2d[MioInSysrstCtrlAonLidOpen];
 
   // All muxed outputs
@@ -3258,20 +3257,11 @@ uart #(
   // All dedicated inputs
   logic [23:0] unused_dio_p2d;
   assign unused_dio_p2d = dio_p2d;
-  assign cio_spi_host0_sd_p2d[0] = dio_p2d[DioSpiHost0Sd0];
-  assign cio_spi_host0_sd_p2d[1] = dio_p2d[DioSpiHost0Sd1];
-  assign cio_spi_host0_sd_p2d[2] = dio_p2d[DioSpiHost0Sd2];
-  assign cio_spi_host0_sd_p2d[3] = dio_p2d[DioSpiHost0Sd3];
-  assign cio_spi_device_sd_p2d[0] = dio_p2d[DioSpiDeviceSd0];
-  assign cio_spi_device_sd_p2d[1] = dio_p2d[DioSpiDeviceSd1];
-  assign cio_spi_device_sd_p2d[2] = dio_p2d[DioSpiDeviceSd2];
-  assign cio_spi_device_sd_p2d[3] = dio_p2d[DioSpiDeviceSd3];
+ 
   assign cio_usbdev_d_p2d = dio_p2d[DioUsbdevD];
   assign cio_usbdev_dp_p2d = dio_p2d[DioUsbdevDp];
   assign cio_usbdev_dn_p2d = dio_p2d[DioUsbdevDn];
   assign cio_sysrst_ctrl_aon_ec_rst_l_p2d = dio_p2d[DioSysrstCtrlAonEcRstL];
-  assign cio_spi_device_sck_p2d = dio_p2d[DioSpiDeviceSck];
-  assign cio_spi_device_csb_p2d = dio_p2d[DioSpiDeviceCsb];
   assign cio_usbdev_sense_p2d = dio_p2d[DioUsbdevSense];
 
     // All dedicated outputs

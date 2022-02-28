@@ -59,6 +59,7 @@ module prim_generic_ram_2p #(
   // using always instead of always_ff to avoid 'ICPD  - illegal combination of drivers' error
   // thrown due to 'mem' being driven by two always processes below
   always @(posedge clk_a_i) begin
+    a_rdata_o <= '0;
     if (a_req_i) begin
       if (a_write_i) begin
         for (int i=0; i < MaskWidth; i = i + 1) begin
