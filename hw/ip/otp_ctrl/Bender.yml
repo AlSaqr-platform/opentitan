@@ -25,7 +25,7 @@ sources:
      - rtl/otp_ctrl_pkg.sv
   
      - rtl/otp_ctrl_part_pkg.sv
-     - rtl/otp_ctrl_reg_top.sv
+   #  - rtl/otp_ctrl_reg_top.sv
      
      - ../prim_generic/rtl/prim_generic_otp.sv
      - rtl/otp_ctrl_core_reg_top.sv
@@ -36,7 +36,7 @@ sources:
      - rtl/otp_ctrl_lfsr_timer.sv
      - rtl/otp_ctrl_part_buf.sv
      - rtl/otp_ctrl_part_unbuf.sv
-     - rtl/otp_ctrl_prim_reg_top.sv      
+   #  - rtl/otp_ctrl_prim_reg_top.sv      
      
      - rtl/otp_ctrl_scrmbl.sv
      - rtl/otp_ctrl.sv

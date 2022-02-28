@@ -334,7 +334,7 @@ module keymgr_ctrl import keymgr_pkg::*; #(
     endcase // unique case (update_sel)
   end
 
-  prim_count #(
+  keymgr_cnt #(
     .Width(CntWidth),
     .CntStyle(DupCnt)
   ) u_cnt (

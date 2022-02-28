@@ -202,46 +202,20 @@ module rom_ctrl_regs_reg_top (
     .qs     (fatal_alert_cause_integrity_error_qs)
   );
 
-
-
+ 
   // Subregister 0 of Multireg digest
   // R[digest_0]: V(False)
-
-   /* prim_subreg #(
-    .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
-    .RESVAL  (32'h0)
-  ) u_digest_1 (
-    .clk_i   (clk_i),
-    .rst_ni  (rst_ni),
-
-    // from register interface
-    .we     (1'b0),
-    .wd     ('0),
-
-    // from internal hardware
-    .de     (hw2reg.digest[1].de),
-    .d      (hw2reg.digest[1].d),
-
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.digest[1].q),
-
-    // to register interface (read)
-    .qs     (digest_1_qs)
-  );*/
-
   prim_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_0 (
     .clk_i   (clk_i),
     .rst_ni  (rst_ni),
 
     // from register interface
-    .we     (reg_we),
-    .wd     (reg_wdata),
+    .we     (1'b0),
+    .wd     ('0),
 
     // from internal hardware
     .de     (hw2reg.digest[0].de),
@@ -254,11 +228,12 @@ module rom_ctrl_regs_reg_top (
     // to register interface (read)
     .qs     (digest_0_qs)
   );
+ 
 
-  // Subregister 1 of Multireg digest
-  // R[digest_1]: V(False)
+  // Subregister 0 of Multireg digest
+  // R[digest_0]: V(False)
 
-  prim_subreg #(
+   prim_subreg #(
     .DW      (32),
     .SwAccess(prim_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
@@ -281,6 +256,10 @@ module rom_ctrl_regs_reg_top (
     // to register interface (read)
     .qs     (digest_1_qs)
   );
+  
+
+  // Subregister 1 of Multireg digest
+  // R[digest_1]: V(False)
 
   // Subregister 2 of Multireg digest
   // R[digest_2]: V(False)

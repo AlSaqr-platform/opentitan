@@ -555,7 +555,7 @@ module aes_reg_top (
   // Subregister 0 of Multireg data_in
   // R[data_in_0]: V(False)
 
-/*  prim_subreg #(
+  prim_subreg #(
     .DW      (32),
     .SwAccess(prim_subreg_pkg::SwAccessWO),
     .RESVAL  (32'h0)
@@ -577,32 +577,6 @@ module aes_reg_top (
 
     // to register interface (read)
     .qs     ()
-  );*/
-
-   logic [31:0] reg_read;
-   
-     prim_subreg #(
-    .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
-    .RESVAL  (32'h0)
-  ) u_data_in_0 (
-    .clk_i   (clk_i),
-    .rst_ni  (rst_ni),
-
-    // from register interface
-    .we     (data_in_0_we),
-    .wd     (data_in_0_wd),
-
-    // from internal hardware
-    .de     (hw2reg.data_in[0].de),
-    .d      (hw2reg.data_in[0].d),
-
-    // to internal hardware
-    .qe     (reg2hw.data_in[0].qe),
-    .q      (reg2hw.data_in[0].q),
-
-    // to register interface (read)
-    .qs     (reg_read)
   );
 
 
@@ -1391,7 +1365,7 @@ module aes_reg_top (
       end
 
       addr_hit[21]: begin
-        reg_rdata_next[31:0] = reg_read; //'0
+        reg_rdata_next[31:0] = '0; 
       end
 
       addr_hit[22]: begin

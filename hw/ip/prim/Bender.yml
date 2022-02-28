@@ -120,6 +120,7 @@ sources:
       - rtl/prim_msb_extend.sv
       - rtl/prim_ram_2p.sv
       - rtl/prim_pad_attr.sv
+      - rtl/prim_mubi_pkg.sv
       
 
 

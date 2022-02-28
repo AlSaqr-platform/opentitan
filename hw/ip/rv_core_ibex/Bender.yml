@@ -33,7 +33,7 @@ sources:
       - ../prim/rtl/prim_flop_2sync.sv
       - ../prim/rtl/prim_flop.sv
       - ../prim_generic/rtl/prim_generic_ram_1p.sv
-      - ../alert_handler/rtl/alert_handler_reg_pkg.sv
+      - ../../top_earlgrey/ip/alert_handler/rtl/autogen/alert_handler_reg_pkg.sv
 
 
       - rtl/rv_core_ibex_pkg.sv

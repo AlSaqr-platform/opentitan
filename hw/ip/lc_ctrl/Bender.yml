@@ -28,7 +28,7 @@ sources:
   - ../prim_generic/rtl/prim_generic_clock_inv.sv
   - ../pwrmgr/rtl/pwrmgr_pkg.sv
   - ../prim_generic/rtl/prim_generic_clock_mux2.sv
-  - ../alert_handler/rtl/alert_handler_reg_pkg.sv
+  - ../../top_earlgrey/ip/alert_handler/rtl/autogen/alert_handler_reg_pkg.sv
 
   - rtl/lc_ctrl_reg_pkg.sv
   - rtl/lc_ctrl_reg_top.sv

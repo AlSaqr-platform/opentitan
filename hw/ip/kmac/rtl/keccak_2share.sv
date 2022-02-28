@@ -92,8 +92,8 @@ module keccak_2share #(
   end : g_state_inout
 
   if (EnMasking) begin : g_2share_data
-    assign phase1_in = (sel_i == 1'b 0) ? state_in : '{default:'0};
-    assign phase2_in = (sel_i == 1'b 1) ? state_in : '{default:'0};
+    assign phase1_in = (sel_i == 1'b 0) ? state_in : '{default: '0};
+    assign phase2_in = (sel_i == 1'b 1) ? state_in : '{default: '0};
 
     always_comb begin
       unique case (sel_i)

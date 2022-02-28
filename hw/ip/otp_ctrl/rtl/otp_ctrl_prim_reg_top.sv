@@ -38,7 +38,8 @@ module otp_ctrl_prim_reg_top (
     .tl_o(tl_o)
   );
 
- 
+  assign tl_reg_h2d = tl_i;
+  assign tl_o_pre   = tl_reg_d2h;
 
   // Unused signal tieoff
   // devmode_i is not used if there are no registers

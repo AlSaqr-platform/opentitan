@@ -97,12 +97,13 @@ module keymgr_reg_top (
     .wdata_o (reg_wdata),
     .be_o    (reg_be),
     .busy_i  (reg_busy),
-    .rdata_i (reg_rdata_next),//sarebbe reg_rdata
+    .rdata_i (reg_rdata),
     .error_i (reg_error)
   );
 
   // cdc oversampling signals
-
+   
+  assign reg_rdata = reg_rdata_next ;
   assign reg_error = (devmode_i & addrmiss) | wr_err | intg_err;
 
   // Define SW related signals
@@ -306,8 +307,7 @@ module keymgr_reg_top (
   logic fault_status_ctrl_fsm_cnt_qs;
 
    
-  assign reg_rdata = sealing_sw_binding_0_qs ;
-
+ 
   // Register instances
   // R[intr_state]: V(False)
 
@@ -803,14 +803,14 @@ module keymgr_reg_top (
 
   prim_subreg #(
     .DW      (32),
-    .SwAccess("RW"),
+    .SwAccess(prim_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_sealing_sw_binding_7 (
     .clk_i   (clk_i),
     .rst_ni  (rst_ni),
 
     // from register interface
-    .we     (sealing_sw_binding_7_we),// & sw_binding_regwen_qs),
+    .we     (sealing_sw_binding_7_we & sw_binding_regwen_qs),
     .wd     (sealing_sw_binding_7_wd),
 
     // from internal hardware
@@ -867,7 +867,7 @@ module keymgr_reg_top (
 
     // from register interface
     .we     (attest_sw_binding_1_we & sw_binding_regwen_qs),
-    .wd     (reg_wdata),
+    .wd     (attest_sw_binding_1_wd),
 
     // from internal hardware
     .de     (1'b0),
@@ -892,9 +892,8 @@ module keymgr_reg_top (
     .clk_i   (clk_i),
     .rst_ni  (rst_ni),
 
-    // from register interface
-    .we     (sealing_sw_binding_2_we & sw_binding_regwen_qs),
-    .wd     (sealing_sw_binding_2_wd),
+    .we     (attest_sw_binding_2_we & sw_binding_regwen_qs),
+    .wd     (attest_sw_binding_2_wd),
 
     // from internal hardware
     .de     (1'b0),

@@ -373,10 +373,10 @@ module rv_core_ibex
     .rdata_intg_o (instr_rdata_intg),
     .err_o        (instr_err),
     .intg_err_o   (ibus_intg_err),
-    .tl_o         (corei_tl_h_o),
-    .tl_i         (corei_tl_h_i)
+    .tl_o         (tl_i_ibex2fifo),//corei_tl_h_o),//
+    .tl_i         (tl_i_fifo2ibex)//corei_tl_h_i)//
   );
-/*
+
   tlul_fifo_sync #(
     .ReqPass(FifoPass),
     .RspPass(FifoPass),
@@ -393,7 +393,7 @@ module rv_core_ibex
     .spare_req_o (),
     .spare_rsp_i (1'b0),
     .spare_rsp_o ());
-*/
+
   logic [31:0] data_addr_trans;
   rv_core_addr_trans #(
     .AddrWidth(32),
@@ -424,10 +424,10 @@ module rv_core_ibex
     .rdata_intg_o (data_rdata_intg),
     .err_o        (data_err),
     .intg_err_o   (dbus_intg_err),
-    .tl_o         (cored_tl_h_o),
-    .tl_i         (cored_tl_h_i)
+    .tl_o         (tl_d_ibex2fifo),//cored_tl_h_o),//
+    .tl_i         (tl_d_fifo2ibex)//cored_tl_h_i)//
   );
-/*
+
  tlul_fifo_sync #(
     .ReqPass(FifoPass),
     .RspPass(FifoPass),
@@ -444,7 +444,7 @@ module rv_core_ibex
     .spare_req_o (),
     .spare_rsp_i (1'b0),
     .spare_rsp_o ());
-*/
+
   //
   // Interception point for connecting simulation SRAM by disconnecting the tl_d output. The
   // disconnection is done only if `SYNTHESIS is NOT defined AND `RV_CORE_IBEX_SIM_SRAM is
