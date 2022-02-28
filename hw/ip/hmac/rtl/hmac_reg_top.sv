@@ -608,7 +608,7 @@ module hmac_reg_top (
 
     // from register interface
     .we     (1'b0), 
-    .wd     (),
+    .wd     ('0),
 
     // from internal hardware
     .de     (hw2reg.err_code.de),
