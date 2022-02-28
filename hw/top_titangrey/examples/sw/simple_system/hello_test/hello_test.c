@@ -1,3 +1,4 @@
+
 // Copyright lowRISC contributors.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("rom_ctrl        - failed\n");}
-
+  
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x4112002C;
  *p_reg = msg2;
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("kmac - failed\n");}
-
+  /*
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x4113002C;
  *p_reg = msg3;
@@ -59,8 +60,9 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("keymgr         - failed\n");}
+  */
+  ////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x40130040;
  *p_reg = msg4;
   if(*p_reg == msg4){
@@ -147,7 +149,7 @@ int main(int argc, char **argv) {
  *p_reg_bool = bit;
   if(*p_reg_bool == bit){ puts("rv_dm             - succed, msg: true\n"); }
   else{ puts("rv_dm             - there are no regs\n");}
-
+  /*
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x41010004;
  *p_reg = msg9;
@@ -157,7 +159,7 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("rv_plic    - failed\n");}
-
+  */
   ///////////////////////////////////////////////////////////////  
   p_reg =(int *) 0x4117002C;
  *p_reg = msg10;
@@ -167,7 +169,7 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("edn        - failed\n");}
-  
+  /*
   ///////////////////////////////////////////////////////////////      
   p_reg_bool =(bool *) 0x411D0004;
  *p_reg_bool = bit;
@@ -175,6 +177,8 @@ int main(int argc, char **argv) {
   else{ puts("otbn              - failed\n");}
   
   ///////////////////////////////////////////////////////////////
+  */
+    
   p_reg =(int *) 0x41100054;
  *p_reg = msg11;
   if(*p_reg == msg11){
@@ -223,7 +227,7 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("gpio  - failed\n");}
-
+  /*
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x40060010;
  *p_reg = msg16;
@@ -233,9 +237,10 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("gpio  - failed\n");}
- 
-  while(1);
-  
-  //sim_halt();                
+*/
+  // while(1);
+
+  sim_halt();                
   return 0;
 }
+
