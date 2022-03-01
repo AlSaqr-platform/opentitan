@@ -4,6 +4,8 @@ package:
   
 dependencies:
 
+tech_cells_generic: { git:  "git@github.com:pulp-platform/tech_cells_generic.git", version: 0.2.2 }
+
 # prim          : { path: "hw/ip/prim"          }
 # tlul          : { path: "hw/ip/tlul"          }
 # pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
@@ -43,14 +45,26 @@ export_include_dirs:
        - hw/ip/rv_core_ibex/rtl
        - hw/dv/sv/dv_utils
 
+
 #      - hw/ip/tlul/rtl/
 #      - hw/top_earlgrey/rtl/
 
 sources:
+###### dbg_rv
 
+      - hw/vendor/pulp_riscv_dbg/debug_rom/debug_rom.sv
+      - hw/vendor/pulp_riscv_dbg/debug_rom/debug_rom_one_scratch.sv
+      - hw/vendor/pulp_riscv_dbg/src/dm_pkg.sv
+      - hw/vendor/pulp_riscv_dbg/src/dm_obi_top.sv
+      - hw/vendor/pulp_riscv_dbg/src/dm_sba.sv
+      - hw/vendor/pulp_riscv_dbg/src/dmi_cdc.sv
+      - hw/vendor/pulp_riscv_dbg/src/dmi_jtag.sv
+      - hw/vendor/pulp_riscv_dbg/src/dmi_jtag_tap.sv
+      - hw/vendor/pulp_riscv_dbg/src/dm_mem.sv
+      - hw/vendor/pulp_riscv_dbg/src/dm_csrs.sv
+       
 ####### prim
 
-      - hw/top_earlgrey/rtl/top_pkg.sv       
       - hw/ip/prim/rtl/prim_assert.sv
       - hw/ip/prim/rtl/prim_clock_mux2.sv
       - hw/ip/prim/rtl/prim_clock_inv.sv
@@ -87,8 +101,6 @@ sources:
       - hw/ip/prim/rtl/prim_alert_sender.sv
       - hw/ip/prim/rtl/prim_esc_sender.sv
       - hw/ip/prim/rtl/prim_packer_fifo.sv
-      - hw/ip/prim/rtl/prim_flop_2sync.sv
-      - hw/ip/prim/rtl/prim_clock_gating.sv
       - hw/ip/prim/rtl/prim_secded_28_22_dec.sv
       - hw/ip/prim/rtl/prim_subreg_arb.sv
       - hw/ip/prim/rtl/prim_arbiter_fixed.sv
@@ -107,6 +119,7 @@ sources:
       - hw/ip/prim/rtl/prim_subreg_ext_async.sv
       - hw/ip/prim/rtl/prim_assert_dummy_macros.svh
       - hw/ip/prim/rtl/prim_filter_ctr.sv
+      - hw/ip/prim/rtl/prim_ram_1p.sv
       - hw/ip/prim/rtl/prim_prince.sv
       - hw/ip/prim/rtl/prim_secded_64_57_dec.sv
       - hw/ip/prim/rtl/prim_subreg_ext.sv
@@ -114,6 +127,7 @@ sources:
       - hw/ip/prim/rtl/prim_filter.sv
       - hw/ip/prim/rtl/prim_pulse_sync.sv
       - hw/ip/prim/rtl/prim_secded_64_57_enc.sv
+      - hw/ip/prim/rtl/prim_assert.sv
       - hw/ip/prim/rtl/prim_gate_gen.sv
       - hw/ip/prim/rtl/prim_ram_1p_adv.sv
       - hw/ip/prim/rtl/prim_secded_72_64_dec.sv
@@ -154,11 +168,14 @@ sources:
       - hw/ip/prim/rtl/prim_edn_req.sv
       - hw/ip/prim/rtl/prim_msb_extend.sv
       - hw/ip/prim/rtl/prim_ram_2p.sv
+      - hw/ip/prim/rtl/prim_pad_attr.sv
+      - hw/ip/prim/rtl/prim_mubi_pkg.sv
+      - hw/ip/prim/rtl/prim_flop_2sync.sv
+      - hw/ip/prim/rtl/prim_clock_gating.sv
+      
+##### tlul
 
-##### TLUL
-
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
+      - hw/top_earlgrey/rtl/top_pkg.sv
       - hw/ip/tlul/rtl/tlul_pkg.sv  
       - hw/ip/tlul/rtl/tlul_cmd_intg_chk.sv
       - hw/ip/tlul/rtl/tlul_data_integ_enc.sv
@@ -180,9 +197,8 @@ sources:
       - hw/ip/tlul/rtl/tlul_fifo_async.sv
       - hw/ip/tlul/rtl/tlul_adapter_sram.sv
 
-##### ibex core
+#### ibex core
 
-      - hw/dv/sv/dv_utils/dv_fcov_macros.svh
       - hw/vendor/lowrisc_ibex/rtl/ibex_pkg.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_register_file_ff.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_alu.sv
@@ -198,6 +214,8 @@ sources:
       - hw/vendor/lowrisc_ibex/rtl/ibex_pmp.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_tracer_pkg.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_wb_stage.sv
+      - hw/vendor/lowrisc_ibex/rtl/ibex_dummy_instr.sv
+      - hw/vendor/lowrisc_ibex/rtl/ibex_lockstep.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_cs_registers.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_ex_block.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_id_stage.sv
@@ -206,19 +224,27 @@ sources:
       - hw/vendor/lowrisc_ibex/rtl/ibex_if_stage.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_core.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_top.sv
+      
+#### core wrapper
 
-##### rv_core_ibex wrapper
-
-      - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv   #modificato, problemi con il reg_pkg
-      - hw/ip/pwrmgr/rtl/pwrmgr_reg_pkg.sv
-      - hw/vendor/lowrisc_ibex/rtl/ibex_icache.sv      
-      - hw/ip/alert_handler/rtl/alert_handler_reg_pkg.sv
+      - hw/top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_pkg.sv
+      - hw/top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_top.sv
+      - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv
+      - hw/top_earlgrey/ip/alert_handler/rtl/autogen/alert_handler_reg_pkg.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_pkg.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_reg_pkg.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_cfg_reg_top.sv
       - hw/ip/rv_core_ibex/rtl/rv_core_addr_trans.sv
 #     - hw/ip/rv_core_ibex/rtl/rv_core_ibex_peri.sv  
       - hw/ip/rv_core_ibex/rtl/rv_core_ibex.sv
+
+##### rv_dm
+
+      - hw/ip/rv_dm/rtl/jtag_pkg.sv
+      - hw/ip/rv_dm/rtl/rv_dm_reg_pkg.sv
+      - hw/ip/rv_dm/rtl/rv_dm_regs_reg_top.sv
+      - hw/ip/rv_dm/rtl/rv_dm_rom_reg_top.sv
+      - hw/ip/rv_dm/rtl/rv_dm.sv
 
 ##### kmac
 
@@ -239,7 +265,7 @@ sources:
       - hw/ip/kmac/rtl/kmac_staterd.sv
       - hw/ip/kmac/rtl/sha3.sv
       - hw/ip/kmac/rtl/sha3pad.sv
-  
+      
 ##### rom_ctrl
 
       - hw/ip/rom_ctrl/rtl/rom_ctrl_pkg.sv
@@ -254,16 +280,27 @@ sources:
       - hw/ip/rom_ctrl/rtl/rom_ctrl.sv
 
 ##### rv_plic
-   
-      - hw/ip/rv_plic/rtl/rv_plic_reg_pkg.sv
-      - hw/ip/rv_plic/rtl/rv_plic_reg_top.sv
+        
+      - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic_reg_pkg.sv
+      - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic_reg_top.sv
       - hw/ip/rv_plic/rtl/rv_plic_gateway.sv
       - hw/ip/rv_plic/rtl/rv_plic_target.sv
-      - hw/ip/rv_plic/rtl/rv_plic.sv
+      - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic.sv
+
+
+##### alert_handler
+
+      - hw/top_earlgrey/ip/alert_handler/rtl/autogen/alert_handler_reg_top.sv
+      - hw/ip/alert_handler/rtl/alert_pkg.sv
+      - hw/ip/alert_handler/rtl/alert_handler_accu.sv
+      - hw/ip/alert_handler/rtl/alert_handler_class.sv
+      - hw/ip/alert_handler/rtl/alert_handler_esc_timer.sv
+      - hw/ip/alert_handler/rtl/alert_handler_ping_timer.sv
+      - hw/ip/alert_handler/rtl/alert_handler_reg_wrap.sv
+      - hw/ip/alert_handler/rtl/alert_handler.sv
 
 ##### pwrmgr
 
-      - hw/ip/pwrmgr/rtl/pwrmgr_reg_top.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_cdc.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_cdc_pulse.sv
       - hw/ip/pwrmgr/rtl/pwrmgr_fsm.sv
@@ -273,14 +310,16 @@ sources:
   
 ##### keymgr
 
-      - hw/ip/rv_dm/rtl/jtag_pkg.sv
-      - hw/ip/flash_ctrl/rtl/flash_ctrl_reg_pkg.sv
-      - hw/ip/flash_ctrl/rtl/flash_ctrl_pkg.sv
+      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
+      - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
+      - hw/top_earlgrey/ip/flash_ctrl/rtl/autogen/flash_ctrl_reg_pkg.sv
+      - hw/top_earlgrey/ip/flash_ctrl/rtl/autogen/flash_ctrl_pkg.sv
+      - hw/ip/keymgr/rtl/keymgr_reg_top.sv
+      - hw/ip/keymgr/rtl/keymgr_cnt.sv
       - hw/ip/keymgr/rtl/keymgr_cfg_en.sv
       - hw/ip/keymgr/rtl/keymgr_ctrl.sv
       - hw/ip/keymgr/rtl/keymgr_input_checks.sv
       - hw/ip/keymgr/rtl/keymgr_kmac_if.sv
-      - hw/ip/keymgr/rtl/keymgr_reg_top.sv
       - hw/ip/keymgr/rtl/keymgr_reseed_ctrl.sv
       - hw/ip/keymgr/rtl/keymgr_sideload_key.sv
       - hw/ip/keymgr/rtl/keymgr_sideload_key_ctrl.sv
@@ -291,7 +330,6 @@ sources:
       - hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv.tpl
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_top.sv
       - hw/ip/prim_generic/rtl/prim_generic_otp.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_core_reg_top.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_dai.sv
@@ -301,7 +339,6 @@ sources:
       - hw/ip/otp_ctrl/rtl/otp_ctrl_lfsr_timer.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_buf.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_unbuf.sv
-      - hw/ip/otp_ctrl/rtl/otp_ctrl_prim_reg_top.sv      
       - hw/ip/otp_ctrl/rtl/otp_ctrl_scrmbl.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl.sv
 
@@ -340,7 +377,7 @@ sources:
 
       - hw/ip/flash_ctrl/rtl/flash_phy_pkg.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_arb.sv
-      - hw/ip/flash_ctrl/rtl/flash_ctrl_core_reg_top.sv
+      - hw/top_earlgrey/ip/flash_ctrl/rtl/autogen/flash_ctrl_core_reg_top.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_erase.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_info_cfg.sv
       - hw/ip/flash_ctrl/rtl/flash_ctrl_lcmgr.sv
@@ -357,7 +394,7 @@ sources:
       - hw/ip/flash_ctrl/rtl/flash_phy_rd.sv
       - hw/ip/prim_generic/rtl/prim_generic_flash.sv
       - hw/ip/flash_ctrl/rtl/flash_phy.sv
-      - hw/ip/flash_ctrl/rtl/flash_ctrl.sv
+      - hw/top_earlgrey/ip/flash_ctrl/rtl/autogen/flash_ctrl.sv
 
 ##### uart
 
@@ -370,11 +407,11 @@ sources:
 
 ##### clkmgr
 
-      - hw/ip/clkmgr/rtl/clkmgr_reg_pkg.sv
-      - hw/ip/clkmgr/rtl/clkmgr_pkg.sv
-      - hw/ip/clkmgr/rtl/clkmgr_reg_top.sv
+      - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr_reg_pkg.sv
+      - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr_pkg.sv
+      - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr_reg_top.sv
       - hw/ip/clkmgr/rtl/clkmgr_byp.sv
-      - hw/ip/clkmgr/rtl/clkmgr.sv
+      - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr.sv
 
 ##### sysrst_ctrl
 
@@ -392,33 +429,15 @@ sources:
       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_ulpfsm.sv
       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl.sv
 
-##### alert_handler
-
-      - hw/ip/alert_handler/rtl/alert_pkg.sv
-      - hw/ip/alert_handler/rtl/alert_handler_reg_top.sv
-      - hw/ip/alert_handler/rtl/alert_handler_accu.sv
-      - hw/ip/alert_handler/rtl/alert_handler_class.sv
-      - hw/ip/alert_handler/rtl/alert_handler_esc_timer.sv
-      - hw/ip/alert_handler/rtl/alert_handler_ping_timer.sv
-      - hw/ip/alert_handler/rtl/alert_handler_reg_wrap.sv
-      - hw/ip/alert_handler/rtl/alert_handler.sv
-
 ##### rstmgr
 
-      - hw/ip/rstmgr/rtl/rstmgr_pkg.sv
-      - hw/ip/rstmgr/rtl/rstmgr_reg_pkg.sv
-      - hw/ip/rstmgr/rtl/rstmgr_reg_top.sv
+      - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_pkg.sv
+      - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_reg_pkg.sv
+      - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_reg_top.sv
       - hw/ip/rstmgr/rtl/rstmgr_crash_info.sv
       - hw/ip/rstmgr/rtl/rstmgr_ctrl.sv
       - hw/ip/rstmgr/rtl/rstmgr_por.sv
-      - hw/ip/rstmgr/rtl/rstmgr.sv
-
-##### rv_dm
-
-      - hw/ip/rv_dm/rtl/rv_dm_reg_pkg.sv
-      - hw/ip/rv_dm/rtl/rv_dm_regs_reg_top.sv
-      - hw/ip/rv_dm/rtl/rv_dm_rom_reg_top.sv
-      - hw/ip/rv_dm/rtl/rv_dm.sv
+      - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr.sv
 
 ##### aes
 
@@ -559,12 +578,49 @@ sources:
       - hw/ip/spi_host/rtl/spi_host_core.sv
       - hw/ip/spi_host/rtl/spi_host.sv
 
+##### aon_timer
+
+      - hw/ip/aon_timer/rtl/aon_timer_reg_pkg.sv  
+      - hw/ip/aon_timer/rtl/aon_timer_reg_top.sv
+      - hw/ip/aon_timer/rtl/aon_timer_core.sv
+      - hw/ip/aon_timer/rtl/aon_timer.sv
+
+##### rv_timer
+
+      - hw/ip/rv_timer/rtl/rv_timer_reg_pkg.sv
+      - hw/ip/rv_timer/rtl/rv_timer_reg_top.sv
+      - hw/ip/rv_timer/rtl/timer_core.sv
+      - hw/ip/rv_timer/rtl/rv_timer.sv
+
+##### pinmux
+
+      - hw/ip/usbdev/rtl/usbdev_pkg.sv    
+      - hw/ip/usbdev/rtl/usbdev_aon_wake.sv
+      - hw/top_earlgrey/ip/pinmux/rtl/autogen/pinmux_reg_pkg.sv
+      - hw/top_earlgrey/ip/pinmux/rtl/autogen/pinmux_reg_top.sv
+      - hw/ip/pinmux/rtl/pinmux_pkg.sv
+      - hw/ip/pinmux/rtl/pinmux_jtag_breakout.sv 
+      - hw/ip/pinmux/rtl/pinmux_jtag_buf.sv
+      - hw/ip/pinmux/rtl/pinmux_strap_sampling.sv
+      - hw/ip/pinmux/rtl/pinmux_wkup.sv
+      - hw/ip/pinmux/rtl/pinmux.sv
+
+##### crossbar
+     
+      - hw/top_titangrey/crossbar/xbar_main/rtl/autogen/tl_main_pkg.sv
+      - hw/top_titangrey/crossbar/xbar_main/rtl/autogen/xbar_main.sv
+      - hw/top_titangrey/crossbar/xbar_peri/rtl/autogen/tl_peri_pkg.sv
+      - hw/top_titangrey/crossbar/xbar_peri/rtl/autogen/xbar_peri.sv
+
 ##### top module
- 
-      - hw/top_titangrey/autogen/rtl/autogen/tl_main_pkg.sv
-      - hw/top_titangrey/autogen/rtl/autogen/xbar_main.sv
+
+      - hw/top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
+      - hw/top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv    
       - hw/top_titangrey/tb/prim_generic_ram_2p.sv
       - hw/top_titangrey/tb/simulator_ctrl.sv
       - hw/top_titangrey/tb/ram_2p.sv
       - hw/top_titangrey/tb/opentitan.sv
+
+##### testbench
+
       - hw/top_titangrey/tb/testbench.sv

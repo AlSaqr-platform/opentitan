@@ -23,6 +23,9 @@ hw/top_titangrey/Bender.lock
 hw/top_titangrey/autogen/*
 hw/top_titangrey/crossbar/*
 hw/top_titangrey/scripts/*
+scripts/*
+Bender.lock
+
 
 
 # JasperGold FPV Result
