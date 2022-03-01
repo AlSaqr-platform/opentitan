@@ -25,8 +25,10 @@ hw/top_titangrey/crossbar/*
 hw/top_titangrey/scripts/*
 scripts/*
 Bender.lock
-
-
+examples/sw/simple_system/common/simple_system_common.d
+examples/sw/simple_system/common/simple_system_common.o
+examples/sw/simple_system/hello_test/hello_test.dis
+examples/sw/simple_system/hello_test/hello_test.elf
 
 # JasperGold FPV Result
 jgproject/
