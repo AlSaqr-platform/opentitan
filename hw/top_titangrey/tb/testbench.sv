@@ -27,11 +27,14 @@ module testbench ();
    
     logic [3:0] tieoff_data = 4'b0;
     logic       enable      = 1'b0;
+    logic        test_reset;
+   
    
    
   opentitan u_RoT (
 
     // spi_device
+    .test_reset,
     .cio_spi_device_sck_p2d(1'b0),
     .cio_spi_device_csb_p2d(1'b0),
     .cio_spi_device_sd_p2d(tieoff_data),

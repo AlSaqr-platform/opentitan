@@ -200,7 +200,8 @@ module opentitan #(
   
   output              clkmgr_pkg::clkmgr_ast_out_t clks_ast_o,
   output              rstmgr_pkg::rstmgr_ast_out_t rsts_ast_o,
-
+  
+  output logic        test_reset,
 
   input               scan_rst_ni, // reset used for test mode
   input               scan_en_i,
@@ -219,6 +220,58 @@ module opentitan #(
   import top_earlgrey_pkg::*;
   // Compile-time random constants
   import top_earlgrey_rnd_cnst_pkg::*;
+
+   
+ // Test Reset to provide as output to alsaqr to start the boot
+ 
+  logic trigger;
+  logic [31:0] count;
+  logic t_enable;
+ 
+  enum {HIGH, LOW} state, next_state;
+
+  always_ff @(posedge clk_main_i, negedge por_n_i) begin
+		if(por_n_i == 0)
+			state <= LOW;
+		else
+	    state <= next_state;
+	end
+   
+  always_comb begin
+	    
+    trigger  = 1'b0;
+    t_enable = 1'b1;
+     
+		case(state)
+      
+			LOW:      if(count == 31'b100000)
+						      next_state = HIGH;
+					      else 					      
+                	next_state = LOW;
+
+		  HIGH:     begin
+	              trigger  = 1'b1;                
+                t_enable = 1'b0;
+                end
+      
+			default:  next_state = LOW;
+      
+		endcase
+	end // always_comb
+
+  assign test_reset = trigger;
+  
+
+	always_ff @(posedge clk_main_i, negedge por_n_i)
+	begin
+		if(por_n_i == 0)
+			  count <= 'b0;
+		else
+			if(t_enable)
+				count <= count + 1;
+			else	
+				count <= 'b0;
+	end
  
   localparam logic [31:0] JTAG_IDCODE = {
     4'h0,     // Version
