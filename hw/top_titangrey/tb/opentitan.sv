@@ -87,7 +87,7 @@ module opentitan #(
   parameter bit OtbnStub = 0,
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
-  parameter RomCtrlBootRomInitFile = "../examples/sw/simple_system/hello_test/hello_test.vmem",
+  parameter RomCtrlBootRomInitFile = "../../../examples/sw/simple_system/hello_test/hello_test.vmem",
   parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1,
