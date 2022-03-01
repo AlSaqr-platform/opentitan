@@ -283,9 +283,9 @@ sources:
         
       - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic_reg_pkg.sv
       - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic_reg_top.sv
-      - hw/ip/rv_plic/rtl/rv_plic_gateway.sv
-      - hw/ip/rv_plic/rtl/rv_plic_target.sv
-      - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_plic.sv
+      - hw/ip/rv_plic/rtl/rv_ibex_plic_gateway.sv
+      - hw/ip/rv_plic/rtl/rv_ibex_plic_target.sv
+      - hw/top_earlgrey/ip/rv_plic/rtl/autogen/rv_ibex_plic.sv
 
 
 ##### alert_handler
