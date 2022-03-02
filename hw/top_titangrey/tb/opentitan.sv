@@ -210,7 +210,7 @@ module opentitan #(
   );
 
     
-  parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/examples/sw/simple_system/hello_test/hello_test.vmem";
+  parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
   localparam int NrDevices = 3;
   localparam int NrHosts = 1;
 
@@ -244,7 +244,7 @@ module opentitan #(
      
 		case(state)
       
-			LOW:      if(count == 31'b100000)
+			LOW:      if(count == 31'b1000000000000000)
 						      next_state = HIGH;
 					      else 					      
                 	next_state = LOW;

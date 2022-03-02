@@ -238,9 +238,9 @@ int main(int argc, char **argv) {
   }
   else{ puts("gpio  - failed\n");}
 */
-  // while(1);
+  while(1);
 
-  sim_halt();                
+  // sim_halt();                
   return 0;
 }
 

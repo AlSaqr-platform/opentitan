@@ -24,6 +24,7 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   logic [Width-1:0] mem [Depth];
 
   always_ff @(posedge clk_i) begin
+    rdata_o <= '0; 
     if (req_i) begin
       rdata_o <= mem[addr_i];
     end
