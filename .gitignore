@@ -19,10 +19,10 @@ hw/ip/*/sw
 
 # Autogen stuff
 .bender
-hw/top_titangrey/crossbar/xbarmain/data/*
-hw/top_titangrey/crossbar/xbarmain/xbar_main.core
+hw/top_titangrey/crossbar/xbar_main/data/*
+hw/top_titangrey/crossbar/xbar_main/xbar_main.core
 
-hw/top_titangrey/crossbar/xbarmain/dv/*
+hw/top_titangrey/crossbar/xbar_main/dv/*
 hw/top_titangrey/Bender.lock
 hw/top_titangrey/autogen/*
 hw/top_titangrey/scripts/*
