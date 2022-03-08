@@ -335,7 +335,7 @@ interface AXI_BUS_ASYNC
 endinterface
 
 
-`include "axi/typedef.svh"
+`include "../include/axi/typedef.svh"
 
 /// An asynchronous AXI4 interface for Gray CDCs.
 interface AXI_BUS_ASYNC_GRAY #(
