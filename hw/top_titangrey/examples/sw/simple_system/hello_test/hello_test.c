@@ -30,17 +30,17 @@ int main(int argc, char **argv) {
   char msg16 = 'G';
   
   puts("Test software:\n");
-
+  /*
   ///////////////////////////////////////////////////////////////  
-  p_reg =(int *) 0x411E0008;
+  p_reg =(int *) 0x49000004;
  *p_reg = msg1;
   if(*p_reg == msg1){
-    puts("rom_ctrl          - succed, msg: ");
+    puts("test          - succed, msg: ");
     putint(*p_reg);
     puts("\n");
   }
-  else{ puts("rom_ctrl        - failed\n");}
-  
+  else{ puts("test        - failed\n");}
+  */  
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x4112002C;
  *p_reg = msg2;
@@ -238,9 +238,29 @@ int main(int argc, char **argv) {
   }
   else{ puts("gpio  - failed\n");}
 */
-  while(1);
+  // while(1);
 
-  // sim_halt();                
+  sim_halt();                
   return 0;
 }
+/*
+// Copyright lowRISC contributors.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "simple_system_common.h"
+#include <stdbool.h>
+
+int main(int argc, char **argv) {
+
+  int bit   = true;
+  bool volatile * p_reg_bool;
+  p_reg_bool = (bool *) 0x49000004;
+ *p_reg_bool = bit;
+ 
+ // while(1);
+
+  sim_halt();                
+  return 0;
+  }*/
 

@@ -4,7 +4,9 @@ package:
   
 dependencies:
 
-tech_cells_generic: { git:  "git@github.com:pulp-platform/tech_cells_generic.git", version: 0.2.2 }
+ tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git", version: 0.2.2 }
+ common_cells:        { git: "https://github.com/pulp-platform/common_cells.git", version: 1.21.0 }
+ common_verification: { git: "https://github.com/pulp-platform/common_verification.git", version: 0.2.0 }
 
 # prim          : { path: "hw/ip/prim"          }
 # tlul          : { path: "hw/ip/tlul"          }
@@ -44,6 +46,7 @@ export_include_dirs:
        - hw/ip/tlul/rtl
        - hw/ip/rv_core_ibex/rtl
        - hw/dv/sv/dv_utils
+       - hw/ip/axi/include
 
 
 #      - hw/ip/tlul/rtl/
@@ -605,12 +608,59 @@ sources:
       - hw/ip/pinmux/rtl/pinmux_wkup.sv
       - hw/ip/pinmux/rtl/pinmux.sv
 
-##### crossbar
+##### tlul crossbar
      
       - hw/top_titangrey/crossbar/xbar_main/rtl/autogen/tl_main_pkg.sv
       - hw/top_titangrey/crossbar/xbar_main/rtl/autogen/xbar_main.sv
       - hw/top_titangrey/crossbar/xbar_peri/rtl/autogen/tl_peri_pkg.sv
       - hw/top_titangrey/crossbar/xbar_peri/rtl/autogen/xbar_peri.sv
+
+##### axi
+
+      - hw/ip/axi/include/axi/assign.svh
+      - hw/ip/axi/include/axi/typedef.svh
+      - hw/ip/axi/include/cv64a6_imacfd_sv39_config_pkg.sv
+      #- hw/ip/axi/include/cv32a6_imac_sv0_config_pkg.sv
+      - hw/ip/axi/include/riscv_pkg.sv
+      - hw/ip/axi/src/axi_pkg.sv
+      - hw/ip/axi/src/axi_intf.sv
+      - hw/ip/axi/include/ariane_axi_pkg.sv
+      - hw/ip/axi/src/axi_adapter.sv
+      - hw/ip/axi/src/axi_tlul_adapter.sv
+      - hw/ip/axi/src/axi2mem.sv
+    #  - hw/ip/axi/src/axi_atop_filter.sv
+    #  - hw/ip/axi/src/axi_burst_splitter.sv
+    #  - hw/ip/axi/src/axi_cdc_dst.sv
+    #  - hw/ip/axi/src/axi_cdc_src.sv
+    #  - hw/ip/axi/src/axi_cut.sv
+    #  - hw/ip/axi/src/axi_delayer.sv
+    #  - hw/ip/axi/src/axi_demux.sv
+    #  - hw/ip/axi/src/axi_dw_downsizer.sv
+    #  - hw/ip/axi/src/axi_dw_upsizer.sv
+    #  - hw/ip/axi/src/axi_id_remap.sv
+    #  - hw/ip/axi/src/axi_id_prepend.sv
+    #  - hw/ip/axi/src/axi_isolate.sv
+    #  - hw/ip/axi/src/axi_join.sv
+    #  - hw/ip/axi/src/axi_lite_demux.sv
+    #  - hw/ip/axi/src/axi_lite_join.sv
+    #  - hw/ip/axi/src/axi_lite_mailbox.sv
+    #  - hw/ip/axi/src/axi_lite_mux.sv
+    #  - hw/ip/axi/src/axi_lite_regs.sv
+    #  - hw/ip/axi/src/axi_lite_to_apb.sv
+    #  - hw/ip/axi/src/axi_lite_to_axi.sv
+    #  - hw/ip/axi/src/axi_modify_address.sv
+    #  - hw/ip/axi/src/axi_mux.sv
+    #  - hw/ip/axi/src/axi_serializer.sv
+    #  - hw/ip/axi/src/axi_cdc.sv
+    #  - hw/ip/axi/src/axi_err_slv.sv
+    #  - hw/ip/axi/src/axi_dw_converter.sv
+    #  - hw/ip/axi/src/axi_id_serialize.sv
+    #  - hw/ip/axi/src/axi_multicut.sv
+    #  - hw/ip/axi/src/axi_to_axi_lite.sv
+    #  - hw/ip/axi/src/axi_iw_converter.sv
+    #  - hw/ip/axi/src/axi_lite_xbar.sv
+    #  - hw/ip/axi/src/axi_xbar.sv
+
 
 ##### top module
 
@@ -619,8 +669,10 @@ sources:
       - hw/top_titangrey/tb/prim_generic_ram_2p.sv
       - hw/top_titangrey/tb/simulator_ctrl.sv
       - hw/top_titangrey/tb/ram_2p.sv
+ 
       - hw/top_titangrey/tb/opentitan.sv
 
 ##### testbench
-
+      - hw/top_titangrey/tb/tlul_functions.sv
+      - hw/top_titangrey/tb/adapter_testbench.sv
       - hw/top_titangrey/tb/testbench.sv

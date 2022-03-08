@@ -2,8 +2,6 @@
  TODO_1: substitute the current ram_2p.sv for data and instr with the actuale sram_ctrl
  ip present in the opentitan repo (and change also the memory mapping for it, accordingly
  to the memory map used in opentitan).
- TODO_2: all the interchip connections between the varius ip are currently missing,
- only the bus port is connected to the crossbar (and of course clk and rst).
  TODO_3: since the simulator control is not an opentitan ip, it could be possible to
  remove it and use the uart to print out the output of test softwares
 */
@@ -24,7 +22,9 @@
 `endif
 
 
-module opentitan #(
+module opentitan 
+  import axi_pkg::*; 
+  #(
 
   // Manually defined parameters
 
@@ -114,101 +114,104 @@ module opentitan #(
 ) (
   
   // spi_device
-  input  logic        cio_spi_device_sck_p2d,
-  input  logic        cio_spi_device_csb_p2d,
-  input  logic [3:0]  cio_spi_device_sd_p2d,
-  output logic [3:0]  cio_spi_device_sd_d2p,
-  output logic [3:0]  cio_spi_device_sd_en_d2p,
+  input logic        cio_spi_device_sck_p2d,
+  input logic        cio_spi_device_csb_p2d,
+  input logic [3:0]  cio_spi_device_sd_p2d,
+  output logic [3:0] cio_spi_device_sd_d2p,
+  output logic [3:0] cio_spi_device_sd_en_d2p,
   // spi_host0
-  input  logic [3:0]  cio_spi_host0_sd_p2d,
-  output logic        cio_spi_host0_sck_d2p,
-  output logic        cio_spi_host0_sck_en_d2p,
-  output logic        cio_spi_host0_csb_d2p,
-  output logic        cio_spi_host0_csb_en_d2p,
-  output logic [3:0]  cio_spi_host0_sd_d2p,
-  output logic [3:0]  cio_spi_host0_sd_en_d2p,
+  input logic [3:0]  cio_spi_host0_sd_p2d,
+  output logic       cio_spi_host0_sck_d2p,
+  output logic       cio_spi_host0_sck_en_d2p,
+  output logic       cio_spi_host0_csb_d2p,
+  output logic       cio_spi_host0_csb_en_d2p,
+  output logic [3:0] cio_spi_host0_sd_d2p,
+  output logic [3:0] cio_spi_host0_sd_en_d2p,
   // spi_host1
-  input  logic [3:0]  cio_spi_host1_sd_p2d,
-  output logic        cio_spi_host1_sck_d2p,
-  output logic        cio_spi_host1_sck_en_d2p,
-  output logic        cio_spi_host1_csb_d2p,
-  output logic        cio_spi_host1_csb_en_d2p,
-  output logic [3:0]  cio_spi_host1_sd_d2p,
-  output logic [3:0]  cio_spi_host1_sd_en_d2p,
+  input logic [3:0]  cio_spi_host1_sd_p2d,
+  output logic       cio_spi_host1_sck_d2p,
+  output logic       cio_spi_host1_sck_en_d2p,
+  output logic       cio_spi_host1_csb_d2p,
+  output logic       cio_spi_host1_csb_en_d2p,
+  output logic [3:0] cio_spi_host1_sd_d2p,
+  output logic [3:0] cio_spi_host1_sd_en_d2p,
+
 
   // pad attributes to padring
-  output              prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NMioPads-1:0] mio_attr_o,
-  output              prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NDioPads-1:0] dio_attr_o,
+  output             prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NMioPads-1:0] mio_attr_o,
+  output             prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NDioPads-1:0] dio_attr_o,
 
 
   // Inter-module Signal External type
-  output              ast_pkg::adc_ast_req_t adc_req_o,
-  input               ast_pkg::adc_ast_rsp_t adc_rsp_i,
-  input               edn_pkg::edn_req_t ast_edn_req_i,
+  output             ast_pkg::adc_ast_req_t adc_req_o,
+  input              ast_pkg::adc_ast_rsp_t adc_rsp_i,
+  input              edn_pkg::edn_req_t ast_edn_req_i,
   
-  output              edn_pkg::edn_rsp_t ast_edn_rsp_o,
-  output              lc_ctrl_pkg::lc_tx_t ast_lc_dft_en_o,
+  output             edn_pkg::edn_rsp_t ast_edn_rsp_o,
+  output             lc_ctrl_pkg::lc_tx_t ast_lc_dft_en_o,
   
-  input               prim_ram_1p_pkg::ram_1p_cfg_t ram_1p_cfg_i,
-  input               prim_ram_2p_pkg::ram_2p_cfg_t ram_2p_cfg_i,
-  input               prim_rom_pkg::rom_cfg_t rom_cfg_i,
+  input              prim_ram_1p_pkg::ram_1p_cfg_t ram_1p_cfg_i,
+  input              prim_ram_2p_pkg::ram_2p_cfg_t ram_2p_cfg_i,
+  input              prim_rom_pkg::rom_cfg_t rom_cfg_i,
   
-  input logic         clk_main_i,
-  input logic         clk_io_i,
-  input logic         clk_usb_i,
-  input logic         clk_aon_i,
-  output logic        clk_main_jitter_en_o,
+  input logic        clk_main_i,
+  input logic        clk_io_i,
+  input logic        clk_usb_i,
+  input logic        clk_aon_i,
+  output logic       clk_main_jitter_en_o,
   
-  output              lc_ctrl_pkg::lc_tx_t ast_clk_byp_req_o,
-  input               lc_ctrl_pkg::lc_tx_t ast_clk_byp_ack_i,
+  output             lc_ctrl_pkg::lc_tx_t ast_clk_byp_req_o,
+  input              lc_ctrl_pkg::lc_tx_t ast_clk_byp_ack_i,
   
-  output              ast_pkg::ast_dif_t flash_alert_o,
-  input               lc_ctrl_pkg::lc_tx_t flash_bist_enable_i,
-  input logic         flash_power_down_h_i,
-  input logic         flash_power_ready_h_i,
-  inout [1:0]         flash_test_mode_a_io,
-  inout               flash_test_voltage_h_io,
+  output             ast_pkg::ast_dif_t flash_alert_o,
+  input              lc_ctrl_pkg::lc_tx_t flash_bist_enable_i,
+  input logic        flash_power_down_h_i,
+  input logic        flash_power_ready_h_i,
+  inout [1:0]        flash_test_mode_a_io,
+  inout              flash_test_voltage_h_io,
   
-  output              entropy_src_pkg::entropy_src_rng_req_t es_rng_req_o,
-  input               entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp_i,
-  output logic        es_rng_fips_o,
+  output             entropy_src_pkg::entropy_src_rng_req_t es_rng_req_o,
+  input              entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp_i,
+  output logic       es_rng_fips_o,
   
-  output              tlul_pkg::tl_h2d_t ast_tl_req_o,
-  input               tlul_pkg::tl_d2h_t ast_tl_rsp_i,
+  output             tlul_pkg::tl_h2d_t ast_tl_req_o,
+  input              tlul_pkg::tl_d2h_t ast_tl_rsp_i,
   
-  output              pinmux_pkg::dft_strap_test_req_t dft_strap_test_o,
-  input logic         dft_hold_tap_sel_i,
+  output             pinmux_pkg::dft_strap_test_req_t dft_strap_test_o,
+  input logic        dft_hold_tap_sel_i,
   
-  output              pwrmgr_pkg::pwr_ast_req_t pwrmgr_ast_req_o,
-  input               pwrmgr_pkg::pwr_ast_rsp_t pwrmgr_ast_rsp_i,
+  output             pwrmgr_pkg::pwr_ast_req_t pwrmgr_ast_req_o,
+  input              pwrmgr_pkg::pwr_ast_rsp_t pwrmgr_ast_rsp_i,
   
-  output              otp_ctrl_pkg::otp_ast_req_t otp_ctrl_otp_ast_pwr_seq_o,
-  input               otp_ctrl_pkg::otp_ast_rsp_t otp_ctrl_otp_ast_pwr_seq_h_i,
-  inout               otp_ext_voltage_h_io,
-  output              ast_pkg::ast_dif_t otp_alert_o,
+  output             otp_ctrl_pkg::otp_ast_req_t otp_ctrl_otp_ast_pwr_seq_o,
+  input              otp_ctrl_pkg::otp_ast_rsp_t otp_ctrl_otp_ast_pwr_seq_h_i,
+  inout              otp_ext_voltage_h_io,
+  output             ast_pkg::ast_dif_t otp_alert_o,
   
-  input logic         por_n_i,
+  input logic        por_n_i,
   
-  input               ast_pkg::ast_alert_req_t sensor_ctrl_ast_alert_req_i,
-  output              ast_pkg::ast_alert_rsp_t sensor_ctrl_ast_alert_rsp_o,
-  input               ast_pkg::ast_status_t sensor_ctrl_ast_status_i,
-  input logic [8:0]   ast2pinmux_i,
-  input logic         ast_init_done_i,
+  input              ast_pkg::ast_alert_req_t sensor_ctrl_ast_alert_req_i,
+  output             ast_pkg::ast_alert_rsp_t sensor_ctrl_ast_alert_rsp_o,
+  input              ast_pkg::ast_status_t sensor_ctrl_ast_status_i,
+  input logic [8:0]  ast2pinmux_i,
+  input logic        ast_init_done_i,
   
-  output logic        usbdev_usb_ref_val_o,
-  output logic        usbdev_usb_ref_pulse_o,
+  output logic       usbdev_usb_ref_val_o,
+  output logic       usbdev_usb_ref_pulse_o,
   
-  output              clkmgr_pkg::clkmgr_ast_out_t clks_ast_o,
-  output              rstmgr_pkg::rstmgr_ast_out_t rsts_ast_o,
+  output             clkmgr_pkg::clkmgr_ast_out_t clks_ast_o,
+  output             rstmgr_pkg::rstmgr_ast_out_t rsts_ast_o,
   
-  output logic        test_reset,
+  output logic       test_reset,
+ // AXI_BUS.Master     ot_axi_mst,
 
-  input               scan_rst_ni, // reset used for test mode
-  input               scan_en_i,
-  input               lc_ctrl_pkg::lc_tx_t scanmode_i   // lc_ctrl_pkg::On for Scan
+  input              scan_rst_ni, // reset used for test mode
+  input              scan_en_i,
+  input              lc_ctrl_pkg::lc_tx_t scanmode_i   // lc_ctrl_pkg::On for Scan
    
   );
-
+  
+   
     
   parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
   localparam int NrDevices = 3;
@@ -584,6 +587,56 @@ module opentitan #(
     Timer
   } bus_device_e;
 
+  
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) axi_data_slave();
+
+  logic [31:0] mst_data_wdata;
+  logic [31:0] mst_data_addr;
+  logic        mst_data_req;
+  logic        mst_data_we;
+  logic [3:0]  mst_data_be;
+   
+  logic [31:0] mst_data_rdata;
+  logic        mst_data_rvalid;
+
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) axi_instr_slave();
+   
+  logic [31:0] mst_simctrl_wdata;
+  logic [31:0] mst_simctrl_addr;
+  logic        mst_simctrl_req;
+  logic        mst_simctrl_we;
+  logic [3:0]  mst_simctrl_be;
+   
+  logic [31:0] mst_simctrl_rdata;
+  logic        mst_simctrl_rvalid;
+
+   
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) axi_simctrl_slave();
+   
+  logic [31:0] mst_instr_wdata;
+  logic [31:0] mst_instr_addr;
+  logic        mst_instr_req;
+  logic        mst_instr_we;
+  logic [3:0]  mst_instr_be;
+   
+  logic [31:0] mst_instr_rdata;
+  logic        mst_instr_rvalid;
+/*
    
   // host and device signals
   logic           host_req    [NrHosts]; 
@@ -682,7 +735,7 @@ module opentitan #(
     assign ram2core.d_source               = core2ram.a_source;
     assign ram2core.d_user                 = TL_D_USER_DEFAULT;
     assign ram2core.d_sink                 = '0;
-   
+   */
    
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
@@ -890,7 +943,8 @@ module opentitan #(
   tlul_pkg::tl_d2h_t       ram2core;
   tlul_pkg::tl_h2d_t       core2instr;
   tlul_pkg::tl_d2h_t       instr2core;
-  
+  tlul_pkg::tl_h2d_t       core2alsaqr;
+  tlul_pkg::tl_d2h_t       alsaqr2core;
   
   
   rstmgr_pkg::rstmgr_out_t       rstmgr_aon_resets;
@@ -1020,7 +1074,130 @@ module opentitan #(
     .tdo_oe_i (1'b0)
   );
 
-      
+  axi_tlul_adapter u_instr_adapter (
+     .clk_i        (clk_main_i),
+     .rst_ni       (por_n_i),
+     .tl_req       (core2instr),
+     .tl_rsp       (instr2core),
+     .axi_mst_intf (axi_instr_slave)
+  );
+   
+  axi_tlul_adapter u_data_adapter (
+     .clk_i        (clk_main_i),
+     .rst_ni       (por_n_i),
+     .tl_req       (core2ram),
+     .tl_rsp       (ram2core),
+     .axi_mst_intf (axi_data_slave)
+  );
+
+     
+  axi_tlul_adapter u_simctrl_adapter (
+     .clk_i        (clk_main_i),
+     .rst_ni       (por_n_i),
+     .tl_req       (core2simctrl),
+     .tl_rsp       (simctrl2core),
+     .axi_mst_intf (axi_simctrl_slave)
+  );
+   
+  axi2mem #(
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) u_instr_axi2mem (
+    .clk_i      ( clk_main_i          ),
+    .rst_ni     ( por_n_i             ),
+                  
+    .slave      ( axi_instr_slave     ),
+                  
+    .req_o      ( mst_instr_req       ),
+    .we_o       ( mst_instr_we        ),
+    .addr_o     ( mst_instr_addr      ),
+    .be_o       ( mst_instr_be        ),
+    .data_o     ( mst_instr_wdata     ),
+    .data_i     ( mst_instr_rdata     )
+  );
+  
+  axi2mem #(
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) u_data_axi2mem (
+    .clk_i      ( clk_main_i          ),
+    .rst_ni     ( por_n_i             ),
+                  
+    .slave      ( axi_data_slave      ),
+                  
+    .req_o      ( mst_data_req        ),
+    .we_o       ( mst_data_we         ),
+    .addr_o     ( mst_data_addr       ),
+    .be_o       ( mst_data_be         ),
+    .data_o     ( mst_data_wdata      ),
+    .data_i     ( mst_data_rdata      )
+  );
+
+  axi2mem #(
+    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) u_simctrl_axi2mem (
+    .clk_i      ( clk_main_i          ),
+    .rst_ni     ( por_n_i             ),
+                  
+    .slave      ( axi_simctrl_slave      ),
+                  
+    .req_o      ( mst_simctrl_req        ),
+    .we_o       ( mst_simctrl_we         ),
+    .addr_o     ( mst_simctrl_addr       ),
+    .be_o       ( mst_simctrl_be         ),
+    .data_o     ( mst_simctrl_wdata      ),
+    .data_i     ( mst_simctrl_rdata      )
+  );
+
+  ram_2p #(
+      .Depth(1024*1024/4),
+      .MemInitFile(SRAMInitFile)
+  ) u_ram_test (
+      .clk_i       (clk_main_i),
+      .rst_ni      (por_n_i),
+ 
+      .a_req_i     ( mst_data_req     ),
+      .a_we_i      ( mst_data_we      ),
+      .a_be_i      ( mst_data_be      ),
+      .a_addr_i    ( mst_data_addr    ),
+      .a_wdata_i   ( mst_data_wdata   ),
+      .a_rvalid_o  ( mst_data_rvalid  ),
+      .a_rdata_o   ( mst_data_rdata   ),
+
+      .b_req_i     ( mst_instr_req    ),
+      .b_we_i      ( mst_instr_we     ),
+      .b_be_i      ( mst_instr_be     ),
+      .b_addr_i    ( mst_instr_addr   ),
+      .b_wdata_i   ( mst_instr_wdata  ),
+      .b_rvalid_o  ( mst_instr_rvalid ),
+      .b_rdata_o   ( mst_instr_rdata  )
+  );
+
+   
+  simulator_ctrl #(
+    .LogName("ibex_simple_system.log")
+    ) u_simulator_ctrl (
+      .clk_i     (clk_main_i),
+      .rst_ni    (por_n_i),
+
+      .req_i     (mst_simctrl_req),
+      .we_i      (mst_simctrl_we),
+      .be_i      (mst_simctrl_be),
+      .addr_i    (mst_simctrl_addr),
+      .wdata_i   (mst_simctrl_wdata),
+      .rvalid_o  (mst_simctrl_rvalid),
+      .rdata_o   (mst_simctrl_rdata)
+    );
+
+
+   /*
   ram_2p #(
       .Depth(1024*1024/4),
       .MemInitFile(SRAMInitFile)
@@ -1043,22 +1220,7 @@ module opentitan #(
       .b_wdata_i   (32'b0),
       .b_rvalid_o  (instr_rvalid),
       .b_rdata_o   (instr_rdata)
-    );
- 
-  simulator_ctrl #(
-    .LogName("ibex_simple_system.log")
-    ) u_simulator_ctrl (
-      .clk_i     (clk_main_i),
-      .rst_ni    (por_n_i),
-
-      .req_i     (device_req[SimCtrl]),
-      .we_i      (device_we[SimCtrl]),
-      .be_i      (device_be[SimCtrl]),
-      .addr_i    (device_addr[SimCtrl]),
-      .wdata_i   (device_wdata[SimCtrl]),
-      .rvalid_o  (device_rvalid[SimCtrl]),
-      .rdata_o   (device_rdata[SimCtrl])
-    );
+    );*/
 
 
  // Test Reset to provide as output to alsaqr to start the boot
@@ -2872,6 +3034,10 @@ uart #(
     .tl_sim_ctrl_i(simctrl2core),
     .tl_sim_ctrl_o(core2simctrl),
 
+    .tl_alsaqr_i(alsaqr2core),
+    .tl_alsaqr_o(core2alsaqr),
+
+
     // port: tl_rv_dm__sba
     .tl_rv_dm__sba_i(main_tl_rv_dm__sba_req),
     .tl_rv_dm__sba_o(main_tl_rv_dm__sba_rsp),
@@ -3094,7 +3260,7 @@ uart #(
 
     .scanmode_i
   );
-
+  
   // Pinmux connections
   // All muxed inputs
   assign cio_gpio_gpio_p2d[0] = mio_p2d[MioInGpioGpio0];

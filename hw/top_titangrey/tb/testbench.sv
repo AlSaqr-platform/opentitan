@@ -7,6 +7,7 @@ module testbench ();
    assign fake_ast_edn.edn_fips = '0;
    assign fake_ast_edn.edn_bus = '0;
    
+   
   
   initial begin
      
@@ -27,9 +28,15 @@ module testbench ();
    
     logic [3:0] tieoff_data = 4'b0;
     logic       enable      = 1'b0;
-    logic        test_reset;
+    logic       test_reset;
    
-   
+/*  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( 64 ),
+    .AXI_DATA_WIDTH ( 64 ),
+    .AXI_ID_WIDTH   ( 0 ),
+    .AXI_USER_WIDTH ( 1 )
+  ) slave();
+*/
    
   opentitan u_RoT (
 
@@ -53,7 +60,8 @@ module testbench ();
     .clk_io_i(clk_sys),
     .clk_usb_i(clk_sys),
     .ast_edn_req_i (fake_ast_edn),
-    .clk_aon_i(clk_sys) 
-);
+    .clk_aon_i(clk_sys)
+  );
+   
 
 endmodule

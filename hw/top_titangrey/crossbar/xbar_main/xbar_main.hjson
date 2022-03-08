@@ -74,6 +74,7 @@
       kmac
       sram_ctrl_main.regs
       rv_core_ibex.cfg
+      alsaqr
     ]
     rv_dm.sba:
     [
@@ -165,6 +166,24 @@
       [
         {
           base_addr: 0x10000
+          size_byte: 0x1000
+        }
+      ]
+      xbar: false
+      stub: false
+      pipeline: "true"
+    }
+    {
+      name: alsaqr
+      type: device
+      clock: clk_main_i
+      reset: rst_main_ni
+      inst_type: alsaqr
+      pipeline_byp: "false"
+      addr_range:
+      [
+        {
+          base_addr: 0x90000000
           size_byte: 0x1000
         }
       ]
