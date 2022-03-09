@@ -5,9 +5,9 @@ package:
 dependencies:
 
  tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git", version: 0.2.2 }
- common_cells:        { git: "https://github.com/pulp-platform/common_cells.git", version: 1.21.0 }
- common_verification: { git: "https://github.com/pulp-platform/common_verification.git", version: 0.2.0 }
-
+ common_cells:        { git: "https://github.com/pulp-platform/common_cells.git", version: 1.21.0  }
+ axi:                 { git: "https://github.com/pulp-platform/axi.git", version: "0.29.1"         }
+ 
 # prim          : { path: "hw/ip/prim"          }
 # tlul          : { path: "hw/ip/tlul"          }
 # pulp_dbg      : { path: "hw/vendor/pulp_riscv_dbg/src" }
@@ -617,17 +617,17 @@ sources:
 
 ##### axi
 
-      - hw/ip/axi/include/axi/assign.svh
-      - hw/ip/axi/include/axi/typedef.svh
-      - hw/ip/axi/include/cv64a6_imacfd_sv39_config_pkg.sv
-      #- hw/ip/axi/include/cv32a6_imac_sv0_config_pkg.sv
-      - hw/ip/axi/include/riscv_pkg.sv
-      - hw/ip/axi/src/axi_pkg.sv
-      - hw/ip/axi/src/axi_intf.sv
-      - hw/ip/axi/include/ariane_axi_pkg.sv
-      - hw/ip/axi/src/axi_adapter.sv
-      - hw/ip/axi/src/axi_tlul_adapter.sv
-      - hw/ip/axi/src/axi2mem.sv
+    #  - hw/ip/axi/include/axi/assign.svh
+    #  - hw/ip/axi/include/axi/typedef.svh
+    #  - hw/ip/axi/include/cv64a6_imacfd_sv39_config_pkg.sv
+    #  - hw/ip/axi/include/cv32a6_imac_sv0_config_pkg.sv
+    #  - hw/ip/axi/include/riscv_pkg.sv
+    #  - hw/ip/axi/src/axi_pkg.sv
+    #  - hw/ip/axi/src/axi_intf.sv
+    #  - hw/ip/axi/include/ariane_axi_pkg.sv
+    #  - hw/ip/axi/src/axi_adapter.sv
+    #  - hw/ip/axi/src/axi_tlul_adapter.sv
+    #  - hw/ip/axi/src/axi2mem.sv
 
     #  - hw/ip/axi/src/axi_atop_filter.sv
     #  - hw/ip/axi/src/axi_burst_splitter.sv
@@ -662,6 +662,17 @@ sources:
     #  - hw/ip/axi/src/axi_lite_xbar.sv
     #  - hw/ip/axi/src/axi_xbar.sv
 
+##### tlul2axi
+
+      - hw/ip/tlul2axi/include/cv64a6_imacfd_sv39_config_pkg.sv
+      - hw/ip/tlul2axi/include/riscv_pkg.sv
+      - hw/ip/tlul2axi/include/ariane_axi_pkg.sv
+      - hw/ip/tlul2axi/rtl/tlul_intf.sv
+      - hw/ip/tlul2axi/rtl/tlul_assign.svh
+      - hw/ip/tlul2axi/rtl/tlul_functions.sv
+      - hw/ip/tlul2axi/rtl/axi_adapter.sv
+      - hw/ip/tlul2axi/rtl/axi_tlul_adapter.sv
+      - hw/ip/tlul2axi/rtl/axi2mem.sv
 
 ##### top module
 
@@ -674,8 +685,8 @@ sources:
       - hw/top_titangrey/tb/opentitan.sv
 
 ##### testbench
-      - hw/top_titangrey/tb/tlul_intf.sv
-      - hw/top_titangrey/tb/tlul_assign.svh
-      - hw/top_titangrey/tb/tlul_functions.sv
+    #  - hw/top_titangrey/tb/tlul_intf.sv
+    #  - hw/top_titangrey/tb/tlul_assign.svh
+    #  - hw/top_titangrey/tb/tlul_functions.sv
       - hw/top_titangrey/tb/adapter_testbench.sv
       - hw/top_titangrey/tb/testbench.sv

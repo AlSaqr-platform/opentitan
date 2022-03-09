@@ -69,22 +69,20 @@ package tlul_functions;
       tl_bus.tl_req.a_address   <= #TA addr;
       tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::Get;
      
-      cycle_end ();
+      //cycle_end ();
       tl_bus.tl_req.a_valid     <= #TA 1'b1;
-      cycle_start();
+      //cycle_start();
      
-      while (!tl_bus.tl_rsp.a_ready) begin
-        cycle_end();
-        cycle_start();
-      end
-     
+      @(posedge tl_bus.tl_rsp.d_valid) 
+   
       data  = tl_bus.tl_rsp.d_data;
       err   = tl_bus.tl_rsp.d_error;
+      tl_bus.tl_req.a_valid   <= #TA 1'b0; 
       cycle_end();
 
-       
+
       tl_bus.tl_req.a_address <= #TA 32'b0;
-      tl_bus.tl_req.a_valid   <= #TA 1'b0;
+
       lock.put();
 
          
@@ -106,20 +104,22 @@ package tlul_functions;
       tl_bus.tl_req.a_data      <= #TA data;  
    
        
-      cycle_end();
+      //cycle_end();
+       
       tl_bus.tl_req.a_valid     <= #TA 1'b1;
-      cycle_start();
-     
-      while (!tl_bus.tl_rsp.d_valid) begin
+      //cycle_start();
+       
+      @(posedge tl_bus.tl_rsp.d_valid) 
+     /* while (!tl_bus.tl_rsp.d_valid) begin
         cycle_end();
         cycle_start();
-      end
+      end*/
        
       err = tl_bus.tl_rsp.d_error;
-         
+      tl_bus.tl_req.a_valid   <= #TA 1'b0;    
       cycle_end();
      
-      tl_bus.tl_req.a_valid   <= #TA 1'b0;
+
       tl_bus.tl_req.a_data    <= #TA 32'b0;
       tl_bus.tl_req.a_address <= #TA addr;
       
