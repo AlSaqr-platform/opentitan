@@ -117,7 +117,7 @@ package tlul_functions;
        
       err = tl_bus.tl_rsp.d_error;
          
-      //cycle_end();
+      cycle_end();
      
       tl_bus.tl_req.a_valid   <= #TA 1'b0;
       tl_bus.tl_req.a_data    <= #TA 32'b0;
