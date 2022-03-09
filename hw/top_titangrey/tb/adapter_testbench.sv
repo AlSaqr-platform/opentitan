@@ -1,22 +1,18 @@
+`include "tlul_assign.svh"
+
 module adapter_testbench #();
 
    localparam time TA   = 1ns;
    localparam time TT   = 2ns;
-   
-   localparam [31:0] BaseAddr      = 32'h1A10_0000;
-   localparam [31:0] TestStartAddr = 32'h1A10_0000;
-   localparam [31:0] TestEndAddr   = 32'h1A10_0030;
-   
    localparam int unsigned RTC_CLOCK_PERIOD = 30.517us;
 
    logic rst_ni;
    logic clk_i;
 
    semaphore lock;
-  //
    
    import tlul_pkg::*;
-   import tlul_tasks::*;
+   import tlul_functions::*;
    
 
    tl_h2d_t tl_req;
@@ -31,18 +27,18 @@ module adapter_testbench #();
    logic [31:0] mst_rdata;
    logic        mst_rvalid;
    
-   //typedef tlul_test::tlul_driver #( .TT(TT), .TA(TA)) tlul_driver_t;
+   typedef tlul_functions::tlul_driver #( .TT(TT), .TA(TA)) tlul_driver_t;
                                      
-   //tlul_test::tlul_driver #( .TT(TT), .TA(TA)) tlul_master = new( clk_i);
-   
-   task cycle_start;
-     #TT;
-   endtask
+  
+   tlul_bus tl_bus();
+   tlul_driver_t tlul_master = new(tl_bus);
 
-   task cycle_end;
-     @(posedge clk_i);
-   endtask
+   `REQ_ASSIGN(tl_req, tl_bus.tl_req);
+   `RSP_ASSIGN(tl_bus.tl_rsp, tl_rsp);
+   assign tl_bus.clk_i = clk_i;
    
+   
+    
    AXI_BUS #(
     .AXI_ADDR_WIDTH ( 32 ),
     .AXI_DATA_WIDTH ( 32 ),
@@ -75,8 +71,6 @@ module adapter_testbench #();
     .data_i     ( mst_rdata            )
    );
    
-   
-      
    ram_2p #(
       .Depth(1024*1024/4)
    ) u_ram (
@@ -105,6 +99,60 @@ module adapter_testbench #();
 
    initial begin : proc_apb_master
       
+    automatic logic [31:0] addr;
+    automatic logic [31:0] rdata;
+    automatic logic [31:0] wdata;
+    automatic logic  err;
+
+  
+    @(posedge rst_ni);
+    tlul_master.reset_master();
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    addr = 'h1A100010;
+    wdata = 32'h25C350;
+      
+    tlul_master.write(addr, wdata, err);
+    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    tlul_master.read(addr, rdata, err);
+    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+      
+    addr = 'h1A100014;
+    wdata = 32'h35C350;
+      
+    tlul_master.write(addr, wdata, err);
+    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    tlul_master.read(addr, rdata, err);
+    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+      
+    addr = 'h1A100018;
+    wdata = 32'h45C350;
+      
+    tlul_master.write(addr, wdata, err);
+    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    tlul_master.read(addr, rdata, err);
+    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+ 
+    $finish;
+      
+   end 
+   
+endmodule
+
+
+     
+ /*     
      automatic logic [31:0] addr;
      automatic logic [31:0] wdata;
      automatic logic [31:0] rdata; 
@@ -185,15 +233,7 @@ module adapter_testbench #();
         $display("Fail");
       
      repeat  ($urandom_range(10,15)) @(posedge clk_i);
-      
-     $finish;
-      
-   end 
-   
-endmodule
-
-
-
+      */
 
 
 

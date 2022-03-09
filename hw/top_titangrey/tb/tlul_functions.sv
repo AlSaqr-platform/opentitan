@@ -1,27 +1,40 @@
-package tlul_tasks;
-   
-  import tlul_pkg::*; 
-  
-  localparam time TA   = 1ns;
-  localparam time TT   = 2ns;
+`include "tlul_assign.svh"
 
-  tl_h2d_t tl_req;
-  tl_d2h_t tl_rsp;
+package tlul_functions;
+  import tlul_pkg::*; 
+  class tlul_driver#(
+    parameter time         TA         = 0ns,    // application time
+    parameter time         TT         = 0ns     // test time
+  );
+     
+
+
+    virtual tlul_bus tl_bus;
+    semaphore lock;
+    logic clk_i;
+     
+
+    function new(virtual tlul_bus tlbus, logic clk = 0);
+      this.tl_bus = tlbus;
+      this.clk_i  = clk; 
+      this.lock   = new(1);
+    endfunction
    
-/*
-  task reset_master(input tl_h2d_t tl_req, input logic clk_i);
-   
-    tl_req.a_valid     <= '0;
-    tl_req.a_opcode    <= tlul_pkg::Get;
-    tl_req.a_param     <= '0;
-    tl_req.a_size      <= '0;
-    tl_req.a_source    <= '0;
-    tl_req.a_address   <= '0;
-    tl_req.a_mask      <= '1;
-    tl_req.a_data      <= '0;
-    tl_req.a_user      <= '0;
-    tl_req.d_ready     <= '0;
-  endtask*/
+
+    function void reset_master();
+      
+      tl_bus.tl_req.a_valid     <= '0;
+      tl_bus.tl_req.a_opcode    <= tlul_pkg::Get;
+      tl_bus.tl_req.a_param     <= '0;
+      tl_bus.tl_req.a_size      <= '0;
+      tl_bus.tl_req.a_source    <= '0;
+      tl_bus.tl_req.a_address   <= '0;
+      tl_bus.tl_req.a_mask      <= '1;
+      tl_bus.tl_req.a_data      <= '0;
+      tl_bus.tl_req.a_user      <= '0;
+      tl_bus.tl_req.d_ready     <= '1;
+      
+    endfunction
 
   /*  function void reset_slave();
       tl_rsp.d_valid     <= '0;
@@ -36,72 +49,84 @@ package tlul_tasks;
       tl_rsp.a_ready     <= '0;
     endfunction */
 
-  task cycle_start;
-    #TT;
-  endtask
+    task cycle_start;
+      #TT;
+    endtask
 
-  task cycle_end (input logic clk_i);
-    @(posedge clk_i);
-  endtask
+    task cycle_end;
+      @(posedge tl_bus.clk_i);
+    endtask
 
-  task read(
-    input  logic   clk_i,
-    input  [31:0]  addr,
-    output [31:0]  data,
-    output logic   err
-  );
-        
-    tl_req.a_address   <= #TA addr;
-    tl_req.a_opcode    <= #TA tlul_pkg::Get;
+    task read(
+      input  [31:0]  addr,
+      output [31:0]  data,
+      output logic   err
+    );
+      
+      while (!lock.try_get()) begin
+        cycle_end();
+      end
+      tl_bus.tl_req.a_address   <= #TA addr;
+      tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::Get;
      
-    cycle_end (clk_i);
-    tl_req.a_valid     <= #TA 1'b1;
-    cycle_start();
-     
-    while (!tl_rsp.a_ready) begin
-      cycle_end(clk_i);
+      cycle_end ();
+      tl_bus.tl_req.a_valid     <= #TA 1'b1;
       cycle_start();
-    end
      
-    data  = tl_rsp.d_data;
-    err   = tl_rsp.d_error;
-    cycle_end(clk_i);
+      while (!tl_bus.tl_rsp.a_ready) begin
+        cycle_end();
+        cycle_start();
+      end
+     
+      data  = tl_bus.tl_rsp.d_data;
+      err   = tl_bus.tl_rsp.d_error;
+      cycle_end();
+
        
-    tl_req.a_address <= #TA 32'b0;
-    tl_req.a_valid   <= #TA 1'b0;
+      tl_bus.tl_req.a_address <= #TA 32'b0;
+      tl_bus.tl_req.a_valid   <= #TA 1'b0;
+      lock.put();
+
          
-  endtask
+    endtask
 
   
-  task write(
-    input  logic  clk_i,
-    input  [31:0] addr,
-    input  [31:0] data,
-    output logic  err
-  );
+    task write(
+      input [31:0] addr,
+      input [31:0] data,
+      output logic err
+    );
+
+      while (!lock.try_get()) begin
+        cycle_end();
+      end
           
-    tl_req.a_address   <= #TA addr;
-    tl_req.a_opcode    <= #TA tlul_pkg::PutFullData;
-    tl_req.a_data      <= #TA data;
-     
-    cycle_end(clk_i);
-    tl_req.a_valid <= #TA 1'b1;
-    cycle_start();
-     
-    while (!tl_rsp.a_ready) begin
-      cycle_end(clk_i);
-      cycle_start();
-    end
-       
-    err = tl_rsp.d_error;
-      
-    cycle_end(clk_i);
-     
-    tl_req.a_valid   <= #TA 1'b0;
-    tl_req.a_data    <= #TA 32'b0;
-    tl_req.a_address <= #TA addr;
+      tl_bus.tl_req.a_address   <= #TA addr;
+      tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::PutFullData;
+      tl_bus.tl_req.a_data      <= #TA data;  
    
+       
+      cycle_end();
+      tl_bus.tl_req.a_valid     <= #TA 1'b1;
+      cycle_start();
      
-  endtask
+      while (!tl_bus.tl_rsp.d_valid) begin
+        cycle_end();
+        cycle_start();
+      end
+       
+      err = tl_bus.tl_rsp.d_error;
+         
+      //cycle_end();
+     
+      tl_bus.tl_req.a_valid   <= #TA 1'b0;
+      tl_bus.tl_req.a_data    <= #TA 32'b0;
+      tl_bus.tl_req.a_address <= #TA addr;
+      
+      lock.put();
+   
+    endtask 
+
+  endclass
 
 endpackage

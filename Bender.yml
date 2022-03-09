@@ -628,6 +628,7 @@ sources:
       - hw/ip/axi/src/axi_adapter.sv
       - hw/ip/axi/src/axi_tlul_adapter.sv
       - hw/ip/axi/src/axi2mem.sv
+
     #  - hw/ip/axi/src/axi_atop_filter.sv
     #  - hw/ip/axi/src/axi_burst_splitter.sv
     #  - hw/ip/axi/src/axi_cdc_dst.sv
@@ -673,6 +674,8 @@ sources:
       - hw/top_titangrey/tb/opentitan.sv
 
 ##### testbench
+      - hw/top_titangrey/tb/tlul_intf.sv
+      - hw/top_titangrey/tb/tlul_assign.svh
       - hw/top_titangrey/tb/tlul_functions.sv
       - hw/top_titangrey/tb/adapter_testbench.sv
       - hw/top_titangrey/tb/testbench.sv
