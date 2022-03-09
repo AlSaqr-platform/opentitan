@@ -1,4 +1,4 @@
-`include "tlul_assign.svh"
+`include "../../ip/tlul2axi/test/tlul_assign.svh"
 
 module adapter_testbench #();
 

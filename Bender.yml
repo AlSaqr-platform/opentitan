@@ -667,12 +667,13 @@ sources:
       - hw/ip/tlul2axi/include/cv64a6_imacfd_sv39_config_pkg.sv
       - hw/ip/tlul2axi/include/riscv_pkg.sv
       - hw/ip/tlul2axi/include/ariane_axi_pkg.sv
-      - hw/ip/tlul2axi/rtl/tlul_intf.sv
-      - hw/ip/tlul2axi/rtl/tlul_assign.svh
-      - hw/ip/tlul2axi/rtl/tlul_functions.sv
+      - hw/ip/tlul2axi/test/tlul_intf.sv
+      - hw/ip/tlul2axi/test/tlul_assign.svh
+      - hw/ip/tlul2axi/test/tlul_functions.sv
+      - hw/ip/tlul2axi/test/axi2mem.sv
       - hw/ip/tlul2axi/rtl/axi_adapter.sv
       - hw/ip/tlul2axi/rtl/axi_tlul_adapter.sv
-      - hw/ip/tlul2axi/rtl/axi2mem.sv
+
 
 ##### top module
 
