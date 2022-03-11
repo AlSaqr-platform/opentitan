@@ -84,7 +84,6 @@ package tlul_functions;
       tl_bus.tl_req.a_address <= #TA 32'b0;
 
       lock.put();
-
          
     endtask
 
@@ -98,31 +97,22 @@ package tlul_functions;
       while (!lock.try_get()) begin
         cycle_end();
       end
-          
-      tl_bus.tl_req.a_address   <= #TA addr;
+      
+     // tl_bus.tl_req.a_address   <= #TA addr;
       tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::PutFullData;
-      tl_bus.tl_req.a_data      <= #TA data;  
-   
-       
-      //cycle_end();
-       
+     // tl_bus.tl_req.a_data      <= #TA data;  
       tl_bus.tl_req.a_valid     <= #TA 1'b1;
-      //cycle_start();
-       
+      
       @(posedge tl_bus.tl_rsp.d_valid) 
-     /* while (!tl_bus.tl_rsp.d_valid) begin
-        cycle_end();
-        cycle_start();
-      end*/
        
       err = tl_bus.tl_rsp.d_error;
-      tl_bus.tl_req.a_valid   <= #TA 1'b0;    
+   //   tl_bus.tl_req.a_valid   <= #TA 1'b0;    
       cycle_end();
      
 
       tl_bus.tl_req.a_data    <= #TA 32'b0;
       tl_bus.tl_req.a_address <= #TA addr;
-      
+   
       lock.put();
    
     endtask 
