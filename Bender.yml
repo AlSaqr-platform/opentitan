@@ -673,6 +673,7 @@ sources:
       - hw/ip/tlul2axi/test/axi2mem.sv
       - hw/ip/tlul2axi/rtl/axi_adapter.sv
       - hw/ip/tlul2axi/rtl/axi_tlul_adapter.sv
+      - hw/ip/tlul2axi/rtl/tlul2axi.sv
 
 
 ##### top module
