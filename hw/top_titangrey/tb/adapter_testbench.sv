@@ -9,7 +9,7 @@
 // specific language governing permissions and limitations under the License.
 //
 
-`include "../../ip/tlul2axi/test/tlul_assign.svh"
+`include "../../ip/tlul2axi/rtl/tlul_assign.svh"
 
 module adapter_testbench #();
 
