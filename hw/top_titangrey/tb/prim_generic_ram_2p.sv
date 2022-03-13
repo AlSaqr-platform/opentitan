@@ -38,7 +38,7 @@ module prim_generic_ram_2p #(
   // to be the full bit mask.
   localparam int MaskWidth = Width / DataBitsPerMask;
 
-  logic [Width-1:0]     mem [Depth];
+  logic [Width-1:0]     mem [Depth] = '0;
   logic [MaskWidth-1:0] a_wmask;
   logic [MaskWidth-1:0] b_wmask;
 

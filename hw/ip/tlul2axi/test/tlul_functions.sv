@@ -1,3 +1,14 @@
+// Copyright 2022 ETH Zurich and University of Bologna.
+// Copyright and related rights are licensed under the Solderpad Hardware
+// License, Version 0.51 (the "License"); you may not use this file except in
+// compliance with the License.  You may obtain a copy of the License at
+// http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
+// or agreed to in writing, software, hardware and materials distributed under
+// this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+//
+
 `include "tlul_assign.svh"
 
 package tlul_functions;
@@ -57,7 +68,7 @@ package tlul_functions;
       @(posedge tl_bus.clk_i);
     endtask
 
-    task read(
+    task Get(
       input  [31:0]  addr,
       output [31:0]  data,
       output logic   err
@@ -88,7 +99,38 @@ package tlul_functions;
     endtask
 
   
-    task write(
+    task PutPartialData(
+      input [31:0] addr,
+      input [31:0] data,
+      input [3:0]  strb,
+      output logic err
+    );
+
+      while (!lock.try_get()) begin
+        cycle_end();
+      end
+      
+      tl_bus.tl_req.a_address   <= #TA addr;
+      tl_bus.tl_req.a_mask      <= #TA strb; 
+      tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::PutPartialData;
+      tl_bus.tl_req.a_data      <= #TA data;  
+      tl_bus.tl_req.a_valid     <= #TA 1'b1;
+      
+      @(posedge tl_bus.tl_rsp.d_valid) 
+       
+      err = tl_bus.tl_rsp.d_error;
+      tl_bus.tl_req.a_valid     <= #TA 1'b0;
+       
+      cycle_end();
+     
+      tl_bus.tl_req.a_data    <= #TA 32'b0;
+      tl_bus.tl_req.a_address <= #TA addr;
+   
+      lock.put();
+   
+    endtask // PutPartialData
+
+    task PutFullData(
       input [31:0] addr,
       input [31:0] data,
       output logic err
@@ -98,18 +140,18 @@ package tlul_functions;
         cycle_end();
       end
       
-     // tl_bus.tl_req.a_address   <= #TA addr;
+      tl_bus.tl_req.a_address   <= #TA addr;
       tl_bus.tl_req.a_opcode    <= #TA tlul_pkg::PutFullData;
-     // tl_bus.tl_req.a_data      <= #TA data;  
+      tl_bus.tl_req.a_data      <= #TA data;  
       tl_bus.tl_req.a_valid     <= #TA 1'b1;
       
       @(posedge tl_bus.tl_rsp.d_valid) 
        
       err = tl_bus.tl_rsp.d_error;
-   //   tl_bus.tl_req.a_valid   <= #TA 1'b0;    
+      tl_bus.tl_req.a_valid     <= #TA 1'b0;
+       
       cycle_end();
      
-
       tl_bus.tl_req.a_data    <= #TA 32'b0;
       tl_bus.tl_req.a_address <= #TA addr;
    

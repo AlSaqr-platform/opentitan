@@ -1,3 +1,14 @@
+// Copyright 2022 ETH Zurich and University of Bologna.
+// Copyright and related rights are licensed under the Solderpad Hardware
+// License, Version 0.51 (the "License"); you may not use this file except in
+// compliance with the License.  You may obtain a copy of the License at
+// http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
+// or agreed to in writing, software, hardware and materials distributed under
+// this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+//
+
 `include "../../ip/tlul2axi/test/tlul_assign.svh"
 
 module adapter_testbench #();
@@ -112,6 +123,7 @@ module adapter_testbench #();
     automatic logic [31:0] addr;
     automatic logic [31:0] rdata;
     automatic logic [31:0] wdata;
+    automatic logic [7:0]  strb;
     automatic logic  err;
 
 ///////////////////////////////// RESET ///////////////////////////////
@@ -125,12 +137,12 @@ module adapter_testbench #();
     addr = 'h1A100010;
     wdata = 32'h25C350;
      
-    tlul_master.read(addr, rdata, err);
-    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    tlul_master.PutFullData(addr, wdata, err);
+    $display("PutFullData to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
-/*
-    tlul_master.read(addr, rdata, err);
-    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+
+    tlul_master.Get(addr, rdata, err);
+    $display("Get to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
@@ -138,29 +150,47 @@ module adapter_testbench #();
     addr = 'h1A100014;
     wdata = 32'h35C350;
       
-    tlul_master.write(addr, wdata, err);
-    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    tlul_master.PutFullData(addr, wdata, err);
+    $display("PutFullData to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
-    tlul_master.read(addr, rdata, err);
-    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    tlul_master.Get(addr, rdata, err);
+    $display("Get to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
              
     addr = 'h1A100018;
-    wdata = 32'h45C350;
+    wdata = 32'h00000000;
+    
       
-    tlul_master.write(addr, wdata, err);
-    $display("Write to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+      
+    tlul_master.PutFullData(addr, wdata, err);
+    $display("PutPartialData to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
-    tlul_master.read(addr, rdata, err);
-    $display("Read to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    tlul_master.Get(addr, rdata, err);
+    $display("Get to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+//////////////////////////////////////////////////////////////////////
+             
+    addr = 'h1A100018;
+    wdata = 32'hFFFFFFFF;
+    strb  = 4'b1001;
+      
+      
+    tlul_master.PutPartialData(addr, wdata, strb, err);
+    $display("PutPartialData to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    tlul_master.Get(addr, rdata, err);
+    $display("Get to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
 
 //////////////////////////////// END ////////////////////////////////
-*/
+
         
     $finish;
       
