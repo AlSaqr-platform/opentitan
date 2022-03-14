@@ -259,7 +259,7 @@ module opentitan
      
 		case(state)
       
-			LOW:      if(count == 31'b1000000000000000)
+			LOW:      if(count == 31'b10000)
 						      next_state = HIGH;
 					      else 					      
                 	next_state = LOW;
