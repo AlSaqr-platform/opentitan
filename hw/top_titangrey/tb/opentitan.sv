@@ -18,6 +18,7 @@
 */
 
 `include "prim_assert.sv"
+`include "../../ip/tlul2axi/rtl/tlul_assign.svh"
 
 
 `ifndef RV32M
@@ -841,6 +842,11 @@ module opentitan
   logic       rv_dm_ndmreset_req;
   logic [4:0] pwrmgr_aon_wakeups;
   logic [1:0] pwrmgr_aon_rstreqs;
+
+  tlul_bus tl_instr_bus();
+  tlul_bus tl_data_bus();
+  tlul_bus tl_simctrl_bus(); 
+   
   tlul_pkg::tl_h2d_t       main_tl_rv_core_ibex__corei_req;
   tlul_pkg::tl_d2h_t       main_tl_rv_core_ibex__corei_rsp;
   tlul_pkg::tl_h2d_t       main_tl_rv_core_ibex__cored_req;
@@ -1071,8 +1077,18 @@ module opentitan
   assign rv_core_ibex_irq_timer = intr_rv_timer_timer_expired_0_0;
   assign rv_core_ibex_hart_id = '0;
    
-  assign rv_core_ibex_boot_addr = 32'h 00100000;  // ADDR_SPACE_ROM_CTRL__ROM; //
+  assign rv_core_ibex_boot_addr = 32'h 00100000;  // ADDR_SPACE_ROM_CTRL__ROM;
 
+  `REQ_ASSIGN(tl_instr_bus.tl_req, core2instr)
+  `RSP_ASSIGN(instr2core, tl_instr_bus.tl_rsp)
+   
+  `REQ_ASSIGN(tl_data_bus.tl_req, core2ram)
+  `RSP_ASSIGN(ram2core, tl_data_bus.tl_rsp)
+
+  `REQ_ASSIGN(tl_simctrl_bus.tl_req, core2simctrl)
+  `RSP_ASSIGN(simctrl2core, tl_simctrl_bus.tl_rsp)
+
+   
   // Struct breakout module tool-inserted DFT TAP signals
   pinmux_jtag_breakout u_dft_tap_breakout (
     .req_i    (pinmux_aon_dft_jtag_req),
@@ -1085,29 +1101,26 @@ module opentitan
     .tdo_oe_i (1'b0)
   );
 
-  axi_tlul_adapter u_instr_adapter (
-     .clk_i        (clk_main_i),
-     .rst_ni       (por_n_i),
-     .tl_req       (core2instr),
-     .tl_rsp       (instr2core),
-     .axi_mst_intf (axi_instr_slave)
+  tlul2axi u_instr_tl2axi (
+     .clk_i   (clk_main_i),
+     .rst_ni  (por_n_i),
+     .tl_host (tl_instr_bus),
+     .axi_mst (axi_instr_slave)
   );
    
-  axi_tlul_adapter u_data_adapter (
-     .clk_i        (clk_main_i),
-     .rst_ni       (por_n_i),
-     .tl_req       (core2ram),
-     .tl_rsp       (ram2core),
-     .axi_mst_intf (axi_data_slave)
+  tlul2axi u_data_tl2axi (
+     .clk_i   (clk_main_i),
+     .rst_ni  (por_n_i),
+     .tl_host (tl_data_bus),
+     .axi_mst (axi_data_slave)
   );
 
      
-  axi_tlul_adapter u_simctrl_adapter (
-     .clk_i        (clk_main_i),
-     .rst_ni       (por_n_i),
-     .tl_req       (core2simctrl),
-     .tl_rsp       (simctrl2core),
-     .axi_mst_intf (axi_simctrl_slave)
+  tlul2axi u_simctrl_tl2axi (
+     .clk_i   (clk_main_i),
+     .rst_ni  (por_n_i),
+     .tl_host (tl_simctrl_bus),
+     .axi_mst (axi_simctrl_slave)
   );
    
   axi2mem #(
@@ -1193,7 +1206,7 @@ module opentitan
 
    
   simulator_ctrl #(
-    .LogName("ibex_simple_system.log")
+    .LogName("log.log")
     ) u_simulator_ctrl (
       .clk_i     (clk_main_i),
       .rst_ni    (por_n_i),
