@@ -9,8 +9,9 @@
 // specific language governing permissions and limitations under the License.
 //
 
-`include "../../ip/tlul2axi/rtl/tlul_assign.svh"
-`include "../../ip/tlul2axi/rtl/axi_assign.svh"
+`include "../rtl/tlul_assign.svh"
+`include "../rtl/axi_assign.svh"
+
 module tlul2axi_testbench #();
 
    localparam time TA   = 1ns;
@@ -58,37 +59,41 @@ module tlul2axi_testbench #();
      .R_MAX_WAIT_CYCLES(R_MAX_WAIT_CYCLES),
      .RESP_MIN_WAIT_CYCLES(RESP_MIN_WAIT_CYCLES),
      .RESP_MAX_WAIT_CYCLES(RESP_MAX_WAIT_CYCLES)
-   ) axi_ran_slave;
+  ) axi_ran_slave;
    
-  assign tl_bus.clk_i = clk_i;
-   
-  AXI_BUS #(
-    .AXI_ADDR_WIDTH(AW),
-    .AXI_DATA_WIDTH(DW),
-    .AXI_ID_WIDTH(IW),
-    .AXI_USER_WIDTH(UW)
-  ) axi_slave ();
+   AXI_BUS #(
+     .AXI_ADDR_WIDTH(AW),
+     .AXI_DATA_WIDTH(DW),
+     .AXI_ID_WIDTH(IW),
+     .AXI_USER_WIDTH(UW)
+   ) axi_slave ();
 
-  AXI_BUS_DV #(
-    .AXI_ADDR_WIDTH(AW),
-    .AXI_DATA_WIDTH(DW),
-    .AXI_ID_WIDTH(IW),
-    .AXI_USER_WIDTH(UW)
-  ) axi (clk_i);
+   AXI_BUS_DV #(
+     .AXI_ADDR_WIDTH(AW),
+     .AXI_DATA_WIDTH(DW),
+     .AXI_ID_WIDTH(IW),
+     .AXI_USER_WIDTH(UW)
+   ) axi (clk_i);
    
   
    axi_ran_slave axi_rand_slave = new(axi);
    `AXI_ASSIGN (axi, axi_slave)
-   
+
+   tlul_pkg::tl_h2d_t tl_req;
+   tlul_pkg::tl_d2h_t tl_rsp;
+      
    tlul_bus tl_bus();
    tlul_driver_t tlul_master = new(tl_bus);
-
-
-  
+   
+   `REQ_ASSIGN(tl_req, tl_bus.tl_req)
+   `RSP_ASSIGN(tl_bus.tl_rsp, tl_rsp)
+   assign tl_bus.clk_i = clk_i;
+    
    tlul2axi u_dut (
       .clk_i,
       .rst_ni,            
-      .tl_host(tl_bus),
+      .tl_req,
+      .tl_rsp,
       .axi_mst(axi_slave)
    );
 

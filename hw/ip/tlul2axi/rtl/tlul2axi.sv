@@ -9,20 +9,22 @@
 // specific language governing permissions and limitations under the License.
 //
 
-module tlul2axi #(
+module tlul2axi
+  import tlul_pkg::*;
+  #(
     parameter int unsigned AXI_ID_WIDTH      = 3,
     parameter int unsigned AXI_ADDR_WIDTH    = 32,
     parameter int unsigned AXI_DATA_WIDTH    = 32,
     parameter int unsigned AXI_USER_WIDTH    = 1
-                 
- ) (
+   ) (
    input logic clk_i,
    input logic rst_ni,
     
-   // input tlul host interface
-   tlul_bus.DEVICE tl_host,
-    
-   // output axi master interface
+   //  tlul host
+   input  tl_h2d_t tl_req,
+   output tl_d2h_t tl_rsp,
+ 
+   //  axi master 
    AXI_BUS.Master  axi_mst
 
    );
@@ -67,30 +69,30 @@ module tlul2axi #(
     // Default assignments
         
   
-    axi_mst.aw_addr   = tl_host.tl_req.a_address;
+    axi_mst.aw_addr   = tl_req.a_address;
     axi_mst.aw_prot   = 3'b0;
     axi_mst.aw_region = 4'b0;
     axi_mst.aw_len    = 8'b0;
-    axi_mst.aw_size   = { 1'b0 , tl_host.tl_req.a_size };   
+    axi_mst.aw_size   = { 1'b0 , tl_req.a_size };   
     axi_mst.aw_burst  = axi_pkg::BURST_INCR; 
     axi_mst.aw_lock   = 1'b0;
     axi_mst.aw_cache  = 4'b0;
     axi_mst.aw_qos    = 4'b0;
-    axi_mst.aw_id     = tl_host.tl_req.a_source;
+    axi_mst.aw_id     = tl_req.a_source;
     axi_mst.aw_atop   = '0;
     axi_mst.aw_user   = '0;
 
    
-    axi_mst.ar_addr   = tl_host.tl_req.a_address;
+    axi_mst.ar_addr   = tl_req.a_address;
     axi_mst.ar_prot   = 3'b0;
     axi_mst.ar_region = 4'b0;
     axi_mst.ar_len    = 8'b0;
-    axi_mst.ar_size   = { 1'b0 , tl_host.tl_req.a_size };
+    axi_mst.ar_size   = { 1'b0 , tl_req.a_size };
     axi_mst.ar_burst  = axi_pkg::BURST_INCR; 
     axi_mst.ar_lock   = 1'b0;
     axi_mst.ar_cache  = 4'b0;
     axi_mst.ar_qos    = 4'b0;
-    axi_mst.ar_id     = tl_host.tl_req.a_source;
+    axi_mst.ar_id     = tl_req.a_source;
     axi_mst.ar_user   = '0;
 
  
@@ -98,16 +100,16 @@ module tlul2axi #(
     axi_mst.w_strb    = '0;
     axi_mst.w_user    = '0;
 
-    tl_host.tl_rsp.d_valid     = 1'b0;
-    tl_host.tl_rsp.d_opcode    = tlul_pkg::AccessAck;
-    tl_host.tl_rsp.d_param     = '0;
-    tl_host.tl_rsp.d_size      = '0;
-    tl_host.tl_rsp.d_source    = '0;
-    tl_host.tl_rsp.d_sink      = '0;
-    tl_host.tl_rsp.d_data      = '0;
-    tl_host.tl_rsp.d_user      = tl_host.tl_req.a_user;
-    tl_host.tl_rsp.d_error     = '0;
-    tl_host.tl_rsp.a_ready     = '0;
+    tl_rsp.d_valid     = 1'b0;
+    tl_rsp.d_opcode    = tlul_pkg::AccessAck;
+    tl_rsp.d_param     = '0;
+    tl_rsp.d_size      = '0;
+    tl_rsp.d_source    = '0;
+    tl_rsp.d_sink      = '0;
+    tl_rsp.d_data      = '0;
+    tl_rsp.d_user      = tl_req.a_user;
+    tl_rsp.d_error     = '0;
+    tl_rsp.a_ready     = '0;
 
     axi_mst.b_ready   = 1'b0;
     axi_mst.r_ready   = 1'b0;
@@ -116,17 +118,17 @@ module tlul2axi #(
     axi_mst.w_last    = 1'b0;
     axi_mst.ar_valid  = 1'b0;
       
-    tl_host.tl_rsp.a_ready = 1'b0;
-    tl_host.tl_rsp.d_valid = 1'b0;
+    tl_rsp.a_ready = 1'b0;
+    tl_rsp.d_valid = 1'b0;
 
     case (state_q)
 
       IDLE: begin
-        if(tl_host.tl_req.a_valid) begin        // request
-          tl_host.tl_rsp.a_ready = 1'b1;   
-          if(tl_host.tl_req.a_opcode == tlul_pkg::Get) // get
+        if(tl_req.a_valid) begin        // request
+          tl_rsp.a_ready = 1'b1;   
+          if(tl_req.a_opcode == tlul_pkg::Get) // get
             axi_mst.ar_valid = 1'b1; 
-          else if (tl_host.tl_req.a_opcode == tlul_pkg::PutFullData || tl_host.tl_req.a_opcode == tlul_pkg::PutPartialData) begin                                     
+          else if (tl_req.a_opcode == tlul_pkg::PutFullData || tl_req.a_opcode == tlul_pkg::PutPartialData) begin                                     
             axi_mst.w_last   = 1'b1;
             axi_mst.aw_valid = 1'b1;
             axi_mst.w_valid  = 1'b1;
@@ -135,26 +137,26 @@ module tlul2axi #(
       end
 
       WAIT_B_VALID: begin
-        tl_host.tl_rsp.d_source = axi_mst.b_id;
-        tl_host.tl_rsp.d_size   = axi_mst.aw_size[1:0];
-        tl_host.tl_rsp.d_opcode = tlul_pkg::AccessAck;
-        tl_host.tl_rsp.d_error  = axi_mst.b_resp[1];
-        axi_mst.w_data = tl_host.tl_req.a_data;
-        axi_mst.w_strb = tl_host.tl_req.a_mask;
+        tl_rsp.d_source = axi_mst.b_id;
+        tl_rsp.d_size   = axi_mst.aw_size[1:0];
+        tl_rsp.d_opcode = tlul_pkg::AccessAck;
+        tl_rsp.d_error  = axi_mst.b_resp[1];
+        axi_mst.w_data = tl_req.a_data;
+        axi_mst.w_strb = tl_req.a_mask;
         if(axi_mst.b_valid) begin
-          tl_host.tl_rsp.d_valid  = 1'b1;
+          tl_rsp.d_valid  = 1'b1;
           axi_mst.b_ready = 1'b1;
         end
       end
 
       WAIT_R_VALID: begin
-        tl_host.tl_rsp.d_source = axi_mst.r_id;
-        tl_host.tl_rsp.d_size   = axi_mst.ar_size[1:0];
-        tl_host.tl_rsp.d_opcode = tlul_pkg::AccessAckData;
-        tl_host.tl_rsp.d_error  = axi_mst.r_resp[1];
-        tl_host.tl_rsp.d_data   = axi_mst.r_data;
+        tl_rsp.d_source = axi_mst.r_id;
+        tl_rsp.d_size   = axi_mst.ar_size[1:0];
+        tl_rsp.d_opcode = tlul_pkg::AccessAckData;
+        tl_rsp.d_error  = axi_mst.r_resp[1];
+        tl_rsp.d_data   = axi_mst.r_data;
         if(axi_mst.r_valid) begin
-          tl_host.tl_rsp.d_valid  = 1'b1;
+          tl_rsp.d_valid  = 1'b1;
           axi_mst.r_ready = 1'b1;
         end
       end

@@ -624,6 +624,7 @@ sources:
       - hw/ip/tlul2axi/rtl/tlul_functions.sv
       - hw/ip/tlul2axi/rtl/tlul2axi.sv
       - hw/ip/tlul2axi/test/axi2mem.sv
+      - hw/ip/tlul2axi/test/tlul2axi_testbench.sv
 
 
 ##### top module
@@ -638,5 +639,4 @@ sources:
 ##### testbench
 
       - hw/top_titangrey/tb/adapter_testbench.sv
-      - hw/top_titangrey/tb/tlul2axi_testbench.sv
       - hw/top_titangrey/tb/testbench.sv
