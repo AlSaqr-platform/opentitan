@@ -10,8 +10,8 @@
 //
 
 `include "../../ip/tlul2axi/rtl/tlul_assign.svh"
-
-module adapter_testbench #();
+`include "../../ip/tlul2axi/rtl/axi_assign.svh"
+module tlul2axi_testbench #();
 
    localparam time TA   = 1ns;
    localparam time TT   = 2ns;
@@ -26,63 +26,66 @@ module adapter_testbench #();
    import tlul_functions::*;
    
 
-  // tl_h2d_t tl_req;
-  // tl_d2h_t tl_rsp;
+   parameter int   AW = 32;   
+   parameter int   DW = 32;  
+   parameter int   IW = 3;   
+   parameter int   UW = 1;
+   parameter bit   RAND_RESP = 0; 
+   parameter int   AX_MIN_WAIT_CYCLES = 0;   
+   parameter int   AX_MAX_WAIT_CYCLES = 5;   
+   parameter int   R_MIN_WAIT_CYCLES = 0;   
+   parameter int   R_MAX_WAIT_CYCLES = 5;   
+   parameter int   RESP_MIN_WAIT_CYCLES = 0;
+   parameter int   RESP_MAX_WAIT_CYCLES = 5;
    
-   logic [31:0] mst_wdata;
-   logic [31:0] mst_addr;
-   logic        mst_req;
-   logic        mst_we;
-   logic [3:0]  mst_be;
    
-   logic [31:0] mst_rdata;
-   logic        mst_rvalid;
+   typedef tlul_functions::tlul_driver #( 
+     .TT(TT), 
+     .TA(TA)
+   ) tlul_driver_t;
    
-   typedef tlul_functions::tlul_driver #( .TT(TT), .TA(TA)) tlul_driver_t;
-                                     
+   typedef axi_test::axi_rand_slave #(  
+     .AW(AW),
+     .DW(DW),
+     .IW(IW),
+     .UW(UW),
+     .TA(TA),
+     .TT(TT),
+     .RAND_RESP(RAND_RESP),
+     .AX_MIN_WAIT_CYCLES(AX_MIN_WAIT_CYCLES),
+     .AX_MAX_WAIT_CYCLES(AX_MAX_WAIT_CYCLES),
+     .R_MIN_WAIT_CYCLES(R_MIN_WAIT_CYCLES),
+     .R_MAX_WAIT_CYCLES(R_MAX_WAIT_CYCLES),
+     .RESP_MIN_WAIT_CYCLES(RESP_MIN_WAIT_CYCLES),
+     .RESP_MAX_WAIT_CYCLES(RESP_MAX_WAIT_CYCLES)
+   ) axi_ran_slave;
+   
+  assign tl_bus.clk_i = clk_i;
+   
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH(AW),
+    .AXI_DATA_WIDTH(DW),
+    .AXI_ID_WIDTH(IW),
+    .AXI_USER_WIDTH(UW)
+  ) axi_slave ();
+
+  AXI_BUS_DV #(
+    .AXI_ADDR_WIDTH(AW),
+    .AXI_DATA_WIDTH(DW),
+    .AXI_ID_WIDTH(IW),
+    .AXI_USER_WIDTH(UW)
+  ) axi (clk_i);
+   
   
+   axi_ran_slave axi_rand_slave = new(axi);
+   `AXI_ASSIGN (axi, axi_slave)
+   
    tlul_bus tl_bus();
    tlul_driver_t tlul_master = new(tl_bus);
 
-  // `REQ_ASSIGN(tl_req, tl_bus.tl_req);
-  // `RSP_ASSIGN(tl_bus.tl_rsp, tl_rsp);
-   assign tl_bus.clk_i = clk_i;
+
   
-   AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_USER_WIDTH ( 1 )
-   ) axi_slave();
-/*
-   axi_tlul_adapter tlul_adapter (
-     .clk_i,
-     .rst_ni,
-     .tl_req(tl_req),
-     .tl_rsp(tl_rsp),
-     .axi_mst_intf(axi_slave)
-   );
-  */
-   
-   axi2mem #(
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_USER_WIDTH ( 1 )
-   ) axi2mem (
-    .clk_i      ( clk_i                ),
-    .rst_ni     ( rst_ni               ),
-    .slave      ( axi_slave            ),
-    .req_o      ( mst_req              ),
-    .we_o       ( mst_we               ),
-    .addr_o     ( mst_addr             ),
-    .be_o       ( mst_be               ),
-    .data_o     ( mst_wdata            ),
-    .data_i     ( mst_rdata            )
-   );
-      
-  
-   tlul2axi u_tlul2axi (
+   tlul2axi u_dut (
       .clk_i,
       .rst_ni,            
       .tl_host(tl_bus),
@@ -90,22 +93,7 @@ module adapter_testbench #();
    );
 
    
-   ram_2p #(
-      .Depth(1024*1024/4)
-   ) u_ram (
-      .clk_i       (clk_i),
-      .rst_ni      (rst_ni),
-
-      .a_req_i     (mst_req),
-      .a_we_i      (mst_we),
-      .a_be_i      (mst_be),
-      .a_addr_i    (mst_addr),
-      .a_wdata_i   (mst_wdata),
-      .a_rvalid_o  (mst_rvalid),
-      .a_rdata_o   (mst_rdata)
-   );
-     
-   initial begin
+   initial begin  : clock_rst_process
       
     lock = new(1);
     clk_i  = 1'b0;
@@ -116,14 +104,26 @@ module adapter_testbench #();
     forever
       #(RTC_CLOCK_PERIOD/2) clk_i = ~clk_i;
       
+   end 
+
+   
+   initial begin  : axi_slave_process
+      
+    @(posedge rst_ni);
+    axi_rand_slave.reset();
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+    axi_rand_slave.run();
+      
    end
 
-   initial begin : proc_axi_master
+   initial begin  : axi_master_process
       
     automatic logic [31:0] addr;
     automatic logic [31:0] rdata;
     automatic logic [31:0] wdata;
     automatic logic [7:0]  strb;
+    automatic logic [31:0] expected_data;
     automatic logic  err;
 
 ///////////////////////////////// RESET ///////////////////////////////
@@ -135,18 +135,49 @@ module adapter_testbench #();
 ///////////////////////////////// START ///////////////////////////////
       
     addr = 'h1A100010;
-    wdata = 32'h25C350;
+    expected_data = 32'h25C350;
   
-    tlul_master.PutFullData(addr, wdata, err);
-    $display("PutFullData    to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
+    tlul_master.PutFullData(addr, expected_data, err);
+    wdata = axi_rand_slave.drv.axi.w_data;   
+    $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
+      
+//////////////////////////////////////////////////////////////////////
 
+    addr = 'h1A100014;
+    expected_data = 32'h45C350;
+  
+    tlul_master.PutFullData(addr, expected_data, err);
+    wdata = axi_rand_slave.drv.axi.w_data;   
+    $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+      
+//////////////////////////////////////////////////////////////////////
+    
+    addr = 'h1A100010;
     tlul_master.Get(addr, rdata, err);
-    $display("Get            to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
+    expected_data = axi_rand_slave.drv.axi.r_data;  
+    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
-      
+
+    addr = 'h1A100010;
+    tlul_master.Get(addr, rdata, err);
+    expected_data = axi_rand_slave.drv.axi.r_data;  
+    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+//////////////////////////////////////////////////////////////////////
+
+    
+    tlul_master.Get(addr, rdata, err);
+    expected_data = axi_rand_slave.drv.axi.r_data;  
+    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
+    repeat ($urandom_range(10,15)) @(posedge clk_i);
+
+//////////////////////////////////////////////////////////////////////
+/*      
     addr = 'h1A100014;
     wdata = 32'h35C350;
       
@@ -190,10 +221,11 @@ module adapter_testbench #();
 
 
 //////////////////////////////// END ////////////////////////////////
-
+*/
         
     $finish;
       
    end 
    
 endmodule
+
