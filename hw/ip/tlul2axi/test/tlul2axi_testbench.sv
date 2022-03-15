@@ -145,6 +145,8 @@ module tlul2axi_testbench #();
     tlul_master.PutFullData(addr, expected_data, err);
     wdata = axi_rand_slave.drv.axi.w_data;   
     $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
+    assert(wdata == expected_data) else
+      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
       
 //////////////////////////////////////////////////////////////////////
@@ -155,6 +157,8 @@ module tlul2axi_testbench #();
     tlul_master.PutFullData(addr, expected_data, err);
     wdata = axi_rand_slave.drv.axi.w_data;   
     $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
+    assert(wdata == expected_data) else
+      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
       
 //////////////////////////////////////////////////////////////////////
@@ -163,6 +167,8 @@ module tlul2axi_testbench #();
     tlul_master.Get(addr, rdata, err);
     expected_data = axi_rand_slave.drv.axi.r_data;  
     $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
+    assert(expected_data == rdata) else
+      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
@@ -171,6 +177,8 @@ module tlul2axi_testbench #();
     tlul_master.Get(addr, rdata, err);
     expected_data = axi_rand_slave.drv.axi.r_data;  
     $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
+    assert(expected_data == rdata) else
+      $error("Received 0x%h != expected 0x%h!", rdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
@@ -179,6 +187,8 @@ module tlul2axi_testbench #();
     tlul_master.Get(addr, rdata, err);
     expected_data = axi_rand_slave.drv.axi.r_data;  
     $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
+    assert(expected_data == rdata) else
+      $error("Received 0x%h != expected 0x%h!", rdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
 //////////////////////////////////////////////////////////////////////
