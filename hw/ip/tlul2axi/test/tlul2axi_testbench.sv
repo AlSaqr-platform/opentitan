@@ -33,13 +33,13 @@ module tlul2axi_testbench #();
    parameter int   UW = 1;
    parameter bit   RAND_RESP = 0; 
    parameter int   AX_MIN_WAIT_CYCLES = 0;   
-   parameter int   AX_MAX_WAIT_CYCLES = 5;   
+   parameter int   AX_MAX_WAIT_CYCLES = 1;   
    parameter int   R_MIN_WAIT_CYCLES = 0;   
-   parameter int   R_MAX_WAIT_CYCLES = 5;   
+   parameter int   R_MAX_WAIT_CYCLES = 1;   
    parameter int   RESP_MIN_WAIT_CYCLES = 0;
-   parameter int   RESP_MAX_WAIT_CYCLES = 5;
-   
-   
+   parameter int   RESP_MAX_WAIT_CYCLES = 1;
+   parameter int   NUM_BEATS = 100;
+      
    typedef tlul_functions::tlul_driver #( 
      .TT(TT), 
      .TA(TA)
@@ -75,7 +75,6 @@ module tlul2axi_testbench #();
      .AXI_USER_WIDTH(UW)
    ) axi (clk_i);
    
-  
    axi_ran_slave axi_rand_slave = new(axi);
    `AXI_ASSIGN (axi, axi_slave)
 
@@ -87,6 +86,7 @@ module tlul2axi_testbench #();
    
    `REQ_ASSIGN(tl_req, tl_bus.tl_req)
    `RSP_ASSIGN(tl_bus.tl_rsp, tl_rsp)
+   
    assign tl_bus.clk_i = clk_i;
     
    tlul2axi u_dut (
@@ -99,7 +99,6 @@ module tlul2axi_testbench #();
 
    
    initial begin  : clock_rst_process
-      
     lock = new(1);
     clk_i  = 1'b0;
     rst_ni = 1'b0;
@@ -108,9 +107,7 @@ module tlul2axi_testbench #();
       rst_ni = 1'b1;
     forever
       #(RTC_CLOCK_PERIOD/2) clk_i = ~clk_i;
-      
    end 
-
    
    initial begin  : axi_slave_process
       
@@ -123,124 +120,28 @@ module tlul2axi_testbench #();
    end
 
    initial begin  : axi_master_process
-      
-    automatic logic [31:0] addr;
-    automatic logic [31:0] rdata;
-    automatic logic [31:0] wdata;
-    automatic logic [7:0]  strb;
-    automatic logic [31:0] expected_data;
-    automatic logic  err;
-
-///////////////////////////////// RESET ///////////////////////////////
-      
+     
     @(posedge rst_ni);
     tlul_master.reset_master();
     repeat ($urandom_range(10,15)) @(posedge clk_i);
 
-///////////////////////////////// START ///////////////////////////////
+    repeat (NUM_BEATS) begin
+       
+      tlul_master.run(RESP_MIN_WAIT_CYCLES, RESP_MAX_WAIT_CYCLES);
+       
+      if(tl_bus.tl_req.a_opcode == tlul_pkg::Get) begin
+        assert(tl_bus.tl_rsp.d_data == axi_rand_slave.drv.axi.r_data) else
+          $fatal("Data mismatch - Read:  %0h expected: %0h", tl_bus.tl_rsp.d_data, axi_rand_slave.drv.axi.r_data);
+      end else begin // if (tl_bus.tl_req.a_opcode == tlul_pkg::PutFullData) 
+        assert(tl_bus.tl_rsp.d_data == axi_rand_slave.drv.axi.r_data) else
+          $fatal("Data mismatch - Wrote: %0h expected: %0h", tl_bus.tl_req.a_data, axi_rand_slave.drv.axi.w_data);
+      end
+       
+    end 
       
-    addr = 'h1A100010;
-    expected_data = 32'h25C350;
-  
-    tlul_master.PutFullData(addr, expected_data, err);
-    wdata = axi_rand_slave.drv.axi.w_data;   
-    $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
-    assert(wdata == expected_data) else
-      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
     repeat ($urandom_range(10,15)) @(posedge clk_i);
-      
-//////////////////////////////////////////////////////////////////////
-
-    addr = 'h1A100014;
-    expected_data = 32'h45C350;
-  
-    tlul_master.PutFullData(addr, expected_data, err);
-    wdata = axi_rand_slave.drv.axi.w_data;   
-    $display("PutFullData    to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, wdata, expected_data, err);
-    assert(wdata == expected_data) else
-      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-      
-//////////////////////////////////////////////////////////////////////
-    
-    addr = 'h1A100010;
-    tlul_master.Get(addr, rdata, err);
-    expected_data = axi_rand_slave.drv.axi.r_data;  
-    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
-    assert(expected_data == rdata) else
-      $error("Received 0x%h != expected 0x%h!", wdata, expected_data);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-//////////////////////////////////////////////////////////////////////
-
-    addr = 'h1A100010;
-    tlul_master.Get(addr, rdata, err);
-    expected_data = axi_rand_slave.drv.axi.r_data;  
-    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
-    assert(expected_data == rdata) else
-      $error("Received 0x%h != expected 0x%h!", rdata, expected_data);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-//////////////////////////////////////////////////////////////////////
-
-    
-    tlul_master.Get(addr, rdata, err);
-    expected_data = axi_rand_slave.drv.axi.r_data;  
-    $display("Get            to addr: %0h. Data: %0h. Expected: %0h. Err? %0h", addr, rdata, expected_data, err);
-    assert(expected_data == rdata) else
-      $error("Received 0x%h != expected 0x%h!", rdata, expected_data);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-//////////////////////////////////////////////////////////////////////
-/*      
-    addr = 'h1A100014;
-    wdata = 32'h35C350;
-      
-    tlul_master.PutFullData(addr, wdata, err);
-    $display("PutFullData    to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-    tlul_master.Get(addr, rdata, err);
-    $display("Get            to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-//////////////////////////////////////////////////////////////////////
-             
-    addr = 'h1A100018;
-    wdata = 32'h00000000;
-    
-      
-      
-    tlul_master.PutFullData(addr, wdata, err);
-    $display("PutFullData    to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-    tlul_master.Get(addr, rdata, err);
-    $display("Get            to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-//////////////////////////////////////////////////////////////////////
-             
-    addr = 'h1A100018;
-    wdata = 32'hFFFFFFFF;
-    strb  = 4'b1001;
-      
-      
-    tlul_master.PutPartialData(addr, wdata, strb, err);
-    $display("PutPartialData to addr: %0h. Data: %0h. Err? %0h", addr, wdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-    tlul_master.Get(addr, rdata, err);
-    $display("Get            to addr: %0h. Data: %0h. Err? %0h", addr, rdata, err);
-    repeat ($urandom_range(10,15)) @(posedge clk_i);
-
-
-//////////////////////////////// END ////////////////////////////////
-*/
-        
     $finish;
-      
    end 
    
 endmodule
-
+  
