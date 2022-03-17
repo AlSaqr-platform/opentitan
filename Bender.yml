@@ -618,12 +618,11 @@ sources:
 
 ##### tlul2axi
 
-      - hw/ip/tlul2axi/rtl/axi_assign.svh
-      - hw/ip/tlul2axi/rtl/tlul_intf.sv
-      - hw/ip/tlul2axi/rtl/tlul_assign.svh
-      - hw/ip/tlul2axi/rtl/tlul_functions.sv
       - hw/ip/tlul2axi/rtl/tlul2axi.sv
-      - hw/ip/tlul2axi/test/axi2mem.sv
+      - hw/ip/tlul2axi/test/axi_assign.svh
+      - hw/ip/tlul2axi/test/tlul_intf.sv
+      - hw/ip/tlul2axi/test/tlul_assign.svh
+      - hw/ip/tlul2axi/test/tlul_functions.sv
       - hw/ip/tlul2axi/test/tlul2axi_testbench.sv
 
 
@@ -638,5 +637,5 @@ sources:
 
 ##### testbench
 
-      - hw/top_titangrey/tb/adapter_testbench.sv
+      #- hw/top_titangrey/tb/adapter_testbench.sv
       - hw/top_titangrey/tb/testbench.sv

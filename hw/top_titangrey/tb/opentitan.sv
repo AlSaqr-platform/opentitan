@@ -18,7 +18,7 @@
 */
 
 `include "prim_assert.sv"
-`include "../../ip/tlul2axi/rtl/tlul_assign.svh"
+`include "../../ip/tlul2axi/test/tlul_assign.svh"
 
 
 `ifndef RV32M

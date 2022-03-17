@@ -9,8 +9,8 @@
 // specific language governing permissions and limitations under the License.
 //
 
-`include "../rtl/tlul_assign.svh"
-`include "../rtl/axi_assign.svh"
+`include "../test/tlul_assign.svh"
+`include "../test/axi_assign.svh"
 
 module tlul2axi_testbench #();
 
