@@ -161,14 +161,17 @@ package tlul_functions;
       tlul_pkg::tl_h2d_t tl_req;
       logic [31:0] in_addr  = 32'h1A000000;
       logic [31:0] end_addr = 32'h1A11FFFF;
-      tl_req.a_opcode  = new_rand_opcode();
+       
+      tl_req.a_opcode  = new_rand_opcode(                   );
       tl_req.a_address = new_rand_addr  ( in_addr, end_addr );
       tl_req.a_mask    = new_rand_mask  ( tl_req.a_opcode   );
       tl_req.a_size    = new_size       ( tl_req.a_mask     );
       tl_req.a_data    = new_rand_data  ( tl_req.a_opcode   );
-      tl_req.a_source  = new_rand_source();
+      tl_req.a_source  = new_rand_source(                   );
+       
       perform_transfer(tl_req);
-      rand_wait(min_wait, max_wait);      
+      rand_wait(min_wait, max_wait);
+      reset_master(); 
     endtask
  
   endclass 
