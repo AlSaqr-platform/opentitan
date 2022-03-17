@@ -11,6 +11,7 @@
 
 `include "../test/tlul_assign.svh"
 `include "../test/axi_assign.svh"
+`include "../test/axi_typedef.svh"
 
 module tlul2axi_testbench #();
 
@@ -33,12 +34,20 @@ module tlul2axi_testbench #();
    parameter int   UW = 1;
    parameter bit   RAND_RESP = 0; 
    parameter int   AX_MIN_WAIT_CYCLES = 0;   
-   parameter int   AX_MAX_WAIT_CYCLES = 1;   
+   parameter int   AX_MAX_WAIT_CYCLES = 0;   
    parameter int   R_MIN_WAIT_CYCLES = 0;   
-   parameter int   R_MAX_WAIT_CYCLES = 1;   
+   parameter int   R_MAX_WAIT_CYCLES = 0;   
    parameter int   RESP_MIN_WAIT_CYCLES = 0;
-   parameter int   RESP_MAX_WAIT_CYCLES = 1;
+   parameter int   RESP_MAX_WAIT_CYCLES = 0;
    parameter int   NUM_BEATS = 100;
+
+   localparam int unsigned SW = DW / 8;
+   
+   typedef logic [AW-1:0] axi_addr_t;
+   typedef logic [DW-1:0] axi_data_t;
+   typedef logic [IW-1:0] axi_id_t;
+   typedef logic [SW-1:0] axi_strb_t;
+   typedef logic [UW-1:0] axi_user_t;
       
    typedef tlul_functions::tlul_driver #( 
      .TT(TT), 
@@ -75,6 +84,19 @@ module tlul2axi_testbench #();
      .AXI_USER_WIDTH(UW)
    ) axi (clk_i);
    
+
+   
+   `AXI_TYPEDEF_AW_CHAN_T (axi_aw_t, axi_addr_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_W_CHAN_T  (axi_w_t, axi_data_t, axi_strb_t, axi_user_t)
+   `AXI_TYPEDEF_B_CHAN_T  (axi_b_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_AR_CHAN_T (axi_ar_t, axi_addr_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_R_CHAN_T  (axi_r_t, axi_data_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_REQ_T     (axi_req_t, axi_aw_t, axi_w_t, axi_ar_t)
+   `AXI_TYPEDEF_RESP_T    (axi_resp_t, axi_b_t, axi_r_t)
+
+   axi_req_t  axi_req;
+   axi_resp_t axi_rsp;
+     
    axi_ran_slave axi_rand_slave = new(axi);
    `AXI_ASSIGN (axi, axi_slave)
 
@@ -86,15 +108,22 @@ module tlul2axi_testbench #();
    
    `REQ_ASSIGN(tl_req, tl_bus.tl_req)
    `RSP_ASSIGN(tl_bus.tl_rsp, tl_rsp)
+
+   `AXI_ASSIGN_FROM_REQ   (axi_slave, axi_req)
+   `AXI_ASSIGN_TO_RESP    (axi_rsp, axi_slave)
    
    assign tl_bus.clk_i = clk_i;
     
-   tlul2axi u_dut (
+   tlul2axi  #(
+      .axi_req_t (axi_req_t),
+      .axi_resp_t(axi_resp_t)
+   ) u_dut (
       .clk_i,
-      .rst_ni,            
+      .rst_ni,           
       .tl_req,
-      .tl_rsp,
-      .axi_mst(axi_slave)
+      .tl_rsp,                   
+      .axi_req,
+      .axi_rsp
    );
 
    
@@ -133,7 +162,7 @@ module tlul2axi_testbench #();
         assert(tl_bus.tl_rsp.d_data == axi_rand_slave.drv.axi.r_data) else
           $fatal("Data mismatch - Read:  %0h expected: %0h", tl_bus.tl_rsp.d_data, axi_rand_slave.drv.axi.r_data);
       end else begin // if (tl_bus.tl_req.a_opcode == tlul_pkg::PutFullData) 
-        assert(tl_bus.tl_rsp.d_data == axi_rand_slave.drv.axi.r_data) else
+        assert(tl_bus.tl_req.a_data == axi_rand_slave.drv.axi.w_data) else
           $fatal("Data mismatch - Wrote: %0h expected: %0h", tl_bus.tl_req.a_data, axi_rand_slave.drv.axi.w_data);
       end
        

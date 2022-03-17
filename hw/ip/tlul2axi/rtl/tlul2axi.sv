@@ -15,7 +15,9 @@ module tlul2axi
     parameter int unsigned AXI_ID_WIDTH      = 3,
     parameter int unsigned AXI_ADDR_WIDTH    = 32,
     parameter int unsigned AXI_DATA_WIDTH    = 32,
-    parameter int unsigned AXI_USER_WIDTH    = 1
+    parameter int unsigned AXI_USER_WIDTH    = 1,
+    parameter type axi_req_t = logic,
+    parameter type axi_resp_t = logic
    ) (
    input logic clk_i,
    input logic rst_ni,
@@ -25,7 +27,8 @@ module tlul2axi
    output tl_d2h_t tl_rsp,
  
    //  axi master 
-   AXI_BUS.Master  axi_mst
+   input  axi_resp_t axi_rsp,
+   output axi_req_t  axi_req
 
    );
    
@@ -36,14 +39,14 @@ module tlul2axi
     case(state_q)
 
       IDLE: begin       
-        if(axi_mst.ar_ready && axi_mst.ar_valid) 
+        if(axi_rsp.ar_ready && axi_req.ar_valid) 
           state_d = WAIT_R_VALID;
-        if(axi_mst.aw_ready && axi_mst.w_ready && axi_mst.aw_valid && axi_mst.w_valid)
+        if(axi_rsp.aw_ready && axi_rsp.w_ready && axi_req.aw_valid && axi_req.w_valid)
           state_d = WAIT_B_VALID; 
       end
 
       WAIT_R_VALID: begin
-        if(axi_mst.r_valid && axi_mst.r_ready) 
+        if(axi_rsp.r_valid && axi_req.r_ready) 
           state_d = IDLE;
         else
           state_d = WAIT_R_VALID;
@@ -51,7 +54,7 @@ module tlul2axi
 
       
       WAIT_B_VALID: begin
-        if(axi_mst.b_valid && axi_mst.b_ready) 
+        if(axi_rsp.b_valid && axi_req.b_ready) 
           state_d = IDLE;
         else
           state_d = WAIT_B_VALID;
@@ -69,36 +72,35 @@ module tlul2axi
     // Default assignments
         
   
-    axi_mst.aw_addr   = tl_req.a_address;
-    axi_mst.aw_prot   = 3'b0;
-    axi_mst.aw_region = 4'b0;
-    axi_mst.aw_len    = 8'b0;
-    axi_mst.aw_size   = { 1'b0 , tl_req.a_size };   
-    axi_mst.aw_burst  = axi_pkg::BURST_INCR; 
-    axi_mst.aw_lock   = 1'b0;
-    axi_mst.aw_cache  = 4'b0;
-    axi_mst.aw_qos    = 4'b0;
-    axi_mst.aw_id     = tl_req.a_source;
-    axi_mst.aw_atop   = '0;
-    axi_mst.aw_user   = '0;
+    axi_req.aw.addr   = tl_req.a_address;
+    axi_req.aw.prot   = 3'b0;
+    axi_req.aw.region = 4'b0;
+    axi_req.aw.len    = 8'b0;
+    axi_req.aw.size   = { 1'b0 , tl_req.a_size };   
+    axi_req.aw.burst  = axi_pkg::BURST_INCR; 
+    axi_req.aw.lock   = 1'b0;
+    axi_req.aw.cache  = 4'b0;
+    axi_req.aw.qos    = 4'b0;
+    axi_req.aw.id     = tl_req.a_source;
+    axi_req.aw.atop   = '0;
+    axi_req.aw.user   = '0;
 
    
-    axi_mst.ar_addr   = tl_req.a_address;
-    axi_mst.ar_prot   = 3'b0;
-    axi_mst.ar_region = 4'b0;
-    axi_mst.ar_len    = 8'b0;
-    axi_mst.ar_size   = { 1'b0 , tl_req.a_size };
-    axi_mst.ar_burst  = axi_pkg::BURST_INCR; 
-    axi_mst.ar_lock   = 1'b0;
-    axi_mst.ar_cache  = 4'b0;
-    axi_mst.ar_qos    = 4'b0;
-    axi_mst.ar_id     = tl_req.a_source;
-    axi_mst.ar_user   = '0;
-
+    axi_req.ar.addr   = tl_req.a_address;
+    axi_req.ar.prot   = 3'b0;
+    axi_req.ar.region = 4'b0;
+    axi_req.ar.len    = 8'b0;
+    axi_req.ar.size   = { 1'b0 , tl_req.a_size };
+    axi_req.ar.burst  = axi_pkg::BURST_INCR; 
+    axi_req.ar.lock   = 1'b0;
+    axi_req.ar.cache  = 4'b0;
+    axi_req.ar.qos    = 4'b0;
+    axi_req.ar.id     = tl_req.a_source;
+    axi_req.ar.user   = '0;
  
-    axi_mst.w_data    = '0;
-    axi_mst.w_strb    = '0;
-    axi_mst.w_user    = '0;
+    axi_req.w.data    = '0;
+    axi_req.w.strb    = '0;
+    axi_req.w.user    = '0;
 
     tl_rsp.d_valid     = 1'b0;
     tl_rsp.d_opcode    = tlul_pkg::AccessAck;
@@ -111,12 +113,12 @@ module tlul2axi
     tl_rsp.d_error     = '0;
     tl_rsp.a_ready     = '0;
 
-    axi_mst.b_ready   = 1'b0;
-    axi_mst.r_ready   = 1'b0;
-    axi_mst.w_valid   = 1'b0;
-    axi_mst.aw_valid  = 1'b0;
-    axi_mst.w_last    = 1'b0;
-    axi_mst.ar_valid  = 1'b0;
+    axi_req.b_ready   = 1'b0;
+    axi_req.r_ready   = 1'b0;
+    axi_req.w_valid   = 1'b0;
+    axi_req.aw_valid  = 1'b0;
+    axi_req.w.last    = 1'b0;
+    axi_req.ar_valid  = 1'b0;
       
     tl_rsp.a_ready = 1'b0;
     tl_rsp.d_valid = 1'b0;
@@ -127,47 +129,47 @@ module tlul2axi
         if(tl_req.a_valid) begin        // request
           tl_rsp.a_ready = 1'b1;   
           if(tl_req.a_opcode == tlul_pkg::Get) // get
-            axi_mst.ar_valid = 1'b1; 
+            axi_req.ar_valid = 1'b1; 
           else if (tl_req.a_opcode == tlul_pkg::PutFullData || tl_req.a_opcode == tlul_pkg::PutPartialData) begin                                     
-            axi_mst.w_last   = 1'b1;
-            axi_mst.aw_valid = 1'b1;
-            axi_mst.w_valid  = 1'b1;
+            axi_req.w.last   = 1'b1;
+            axi_req.aw_valid = 1'b1;
+            axi_req.w_valid  = 1'b1;
           end                   
         end
       end
 
       WAIT_B_VALID: begin
-        tl_rsp.d_source = axi_mst.b_id;
-        tl_rsp.d_size   = axi_mst.aw_size[1:0];
+        tl_rsp.d_source = axi_rsp.b.id;
+        tl_rsp.d_size   = axi_req.aw.size;
         tl_rsp.d_opcode = tlul_pkg::AccessAck;
-        tl_rsp.d_error  = axi_mst.b_resp[1];
-        axi_mst.w_data = tl_req.a_data;
-        axi_mst.w_strb = tl_req.a_mask;
-        if(axi_mst.b_valid) begin
+        tl_rsp.d_error  = axi_rsp.b.resp[1];
+        axi_req.w.data = tl_req.a_data;
+        axi_req.w.strb = tl_req.a_mask;
+        if(axi_rsp.b_valid) begin
           tl_rsp.d_valid  = 1'b1;
-          axi_mst.b_ready = 1'b1;
+          axi_req.b_ready = 1'b1;
         end
       end
 
       WAIT_R_VALID: begin
-        tl_rsp.d_source = axi_mst.r_id;
-        tl_rsp.d_size   = axi_mst.ar_size[1:0];
+        tl_rsp.d_source = axi_rsp.r.id;
+        tl_rsp.d_size   = axi_req.ar.size;
         tl_rsp.d_opcode = tlul_pkg::AccessAckData;
-        tl_rsp.d_error  = axi_mst.r_resp[1];
-        tl_rsp.d_data   = axi_mst.r_data;
-        if(axi_mst.r_valid) begin
+        tl_rsp.d_error  = axi_rsp.r.resp[1];
+        tl_rsp.d_data   = axi_rsp.r.data;
+        if(axi_rsp.r_valid) begin
           tl_rsp.d_valid  = 1'b1;
-          axi_mst.r_ready = 1'b1;
+          axi_req.r_ready = 1'b1;
         end
       end
 
       default: begin
-        axi_mst.b_ready   = 1'b0;
-        axi_mst.r_ready   = 1'b0;
-        axi_mst.w_valid   = 1'b0;
-        axi_mst.aw_valid  = 1'b0;
-        axi_mst.w_last    = 1'b0;
-        axi_mst.ar_valid  = 1'b0;
+        axi_req.b_ready   = 1'b0;
+        axi_req.r_ready   = 1'b0;
+        axi_req.w_valid   = 1'b0;
+        axi_req.aw_valid  = 1'b0;
+        axi_req.w_last    = 1'b0;
+        axi_req.ar_valid  = 1'b0;
       end
           
     endcase 

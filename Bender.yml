@@ -620,6 +620,7 @@ sources:
 
       - hw/ip/tlul2axi/rtl/tlul2axi.sv
       - hw/ip/tlul2axi/test/axi_assign.svh
+      . hw/ip/tlul2axi/test/axi_typedef.svh
       - hw/ip/tlul2axi/test/tlul_intf.sv
       - hw/ip/tlul2axi/test/tlul_assign.svh
       - hw/ip/tlul2axi/test/tlul_functions.sv
