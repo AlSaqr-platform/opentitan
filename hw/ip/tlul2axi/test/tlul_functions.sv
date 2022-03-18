@@ -66,14 +66,17 @@ package tlul_functions;
       tl_bus.tl_req.a_valid     <= #TA 1'b1;
           
       @(posedge tl_bus.tl_rsp.d_valid)
-
-      tl_bus.tl_req.a_valid     <= #TA 1'b0;
-      tl_bus.tl_req.d_ready     <= #TA 1'b1;
+        
       if(tl_bus.tl_req.a_opcode == tlul_pkg::Get)
         $display("Read:  %0h at Addr: %0h", tl_bus.tl_rsp.d_data, tl_bus.tl_req.a_address);
       else 
         $display("Wrote: %0h at Addr: %0h", tl_bus.tl_req.a_data, tl_bus.tl_req.a_address);
     
+      tl_bus.tl_req.a_valid     <= #TA 1'b0;
+      tl_bus.tl_req.d_ready     <= #TA 1'b1;
+      tl_bus.tl_req.a_data      <= #TA 32'b0;
+       
+     
       cycle_end();
       
       reset_master();

@@ -54,6 +54,7 @@
       rv_dm.rom
       sim_ctrl
       ram_2p
+      alsaqr
       rv_dm.regs
       sram_ctrl_main.ram
       peri
@@ -74,7 +75,6 @@
       kmac
       sram_ctrl_main.regs
       rv_core_ibex.cfg
-      alsaqr
     ]
     rv_dm.sba:
     [
@@ -183,7 +183,7 @@
       addr_range:
       [
         {
-          base_addr: 0x90000000
+          base_addr: 0x47000000
           size_byte: 0x1000
         }
       ]

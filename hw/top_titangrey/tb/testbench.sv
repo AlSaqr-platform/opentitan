@@ -8,55 +8,115 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
+`include "../../ip/tlul2axi/test/axi_assign.svh"
+`include "../../ip/tlul2axi/test/axi_typedef.svh"
+
 module testbench ();
 
-   logic clk_sys = 1'b0, rst_sys_n;
-   edn_pkg::edn_req_t fake_ast_edn;
-
-   assign fake_ast_edn.edn_ack = '0;
-   assign fake_ast_edn.edn_fips = '0;
-   assign fake_ast_edn.edn_bus = '0;
-   
-   
-  
-  initial begin
      
-    rst_sys_n = 1'b0;
-    #8
-    rst_sys_n = 1'b1;
-  
-  end
+   import lc_ctrl_pkg::*;
+   
+   logic [3:0] tieoff_data = 4'b0;
+   logic       enable      = 1'b0;
+   logic       test_reset;
 
-  //lc_ctrl_pkg::lc_tx_t scanmode;
+
+
    
-    import lc_ctrl_pkg::*;
+   parameter int   AW = 32;   
+   parameter int   DW = 32;  
+   parameter int   IW = 3;   
+   parameter int   UW = 1;
+   localparam time TA   = 1ns;
+   localparam time TT   = 2ns;
+   parameter int unsigned SW = DW / 8;
+   parameter bit   RAND_RESP = 0; 
+   parameter int   AX_MIN_WAIT_CYCLES = 0;   
+   parameter int   AX_MAX_WAIT_CYCLES = 0;   
+   parameter int   R_MIN_WAIT_CYCLES = 0;   
+   parameter int   R_MAX_WAIT_CYCLES = 0;   
+   parameter int   RESP_MIN_WAIT_CYCLES = 0;
+   parameter int   RESP_MAX_WAIT_CYCLES = 0;
+   parameter int   NUM_BEATS = 100;
+   localparam int unsigned RTC_CLOCK_PERIOD = 30.517us;
+  // parameter MemInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
+  // parameter mem = i_sim_mem.mem;
    
-    always begin
-      #1 clk_sys = 1'b0;
-      #1 clk_sys = 1'b1;
-    end
+
+     
+   typedef   logic [AW-1:0] axi_addr_t;
+   typedef   logic [DW-1:0] axi_data_t;
+   typedef   logic [IW-1:0] axi_id_t;
+   typedef   logic [SW-1:0] axi_strb_t;
+   typedef   logic [UW-1:0] axi_user_t;
+      
+   typedef axi_test::axi_rand_slave #(  
+     .AW(AW),
+     .DW(DW),
+     .IW(IW),
+     .UW(UW),
+     .TA(TA),
+     .TT(TT),
+     .RAND_RESP(RAND_RESP),
+     .AX_MIN_WAIT_CYCLES(AX_MIN_WAIT_CYCLES),
+     .AX_MAX_WAIT_CYCLES(AX_MAX_WAIT_CYCLES),
+     .R_MIN_WAIT_CYCLES(R_MIN_WAIT_CYCLES),
+     .R_MAX_WAIT_CYCLES(R_MAX_WAIT_CYCLES),
+     .RESP_MIN_WAIT_CYCLES(RESP_MIN_WAIT_CYCLES),
+     .RESP_MAX_WAIT_CYCLES(RESP_MAX_WAIT_CYCLES)
+   ) axi_ran_slave;
    
-    logic [3:0] tieoff_data = 4'b0;
-    logic       enable      = 1'b0;
-    logic       test_reset;
+   logic clk_sys = 1'b0, rst_sys_n;
    
-/*  AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 64 ),
-    .AXI_DATA_WIDTH ( 64 ),
-    .AXI_ID_WIDTH   ( 0 ),
+   edn_pkg::edn_req_t fake_ast_edn;
+   
+   AXI_BUS #(
+    .AXI_ADDR_WIDTH ( 32 ),
+    .AXI_DATA_WIDTH ( 32 ),
+    .AXI_ID_WIDTH   ( 3 ),
     .AXI_USER_WIDTH ( 1 )
-  ) slave();
-*/
+   ) axi_slave();
+
+   AXI_BUS_DV #(
+     .AXI_ADDR_WIDTH(AW),
+     .AXI_DATA_WIDTH(DW),
+     .AXI_ID_WIDTH(IW),
+     .AXI_USER_WIDTH(UW)
+   ) axi (clk_sys);
+
+   `AXI_TYPEDEF_AW_CHAN_T (axi_aw_t, axi_addr_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_W_CHAN_T  (axi_w_t, axi_data_t, axi_strb_t, axi_user_t)
+   `AXI_TYPEDEF_B_CHAN_T  (axi_b_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_AR_CHAN_T (axi_ar_t, axi_addr_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_R_CHAN_T  (axi_r_t, axi_data_t, axi_id_t, axi_user_t)
+   `AXI_TYPEDEF_REQ_T     (axi_req_t, axi_aw_t, axi_w_t, axi_ar_t)
+   `AXI_TYPEDEF_RESP_T    (axi_resp_t, axi_b_t, axi_r_t)
+
+   axi_req_t  axi_req;
+   axi_resp_t axi_rsp;
+     
+   axi_ran_slave axi_rand_slave = new(axi);
    
-  opentitan u_RoT (
+   `AXI_ASSIGN (axi, axi_slave)
+   `AXI_ASSIGN_FROM_REQ (axi_slave, axi_req)
+   
+   `AXI_ASSIGN_TO_RESP  (axi_rsp, axi_slave)
+   
+   
+   opentitan #(
+    .axi_req_t(axi_req_t),
+    .axi_resp_t(axi_resp_t)
+   ) dut (
 
     // spi_device
     .test_reset,
     .cio_spi_device_sck_p2d(1'b0),
     .cio_spi_device_csb_p2d(1'b0),
     .cio_spi_device_sd_p2d(tieoff_data),
+          
     // spi_host0
     .cio_spi_host0_sd_p2d(tieoff_data),
+          
     // spi_host1
     .cio_spi_host1_sd_p2d(tieoff_data),
  
@@ -69,9 +129,30 @@ module testbench ();
     .clk_main_i (clk_sys),
     .clk_io_i(clk_sys),
     .clk_usb_i(clk_sys),
-    .ast_edn_req_i (fake_ast_edn),
-    .clk_aon_i(clk_sys)
-  );
+    .clk_aon_i(clk_sys),
+    .axi_req(axi_req),
+    .axi_rsp(axi_rsp)
+   );
    
+   initial begin  : main_clock_rst_process
+ 
+    clk_sys   = 1'b0;
+    rst_sys_n = 1'b0;
+    repeat (10)
+      #(RTC_CLOCK_PERIOD/2) clk_sys = 1'b0;
+      rst_sys_n = 1'b1;
+    forever
+      #(RTC_CLOCK_PERIOD/2) clk_sys = ~clk_sys;
+   end
 
+   initial begin  : axi_slave_process
+      
+    @(posedge rst_sys_n);
+    axi_rand_slave.reset();
+    repeat (4) @(posedge clk_sys);
+
+    axi_rand_slave.run();
+   
+   end
+      
 endmodule

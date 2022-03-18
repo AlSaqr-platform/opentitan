@@ -8,7 +8,7 @@ package tl_main_pkg;
 
   localparam logic [31:0] ADDR_SPACE_RV_DM__REGS          = 32'h 41200000;
   localparam logic [31:0] ADDR_SPACE_RV_DM__ROM           = 32'h 00010000;
-  localparam logic [31:0] ADDR_SPACE_ALSAQR               = 32'h 49000000;
+  localparam logic [31:0] ADDR_SPACE_ALSAQR               = 32'h 47000000;
   localparam logic [31:0] ADDR_SPACE_INSTR_MEM            = 32'h 00100000;
   localparam logic [31:0] ADDR_SPACE_RAM_2P               = 32'h 00100000;
   localparam logic [31:0] ADDR_SPACE_SIM_CTRL             = 32'h 00020000;

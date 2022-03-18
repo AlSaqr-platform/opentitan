@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv) {
   
-  int  volatile * p_reg;
+  int  volatile * p_reg; // p_reg2, p_reg3, p_reg4, p_reg5;
   bool volatile * p_reg_bool;
   bool bit   = true;
   
@@ -28,19 +28,41 @@ int main(int argc, char **argv) {
   char msg14 = 'E';
   char msg15 = 'F';
   char msg16 = 'G';
-  
+  int dummy;
   puts("Test software:\n");
-  /*
-  ///////////////////////////////////////////////////////////////  
-  p_reg =(int *) 0x49000004;
- *p_reg = msg1;
-  if(*p_reg == msg1){
-    puts("test          - succed, msg: ");
-    putint(*p_reg);
-    puts("\n");
-  }
-  else{ puts("test        - failed\n");}
-  */  
+
+  ///////////////////////////////////////////////////////////////
+  
+  p_reg =(int *) 0x47000000;
+ *p_reg = 0x00000001;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x47000004;
+ *p_reg = 0x00000002;
+  puthex(*p_reg);
+  puts("\n");
+
+  p_reg =(int *) 0x47000008;
+ *p_reg = 0x00000003;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x47000010;
+ *p_reg = 0x00000004;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x47000014;
+ *p_reg = 0x00000005;
+  puthex(*p_reg);
+  puts("\n");
+
+
+  
+  
+  sim_halt(); 
+    
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x4112002C;
  *p_reg = msg2;

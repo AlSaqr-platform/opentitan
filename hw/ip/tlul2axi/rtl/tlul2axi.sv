@@ -16,7 +16,7 @@ module tlul2axi
     parameter int unsigned AXI_ADDR_WIDTH    = 32,
     parameter int unsigned AXI_DATA_WIDTH    = 32,
     parameter int unsigned AXI_USER_WIDTH    = 1,
-    parameter type axi_req_t = logic,
+    parameter type axi_req_t  = logic,
     parameter type axi_resp_t = logic
    ) (
    input logic clk_i,
@@ -32,17 +32,46 @@ module tlul2axi
 
    );
    
-   enum logic [3:0] { IDLE, WAIT_B_VALID, WAIT_R_VALID, RESET } state_q, state_d;
+   enum  logic [2:0] { IDLE, WAIT_B_VALID, WAIT_R_VALID, WAIT_AR_READY, WAIT_AW_READY, WAIT_W_READY } state_q, state_d;
 
-   always_comb begin : axi_mst_state_fsm
+   always_comb  begin
 
     case(state_q)
 
-      IDLE: begin       
-        if(axi_rsp.ar_ready && axi_req.ar_valid) 
-          state_d = WAIT_R_VALID;
-        if(axi_rsp.aw_ready && axi_rsp.w_ready && axi_req.aw_valid && axi_req.w_valid)
-          state_d = WAIT_B_VALID; 
+      IDLE: begin
+        if(axi_req.ar_valid)       
+          if(axi_rsp.ar_ready)
+            state_d = WAIT_R_VALID;
+          else
+            state_d = WAIT_AR_READY;
+        if(axi_req.aw_valid && axi_req.w_valid)
+          case({axi_rsp.aw_ready, axi_rsp.w_ready})
+            2'b01:   state_d = WAIT_AW_READY;
+            2'b10:   state_d = WAIT_W_READY;
+            2'b11:   state_d = WAIT_B_VALID;
+            default: state_d = IDLE;
+          endcase 
+      end // case: IDLE
+
+      WAIT_AW_READY: begin
+         if(axi_rsp.aw_ready)
+           state_d = WAIT_B_VALID;
+         else
+           state_d = WAIT_AW_READY;
+      end
+
+      WAIT_AR_READY: begin
+         if(axi_rsp.ar_ready)
+           state_d = WAIT_R_VALID;
+         else
+           state_d = WAIT_AR_READY;
+      end
+
+      WAIT_W_READY: begin
+         if(axi_rsp.w_ready)
+           state_d = WAIT_B_VALID;
+         else
+           state_d = WAIT_W_READY;
       end
 
       WAIT_R_VALID: begin
@@ -105,7 +134,7 @@ module tlul2axi
     tl_rsp.d_valid     = 1'b0;
     tl_rsp.d_opcode    = tlul_pkg::AccessAck;
     tl_rsp.d_param     = '0;
-    tl_rsp.d_size      = '0;
+    tl_rsp.d_size      = tl_req.a_size;
     tl_rsp.d_source    = '0;
     tl_rsp.d_sink      = '0;
     tl_rsp.d_data      = '0;
@@ -126,38 +155,60 @@ module tlul2axi
     case (state_q)
 
       IDLE: begin
-        if(tl_req.a_valid) begin        // request
-          tl_rsp.a_ready = 1'b1;   
-          if(tl_req.a_opcode == tlul_pkg::Get) // get
-            axi_req.ar_valid = 1'b1; 
-          else if (tl_req.a_opcode == tlul_pkg::PutFullData || tl_req.a_opcode == tlul_pkg::PutPartialData) begin                                     
+        if(tl_req.a_valid) begin        // request   
+          if(tl_req.a_opcode == tlul_pkg::Get) begin // get
+            axi_req.ar_valid = 1'b1;
+            if(axi_rsp.ar_ready)
+              tl_rsp.a_ready = 1'b1; 
+          end else if (tl_req.a_opcode == tlul_pkg::PutFullData || tl_req.a_opcode == tlul_pkg::PutPartialData) begin                                     
             axi_req.w.last   = 1'b1;
             axi_req.aw_valid = 1'b1;
             axi_req.w_valid  = 1'b1;
+            axi_req.w.data = tl_req.a_data;
+            axi_req.w.strb = tl_req.a_mask;
+            if(axi_rsp.aw_ready && axi_rsp.w_ready)
+              tl_rsp.a_ready = 1'b1;
           end                   
-        end
+        end 
+      end
+
+      WAIT_AR_READY: begin 
+          axi_req.ar_valid = 1'b1;
+          if(axi_rsp.ar_ready)
+            tl_rsp.a_ready = 1'b1;
+      end
+
+      WAIT_AW_READY: begin
+         axi_req.aw_valid = 1'b1;  
+         if(axi_rsp.aw_ready)
+            tl_rsp.a_ready = 1'b1;
+      end
+
+      WAIT_W_READY: begin 
+          axi_req.w.last   = 1'b1;
+          axi_req.w_valid  = 1'b1;
+          axi_req.w.data   = tl_req.a_data;
+          axi_req.w.strb   = tl_req.a_mask;
+          if(axi_rsp.w_ready)
+            tl_rsp.a_ready = 1'b1;
       end
 
       WAIT_B_VALID: begin
-        tl_rsp.d_source = axi_rsp.b.id;
-        tl_rsp.d_size   = axi_req.aw.size;
-        tl_rsp.d_opcode = tlul_pkg::AccessAck;
-        tl_rsp.d_error  = axi_rsp.b.resp[1];
-        axi_req.w.data = tl_req.a_data;
-        axi_req.w.strb = tl_req.a_mask;
         if(axi_rsp.b_valid) begin
+          tl_rsp.d_source = axi_rsp.b.id;
+          tl_rsp.d_opcode = tlul_pkg::AccessAck;
+          tl_rsp.d_error  = axi_rsp.b.resp[1];
           tl_rsp.d_valid  = 1'b1;
           axi_req.b_ready = 1'b1;
         end
       end
 
       WAIT_R_VALID: begin
-        tl_rsp.d_source = axi_rsp.r.id;
-        tl_rsp.d_size   = axi_req.ar.size;
-        tl_rsp.d_opcode = tlul_pkg::AccessAckData;
-        tl_rsp.d_error  = axi_rsp.r.resp[1];
-        tl_rsp.d_data   = axi_rsp.r.data;
         if(axi_rsp.r_valid) begin
+          tl_rsp.d_source = axi_rsp.r.id;
+          tl_rsp.d_opcode = tlul_pkg::AccessAckData;
+          tl_rsp.d_error  = axi_rsp.r.resp[1];
+          tl_rsp.d_data   = axi_rsp.r.data;
           tl_rsp.d_valid  = 1'b1;
           axi_req.r_ready = 1'b1;
         end

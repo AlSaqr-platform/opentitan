@@ -34,11 +34,11 @@ module tlul2axi_testbench #();
    parameter int   UW = 1;
    parameter bit   RAND_RESP = 0; 
    parameter int   AX_MIN_WAIT_CYCLES = 0;   
-   parameter int   AX_MAX_WAIT_CYCLES = 0;   
+   parameter int   AX_MAX_WAIT_CYCLES = 3;   
    parameter int   R_MIN_WAIT_CYCLES = 0;   
-   parameter int   R_MAX_WAIT_CYCLES = 0;   
+   parameter int   R_MAX_WAIT_CYCLES = 3;   
    parameter int   RESP_MIN_WAIT_CYCLES = 0;
-   parameter int   RESP_MAX_WAIT_CYCLES = 0;
+   parameter int   RESP_MAX_WAIT_CYCLES = 3;
    parameter int   NUM_BEATS = 100;
 
    localparam int unsigned SW = DW / 8;

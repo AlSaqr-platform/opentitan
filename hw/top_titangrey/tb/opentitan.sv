@@ -122,7 +122,9 @@ module opentitan
       tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0],
   parameter int unsigned RvCoreIbexDmExceptionAddr =
       tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0],
-  parameter bit RvCoreIbexPipeLine = 0
+  parameter bit RvCoreIbexPipeLine = 0,
+  parameter type axi_req_t  = logic,
+  parameter type axi_resp_t = logic
 ) (
   
   // spi_device
@@ -215,7 +217,9 @@ module opentitan
   output             rstmgr_pkg::rstmgr_ast_out_t rsts_ast_o,
   
   output logic       test_reset,
- // AXI_BUS.Master     ot_axi_mst,
+   
+  output axi_req_t   axi_req,
+  input  axi_resp_t  axi_rsp,
 
   input              scan_rst_ni, // reset used for test mode
   input              scan_en_i,
@@ -599,7 +603,7 @@ module opentitan
     Timer
   } bus_device_e;
 
-  
+/*  
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( 32 ),
     .AXI_DATA_WIDTH ( 32 ),
@@ -648,8 +652,8 @@ module opentitan
    
   logic [31:0] mst_instr_rdata;
   logic        mst_instr_rvalid;
-/*
-   
+
+  */ 
   // host and device signals
   logic           host_req    [NrHosts]; 
   logic           host_gnt    [NrHosts];
@@ -747,7 +751,7 @@ module opentitan
     assign ram2core.d_source               = core2ram.a_source;
     assign ram2core.d_user                 = TL_D_USER_DEFAULT;
     assign ram2core.d_sink                 = '0;
-   */
+   
    
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
@@ -843,9 +847,6 @@ module opentitan
   logic [4:0] pwrmgr_aon_wakeups;
   logic [1:0] pwrmgr_aon_rstreqs;
 
-  tlul_bus tl_instr_bus();
-  tlul_bus tl_data_bus();
-  tlul_bus tl_simctrl_bus(); 
    
   tlul_pkg::tl_h2d_t       main_tl_rv_core_ibex__corei_req;
   tlul_pkg::tl_d2h_t       main_tl_rv_core_ibex__corei_rsp;
@@ -1078,7 +1079,7 @@ module opentitan
   assign rv_core_ibex_hart_id = '0;
    
   assign rv_core_ibex_boot_addr = 32'h 00100000;  // ADDR_SPACE_ROM_CTRL__ROM;
-
+/*
   `REQ_ASSIGN(tl_instr_bus.tl_req, core2instr)
   `RSP_ASSIGN(instr2core, tl_instr_bus.tl_rsp)
    
@@ -1087,7 +1088,7 @@ module opentitan
 
   `REQ_ASSIGN(tl_simctrl_bus.tl_req, core2simctrl)
   `RSP_ASSIGN(simctrl2core, tl_simctrl_bus.tl_rsp)
-
+*/
    
   // Struct breakout module tool-inserted DFT TAP signals
   pinmux_jtag_breakout u_dft_tap_breakout (
@@ -1100,7 +1101,7 @@ module opentitan
     .tdo_i    (1'b0),
     .tdo_oe_i (1'b0)
   );
-
+/*
   tlul2axi u_instr_tl2axi (
      .clk_i   (clk_main_i),
      .rst_ni  (por_n_i),
@@ -1204,24 +1205,25 @@ module opentitan
       .b_rdata_o   ( mst_instr_rdata  )
   );
 
-   
+   */
   simulator_ctrl #(
     .LogName("log.log")
     ) u_simulator_ctrl (
       .clk_i     (clk_main_i),
       .rst_ni    (por_n_i),
 
-      .req_i     (mst_simctrl_req),
-      .we_i      (mst_simctrl_we),
-      .be_i      (mst_simctrl_be),
-      .addr_i    (mst_simctrl_addr),
-      .wdata_i   (mst_simctrl_wdata),
-      .rvalid_o  (mst_simctrl_rvalid),
-      .rdata_o   (mst_simctrl_rdata)
+      .req_i     (device_req[SimCtrl]),
+      .we_i      (device_we[SimCtrl]),
+      .be_i      (device_be[SimCtrl]),
+      .addr_i    (device_addr[SimCtrl]),
+      .wdata_i   (device_wdata[SimCtrl]),
+      .rvalid_o  (device_rvalid[SimCtrl]),
+      .rdata_o   (device_rdata[SimCtrl])
+
     );
 
 
-   /*
+   
   ram_2p #(
       .Depth(1024*1024/4),
       .MemInitFile(SRAMInitFile)
@@ -1244,61 +1246,26 @@ module opentitan
       .b_wdata_i   (32'b0),
       .b_rvalid_o  (instr_rvalid),
       .b_rdata_o   (instr_rdata)
-    );*/
+    );
 
+  tlul2axi #(
+      .axi_req_t (axi_req_t),
+      .axi_resp_t(axi_resp_t)
+  ) u_ot2alsaqr (
+      .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
+      .clk_i(clkmgr_aon_clocks.clk_main_infra),
+      .tl_req(core2alsaqr),
+      .tl_rsp(alsaqr2core),
+      .axi_req,
+      .axi_rsp
+  );
 
- // Test Reset to provide as output to alsaqr to start the boot
- /*
-  logic trigger;
-  logic [31:0] count;
-  logic t_enable;
- 
-  enum {HIGH, LOW} state, next_state;
+   assert property (@(posedge axi_req.w_valid) (core2alsaqr.a_data == axi_req.w.data));
+   assert property (@(posedge axi_req.r_valid) (alsaqr2core.d_data == axi_rsp.r.data));
 
-  always_ff @(posedge clk_sys, negedge rst_sys_n) begin
-		if(rst_sys_n == 0)
-			state <= LOW;
-		else
-	    state <= next_state;
-	end
+  
    
-  always_comb begin
-	    
-    trigger = 1'b0;
-    t_enable = 1'b1;
-     
-		case(state)
-      
-			LOW:      if(count == 31'b100000)
-						      next_state = HIGH;
-					      else 					      
-                	next_state = LOW;
-
-		  HIGH:     begin
-	              trigger = 1'b1;                
-                t_enable = 1'b0;
-                end
-      
-			default:  next_state = LOW;
-      
-		endcase
-	end // always_comb
-
-  assign test_reset = trigger;
-  
-
-	always_ff @(posedge clk_sys, negedge rst_sys_n)
-	begin
-		if(rst_sys_n == 0)
-			  count <= 'b0;
-		else
-			if(t_enable)
-				count <= count + 1;
-			else	
-				count <= 'b0;
-	end*/
-  
-uart #(
+  uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[0:0])
   ) u_uart0 (
 

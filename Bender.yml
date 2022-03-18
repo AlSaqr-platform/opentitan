@@ -46,7 +46,7 @@ export_include_dirs:
        - hw/ip/tlul/rtl
        - hw/ip/rv_core_ibex/rtl
        - hw/dv/sv/dv_utils
-       - hw/ip/axi/include
+       - hw/ip/tlul2axi/test
 
 
 #      - hw/ip/tlul/rtl/
@@ -620,7 +620,7 @@ sources:
 
       - hw/ip/tlul2axi/rtl/tlul2axi.sv
       - hw/ip/tlul2axi/test/axi_assign.svh
-      . hw/ip/tlul2axi/test/axi_typedef.svh
+      - hw/ip/tlul2axi/test/axi_typedef.svh
       - hw/ip/tlul2axi/test/tlul_intf.sv
       - hw/ip/tlul2axi/test/tlul_assign.svh
       - hw/ip/tlul2axi/test/tlul_functions.sv
