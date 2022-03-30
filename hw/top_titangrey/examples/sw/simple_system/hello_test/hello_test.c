@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
   puts("Test software:\n");
 
   ///////////////////////////////////////////////////////////////
-  
+  /*
   p_reg =(int *) 0x47000000;
  *p_reg = 0x00000001;
   puthex(*p_reg);
@@ -52,17 +52,13 @@ int main(int argc, char **argv) {
  *p_reg = 0x00000004;
   puthex(*p_reg);
   puts("\n");
-  
-  p_reg =(int *) 0x47000014;
- *p_reg = 0x00000005;
-  puthex(*p_reg);
-  puts("\n");
-
+  */
 
   
   
-  sim_halt(); 
-    
+  
+  //sim_halt(); 
+  
   ///////////////////////////////////////////////////////////////
   p_reg =(int *) 0x4112002C;
  *p_reg = msg2;
@@ -260,9 +256,17 @@ int main(int argc, char **argv) {
   }
   else{ puts("gpio  - failed\n");}
 */
-  // while(1);
 
-  sim_halt();                
+  p_reg =(int *) 0x1C000000;
+ *p_reg = msg16;
+ // puthex(*p_reg);
+ // puts("\n");
+
+  
+  while(1);
+
+  //  sim_halt();
+
   return 0;
 }
 /*

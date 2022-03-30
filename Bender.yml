@@ -6,7 +6,7 @@ dependencies:
 
  tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git", version: 0.2.2 }
  common_cells:        { git: "https://github.com/pulp-platform/common_cells.git", version: 1.21.0  }
- axi:                 { git: "https://github.com/pulp-platform/axi.git", version: "0.35.0"         }
+# axi_ot:              { git: "https://github.com/pulp-platform/axi.git", version: "0.35.0"         }
  
 # prim          : { path: "hw/ip/prim"          }
 # tlul          : { path: "hw/ip/tlul"          }
