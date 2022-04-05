@@ -1251,7 +1251,7 @@ module opentitan
   tlul2axi #(
       .axi_req_t (axi_req_t),
       .axi_resp_t(axi_resp_t)
-  ) u_ot2alsaqr (
+  ) u_axi_xbar_mst (
       .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
       .clk_i(clkmgr_aon_clocks.clk_main_infra),
       .tl_req(core2alsaqr),
@@ -1260,6 +1260,23 @@ module opentitan
       .axi_rsp
   );
 
+  axi_req_t  ariane_axi_req, ibex_axi_req;
+  axi_resp_t ariane_axi_rsp, ibex_axi_rsp;
+ 
+  axi_scmi_mailbox #(
+      .AxiAddrWidth(32),
+      .AxiDataWidth(32),
+      .axi_req_t(axi_req_t),
+      .axi_resp_t(axi_resp_t)
+  ) u_scmi_controller (
+      .clk_i(clkmgr_aon_clocks.clk_main_infra),
+      .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
+      .ariane_axi_req,
+      .ariane_axi_rsp,
+      .ibex_axi_req,
+      .ibex_axi_rsp
+  );
+   
    assert property (@(posedge axi_req.w_valid) (core2alsaqr.a_data == axi_req.w.data));
    assert property (@(posedge axi_req.r_valid) (alsaqr2core.d_data == axi_rsp.r.data));
 
