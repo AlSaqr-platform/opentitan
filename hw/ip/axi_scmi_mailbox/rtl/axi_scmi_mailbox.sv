@@ -28,9 +28,7 @@ module axi_scmi_mailbox
   output axi_resp_t        ibex_axi_rsp,
 
   input  axi_req_t         ariane_axi_req,
-  output axi_resp_t        ariane_axi_rsp,
-
-  input  scmi_reg2hw_t     reg2hw
+  output axi_resp_t        ariane_axi_rsp
    
   //output logic       [1:0] irq_o       // interrupt output for each port
 );
@@ -38,10 +36,12 @@ module axi_scmi_mailbox
   typedef logic [AxiAddrWidth-1:0]   addr_t;
   typedef logic [AxiDataWidth-1:0]   data_t;
   typedef logic [AxiDataWidth/8-1:0] strb_t;
-
+  
   `REG_BUS_TYPEDEF_REQ(reg_req_t, addr_t, data_t, strb_t)
   `REG_BUS_TYPEDEF_RSP(reg_rsp_t, data_t)
 
+   scmi_reg2hw_t reg2hw;
+   
    reg_req_t reg_req, reg_req_ariane, reg_req_ibex;
    reg_rsp_t reg_rsp, reg_rsp_ariane, reg_rsp_ibex;
 
@@ -80,7 +80,9 @@ module axi_scmi_mailbox
      .clk_i,
      .rst_ni,
      .reg_req_i(reg_req),
-     .reg_rsp_o(reg_rsp)
+     .reg_rsp_o(reg_rsp),
+     .reg2hw,
+     .devmode_i(1'b1)
    );
    
    axi_to_reg #(
@@ -98,6 +100,7 @@ module axi_scmi_mailbox
    ) u_ariane_agent (
      .clk_i,
      .rst_ni,
+     .testmode_i(1'b0),
      .axi_req_i(ariane_axi_req),
      .axi_rsp_o(ariane_axi_rsp),
      .reg_req_o(reg_req_ariane),
@@ -119,6 +122,7 @@ module axi_scmi_mailbox
    ) u_ibex_platform (
      .clk_i,
      .rst_ni,
+     .testmode_i(1'b0),
      .axi_req_i(ibex_axi_req),
      .axi_rsp_o(ibex_axi_rsp),
      .reg_req_o(reg_req_ibex),

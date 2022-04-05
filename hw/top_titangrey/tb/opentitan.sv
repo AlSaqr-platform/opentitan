@@ -963,7 +963,11 @@ module opentitan
   tlul_pkg::tl_d2h_t       instr2core;
   tlul_pkg::tl_h2d_t       core2alsaqr;
   tlul_pkg::tl_d2h_t       alsaqr2core;
-  
+  tlul_pkg::tl_h2d_t       core2mailbox;
+  tlul_pkg::tl_d2h_t       mailbox2core;
+
+  axi_req_t  ariane_axi_req, ibex_axi_req;
+  axi_resp_t ariane_axi_rsp, ibex_axi_rsp;
   
   rstmgr_pkg::rstmgr_out_t       rstmgr_aon_resets;
   clkmgr_pkg::clkmgr_out_t       clkmgr_aon_clocks;
@@ -1260,8 +1264,17 @@ module opentitan
       .axi_rsp
   );
 
-  axi_req_t  ariane_axi_req, ibex_axi_req;
-  axi_resp_t ariane_axi_rsp, ibex_axi_rsp;
+  tlul2axi #(
+      .axi_req_t (axi_req_t),
+      .axi_resp_t(axi_resp_t)
+  ) u_axi_mbox_mst (
+      .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
+      .clk_i(clkmgr_aon_clocks.clk_main_infra),
+      .tl_req(core2mailbox),
+      .tl_rsp(mailbox2core),
+      .axi_req(ibex_axi_req),
+      .axi_rsp(ibex_axi_rsp)
+  );
  
   axi_scmi_mailbox #(
       .AxiAddrWidth(32),
@@ -3044,6 +3057,9 @@ module opentitan
 
     .tl_alsaqr_i(alsaqr2core),
     .tl_alsaqr_o(core2alsaqr),
+
+    .tl_mailbox_i(mailbox2core),
+    .tl_mailbox_o(core2mailbox),
 
 
     // port: tl_rv_dm__sba

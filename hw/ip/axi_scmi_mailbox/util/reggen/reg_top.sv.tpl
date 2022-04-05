@@ -600,7 +600,7 @@ ${bits.msb}\
     .qs     ()
     % endif
   );
-  % else:       ## if not hwext, instantiate prim_subreg, prim_subreg_shadow or constant assign
+  % else:       ## if not hwext, instantiate prim_subreg_scmi, prim_subreg_shadow or constant assign
     % if ((not field.hwaccess.allows_read() and\
            not field.hwaccess.allows_write() and\
            field.swaccess.swrd() == SwRdAccess.RD and\
@@ -609,12 +609,12 @@ ${bits.msb}\
   assign ${finst_name}_qs = ${field.bits.width()}'h${"%x" % (field.resval or 0)};
     % else:     ## not hwext not constant
       % if not shadowed:
-  prim_subreg #(
+  prim_subreg_scmi #(
       % else:
   prim_subreg_shadow #(
       % endif
     .DW      (${field.bits.width()}),
-    .SwAccess("${field.swaccess.value[1].name.upper()}"),
+    .SWACCESS("${field.swaccess.value[1].name.upper()}"),
     .RESVAL  (${field.bits.width()}'h${"%x" % (field.resval or 0)})
   ) u_${finst_name} (
     .clk_i   (clk_i    ),

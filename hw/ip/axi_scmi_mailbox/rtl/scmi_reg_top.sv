@@ -113,9 +113,9 @@ module scmi_reg_top #(
   // Register instances
   // R[reserved]: V(False)
 
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (32),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (32'h0)
   ) u_reserved (
     .clk_i   (clk_i    ),
@@ -141,9 +141,9 @@ module scmi_reg_top #(
   // R[channel_status]: V(False)
 
   //   F[channel_free]: 0:0
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (1),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (1'h0)
   ) u_channel_status_channel_free (
     .clk_i   (clk_i    ),
@@ -167,9 +167,9 @@ module scmi_reg_top #(
 
 
   //   F[channel_error]: 1:1
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (1),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (1'h0)
   ) u_channel_status_channel_error (
     .clk_i   (clk_i    ),
@@ -193,9 +193,9 @@ module scmi_reg_top #(
 
 
   //   F[reserved]: 31:2
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (30),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (30'h0)
   ) u_channel_status_reserved (
     .clk_i   (clk_i    ),
@@ -220,9 +220,9 @@ module scmi_reg_top #(
 
   // R[reserved_impl_defined]: V(False)
 
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (32),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (32'h0)
   ) u_reserved_impl_defined (
     .clk_i   (clk_i    ),
@@ -248,9 +248,9 @@ module scmi_reg_top #(
   // R[channel_flags]: V(False)
 
   //   F[intr_enable]: 0:0
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (1),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (1'h0)
   ) u_channel_flags_intr_enable (
     .clk_i   (clk_i    ),
@@ -274,9 +274,9 @@ module scmi_reg_top #(
 
 
   //   F[reserved]: 31:1
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (31),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (31'h0)
   ) u_channel_flags_reserved (
     .clk_i   (clk_i    ),
@@ -301,9 +301,9 @@ module scmi_reg_top #(
 
   // R[length]: V(False)
 
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (32),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (32'h0)
   ) u_length (
     .clk_i   (clk_i    ),
@@ -329,9 +329,9 @@ module scmi_reg_top #(
   // R[message_header]: V(False)
 
   //   F[message_id]: 7:0
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (8),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (8'h0)
   ) u_message_header_message_id (
     .clk_i   (clk_i    ),
@@ -355,9 +355,9 @@ module scmi_reg_top #(
 
 
   //   F[message_type]: 9:8
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (2),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (2'h0)
   ) u_message_header_message_type (
     .clk_i   (clk_i    ),
@@ -381,9 +381,9 @@ module scmi_reg_top #(
 
 
   //   F[protocol_id]: 17:10
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (8),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (8'h0)
   ) u_message_header_protocol_id (
     .clk_i   (clk_i    ),
@@ -407,9 +407,9 @@ module scmi_reg_top #(
 
 
   //   F[token]: 27:18
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (10),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (10'h0)
   ) u_message_header_token (
     .clk_i   (clk_i    ),
@@ -433,9 +433,9 @@ module scmi_reg_top #(
 
 
   //   F[reserved]: 31:28
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (4),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (4'h0)
   ) u_message_header_reserved (
     .clk_i   (clk_i    ),
@@ -460,9 +460,9 @@ module scmi_reg_top #(
 
   // R[message_payload]: V(False)
 
-  prim_subreg #(
+  prim_subreg_scmi #(
     .DW      (32),
-    .SwAccess("RW"),
+    .SWACCESS("RW"),
     .RESVAL  (32'h0)
   ) u_message_payload (
     .clk_i   (clk_i    ),
@@ -490,13 +490,13 @@ module scmi_reg_top #(
   logic [6:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[0] = (reg_addr == SCMI_RESERVED_OFFSET);
-    addr_hit[1] = (reg_addr == SCMI_CHANNEL_STATUS_OFFSET);
-    addr_hit[2] = (reg_addr == SCMI_RESERVED_IMPL_DEFINED_OFFSET);
-    addr_hit[3] = (reg_addr == SCMI_CHANNEL_FLAGS_OFFSET);
-    addr_hit[4] = (reg_addr == SCMI_LENGTH_OFFSET);
-    addr_hit[5] = (reg_addr == SCMI_MESSAGE_HEADER_OFFSET);
-    addr_hit[6] = (reg_addr == SCMI_MESSAGE_PAYLOAD_OFFSET);
+    addr_hit[0] = (reg_addr[4:0] == SCMI_RESERVED_OFFSET);
+    addr_hit[1] = (reg_addr[4:0] == SCMI_CHANNEL_STATUS_OFFSET);
+    addr_hit[2] = (reg_addr[4:0] == SCMI_RESERVED_IMPL_DEFINED_OFFSET);
+    addr_hit[3] = (reg_addr[4:0] == SCMI_CHANNEL_FLAGS_OFFSET);
+    addr_hit[4] = (reg_addr[4:0] == SCMI_LENGTH_OFFSET);
+    addr_hit[5] = (reg_addr[4:0] == SCMI_MESSAGE_HEADER_OFFSET);
+    addr_hit[6] = (reg_addr[4:0] == SCMI_MESSAGE_PAYLOAD_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;

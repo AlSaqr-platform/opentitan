@@ -34,10 +34,10 @@ package scmi_reg_pkg;
   parameter logic [BlockAw-1:0] SCMI_RESERVED_OFFSET = 5'h 0;
   parameter logic [BlockAw-1:0] SCMI_CHANNEL_STATUS_OFFSET = 5'h 4;
   parameter logic [BlockAw-1:0] SCMI_RESERVED_IMPL_DEFINED_OFFSET = 5'h 8;
-  parameter logic [BlockAw-1:0] SCMI_CHANNEL_FLAGS_OFFSET = 5'h c;
-  parameter logic [BlockAw-1:0] SCMI_LENGTH_OFFSET = 5'h 10;
-  parameter logic [BlockAw-1:0] SCMI_MESSAGE_HEADER_OFFSET = 5'h 14;
-  parameter logic [BlockAw-1:0] SCMI_MESSAGE_PAYLOAD_OFFSET = 5'h 18;
+  parameter logic [BlockAw-1:0] SCMI_CHANNEL_FLAGS_OFFSET = 5'h 10;
+  parameter logic [BlockAw-1:0] SCMI_LENGTH_OFFSET = 5'h 14;
+  parameter logic [BlockAw-1:0] SCMI_MESSAGE_HEADER_OFFSET = 5'h 18;
+  parameter logic [BlockAw-1:0] SCMI_MESSAGE_PAYLOAD_OFFSET = 5'h 1C;
 
   // Register index
   typedef enum int {

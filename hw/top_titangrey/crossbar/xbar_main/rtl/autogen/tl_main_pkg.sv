@@ -8,7 +8,8 @@ package tl_main_pkg;
 
   localparam logic [31:0] ADDR_SPACE_RV_DM__REGS          = 32'h 41200000;
   localparam logic [31:0] ADDR_SPACE_RV_DM__ROM           = 32'h 00010000;
-  localparam logic [31:0] ADDR_SPACE_ALSAQR               = 32'h 1C000000;
+  localparam logic [31:0] ADDR_SPACE_ALSAQR               = 32'h 47000000;
+  localparam logic [31:0] ADDR_SPACE_MAILBOX              = 32'h 60000000;
   localparam logic [31:0] ADDR_SPACE_INSTR_MEM            = 32'h 00100000;
   localparam logic [31:0] ADDR_SPACE_RAM_2P               = 32'h 00100000;
   localparam logic [31:0] ADDR_SPACE_SIM_CTRL             = 32'h 00020000;
@@ -35,7 +36,8 @@ package tl_main_pkg;
 
   localparam logic [31:0] ADDR_MASK_RV_DM__REGS          = 32'h 00000fff;
   localparam logic [31:0] ADDR_MASK_RV_DM__ROM           = 32'h 00000fff;
-  localparam logic [31:0] ADDR_MASK_ALSAQR               = 32'h 00ffffff;
+  localparam logic [31:0] ADDR_MASK_ALSAQR               = 32'h 00000fff;
+  localparam logic [31:0] ADDR_MASK_MAILBOX              = 32'h 00000fff;
   localparam logic [31:0] ADDR_MASK_INSTR_MEM            = 32'h 000fffff;
   localparam logic [31:0] ADDR_MASK_RAM_2P               = 32'h 000fffff;
   localparam logic [31:0] ADDR_MASK_SIM_CTRL             = 32'h 00000fff;
@@ -61,35 +63,36 @@ package tl_main_pkg;
   localparam logic [31:0] ADDR_MASK_SRAM_CTRL_MAIN__RAM  = 32'h 0001ffff;
 
   localparam int N_HOST   = 3;
-  localparam int N_DEVICE = 26;
+  localparam int N_DEVICE = 27;
 
   typedef enum int {
     TlRvDmRegs = 0,
     TlRvDmRom = 1,
     TlAlsaqr = 2,
-    TlInstrMem = 3,
-    TlRam2P = 4,
-    TlSimCtrl = 5,
-    TlRomCtrlRom = 6,
-    TlRomCtrlRegs = 7,
-    TlPeri = 8,
-    TlSpiHost0 = 9,
-    TlFlashCtrlCore = 10,
-    TlFlashCtrlPrim = 11,
-    TlFlashCtrlMem = 12,
-    TlHmac = 13,
-    TlKmac = 14,
-    TlAes = 15,
-    TlEntropySrc = 16,
-    TlCsrng = 17,
-    TlEdn0 = 18,
-    TlEdn1 = 19,
-    TlRvPlic = 20,
-    TlOtbn = 21,
-    TlKeymgr = 22,
-    TlRvCoreIbexCfg = 23,
-    TlSramCtrlMainRegs = 24,
-    TlSramCtrlMainRam = 25
+    TlMailbox = 3,
+    TlInstrMem = 4,
+    TlRam2P = 5,
+    TlSimCtrl = 6,
+    TlRomCtrlRom = 7,
+    TlRomCtrlRegs = 8,
+    TlPeri = 9,
+    TlSpiHost0 = 10,
+    TlFlashCtrlCore = 11,
+    TlFlashCtrlPrim = 12,
+    TlFlashCtrlMem = 13,
+    TlHmac = 14,
+    TlKmac = 15,
+    TlAes = 16,
+    TlEntropySrc = 17,
+    TlCsrng = 18,
+    TlEdn0 = 19,
+    TlEdn1 = 20,
+    TlRvPlic = 21,
+    TlOtbn = 22,
+    TlKeymgr = 23,
+    TlRvCoreIbexCfg = 24,
+    TlSramCtrlMainRegs = 25,
+    TlSramCtrlMainRam = 26
   } tl_device_e;
 
   typedef enum int {

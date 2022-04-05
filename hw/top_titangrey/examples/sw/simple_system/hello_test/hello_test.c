@@ -9,7 +9,7 @@
 int main(int argc, char **argv) {
   
   int  volatile * p_reg; // p_reg2, p_reg3, p_reg4, p_reg5;
-  bool volatile * p_reg_bool;
+  /* bool volatile * p_reg_bool;
   bool bit   = true;
   
   char msg1  = '1';
@@ -28,9 +28,46 @@ int main(int argc, char **argv) {
   char msg14 = 'E';
   char msg15 = 'F';
   char msg16 = 'G';
-  int dummy;
+  int dummy;*/
   puts("Test software:\n");
 
+
+  p_reg =(int *) 0x60000000;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+
+  p_reg =(int *) 0x60000004;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+
+  p_reg =(int *) 0x60000008;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+
+  p_reg =(int *) 0x60000010;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x60000014;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x60000018;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+  
+  p_reg =(int *) 0x6000001C;
+ *p_reg = 0x11001100;
+  puthex(*p_reg);
+  puts("\n");
+
+  sim_halt(); 
   ///////////////////////////////////////////////////////////////
   /*
   p_reg =(int *) 0x47000000;
@@ -54,7 +91,7 @@ int main(int argc, char **argv) {
   puts("\n");
   */
 
-  
+  /*
   
   
   //sim_halt(); 
@@ -68,17 +105,17 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("kmac - failed\n");}
-  /*
+ 
   ///////////////////////////////////////////////////////////////
-  p_reg =(int *) 0x4113002C;
- *p_reg = msg3;
-  if(*p_reg == msg3){
-    puts("keymgr            - succed, msg: ");
-    putint(*p_reg);
-    puts("\n");
-  }
-  else{ puts("keymgr         - failed\n");}
-  */
+//  p_reg =(int *) 0x4113002C;
+// *p_reg = msg3;
+//  if(*p_reg == msg3){
+//    puts("keymgr            - succed, msg: ");
+//    putint(*p_reg);
+//    puts("\n");
+//  }
+//  else{ puts("keymgr         - failed\n");}
+ 
   ////////////////////////////////////////////////////////////////
 
   p_reg =(int *) 0x40130040;
@@ -167,17 +204,17 @@ int main(int argc, char **argv) {
  *p_reg_bool = bit;
   if(*p_reg_bool == bit){ puts("rv_dm             - succed, msg: true\n"); }
   else{ puts("rv_dm             - there are no regs\n");}
-  /*
+  
   ///////////////////////////////////////////////////////////////
-  p_reg =(int *) 0x41010004;
- *p_reg = msg9;
-  if(*p_reg == msg9){
-    puts("rv_plic           - succed, msg: ");
-    putint(*p_reg);
-    puts("\n");
-  }
-  else{ puts("rv_plic    - failed\n");}
-  */
+//  p_reg =(int *) 0x41010004;
+// *p_reg = msg9;
+//  if(*p_reg == msg9){
+//    puts("rv_plic           - succed, msg: ");
+//    putint(*p_reg);
+//    puts("\n");
+//  }
+//  else{ puts("rv_plic    - failed\n");}
+//  
   ///////////////////////////////////////////////////////////////  
   p_reg =(int *) 0x4117002C;
  *p_reg = msg10;
@@ -187,15 +224,15 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("edn        - failed\n");}
-  /*
+  
   ///////////////////////////////////////////////////////////////      
-  p_reg_bool =(bool *) 0x411D0004;
- *p_reg_bool = bit;
-  if(*p_reg_bool == bit){ puts("otbn              - succed, msg: true\n"); }
-  else{ puts("otbn              - failed\n");}
+//  p_reg_bool =(bool *) 0x411D0004;
+// *p_reg_bool = bit;
+//  if(*p_reg_bool == bit){ puts("otbn              - succed, msg: true\n"); }
+//  else{ puts("otbn              - failed\n");}
   
   ///////////////////////////////////////////////////////////////
-  */
+  
     
   p_reg =(int *) 0x41100054;
  *p_reg = msg11;
@@ -245,48 +282,29 @@ int main(int argc, char **argv) {
     puts("\n");
   }
   else{ puts("gpio  - failed\n");}
-  /*
+  
   ///////////////////////////////////////////////////////////////
-  p_reg =(int *) 0x40060010;
- *p_reg = msg16;
-  if(*p_reg == msg16){
-    puts("spi_host          - succed, msg: ");
-    putint(*p_reg);
-    puts("\n");
-  }
-  else{ puts("gpio  - failed\n");}
-*/
+//  p_reg =(int *) 0x40060010;
+// *p_reg = msg16;
+//  if(*p_reg == msg16){
+//    puts("spi_host          - succed, msg: ");
+//    putint(*p_reg);
+//    puts("\n");
+//  }
+//  else{ puts("gpio  - failed\n");}
+
 
   p_reg =(int *) 0x1C000000;
  *p_reg = msg16;
  // puthex(*p_reg);
  // puts("\n");
-
+*/
   
-  while(1);
+  // while(1);
 
   //  sim_halt();
 
   return 0;
 }
-/*
-// Copyright lowRISC contributors.
-// Licensed under the Apache License, Version 2.0, see LICENSE for details.
-// SPDX-License-Identifier: Apache-2.0
 
-#include "simple_system_common.h"
-#include <stdbool.h>
-
-int main(int argc, char **argv) {
-
-  int bit   = true;
-  bool volatile * p_reg_bool;
-  p_reg_bool = (bool *) 0x49000004;
- *p_reg_bool = bit;
- 
- // while(1);
-
-  sim_halt();                
-  return 0;
-  }*/
 
