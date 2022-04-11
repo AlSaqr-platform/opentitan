@@ -23,9 +23,9 @@ module testbench ();
 
 
    
-   parameter int   AW = 32;   
-   parameter int   DW = 32;  
-   parameter int   IW = 3;   
+   parameter int   AW = 64;   
+   parameter int   DW = 64;  
+   parameter int   IW = 8;   
    parameter int   UW = 1;
    localparam time TA   = 1ns;
    localparam time TT   = 2ns;
@@ -71,9 +71,9 @@ module testbench ();
    edn_pkg::edn_req_t fake_ast_edn;
    
    AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH   ( 3 ),
+    .AXI_ADDR_WIDTH ( 64 ),
+    .AXI_DATA_WIDTH ( 64 ),
+    .AXI_ID_WIDTH   ( 8 ),
     .AXI_USER_WIDTH ( 1 )
    ) axi_slave();
 

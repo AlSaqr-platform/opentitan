@@ -7,7 +7,7 @@
 package scmi_reg_pkg;
 
   // Address widths within the block
-  parameter int BlockAw = 5;
+  parameter int BlockAw = 6;
 
   ////////////////////////////
   // Typedefs for registers //
@@ -20,24 +20,24 @@ package scmi_reg_pkg;
     struct packed {
       logic        q;
     } channel_error;
-    struct packed {
-      logic [29:0] q;
-    } reserved;
   } scmi_reg2hw_channel_status_reg_t;
 
   // Register -> HW type
   typedef struct packed {
-    scmi_reg2hw_channel_status_reg_t channel_status; // [31:0]
+    scmi_reg2hw_channel_status_reg_t channel_status; // [1:0]
   } scmi_reg2hw_t;
 
   // Register offsets
-  parameter logic [BlockAw-1:0] SCMI_RESERVED_OFFSET = 5'h 0;
-  parameter logic [BlockAw-1:0] SCMI_CHANNEL_STATUS_OFFSET = 5'h 4;
-  parameter logic [BlockAw-1:0] SCMI_RESERVED_IMPL_DEFINED_OFFSET = 5'h 8;
-  parameter logic [BlockAw-1:0] SCMI_CHANNEL_FLAGS_OFFSET = 5'h 10;
-  parameter logic [BlockAw-1:0] SCMI_LENGTH_OFFSET = 5'h 14;
-  parameter logic [BlockAw-1:0] SCMI_MESSAGE_HEADER_OFFSET = 5'h 18;
-  parameter logic [BlockAw-1:0] SCMI_MESSAGE_PAYLOAD_OFFSET = 5'h 1C;
+  parameter logic [BlockAw-1:0] SCMI_RESERVED_OFFSET = 6'h 0;
+  parameter logic [BlockAw-1:0] SCMI_CHANNEL_STATUS_OFFSET = 6'h 4;
+  parameter logic [BlockAw-1:0] SCMI_RESERVED_IMPL_DEFINED_OFFSET = 6'h 8;
+  parameter logic [BlockAw-1:0] SCMI_CHANNEL_FLAGS_OFFSET = 6'h 10; 
+  parameter logic [BlockAw-1:0] SCMI_LENGTH_OFFSET = 6'h 14;
+  parameter logic [BlockAw-1:0] SCMI_MESSAGE_HEADER_OFFSET = 6'h 18;
+  parameter logic [BlockAw-1:0] SCMI_MESSAGE_PAYLOAD_OFFSET = 6'h 1C;
+
+  // Reset values for hwext registers and their fields
+  parameter logic [31:0] SCMI_RESERVED_RESVAL = 32'h 0;
 
   // Register index
   typedef enum int {
@@ -52,13 +52,13 @@ package scmi_reg_pkg;
 
   // Register width information to check illegal writes
   parameter logic [3:0] SCMI_PERMIT [7] = '{
-    4'b 1111, // index[0] SCMI_RESERVED
-    4'b 1111, // index[1] SCMI_CHANNEL_STATUS
-    4'b 1111, // index[2] SCMI_RESERVED_IMPL_DEFINED
-    4'b 1111, // index[3] SCMI_CHANNEL_FLAGS
-    4'b 1111, // index[4] SCMI_LENGTH
-    4'b 1111, // index[5] SCMI_MESSAGE_HEADER
-    4'b 1111  // index[6] SCMI_MESSAGE_PAYLOAD
+    4'b 0000, // index[0] SCMI_RESERVED
+    4'b 0000, // index[1] SCMI_CHANNEL_STATUS
+    4'b 0000, // index[2] SCMI_RESERVED_IMPL_DEFINED
+    4'b 0000, // index[3] SCMI_CHANNEL_FLAGS
+    4'b 0000, // index[4] SCMI_LENGTH
+    4'b 0000, // index[5] SCMI_MESSAGE_HEADER
+    4'b 0000  // index[6] SCMI_MESSAGE_PAYLOAD
   };
 
 endpackage

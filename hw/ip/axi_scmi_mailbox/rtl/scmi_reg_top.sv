@@ -10,7 +10,7 @@
 module scmi_reg_top #(
     parameter type reg_req_t = logic,
     parameter type reg_rsp_t = logic,
-    parameter int AW = 5
+    parameter int AW = 6
 ) (
   input clk_i,
   input rst_ni,
@@ -26,7 +26,7 @@ module scmi_reg_top #(
 
   import scmi_reg_pkg::* ;
 
-  localparam int DW = 32;
+  localparam int DW = 64;
   localparam int DBW = DW/8;                    // Byte Width
 
   // register signals
@@ -70,23 +70,21 @@ module scmi_reg_top #(
   logic [31:0] reserved_qs;
   logic [31:0] reserved_wd;
   logic reserved_we;
+  logic reserved_re;
   logic channel_status_channel_free_qs;
   logic channel_status_channel_free_wd;
   logic channel_status_channel_free_we;
   logic channel_status_channel_error_qs;
   logic channel_status_channel_error_wd;
   logic channel_status_channel_error_we;
-  logic [29:0] channel_status_reserved_qs;
-  logic [29:0] channel_status_reserved_wd;
-  logic channel_status_reserved_we;
   logic [31:0] reserved_impl_defined_qs;
   logic [31:0] reserved_impl_defined_wd;
   logic reserved_impl_defined_we;
   logic channel_flags_intr_enable_qs;
   logic channel_flags_intr_enable_wd;
   logic channel_flags_intr_enable_we;
-  logic [30:0] channel_flags_reserved_qs;
-  logic [30:0] channel_flags_reserved_wd;
+  logic channel_flags_reserved_qs;
+  logic channel_flags_reserved_wd;
   logic channel_flags_reserved_we;
   logic [31:0] length_qs;
   logic [31:0] length_wd;
@@ -103,37 +101,23 @@ module scmi_reg_top #(
   logic [9:0] message_header_token_qs;
   logic [9:0] message_header_token_wd;
   logic message_header_token_we;
-  logic [3:0] message_header_reserved_qs;
-  logic [3:0] message_header_reserved_wd;
-  logic message_header_reserved_we;
   logic [31:0] message_payload_qs;
   logic [31:0] message_payload_wd;
   logic message_payload_we;
 
   // Register instances
-  // R[reserved]: V(False)
+  // R[reserved]: V(True)
 
-  prim_subreg_scmi #(
-    .DW      (32),
-    .SWACCESS("RW"),
-    .RESVAL  (32'h0)
+  prim_subreg_ext #(
+    .DW    (32)
   ) u_reserved (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
-
-    // from register interface
+    .re     (reserved_re),
     .we     (reserved_we),
     .wd     (reserved_wd),
-
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
-
-    // to internal hardware
+    .d      ('0),
+    .qre    (),
     .qe     (),
     .q      (),
-
-    // to register interface (read)
     .qs     (reserved_qs)
   );
 
@@ -192,32 +176,6 @@ module scmi_reg_top #(
   );
 
 
-  //   F[reserved]: 31:2
-  prim_subreg_scmi #(
-    .DW      (30),
-    .SWACCESS("RW"),
-    .RESVAL  (30'h0)
-  ) u_channel_status_reserved (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
-
-    // from register interface
-    .we     (channel_status_reserved_we),
-    .wd     (channel_status_reserved_wd),
-
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
-
-    // to internal hardware
-    .qe     (),
-    .q      (reg2hw.channel_status.reserved.q ),
-
-    // to register interface (read)
-    .qs     (channel_status_reserved_qs)
-  );
-
-
   // R[reserved_impl_defined]: V(False)
 
   prim_subreg_scmi #(
@@ -273,11 +231,11 @@ module scmi_reg_top #(
   );
 
 
-  //   F[reserved]: 31:1
+  //   F[reserved]: 1:1
   prim_subreg_scmi #(
-    .DW      (31),
+    .DW      (1),
     .SWACCESS("RW"),
-    .RESVAL  (31'h0)
+    .RESVAL  (1'h0)
   ) u_channel_flags_reserved (
     .clk_i   (clk_i    ),
     .rst_ni  (rst_ni  ),
@@ -432,32 +390,6 @@ module scmi_reg_top #(
   );
 
 
-  //   F[reserved]: 31:28
-  prim_subreg_scmi #(
-    .DW      (4),
-    .SWACCESS("RW"),
-    .RESVAL  (4'h0)
-  ) u_message_header_reserved (
-    .clk_i   (clk_i    ),
-    .rst_ni  (rst_ni  ),
-
-    // from register interface
-    .we     (message_header_reserved_we),
-    .wd     (message_header_reserved_wd),
-
-    // from internal hardware
-    .de     (1'b0),
-    .d      ('0  ),
-
-    // to internal hardware
-    .qe     (),
-    .q      (),
-
-    // to register interface (read)
-    .qs     (message_header_reserved_qs)
-  );
-
-
   // R[message_payload]: V(False)
 
   prim_subreg_scmi #(
@@ -515,15 +447,13 @@ module scmi_reg_top #(
 
   assign reserved_we = addr_hit[0] & reg_we & !reg_error;
   assign reserved_wd = reg_wdata[31:0];
+  assign reserved_re = addr_hit[0] & reg_re & !reg_error;
 
   assign channel_status_channel_free_we = addr_hit[1] & reg_we & !reg_error;
   assign channel_status_channel_free_wd = reg_wdata[0];
 
   assign channel_status_channel_error_we = addr_hit[1] & reg_we & !reg_error;
   assign channel_status_channel_error_wd = reg_wdata[1];
-
-  assign channel_status_reserved_we = addr_hit[1] & reg_we & !reg_error;
-  assign channel_status_reserved_wd = reg_wdata[31:2];
 
   assign reserved_impl_defined_we = addr_hit[2] & reg_we & !reg_error;
   assign reserved_impl_defined_wd = reg_wdata[31:0];
@@ -532,7 +462,7 @@ module scmi_reg_top #(
   assign channel_flags_intr_enable_wd = reg_wdata[0];
 
   assign channel_flags_reserved_we = addr_hit[3] & reg_we & !reg_error;
-  assign channel_flags_reserved_wd = reg_wdata[31:1];
+  assign channel_flags_reserved_wd = reg_wdata[1];
 
   assign length_we = addr_hit[4] & reg_we & !reg_error;
   assign length_wd = reg_wdata[31:0];
@@ -549,9 +479,6 @@ module scmi_reg_top #(
   assign message_header_token_we = addr_hit[5] & reg_we & !reg_error;
   assign message_header_token_wd = reg_wdata[27:18];
 
-  assign message_header_reserved_we = addr_hit[5] & reg_we & !reg_error;
-  assign message_header_reserved_wd = reg_wdata[31:28];
-
   assign message_payload_we = addr_hit[6] & reg_we & !reg_error;
   assign message_payload_wd = reg_wdata[31:0];
 
@@ -566,7 +493,6 @@ module scmi_reg_top #(
       addr_hit[1]: begin
         reg_rdata_next[0] = channel_status_channel_free_qs;
         reg_rdata_next[1] = channel_status_channel_error_qs;
-        reg_rdata_next[31:2] = channel_status_reserved_qs;
       end
 
       addr_hit[2]: begin
@@ -575,7 +501,7 @@ module scmi_reg_top #(
 
       addr_hit[3]: begin
         reg_rdata_next[0] = channel_flags_intr_enable_qs;
-        reg_rdata_next[31:1] = channel_flags_reserved_qs;
+        reg_rdata_next[1] = channel_flags_reserved_qs;
       end
 
       addr_hit[4]: begin
@@ -587,7 +513,6 @@ module scmi_reg_top #(
         reg_rdata_next[9:8] = message_header_message_type_qs;
         reg_rdata_next[17:10] = message_header_protocol_id_qs;
         reg_rdata_next[27:18] = message_header_token_qs;
-        reg_rdata_next[31:28] = message_header_reserved_qs;
       end
 
       addr_hit[6]: begin

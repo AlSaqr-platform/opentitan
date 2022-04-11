@@ -7,9 +7,11 @@
   bus_interfaces: [
         { protocol: "reg_iface", direction: "device"}
     ],
-  regwidth: "32",
+  regwidth: "64",
   registers: [
     { name: "reserved",
+      hwext: "true",
+      hwqe:  "true",
       desc: "Reserved, must be 0",
       swaccess: "rw",
       hwaccess: "none",
@@ -22,15 +24,11 @@
       swaccess: "rw",
       hwaccess: "hro",
       fields: [
-        { bits: "31:2",
-          name: "Reserved",
-          desc: "Must be 0"
-        },
-        { bits: "1:1",
+        { bits: "1",
           name: "channel_error",
           desc: "Must be 0 in absence of errors"
         },
-        { bits: "0:0",
+        { bits: "0",
           name: "channel_free",
           desc: "If 1 the agent own the channel, if 0 the platform own the channel"
         }
@@ -49,11 +47,11 @@
       swaccess: "rw",
       hwaccess: "none",
       fields: [
-        { bits: "31:1",
+        { bits: "1",
           name: "Reserved",
           desc: "Must be 0"
         },
-        { bits: "0:0",
+        { bits: "0",
           name: "intr_enable",
           desc: "If 1 interruts are used, if 0 polling is used"
         }
@@ -72,10 +70,6 @@
       swaccess: "rw",
       hwaccess: "none",
       fields: [
-        { bits: "31:28",
-          name: "Reserved",
-          desc: "Must be 0"
-        },
         { bits: "27:18",
           name: "Token",
           desc: "must be same for the msg responses associated to a msg whith the same header"

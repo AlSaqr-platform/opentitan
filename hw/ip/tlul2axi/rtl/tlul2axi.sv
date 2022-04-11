@@ -12,7 +12,7 @@
 module tlul2axi
   import tlul_pkg::*;
   #(
-    parameter int unsigned AXI_ID_WIDTH      = 3,
+    parameter int unsigned AXI_ID_WIDTH      = 8,
     parameter int unsigned AXI_ADDR_WIDTH    = 64,
     parameter int unsigned AXI_DATA_WIDTH    = 64,
     parameter int unsigned AXI_USER_WIDTH    = 1,

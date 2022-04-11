@@ -8,7 +8,7 @@
 
 int main(int argc, char **argv) {
   
-  int  volatile * p_reg; // p_reg2, p_reg3, p_reg4, p_reg5;
+  int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3; // p_reg4, p_reg5;
   /* bool volatile * p_reg_bool;
   bool bit   = true;
   
@@ -32,17 +32,30 @@ int main(int argc, char **argv) {
   puts("Test software:\n");
 
 
-  p_reg =(int *) 0x60000000;
- *p_reg = 0x11001100;
-  puthex(*p_reg);
-  puts("\n");
 
-  p_reg =(int *) 0x60000004;
- *p_reg = 0x11001100;
-  puthex(*p_reg);
-  puts("\n");
+  p_reg  = (int *) 0x60000004;
+  p_reg1 = (int *) 0x60000008;
+  p_reg2 = (int *) 0x60000010;
+  p_reg3 = (int *) 0x60000014;
+  
+  while( *p_reg != 0x00000001);
 
-  p_reg =(int *) 0x60000008;
+  puthex(*p_reg1);
+  puthex(*p_reg2);
+  puthex(*p_reg3);
+
+  if( *p_reg1 == 0xBAADF00D && *p_reg2 == 0xDEADC0DE && *p_reg3 == 0xBAADC0DE )
+    *p_reg = 0x0;
+  else
+    sim_halt();
+  
+  while(1);
+  sim_halt();
+
+  return 0;
+}
+
+/*p_reg =(int *) 0x60000008;
  *p_reg = 0x11001100;
   puthex(*p_reg);
   puts("\n");
@@ -67,7 +80,7 @@ int main(int argc, char **argv) {
   puthex(*p_reg);
   puts("\n");
 
-  sim_halt(); 
+  sim_halt(); */
   ///////////////////////////////////////////////////////////////
   /*
   p_reg =(int *) 0x47000000;
@@ -304,7 +317,5 @@ int main(int argc, char **argv) {
 
   //  sim_halt();
 
-  return 0;
-}
 
 

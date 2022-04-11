@@ -45,9 +45,9 @@ module axi_scmi_mailbox
    reg_req_t reg_req, reg_req_ariane, reg_req_ibex;
    reg_rsp_t reg_rsp, reg_rsp_ariane, reg_rsp_ibex;
 
-   assign reg_req        = reg2hw.channel_status.channel_free.q ? reg_req_ariane : reg_req_ibex;
-   assign reg_rsp_ariane = reg2hw.channel_status.channel_free.q ? reg_rsp : '0;
-   assign reg_rsp_ibex   = reg2hw.channel_status.channel_free.q ? '0 : reg_rsp;
+   assign reg_req        = ~reg2hw.channel_status.channel_free.q ? reg_req_ariane : reg_req_ibex;
+   assign reg_rsp_ibex   = ~reg2hw.channel_status.channel_free.q ? '0 : reg_rsp;
+   assign reg_rsp_ariane = ~reg2hw.channel_status.channel_free.q ? reg_rsp : '0;
 /*
    always_comb
      case(reg2hw.channel_status.channel_free.q)
@@ -88,7 +88,7 @@ module axi_scmi_mailbox
    axi_to_reg #(
      .ADDR_WIDTH(AxiAddrWidth),
      .DATA_WIDTH(AxiDataWidth),
-     .ID_WIDTH(3),
+     .ID_WIDTH(8),
      .USER_WIDTH(1),
      .AXI_MAX_WRITE_TXNS(1),
      .AXI_MAX_READ_TXNS(1),
@@ -110,7 +110,7 @@ module axi_scmi_mailbox
     axi_to_reg #(
      .ADDR_WIDTH(AxiAddrWidth),
      .DATA_WIDTH(AxiDataWidth),
-     .ID_WIDTH(3),
+     .ID_WIDTH(8),
      .USER_WIDTH(1),
      .AXI_MAX_WRITE_TXNS(1),
      .AXI_MAX_READ_TXNS(1),

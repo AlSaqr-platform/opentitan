@@ -206,7 +206,7 @@ module opentitan
   
   input              ast_pkg::ast_alert_req_t sensor_ctrl_ast_alert_req_i,
   output             ast_pkg::ast_alert_rsp_t sensor_ctrl_ast_alert_rsp_o,
-  input              ast_pkg::ast_status_t sensor_ctrl_ast_status_i,
+  input              ast_pkg::ast_status_t    sensor_ctrl_ast_status_i,
   input logic [8:0]  ast2pinmux_i,
   input logic        ast_init_done_i,
   
@@ -218,8 +218,11 @@ module opentitan
   
   output logic       test_reset,
    
-  output axi_req_t   axi_req,
-  input  axi_resp_t  axi_rsp,
+  output             axi_req_t  axi_req,
+  input              axi_resp_t axi_rsp,
+
+  output             axi_resp_t ariane_axi_rsp,   
+  input              axi_req_t  ariane_axi_req,
 
   input              scan_rst_ni, // reset used for test mode
   input              scan_en_i,
@@ -966,8 +969,8 @@ module opentitan
   tlul_pkg::tl_h2d_t       core2mailbox;
   tlul_pkg::tl_d2h_t       mailbox2core;
 
-  axi_req_t  ariane_axi_req, ibex_axi_req;
-  axi_resp_t ariane_axi_rsp, ibex_axi_rsp;
+  axi_req_t   ibex_axi_req;
+  axi_resp_t  ibex_axi_rsp;
   
   rstmgr_pkg::rstmgr_out_t       rstmgr_aon_resets;
   clkmgr_pkg::clkmgr_out_t       clkmgr_aon_clocks;
@@ -1277,8 +1280,8 @@ module opentitan
   );
  
   axi_scmi_mailbox #(
-      .AxiAddrWidth(32),
-      .AxiDataWidth(32),
+      .AxiAddrWidth(64),
+      .AxiDataWidth(64),
       .axi_req_t(axi_req_t),
       .axi_resp_t(axi_resp_t)
   ) u_scmi_controller (
