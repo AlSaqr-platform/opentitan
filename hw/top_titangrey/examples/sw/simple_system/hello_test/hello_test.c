@@ -30,24 +30,32 @@ int main(int argc, char **argv) {
   char msg16 = 'G';
   int dummy;*/
   puts("Test software:\n");
-
-
-
-  p_reg  = (int *) 0x60000004;
-  p_reg1 = (int *) 0x60000008;
-  p_reg2 = (int *) 0x60000010;
-  p_reg3 = (int *) 0x60000014;
+ 
+  p_reg  = (int *) 0x50000004;
+  
+  //p_reg2 = (int *) 0x50000010;
+ 
   
   while( *p_reg != 0x00000001);
 
-  puthex(*p_reg1);
-  puthex(*p_reg2);
-  puthex(*p_reg3);
+  int i = 0;
+  
+  p_reg = (int *) 0x50000008;
+  if( *p_reg == 0xBAADF00D)
+     i++;
+  //if( *p_reg2 == 0xDEADC0DE)
+  //   i++;
+  p_reg = (int *) 0x50000014;
+  if( *p_reg == 0xBAADC0DE)
+     i++;
 
-  if( *p_reg1 == 0xBAADF00D && *p_reg2 == 0xDEADC0DE && *p_reg3 == 0xBAADC0DE )
-    *p_reg = 0x0;
-  else
-    sim_halt();
+  if( i == 2 ){
+      p_reg = (int *) 0x50000004;
+     *p_reg = 0x00000000;
+  }
+  else{
+     sim_halt();
+  }
   
   while(1);
   sim_halt();

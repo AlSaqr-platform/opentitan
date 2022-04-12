@@ -630,13 +630,13 @@ sources:
 
 ##### axi_scmi_mailbox
 
-      - hw/ip/axi_scmi_mailbox/include/typedef.svh
-      - hw/ip/axi_scmi_mailbox/include/assign.svh
-      - hw/ip/axi_scmi_mailbox/include/prim_subreg_scmi.sv
-      - hw/ip/axi_scmi_mailbox/include/prim_subreg_arb_scmi.sv
-      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
-      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
-      - hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
+      #- hw/ip/axi_scmi_mailbox/include/typedef.svh
+      #- hw/ip/axi_scmi_mailbox/include/assign.svh
+      #- hw/ip/axi_scmi_mailbox/include/prim_subreg_scmi.sv
+      #- hw/ip/axi_scmi_mailbox/include/prim_subreg_arb_scmi.sv
+      #- hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
+      #- hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
+      #- hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
 
 ##### top module
 

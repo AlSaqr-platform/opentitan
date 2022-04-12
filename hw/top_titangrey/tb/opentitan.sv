@@ -19,7 +19,8 @@
 
 `include "prim_assert.sv"
 `include "../../ip/tlul2axi/test/tlul_assign.svh"
-
+`include "../../../../../deps/axi_scmi_mailbox/include/axi_typedef.svh"
+`include "../../../../../deps/axi_scmi_mailbox/include/axi_assign.svh"
 
 `ifndef RV32M
   `define RV32M ibex_pkg::RV32MFast
@@ -221,8 +222,8 @@ module opentitan
   output             axi_req_t  axi_req,
   input              axi_resp_t axi_rsp,
 
-  output             axi_resp_t ariane_axi_rsp,   
-  input              axi_req_t  ariane_axi_req,
+  //output             axi_resp_t ariane_axi_rsp,   
+  //input              axi_req_t  ariane_axi_req,
 
   input              scan_rst_ni, // reset used for test mode
   input              scan_en_i,
@@ -1086,6 +1087,42 @@ module opentitan
   assign rv_core_ibex_hart_id = '0;
    
   assign rv_core_ibex_boot_addr = 32'h 00100000;  // ADDR_SPACE_ROM_CTRL__ROM;
+
+  parameter int unsigned AXI_ID_WIDTH            = 8; 
+  parameter int unsigned AXI_ADDR_WIDTH          = 64; 
+  parameter int unsigned AXI_SLV_PORT_DATA_WIDTH = 32; 
+  parameter int unsigned AXI_MST_PORT_DATA_WIDTH = 64; 
+  parameter int unsigned AXI_USER_WIDTH          = 1; 
+  parameter int unsigned AXI_MAX_READS           = 1; 
+ 
+  typedef logic [AXI_ADDR_WIDTH-1:0]            addr_t;
+  typedef logic [AXI_MST_PORT_DATA_WIDTH-1:0]   data_t;
+  typedef logic [AXI_MST_PORT_DATA_WIDTH/8-1:0] strb_t;
+
+  typedef logic [AXI_ID_WIDTH-1:0] id_t                   ;
+  typedef logic [AXI_MST_PORT_DATA_WIDTH-1:0] mst_data_t  ;
+  typedef logic [AXI_MST_PORT_DATA_WIDTH/8-1:0] mst_strb_t;
+  typedef logic [AXI_SLV_PORT_DATA_WIDTH-1:0] slv_data_t  ;
+  typedef logic [AXI_SLV_PORT_DATA_WIDTH/8-1:0] slv_strb_t;
+  typedef logic [AXI_USER_WIDTH-1:0] user_t;
+     
+  `AXI_TYPEDEF_AW_CHAN_T(aw_chan_t, addr_t, id_t, user_t)
+  `AXI_TYPEDEF_W_CHAN_T(mst_w_chan_t, mst_data_t, mst_strb_t, user_t)
+  `AXI_TYPEDEF_W_CHAN_T(slv_w_chan_t, slv_data_t, slv_strb_t, user_t)
+  `AXI_TYPEDEF_B_CHAN_T(b_chan_t, id_t, user_t)
+  `AXI_TYPEDEF_AR_CHAN_T(ar_chan_t, addr_t, id_t, user_t)
+  `AXI_TYPEDEF_R_CHAN_T(mst_r_chan_t, mst_data_t, id_t, user_t)
+  `AXI_TYPEDEF_R_CHAN_T(slv_r_chan_t, slv_data_t, id_t, user_t)
+  `AXI_TYPEDEF_REQ_T(mst_req_t, aw_chan_t, mst_w_chan_t, ar_chan_t)
+  `AXI_TYPEDEF_RESP_T(mst_resp_t, b_chan_t, mst_r_chan_t)
+  `AXI_TYPEDEF_REQ_T(slv_req_t, aw_chan_t, slv_w_chan_t, ar_chan_t)
+  `AXI_TYPEDEF_RESP_T(slv_resp_t, b_chan_t, slv_r_chan_t)
+
+   slv_req_t  axi_req32; 
+   slv_resp_t axi_rsp32;
+   
+
+   
 /*
   `REQ_ASSIGN(tl_instr_bus.tl_req, core2instr)
   `RSP_ASSIGN(instr2core, tl_instr_bus.tl_rsp)
@@ -1108,111 +1145,7 @@ module opentitan
     .tdo_i    (1'b0),
     .tdo_oe_i (1'b0)
   );
-/*
-  tlul2axi u_instr_tl2axi (
-     .clk_i   (clk_main_i),
-     .rst_ni  (por_n_i),
-     .tl_host (tl_instr_bus),
-     .axi_mst (axi_instr_slave)
-  );
-   
-  tlul2axi u_data_tl2axi (
-     .clk_i   (clk_main_i),
-     .rst_ni  (por_n_i),
-     .tl_host (tl_data_bus),
-     .axi_mst (axi_data_slave)
-  );
 
-     
-  tlul2axi u_simctrl_tl2axi (
-     .clk_i   (clk_main_i),
-     .rst_ni  (por_n_i),
-     .tl_host (tl_simctrl_bus),
-     .axi_mst (axi_simctrl_slave)
-  );
-   
-  axi2mem #(
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) u_instr_axi2mem (
-    .clk_i      ( clk_main_i          ),
-    .rst_ni     ( por_n_i             ),
-                  
-    .slave      ( axi_instr_slave     ),
-                  
-    .req_o      ( mst_instr_req       ),
-    .we_o       ( mst_instr_we        ),
-    .addr_o     ( mst_instr_addr      ),
-    .be_o       ( mst_instr_be        ),
-    .data_o     ( mst_instr_wdata     ),
-    .data_i     ( mst_instr_rdata     )
-  );
-  
-  axi2mem #(
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) u_data_axi2mem (
-    .clk_i      ( clk_main_i          ),
-    .rst_ni     ( por_n_i             ),
-                  
-    .slave      ( axi_data_slave      ),
-                  
-    .req_o      ( mst_data_req        ),
-    .we_o       ( mst_data_we         ),
-    .addr_o     ( mst_data_addr       ),
-    .be_o       ( mst_data_be         ),
-    .data_o     ( mst_data_wdata      ),
-    .data_i     ( mst_data_rdata      )
-  );
-
-  axi2mem #(
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) u_simctrl_axi2mem (
-    .clk_i      ( clk_main_i          ),
-    .rst_ni     ( por_n_i             ),
-                  
-    .slave      ( axi_simctrl_slave      ),
-                  
-    .req_o      ( mst_simctrl_req        ),
-    .we_o       ( mst_simctrl_we         ),
-    .addr_o     ( mst_simctrl_addr       ),
-    .be_o       ( mst_simctrl_be         ),
-    .data_o     ( mst_simctrl_wdata      ),
-    .data_i     ( mst_simctrl_rdata      )
-  );
-
-  ram_2p #(
-      .Depth(1024*1024/4),
-      .MemInitFile(SRAMInitFile)
-  ) u_ram_test (
-      .clk_i       (clk_main_i),
-      .rst_ni      (por_n_i),
- 
-      .a_req_i     ( mst_data_req     ),
-      .a_we_i      ( mst_data_we      ),
-      .a_be_i      ( mst_data_be      ),
-      .a_addr_i    ( mst_data_addr    ),
-      .a_wdata_i   ( mst_data_wdata   ),
-      .a_rvalid_o  ( mst_data_rvalid  ),
-      .a_rdata_o   ( mst_data_rdata   ),
-
-      .b_req_i     ( mst_instr_req    ),
-      .b_we_i      ( mst_instr_we     ),
-      .b_be_i      ( mst_instr_be     ),
-      .b_addr_i    ( mst_instr_addr   ),
-      .b_wdata_i   ( mst_instr_wdata  ),
-      .b_rvalid_o  ( mst_instr_rvalid ),
-      .b_rdata_o   ( mst_instr_rdata  )
-  );
-
-   */
   simulator_ctrl #(
     .LogName("log.log")
     ) u_simulator_ctrl (
@@ -1228,8 +1161,6 @@ module opentitan
       .rdata_o   (device_rdata[SimCtrl])
 
     );
-
-
    
   ram_2p #(
       .Depth(1024*1024/4),
@@ -1254,19 +1185,47 @@ module opentitan
       .b_rvalid_o  (instr_rvalid),
       .b_rdata_o   (instr_rdata)
     );
-
+   
+  axi_dw_converter #(
+     .AxiMaxReads        ( AXI_MAX_READS           ),
+     .AxiSlvPortDataWidth( AXI_SLV_PORT_DATA_WIDTH ),
+     .AxiMstPortDataWidth( AXI_MST_PORT_DATA_WIDTH ),
+     .AxiAddrWidth       ( AXI_ADDR_WIDTH          ),
+     .AxiIdWidth         ( AXI_ID_WIDTH            ),
+     .aw_chan_t          ( aw_chan_t               ),
+     .mst_w_chan_t       ( mst_w_chan_t            ),
+     .slv_w_chan_t       ( slv_w_chan_t            ),
+     .b_chan_t           ( b_chan_t                ),
+     .ar_chan_t          ( ar_chan_t               ),
+     .mst_r_chan_t       ( mst_r_chan_t            ),
+     .slv_r_chan_t       ( slv_r_chan_t            ),
+     .axi_mst_req_t      ( mst_req_t               ),
+     .axi_mst_resp_t     ( mst_resp_t              ),
+     .axi_slv_req_t      ( slv_req_t               ),
+     .axi_slv_resp_t     ( slv_resp_t              )
+  ) i_axi_dw_converter (
+    .clk_i      ( clkmgr_aon_clocks.clk_main_infra    ),
+    .rst_ni     ( rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]   ),
+    // slave port
+    .slv_req_i  ( axi_req32  ),
+    .slv_resp_o ( axi_rsp32  ),
+    // master port
+    .mst_req_o  ( axi_req  ),
+    .mst_resp_i ( axi_rsp  )
+  );
+   
   tlul2axi #(
-      .axi_req_t (axi_req_t),
-      .axi_resp_t(axi_resp_t)
+      .axi_req_t (slv_req_t),
+      .axi_resp_t(slv_resp_t)
   ) u_axi_xbar_mst (
       .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
       .clk_i(clkmgr_aon_clocks.clk_main_infra),
       .tl_req(core2alsaqr),
       .tl_rsp(alsaqr2core),
-      .axi_req,
-      .axi_rsp
+      .axi_req(axi_req32),
+      .axi_rsp(axi_rsp32)
   );
-
+/*
   tlul2axi #(
       .axi_req_t (axi_req_t),
       .axi_resp_t(axi_resp_t)
@@ -1292,9 +1251,9 @@ module opentitan
       .ibex_axi_req,
       .ibex_axi_rsp
   );
-   
-   assert property (@(posedge axi_req.w_valid) (core2alsaqr.a_data == axi_req.w.data));
-   assert property (@(posedge axi_req.r_valid) (alsaqr2core.d_data == axi_rsp.r.data));
+  */ 
+   assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
+   assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
 
   
    

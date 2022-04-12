@@ -55,7 +55,7 @@
       sim_ctrl
       ram_2p
       alsaqr
-      mailbox
+      //mailbox
       rv_dm.regs
       sram_ctrl_main.ram
       peri
@@ -184,7 +184,7 @@
       addr_range:
       [
         {
-          base_addr: 0x47000000
+          base_addr: 0x50000000
           size_byte: 0x1000
         }
       ]
@@ -192,7 +192,7 @@
       stub: false
       pipeline: "true"
     }
-    {
+   /* {
       name: mailbox
       type: device
       clock: clk_main_i
@@ -209,7 +209,7 @@
       xbar: false
       stub: false
       pipeline: "true"
-    }
+    }*/
     {
       name: instr_mem
       type: device

@@ -14,7 +14,7 @@ module tlul2axi
   #(
     parameter int unsigned AXI_ID_WIDTH      = 8,
     parameter int unsigned AXI_ADDR_WIDTH    = 64,
-    parameter int unsigned AXI_DATA_WIDTH    = 64,
+    parameter int unsigned AXI_DATA_WIDTH    = 32,
     parameter int unsigned AXI_USER_WIDTH    = 1,
     parameter type axi_req_t  = logic,
     parameter type axi_resp_t = logic
@@ -101,7 +101,7 @@ module tlul2axi
     // Default assignments
         
   
-    axi_req.aw.addr   = { 32'b0, tl_req.a_address};
+    axi_req.aw.addr   = { 32'b0, tl_req.a_address };
     axi_req.aw.prot   = 3'b0;
     axi_req.aw.region = 4'b0;
     axi_req.aw.len    = 8'b0;
@@ -115,7 +115,7 @@ module tlul2axi
     axi_req.aw.user   = '0;
 
    
-    axi_req.ar.addr   = { 32'b0, tl_req.a_address};
+    axi_req.ar.addr   = { 32'b0, tl_req.a_address };
     axi_req.ar.prot   = 3'b0;
     axi_req.ar.region = 4'b0;
     axi_req.ar.len    = 8'b0;
@@ -164,8 +164,8 @@ module tlul2axi
             axi_req.w.last   = 1'b1;
             axi_req.aw_valid = 1'b1;
             axi_req.w_valid  = 1'b1;
-            axi_req.w.data = { 32'b0, tl_req.a_data};
-            axi_req.w.strb = {  4'b0, tl_req.a_mask};
+            axi_req.w.data = tl_req.a_data;
+            axi_req.w.strb = tl_req.a_mask;
             if(axi_rsp.aw_ready && axi_rsp.w_ready)
               tl_rsp.a_ready = 1'b1;
           end                   
@@ -187,8 +187,8 @@ module tlul2axi
       WAIT_W_READY: begin 
           axi_req.w.last   = 1'b1;
           axi_req.w_valid  = 1'b1;
-          axi_req.w.data   = { 32'b0,tl_req.a_data};
-          axi_req.w.strb   = {  4'b0,tl_req.a_mask};
+          axi_req.w.data   = tl_req.a_data;
+          axi_req.w.strb   = tl_req.a_mask;
           if(axi_rsp.w_ready)
             tl_rsp.a_ready = 1'b1;
       end
@@ -208,7 +208,7 @@ module tlul2axi
           tl_rsp.d_source = axi_rsp.r.id;
           tl_rsp.d_opcode = tlul_pkg::AccessAckData;
           tl_rsp.d_error  = axi_rsp.r.resp[1];
-          tl_rsp.d_data   = axi_rsp.r.data[31:0];
+          tl_rsp.d_data   = axi_rsp.r.data;
           tl_rsp.d_valid  = 1'b1;
           axi_req.r_ready = 1'b1;
         end
