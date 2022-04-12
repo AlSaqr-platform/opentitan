@@ -1121,18 +1121,6 @@ module opentitan
    slv_req_t  axi_req32; 
    slv_resp_t axi_rsp32;
    
-
-   
-/*
-  `REQ_ASSIGN(tl_instr_bus.tl_req, core2instr)
-  `RSP_ASSIGN(instr2core, tl_instr_bus.tl_rsp)
-   
-  `REQ_ASSIGN(tl_data_bus.tl_req, core2ram)
-  `RSP_ASSIGN(ram2core, tl_data_bus.tl_rsp)
-
-  `REQ_ASSIGN(tl_simctrl_bus.tl_req, core2simctrl)
-  `RSP_ASSIGN(simctrl2core, tl_simctrl_bus.tl_rsp)
-*/
    
   // Struct breakout module tool-inserted DFT TAP signals
   pinmux_jtag_breakout u_dft_tap_breakout (
@@ -1225,33 +1213,7 @@ module opentitan
       .axi_req(axi_req32),
       .axi_rsp(axi_rsp32)
   );
-/*
-  tlul2axi #(
-      .axi_req_t (axi_req_t),
-      .axi_resp_t(axi_resp_t)
-  ) u_axi_mbox_mst (
-      .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
-      .clk_i(clkmgr_aon_clocks.clk_main_infra),
-      .tl_req(core2mailbox),
-      .tl_rsp(mailbox2core),
-      .axi_req(ibex_axi_req),
-      .axi_rsp(ibex_axi_rsp)
-  );
- 
-  axi_scmi_mailbox #(
-      .AxiAddrWidth(64),
-      .AxiDataWidth(64),
-      .axi_req_t(axi_req_t),
-      .axi_resp_t(axi_resp_t)
-  ) u_scmi_controller (
-      .clk_i(clkmgr_aon_clocks.clk_main_infra),
-      .rst_ni(rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
-      .ariane_axi_req,
-      .ariane_axi_rsp,
-      .ibex_axi_req,
-      .ibex_axi_rsp
-  );
-  */ 
+
    assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
    assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
 
