@@ -89,14 +89,10 @@ sleep_loop:
 
   // All unimplemented interrupts/exceptions go to the default_exc_handler.
   .org 0x00
-  .rept 7
-  jal x0, default_exc_handler
+  .rept 31
+  nop
   .endr
-  jal x0, timer_handler
-  .rept 23
   jal x0, default_exc_handler
-  .endr
-
   // reset vector
   .org 0x80
   jal x0, reset_handler

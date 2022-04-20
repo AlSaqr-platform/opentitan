@@ -207,7 +207,7 @@ module opentitan
   
   input              ast_pkg::ast_alert_req_t sensor_ctrl_ast_alert_req_i,
   output             ast_pkg::ast_alert_rsp_t sensor_ctrl_ast_alert_rsp_o,
-  input              ast_pkg::ast_status_t    sensor_ctrl_ast_status_i,
+  input              ast_pkg::ast_status_t sensor_ctrl_ast_status_i,
   input logic [8:0]  ast2pinmux_i,
   input logic        ast_init_done_i,
   
@@ -219,9 +219,11 @@ module opentitan
   
   output logic       test_reset,
    
-  output             axi_req_t  axi_req,
+  output             axi_req_t axi_req,
   input              axi_resp_t axi_rsp,
 
+  input logic        irq_ibex_i,
+   
   //output             axi_resp_t ariane_axi_rsp,   
   //input              axi_req_t  ariane_axi_req,
 
@@ -607,57 +609,6 @@ module opentitan
     Timer
   } bus_device_e;
 
-/*  
-  AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) axi_data_slave();
-
-  logic [31:0] mst_data_wdata;
-  logic [31:0] mst_data_addr;
-  logic        mst_data_req;
-  logic        mst_data_we;
-  logic [3:0]  mst_data_be;
-   
-  logic [31:0] mst_data_rdata;
-  logic        mst_data_rvalid;
-
-  AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) axi_instr_slave();
-   
-  logic [31:0] mst_simctrl_wdata;
-  logic [31:0] mst_simctrl_addr;
-  logic        mst_simctrl_req;
-  logic        mst_simctrl_we;
-  logic [3:0]  mst_simctrl_be;
-   
-  logic [31:0] mst_simctrl_rdata;
-  logic        mst_simctrl_rvalid;
-
-   
-  AXI_BUS #(
-    .AXI_ADDR_WIDTH ( 32 ),
-    .AXI_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH   ( 3 ),
-    .AXI_USER_WIDTH ( 1 )
-  ) axi_simctrl_slave();
-   
-  logic [31:0] mst_instr_wdata;
-  logic [31:0] mst_instr_addr;
-  logic        mst_instr_req;
-  logic        mst_instr_we;
-  logic [3:0]  mst_instr_be;
-   
-  logic [31:0] mst_instr_rdata;
-  logic        mst_instr_rvalid;
-
-  */ 
   // host and device signals
   logic           host_req    [NrHosts]; 
   logic           host_gnt    [NrHosts];
@@ -2883,7 +2834,7 @@ module opentitan
       1'b0,//intr_i2c1_tx_overflow, // IDs [103 +: 1]
       1'b0,//intr_i2c1_tx_nonempty, // IDs [102 +: 1]
       1'b0,//intr_i2c1_tx_empty, // IDs [101 +: 1]
-      1'b0,//intr_i2c1_trans_complete, // IDs [100 +: 1]
+      irq_ibex_i,//1'b0,//intr_i2c1_trans_complete, // IDs [100 +: 1]
       1'b0,//intr_i2c1_sda_unstable, // IDs [99 +: 1]
       1'b0,//intr_i2c1_stretch_timeout, // IDs [98 +: 1]
       1'b0,//intr_i2c1_sda_interference, // IDs [97 +: 1]

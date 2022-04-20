@@ -147,6 +147,7 @@ unsigned int get_mtval() {
 }
 
 void simple_exc_handler(void) {
+  /*
   puts("EXCEPTION!!!\n");
   puts("============\n");
   puts("MEPC:   0x");
@@ -157,8 +158,46 @@ void simple_exc_handler(void) {
   puthex(get_mtval());
   putchar('\n');
   sim_halt();
+  */
+  
+  int mbox_id = 100;
+  int a, b, c, e, d;
+  int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5, * plic_check;
 
+  //init pointer to check memory
+  p_reg  = (int *) 0x50000004;
+  p_reg1 = (int *) 0x50000008;
+  p_reg2 = (int *) 0x50000010;
+  p_reg3 = (int *) 0x50000014;
+  p_reg4 = (int *) 0x50000018;
+  p_reg5 = (int *) 0x5000001C;
+  
+  // start of """Interrupt Service Routine"""
+  
+  plic_check = (int *) 0x4800031C;
+  while(*plic_check != mbox_id);   //check wether the intr is the correct one
+  
+  p_reg = (int *) 0x50000020;
+ *p_reg = 0x00000000;        //clearing the pending interrupt signal
+ 
+ *plic_check = mbox_id;      //completing interrupt
+
+  a = *p_reg1;
+  b = *p_reg2;
+  c = *p_reg3;
+  d = *p_reg4;
+  e = *p_reg5;
+
+  if( a == 0xBAADC0DE && b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
+      p_reg = (int *) 0x50000024; // completion interrupt to ariane agent
+     *p_reg = 0x00000001;
+  }
+  else{
+     sim_halt();
+  }
+  
   while(1);
+  sim_halt();
 }
 
 volatile uint64_t time_elapsed;
