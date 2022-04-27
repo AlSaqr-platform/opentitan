@@ -146,20 +146,7 @@ unsigned int get_mtval() {
   return result;
 }
 
-void simple_exc_handler(void) {
-  /*
-  puts("EXCEPTION!!!\n");
-  puts("============\n");
-  puts("MEPC:   0x");
-  puthex(get_mepc());
-  puts("\nMCAUSE: 0x");
-  puthex(get_mcause());
-  puts("\nMTVAL:  0x");
-  puthex(get_mtval());
-  putchar('\n');
-  sim_halt();
-  */
-  
+void external_irq_handler(void)  {
   int mbox_id = 100;
   int a, b, c, e, d;
   int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5, * plic_check;
@@ -193,10 +180,20 @@ void simple_exc_handler(void) {
      *p_reg = 0x00000001;
   }
   else{
-     sim_halt();
+      sim_halt();
   }
-  
   while(1);
+}
+void simple_exc_handler(void) {
+  puts("EXCEPTION!!!\n");
+  puts("============\n");
+  puts("MEPC:   0x");
+  puthex(get_mepc());
+  puts("\nMCAUSE: 0x");
+  puthex(get_mcause());
+  puts("\nMTVAL:  0x");
+  puthex(get_mtval());
+  putchar('\n');
   sim_halt();
 }
 

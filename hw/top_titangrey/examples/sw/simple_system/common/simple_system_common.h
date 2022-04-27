@@ -20,6 +20,9 @@
  * @param c Character to output
  * @returns Character output (never fails so no EOF ever returned)
  */
+
+void external_irq_handler(void) __attribute__((interrupt));
+
 int putchar(int c);
 
 bool putbool(bool c);

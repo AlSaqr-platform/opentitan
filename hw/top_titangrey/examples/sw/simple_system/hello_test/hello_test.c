@@ -45,39 +45,14 @@ int main(int argc, char **argv) {
 
   /////////////////////////// shared memory test start ///////////////////////////////
 
-  asm volatile ("wfi");
 
-  /* plic_check = (int *) 0x4800031C;
+  plic_check = (int *) 0x4800031C;
   while(*plic_check != mbox_id) 
     asm volatile ("wfi");
-  
-  // start of """Interrupt Service Routine"""
-  
-  p_reg = (int *) 0x50000020;
-  
- *p_reg      = 0x00000000;
- *plic_check = mbox_id;
-  
-  // end   of """Interrupt Service Routine"""
-
-  a = *p_reg1;
-  b = *p_reg2;
-  c = *p_reg3;
-  d = *p_reg4;
-  e = *p_reg5;
-
-  if( a == 0xBAADC0DE && b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
-      p_reg = (int *) 0x50000024; // completion interrupt
-     *p_reg = 0x00000001;
-  }
-  else{
-     sim_halt();
-  }
-  
+ 
   while(1);
   sim_halt();
 
- */
   return 0;
   
 }

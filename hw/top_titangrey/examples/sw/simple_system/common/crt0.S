@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 #include "simple_system_regs.h"
-
+  
 .section .text
 
 default_exc_handler:
@@ -49,6 +49,7 @@ reset_handler:
   /* stack initilization */
   la   x2, _stack_start
 
+
 _start:
   .global _start
 
@@ -81,18 +82,28 @@ sleep_loop:
   wfi
   j sleep_loop
 
+  
 /* =================================================== [ exceptions ] === */
 /* This section has to be down here, since we have to disable rvc for it  */
 
   .section .vectors, "ax"
   .option norvc;
-
-  // All unimplemented interrupts/exceptions go to the default_exc_handler.
+  
   .org 0x00
-  .rept 31
+  .rept 10
   nop
   .endr
   jal x0, default_exc_handler
+  
+  jal x0, external_irq_handler
+
+  .org 0x34
+  .rept 18
+  nop
+  .endr
+  mret /* jal x0, default_exc_handler*/
+
   // reset vector
   .org 0x80
   jal x0, reset_handler
+
