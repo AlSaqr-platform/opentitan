@@ -100,7 +100,8 @@ module opentitan
   parameter bit OtbnStub = 0,
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
-  parameter RomCtrlBootRomInitFile = "",
+  parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem",
+  parameter RomCtrlBootRomInitFile = SRAMInitFile,
   parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1,
@@ -235,7 +236,6 @@ module opentitan
   
    
     
-  parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem";
   localparam int NrDevices = 3;
   localparam int NrHosts = 1;
 
@@ -2933,8 +2933,6 @@ module opentitan
     .tl_alsaqr_i(alsaqr2core),
     .tl_alsaqr_o(core2alsaqr),
 
-    .tl_mailbox_i(mailbox2core),
-    .tl_mailbox_o(core2mailbox),
 
 
     // port: tl_rv_dm__sba
