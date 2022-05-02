@@ -19,7 +19,7 @@ module testbench ();
    logic [3:0] tieoff_data = 4'b0;
    logic       enable      = 1'b0;
    logic       test_reset;
-
+   logic       irq_ibex_i;
 
 
    
@@ -131,27 +131,41 @@ module testbench ();
     .clk_usb_i(clk_sys),
     .clk_aon_i(clk_sys),
     .axi_req(axi_req),
-    .axi_rsp(axi_rsp)
+    .axi_rsp(axi_rsp),
+    .irq_ibex_i
    );
+   
+   initial begin  : ibex_irq
+     
+     @(posedge rst_sys_n);
+     irq_ibex_i = 1'b0;
+      
+     repeat (800) @(posedge clk_sys);
+     irq_ibex_i = 1'b1;
+      
+     repeat (10)  @(posedge clk_sys);
+     irq_ibex_i = 1'b0;
+      
+   end
    
    initial begin  : main_clock_rst_process
  
-    clk_sys   = 1'b0;
-    rst_sys_n = 1'b0;
-    repeat (10)
-      #(RTC_CLOCK_PERIOD/2) clk_sys = 1'b0;
-      rst_sys_n = 1'b1;
-    forever
-      #(RTC_CLOCK_PERIOD/2) clk_sys = ~clk_sys;
+     clk_sys   = 1'b0;
+     rst_sys_n = 1'b0;
+     repeat (10)
+       #(RTC_CLOCK_PERIOD/2) clk_sys = 1'b0;
+       rst_sys_n = 1'b1;
+     forever
+       #(RTC_CLOCK_PERIOD/2) clk_sys = ~clk_sys;
    end
 
    initial begin  : axi_slave_process
       
-    @(posedge rst_sys_n);
-    axi_rand_slave.reset();
-    repeat (4) @(posedge clk_sys);
+     @(posedge rst_sys_n);
+     axi_rand_slave.reset();
+     repeat (4) @(posedge clk_sys);
 
-    axi_rand_slave.run();
+     axi_rand_slave.run();
    
    end
       

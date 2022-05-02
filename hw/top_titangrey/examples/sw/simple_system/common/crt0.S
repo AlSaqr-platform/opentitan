@@ -101,7 +101,7 @@ sleep_loop:
   .rept 18
   nop
   .endr
-  mret /* jal x0, default_exc_handler*/
+  jal x0, default_exc_handler
 
   // reset vector
   .org 0x80

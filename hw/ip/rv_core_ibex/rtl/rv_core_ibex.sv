@@ -245,7 +245,7 @@ module rv_core_ibex
     .lc_en_o(pwrmgr_cpu_en)
   );
 
-  ibex_top #(
+  ibex_top_tracing #(
     .PMPEnable                ( PMPEnable                ),
     .PMPGranularity           ( PMPGranularity           ),
     .PMPNumRegions            ( PMPNumRegions            ),
@@ -307,33 +307,7 @@ module rv_core_ibex
 
     .debug_req_i,
     .crash_dump_o,
-
-`ifdef RVFI
-    .rvfi_valid,
-    .rvfi_order,
-    .rvfi_insn,
-    .rvfi_trap,
-    .rvfi_halt,
-    .rvfi_intr,
-    .rvfi_mode,
-    .rvfi_ixl,
-    .rvfi_rs1_addr,
-    .rvfi_rs2_addr,
-    .rvfi_rs3_addr,
-    .rvfi_rs1_rdata,
-    .rvfi_rs2_rdata,
-    .rvfi_rs3_rdata,
-    .rvfi_rd_addr,
-    .rvfi_rd_wdata,
-    .rvfi_pc_rdata,
-    .rvfi_pc_wdata,
-    .rvfi_mem_addr,
-    .rvfi_mem_rmask,
-    .rvfi_mem_wmask,
-    .rvfi_mem_rdata,
-    .rvfi_mem_wdata,
-`endif
-
+            
     .fetch_enable_i   (1'b1),//lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),
     .alert_minor_o    (alert_minor),
     .alert_major_o    (alert_major),

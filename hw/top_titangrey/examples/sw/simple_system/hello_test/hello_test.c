@@ -46,11 +46,11 @@ int main(int argc, char **argv) {
   /////////////////////////// shared memory test start ///////////////////////////////
 
 
-  plic_check = (int *) 0x4800031C;
-  while(*plic_check != mbox_id) 
-    asm volatile ("wfi");
+  plic_check = (int *) 0x4800031C; 
+  asm volatile ("wfi");
  
-  while(1);
+  //while(1);
+  puts("Test succeed\n");
   sim_halt();
 
   return 0;

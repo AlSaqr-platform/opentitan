@@ -55,6 +55,11 @@ export_include_dirs:
 #      - hw/top_earlgrey/rtl/
 
 sources:
+
+      defines:
+        RVFI: true
+      files:
+      
 ###### dbg_rv
 
       - hw/vendor/pulp_riscv_dbg/debug_rom/debug_rom.sv
@@ -229,7 +234,7 @@ sources:
       - hw/vendor/lowrisc_ibex/rtl/ibex_if_stage.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_core.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_top.sv
-      
+      - hw/vendor/lowrisc_ibex/rtl/ibex_top_tracing.sv      
 #### core wrapper
 
       - hw/top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_pkg.sv

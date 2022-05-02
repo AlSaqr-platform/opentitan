@@ -48,6 +48,7 @@ void puthex(uint32_t h) {
   }
 }
 
+
 void sim_halt() { DEV_WRITE(SIM_CTRL_BASE + SIM_CTRL_CTRL, 1); }
 
 void pcount_reset() {
@@ -174,15 +175,16 @@ void external_irq_handler(void)  {
   c = *p_reg3;
   d = *p_reg4;
   e = *p_reg5;
-
+  return;
+  /*sim_halt();
   if( a == 0xBAADC0DE && b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
       p_reg = (int *) 0x50000024; // completion interrupt to ariane agent
      *p_reg = 0x00000001;
   }
   else{
       sim_halt();
-  }
-  while(1);
+      }*/
+  //while(1);
 }
 void simple_exc_handler(void) {
   puts("EXCEPTION!!!\n");
@@ -245,3 +247,4 @@ void simple_timer_handler(void) {
   increment_timecmp(time_increment);
   time_elapsed++;
 }
+

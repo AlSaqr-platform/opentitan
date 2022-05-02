@@ -100,7 +100,7 @@ module opentitan
   parameter bit OtbnStub = 0,
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
-  parameter SRAMInitFile = "/scratch/ciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem",
+  parameter SRAMInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem",
   parameter RomCtrlBootRomInitFile = SRAMInitFile,
   parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
   // parameters for rv_core_ibex
