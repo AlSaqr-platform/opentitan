@@ -655,4 +655,6 @@ sources:
 ##### testbench
 
       #- hw/top_titangrey/tb/adapter_testbench.sv
+      - hw/top_titangrey/tb/jtag_intf.sv
+      - hw/top_titangrey/tb/jtag_test.sv
       - hw/top_titangrey/tb/testbench.sv

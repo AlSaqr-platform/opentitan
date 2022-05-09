@@ -36,7 +36,8 @@
 
 
 module opentitan 
-  import axi_pkg::*; 
+  import axi_pkg::*;
+  import jtag_pkg::*;
   #(
 
   // Manually defined parameters
@@ -71,7 +72,7 @@ module opentitan
   // parameters for aon_timer_aon
   // parameters for sensor_ctrl_aon
   // parameters for sram_ctrl_ret_aon
-  parameter bit SramCtrlRetAonInstrExec = 0,
+  parameter bit SramCtrlRetAonInstrExec = 1,//0,
   // parameters for flash_ctrl
   // parameters for rv_dm
   parameter logic [31:0] RvDmIdcodeValue = 32'h 0000_0001,
@@ -100,8 +101,8 @@ module opentitan
   parameter bit OtbnStub = 0,
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
-  parameter SRAMInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.vmem",
-  parameter RomCtrlBootRomInitFile = SRAMInitFile,
+  parameter SRAMInitFile = "",//home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/ram.vmem",
+  parameter RomCtrlBootRomInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/bootrom.vmem",
   parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1,
@@ -151,7 +152,6 @@ module opentitan
   output logic       cio_spi_host1_csb_en_d2p,
   output logic [3:0] cio_spi_host1_sd_d2p,
   output logic [3:0] cio_spi_host1_sd_en_d2p,
-
 
   // pad attributes to padring
   output             prim_pad_wrapper_pkg::pad_attr_t [pinmux_reg_pkg::NMioPads-1:0] mio_attr_o,
@@ -230,8 +230,12 @@ module opentitan
 
   input              scan_rst_ni, // reset used for test mode
   input              scan_en_i,
-  input              lc_ctrl_pkg::lc_tx_t scanmode_i   // lc_ctrl_pkg::On for Scan
+  input              lc_ctrl_pkg::lc_tx_t scanmode_i,   // lc_ctrl_pkg::On for Scan
    
+  input              jtag_pkg::jtag_req_t jtag_i,
+  output             jtag_pkg::jtag_rsp_t jtag_o,
+
+  input logic        rst_ibex_n
   );
   
    
@@ -602,7 +606,39 @@ module opentitan
   logic intr_edn1_edn_fatal_err;
   logic intr_otbn_done;
 
-     
+  // simctrl signals
+  logic           device_req;
+  logic [31:0]    device_addr;
+  logic           device_we;
+  logic [ 3:0]    device_be;
+  logic [31:0]    device_wdata;
+  logic           device_rvalid; 
+  logic [31:0]    device_rdata;
+  logic           device_err;
+
+  // simcontrol ibexprot2tlul
+   
+   assign device_req             = core2simctrl.a_valid;
+   assign device_addr            = core2simctrl.a_address;
+   assign device_be              = core2simctrl.a_mask;
+   assign device_we              =  ~(core2simctrl.a_opcode[2] || core2simctrl.a_opcode[0]);
+   assign device_wdata           = core2simctrl.a_data;
+   assign simctrl2core.d_valid   = device_rvalid; 
+   assign simctrl2core.a_ready   = 1'b1; 
+   assign simctrl2core.d_data    = device_rdata;
+   assign simctrl2core.d_opcode  = tlul_pkg::AccessAckData;
+   assign simctrl2core.d_error   = device_err;
+   assign simctrl2core.d_param   = core2simctrl.a_param;
+   assign simctrl2core.d_size    = core2simctrl.a_size;
+   assign simctrl2core.d_source  = core2simctrl.a_source;
+   assign simctrl2core.d_user    = TL_D_USER_DEFAULT;
+   assign simctrl2core.d_sink    = '0;
+
+   assign device_err = 1'b0;
+
+  
+
+/*     
   typedef enum logic[1:0] {
     Ram,
     SimCtrl,
@@ -629,6 +665,15 @@ module opentitan
   logic           device_rvalid [NrDevices]; 
   logic [31:0]    device_rdata  [NrDevices];
   logic           device_err    [NrDevices];
+
+  logic           device_req_;
+  logic [31:0]    device_addr_;
+  logic           device_we_;
+  logic [ 3:0]    device_be_;
+  logic [31:0]    device_wdata_;
+  logic           device_rvalid_; 
+  logic [31:0]    device_rdata_;
+  logic           device_err_;
    
 
   // Instruction fetch signals
@@ -646,6 +691,7 @@ module opentitan
 
   // Tie-off unused error signals
   assign device_err[Ram] = 1'b0;
+  assign device_err_     = 1'b0;
   assign device_err[SimCtrl] = 1'b0;
 
 // protocol conversion for the simctrl and ram, not opentitan ips so not implementing tile link
@@ -686,7 +732,24 @@ module opentitan
     assign simctrl2core.d_source           = core2simctrl.a_source;
     assign simctrl2core.d_user             = TL_D_USER_DEFAULT;
     assign simctrl2core.d_sink               = '0;
- 
+
+// test ram ibexprot2tlul
+   
+    assign device_req_              = tcore2simctrl.a_valid;
+    assign device_addr_             = tcore2simctrl.a_address;
+    assign device_be_               = tcore2simctrl.a_mask;
+    assign device_we_               =  ~(tcore2simctrl.a_opcode[2] || tcore2simctrl.a_opcode[0]);
+    assign device_wdata_            = tcore2simctrl.a_data;
+    assign tsimctrl2core.d_valid    = device_rvalid_; 
+    assign tsimctrl2core.a_ready    = 1'b1; 
+    assign tsimctrl2core.d_data     = device_rdata_;
+    assign tsimctrl2core.d_opcode   = tlul_pkg::AccessAckData;
+    assign tsimctrl2core.d_error    = device_err_;
+    assign tsimctrl2core.d_param    = tcore2simctrl.a_param;
+    assign tsimctrl2core.d_size     = tcore2simctrl.a_size;
+    assign tsimctrl2core.d_source   = tcore2simctrl.a_source;
+    assign tsimctrl2core.d_user     = TL_D_USER_DEFAULT;
+    assign tsimctrl2core.d_sink     = '0; 
 
 
 // ram ibexprot2tlul
@@ -707,7 +770,7 @@ module opentitan
     assign ram2core.d_user                 = TL_D_USER_DEFAULT;
     assign ram2core.d_sink                 = '0;
    
-   
+*/   
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
   prim_alert_pkg::alert_rx_t [alert_pkg::NAlerts-1:0]  alert_rx;
@@ -909,20 +972,16 @@ module opentitan
   tlul_pkg::tl_d2h_t       sysrst_ctrl_aon_tl_rsp;
   tlul_pkg::tl_h2d_t       adc_ctrl_aon_tl_req;
   tlul_pkg::tl_d2h_t       adc_ctrl_aon_tl_rsp;
-   
+
+
   tlul_pkg::tl_h2d_t       core2simctrl;
   tlul_pkg::tl_d2h_t       simctrl2core;
-  tlul_pkg::tl_h2d_t       core2ram;
-  tlul_pkg::tl_d2h_t       ram2core;
-  tlul_pkg::tl_h2d_t       core2instr;
-  tlul_pkg::tl_d2h_t       instr2core;
+  //tlul_pkg::tl_h2d_t       core2ram;
+  //tlul_pkg::tl_d2h_t       ram2core;
+  //tlul_pkg::tl_h2d_t       core2instr;
+  //tlul_pkg::tl_d2h_t       instr2core;
   tlul_pkg::tl_h2d_t       core2alsaqr;
   tlul_pkg::tl_d2h_t       alsaqr2core;
-  tlul_pkg::tl_h2d_t       core2mailbox;
-  tlul_pkg::tl_d2h_t       mailbox2core;
-
-  axi_req_t   ibex_axi_req;
-  axi_resp_t  ibex_axi_rsp;
   
   rstmgr_pkg::rstmgr_out_t       rstmgr_aon_resets;
   clkmgr_pkg::clkmgr_out_t       clkmgr_aon_clocks;
@@ -1037,7 +1096,7 @@ module opentitan
   assign rv_core_ibex_irq_timer = intr_rv_timer_timer_expired_0_0;
   assign rv_core_ibex_hart_id = '0;
    
-  assign rv_core_ibex_boot_addr = 32'h 00100000;  // ADDR_SPACE_ROM_CTRL__ROM;
+  assign rv_core_ibex_boot_addr = ADDR_SPACE_ROM_CTRL__ROM;
 
   parameter int unsigned AXI_ID_WIDTH            = 8; 
   parameter int unsigned AXI_ADDR_WIDTH          = 64; 
@@ -1091,16 +1150,16 @@ module opentitan
       .clk_i     (clk_main_i),
       .rst_ni    (por_n_i),
 
-      .req_i     (device_req[SimCtrl]),
-      .we_i      (device_we[SimCtrl]),
-      .be_i      (device_be[SimCtrl]),
-      .addr_i    (device_addr[SimCtrl]),
-      .wdata_i   (device_wdata[SimCtrl]),
-      .rvalid_o  (device_rvalid[SimCtrl]),
-      .rdata_o   (device_rdata[SimCtrl])
+      .req_i     (device_req),
+      .we_i      (device_we),
+      .be_i      (device_be),
+      .addr_i    (device_addr),
+      .wdata_i   (device_wdata),
+      .rvalid_o  (device_rvalid),
+      .rdata_o   (device_rdata)
 
     );
-   
+  /* 
   ram_2p #(
       .Depth(1024*1024/4),
       .MemInitFile(SRAMInitFile)
@@ -1123,7 +1182,7 @@ module opentitan
       .b_wdata_i   (32'b0),
       .b_rvalid_o  (instr_rvalid),
       .b_rdata_o   (instr_rdata)
-    );
+    );*/
    
   axi_dw_converter #(
      .AxiMaxReads        ( AXI_MAX_READS           ),
@@ -1168,8 +1227,6 @@ module opentitan
    assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
    assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
 
-  
-   
   uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[0:0])
   ) u_uart0 (
@@ -2287,9 +2344,9 @@ module opentitan
       .alert_rx_i  ( alert_rx[46] ),
 
       // Inter-module signals
-      .jtag_i(pinmux_aon_rv_jtag_req),
-      .jtag_o(pinmux_aon_rv_jtag_rsp),
-      .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
+      .jtag_i,//pinmux_aon_rv_jtag_req),
+      .jtag_o,//pinmux_aon_rv_jtag_rsp),
+      .lc_hw_debug_en_i(lc_ctrl_pkg::On),//lc_ctrl_lc_hw_debug_en),
       .unavailable_i(1'b0),
       .ndmreset_req_o(rv_dm_ndmreset_req),
       .dmactive_o(),
@@ -2595,7 +2652,7 @@ module opentitan
     .RndCnstLfsrSeed(RndCnstSramCtrlMainLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlMainLfsrPerm),
     .MemSizeRam(131072),
-    .InstrExec(SramCtrlMainInstrExec)
+    .InstrExec(1)//SramCtrlMainInstrExec)
   ) u_sram_ctrl_main (
       // [62]: fatal_error
       .alert_tx_o  ( alert_tx[62] ),
@@ -2605,9 +2662,9 @@ module opentitan
       .sram_otp_key_o(otp_ctrl_sram_otp_key_req[0]),
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
-      .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
-      .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
-      .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),
+      .lc_escalate_en_i(lc_ctrl_lc_escalate_en),//lc_ctrl_pkg::On),
+      .lc_hw_debug_en_i(lc_ctrl_pkg::On),//lc_ctrl_lc_hw_debug_en),//
+      .otp_en_sram_ifetch_i(prim_mubi_pkg::MuBi8True),//sram_ctrl_main_otp_en_sram_ifetch),
       .regs_tl_i(sram_ctrl_main_regs_tl_req),
       .regs_tl_o(sram_ctrl_main_regs_tl_rsp),
       .ram_tl_i(sram_ctrl_main_ram_tl_req),
@@ -2688,9 +2745,6 @@ module opentitan
   );
 
   rv_core_ibex #(
-
-
-                 
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[69:66]),
     .RndCnstLfsrSeed(RndCnstRvCoreIbexLfsrSeed),
     .RndCnstLfsrPerm(RndCnstRvCoreIbexLfsrPerm),
@@ -2921,19 +2975,17 @@ module opentitan
     .tl_rv_core_ibex__cored_i(main_tl_rv_core_ibex__cored_req),
     .tl_rv_core_ibex__cored_o(main_tl_rv_core_ibex__cored_rsp),
 
-    .tl_instr_mem_i(instr2core),
-    .tl_instr_mem_o(core2instr),
+    //.tl_instr_mem_i(instr2core),
+    //.tl_instr_mem_o(core2instr),
 
-    .tl_ram_2p_i(ram2core),
-    .tl_ram_2p_o(core2ram),
+    //.tl_ram_2p_i(ram2core),
+    //.tl_ram_2p_o(core2ram),
 
     .tl_sim_ctrl_i(simctrl2core),
     .tl_sim_ctrl_o(core2simctrl),
 
     .tl_alsaqr_i(alsaqr2core),
     .tl_alsaqr_o(core2alsaqr),
-
-
 
     // port: tl_rv_dm__sba
     .tl_rv_dm__sba_i(main_tl_rv_dm__sba_req),
@@ -3020,8 +3072,8 @@ module opentitan
     .tl_sram_ctrl_main__regs_i(sram_ctrl_main_regs_tl_rsp),
 
     // port: tl_sram_ctrl_main__ram
-    .tl_sram_ctrl_main__ram_o(sram_ctrl_main_ram_tl_req),
-    .tl_sram_ctrl_main__ram_i(sram_ctrl_main_ram_tl_rsp),
+    .tl_sram_ctrl_main__ram_o(sram_ctrl_main_ram_tl_req),//tcore2simctrl),//
+    .tl_sram_ctrl_main__ram_i(sram_ctrl_main_ram_tl_rsp),//tsimctrl2core),//
 
     // port: tl_spi_host0
     .tl_spi_host0_o(spi_host0_tl_req),

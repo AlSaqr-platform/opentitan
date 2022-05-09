@@ -1,7 +1,7 @@
 GIT ?= git
 BENDER ?= bender
 VSIM ?= vsim
-
+DPI-LIB ?= work-dpi
 all: sim_all 
 
 clean: sim_clean

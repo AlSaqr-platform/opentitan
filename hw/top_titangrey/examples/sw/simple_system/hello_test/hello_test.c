@@ -1,58 +1,55 @@
-
-// Copyright lowRISC contributors.
-// Licensed under the Apache License, Version 2.0, see LICENSE for details.
-// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2022 ETH Zurich and University of Bologna
+// Copyright and related rights are licensed under the Solderpad Hardware
+// License, Version 0.51 (the "License"); you may not use this file except in
+// compliance with the License.  You may obtain a copy of the License at
+// http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
+// or agreed to in writing, software, hardware and materials distributed under
+// this License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+//
+//
 
 #include "simple_system_common.h"
 #include <stdbool.h>
 
 int main(int argc, char **argv) {
 
-  #define PLIC_BASE     0x48000000
-  #define PLIC_PRIO     PLIC_BASE + 0x030
-  #define PLIC_CHECK    PLIC_BASE + 0x31C
   
-  //enable bits for sources 0-31
-  #define PLIC_EN_BITS  PLIC_BASE + 0x300
-  
-  int a, b, c, d, e, f;
-  int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5, * plic_check, * plic_prio, * plic_en, * ibex_intr_setup;
-  int mbox_id = 100;
+  int volatile  * plic_prio, * plic_en;
+  /*int a;
 
-  unsigned val_1 = 0x00001808;  //set global interrupt enable in ibex regs
-  unsigned val_2 = 0x00000800;  //set external interrupts
-  
+  for(int i = 0x10000000; i<0x1000001F; i = i + 0x4){
+    plic_en = (int *) i;
+    *plic_en = 0xdeadc0de;
+  }
+
+  for(int j = 0x10000000; j<0x1000001F; j = j + 0x4){
+    plic_en = (int *) j;
+    puthex(*plic_en);
+    puts("\n");
+  }
+  */
+
+
+  unsigned val_1 = 0x00001808;  // Set global interrupt enable in ibex regs
+  unsigned val_2 = 0x00000800;  // Set external interrupts
+
+  // Enabling ibex irqs 
   asm volatile("csrw  mstatus, %0\n" : : "r"(val_1)); 
   asm volatile("csrw  mie, %0\n"     : : "r"(val_2));
 
-  // init pointers for mem test
-  
-  p_reg  = (int *) 0x50000004;
-  p_reg1 = (int *) 0x50000008;
-  p_reg2 = (int *) 0x50000010;
-  p_reg3 = (int *) 0x50000014;
-  p_reg4 = (int *) 0x50000018;
-  p_reg5 = (int *) 0x5000001C;
-  
-  //set mbox interrupt
-  
-  plic_prio  = (int *) 0x480001C0;  //priority reg
-  plic_en    = (int *) 0x4800030C;  //enable reg
+  // Enabling the interrupt controller and the mbox irq
+  plic_prio  = (int *) 0x480001C0;  // Priority reg
+  plic_en    = (int *) 0x4800030C;  // Enable reg
 
- *plic_prio  = 1;                   // set mbox interrupt priority to 1
- *plic_en    = 0x00000010;          // enable interrupt                       
-   
-
+ *plic_prio  = 1;                   // Set mbox interrupt priority to 1
+ *plic_en    = 0x00000010;          // Enable interrupt                       
+ 
   /////////////////////////// shared memory test start ///////////////////////////////
 
-
-  plic_check = (int *) 0x4800031C; 
-  asm volatile ("wfi");
- 
-  //while(1);
-  puts("Test succeed\n");
-  sim_halt();
-
+  while(1) asm volatile ("wfi"); // Ready to receive a command from the Agent --> Jump to the External_Irq_Handler 
+  
   return 0;
   
 }

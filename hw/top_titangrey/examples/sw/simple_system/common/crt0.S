@@ -56,7 +56,6 @@ _start:
   /* clear BSS */
   la x26, _bss_start
   la x27, _bss_end
-
   bge x26, x27, zero_loop_end
 
 zero_loop:
@@ -72,11 +71,11 @@ main_entry:
   addi x11, x0, 0
   jal x1, main
 
-  /* Halt simulation */
+  /* Halt simulation 
   li x5, SIM_CTRL_BASE + SIM_CTRL_CTRL
   li x6, 1
   sw x6, 0(x5)
-
+  */
   /* If execution ends up here just put the core to sleep */
 sleep_loop:
   wfi
@@ -91,8 +90,9 @@ sleep_loop:
   
   .org 0x00
   .rept 10
-  nop
+  jal x0, default_exc_handler
   .endr
+  
   jal x0, default_exc_handler
   
   jal x0, external_irq_handler

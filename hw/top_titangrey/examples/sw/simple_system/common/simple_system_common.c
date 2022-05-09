@@ -148,6 +148,21 @@ unsigned int get_mtval() {
 }
 
 void external_irq_handler(void)  {
+  /*
+  int a;
+  int * plic_en;
+
+  for(int i = 0x10000000; i<0x1000001F; i = i + 0x4){
+    plic_en = (int *) i;
+    *plic_en = 0xdeadc0de;
+  }
+
+  for(int j = 0x10000000; j<0x1000001F; j = j + 0x4){
+    plic_en = (int *) j;
+    puthex(*plic_en);
+    puts("\n");
+  }
+  */
   int mbox_id = 100;
   int a, b, c, e, d;
   int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5, * plic_check;
@@ -175,16 +190,16 @@ void external_irq_handler(void)  {
   c = *p_reg3;
   d = *p_reg4;
   e = *p_reg5;
-  return;
-  /*sim_halt();
+  
+  
   if( a == 0xBAADC0DE && b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
       p_reg = (int *) 0x50000024; // completion interrupt to ariane agent
      *p_reg = 0x00000001;
   }
   else{
       sim_halt();
-      }*/
-  //while(1);
+      }
+  return;
 }
 void simple_exc_handler(void) {
   puts("EXCEPTION!!!\n");
