@@ -166,7 +166,7 @@ module testbench ();
     .cio_spi_host1_sd_p2d(tieoff_data),
  
     .scan_rst_ni (rst_sys_n),
-    .scan_en_i (1'b1),
+    .scan_en_i (1'b0),
     .scanmode_i (lc_ctrl_pkg::On),
     .ast_clk_byp_ack_i(lc_ctrl_pkg::Off), 
     

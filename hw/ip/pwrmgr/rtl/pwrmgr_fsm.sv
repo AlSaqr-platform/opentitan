@@ -223,7 +223,7 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
         rst_lc_req_d = '0;  // release rst_lc_n for all power domains
 
         if (&pwr_rst_i.rst_lc_src_n) begin // once all resets are released
-          state_d = FastPwrStateOtpInit;
+          state_d = FastPwrStateOtpInit; //FastPwrStateLcInit;// my test
         end
       end
 
@@ -239,7 +239,7 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
         lc_init = 1'b1;
 
         if (lc_done) begin
-          state_d = FastPwrStateStrap;
+          state_d = FastPwrStateAckPwrUp;//FastPwrStateStrap;
 
         end
       end

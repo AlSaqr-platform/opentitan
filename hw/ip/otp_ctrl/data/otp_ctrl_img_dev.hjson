@@ -64,6 +64,10 @@
                     name:  "EN_ENTROPY_SRC_FW_READ",
                     value: "0xA5",
                 },
+                {
+                    name:  "EN_SRAM_IFETCH",
+                    value: "0x5A",
+                },
             ],
         }
         {

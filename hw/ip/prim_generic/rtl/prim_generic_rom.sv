@@ -24,10 +24,20 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   logic [Width-1:0] mem [Depth];
 
   always_ff @(posedge clk_i) begin
-    rdata_o <= '0; 
+    rdata_o <= '0;
     if (req_i) begin
       rdata_o <= mem[addr_i];
     end
+  end
+
+  initial begin
+
+     for(int i=0; i<Depth; i++) begin
+
+        mem[i] = '0;
+        
+     end
+     
   end
 
   `include "prim_util_memload.svh"

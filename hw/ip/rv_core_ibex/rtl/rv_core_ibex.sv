@@ -308,7 +308,7 @@ module rv_core_ibex
     .debug_req_i,
     .crash_dump_o,
             
-    .fetch_enable_i   (1'b1),//lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),
+    .fetch_enable_i   (lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),//1'b1),//
     .alert_minor_o    (alert_minor),
     .alert_major_o    (alert_major),
     .core_sleep_o     (pwrmgr_o.core_sleeping)

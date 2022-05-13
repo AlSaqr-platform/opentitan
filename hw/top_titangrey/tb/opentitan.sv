@@ -58,7 +58,7 @@ module opentitan
   // parameters for rv_timer
   // parameters for usbdev
   // parameters for otp_ctrl
-  parameter OtpCtrlMemInitFile = "",
+  parameter OtpCtrlMemInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/otp-img.vmem",
   // parameters for lc_ctrl
   // parameters for alert_handler
   // parameters for pwrmgr_aon
@@ -72,7 +72,7 @@ module opentitan
   // parameters for aon_timer_aon
   // parameters for sensor_ctrl_aon
   // parameters for sram_ctrl_ret_aon
-  parameter bit SramCtrlRetAonInstrExec = 1,//0,
+  parameter bit SramCtrlRetAonInstrExec = 0,
   // parameters for flash_ctrl
   // parameters for rv_dm
   parameter logic [31:0] RvDmIdcodeValue = 32'h 0000_0001,
@@ -103,9 +103,10 @@ module opentitan
   // parameters for rom_ctrl
   parameter SRAMInitFile = "",//home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/ram.vmem",
   parameter RomCtrlBootRomInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/bootrom.vmem",
-  parameter bit SecRomCtrlDisableScrambling = 1'b1,  //1'b0,
+  parameter bit SecRomCtrlDisableScrambling = 1'b0,//1'b0,  //
+  //parameter RndCnstRomCtrlScrKey = 128'h19346831865856761597628649319762,
   // parameters for rv_core_ibex
-  parameter bit RvCoreIbexPMPEnable = 0,//1,
+  parameter bit RvCoreIbexPMPEnable = 1,
   parameter int unsigned RvCoreIbexPMPGranularity = 0,
   parameter int unsigned RvCoreIbexPMPNumRegions = 16,
   parameter int unsigned RvCoreIbexMHPMCounterNum = 10,
@@ -114,13 +115,13 @@ module opentitan
   parameter ibex_pkg::rv32m_e RvCoreIbexRV32M = ibex_pkg::RV32MSingleCycle,
   parameter ibex_pkg::rv32b_e RvCoreIbexRV32B = ibex_pkg::RV32BNone,
   parameter ibex_pkg::regfile_e RvCoreIbexRegFile = ibex_pkg::RegFileFF,
-  parameter bit RvCoreIbexBranchTargetALU = 0, //1,
-  parameter bit RvCoreIbexWritebackStage =0,//1,
-  parameter bit RvCoreIbexICache = 0,//1,
-  parameter bit RvCoreIbexICacheECC = 0,//1,
+  parameter bit RvCoreIbexBranchTargetALU = 1,
+  parameter bit RvCoreIbexWritebackStage =1,
+  parameter bit RvCoreIbexICache = 1,
+  parameter bit RvCoreIbexICacheECC = 1,
   parameter bit RvCoreIbexBranchPredictor = 0,
   parameter bit RvCoreIbexDbgTriggerEn = 1,
-  parameter bit RvCoreIbexSecureIbex = 0,//1,
+  parameter bit RvCoreIbexSecureIbex = 1,
   parameter int unsigned RvCoreIbexDmHaltAddr =
       tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0],
   parameter int unsigned RvCoreIbexDmExceptionAddr =
@@ -195,10 +196,7 @@ module opentitan
   
   output             pinmux_pkg::dft_strap_test_req_t dft_strap_test_o,
   input logic        dft_hold_tap_sel_i,
-  
-  output             pwrmgr_pkg::pwr_ast_req_t pwrmgr_ast_req_o,
-  input              pwrmgr_pkg::pwr_ast_rsp_t pwrmgr_ast_rsp_i,
-  
+   
   output             otp_ctrl_pkg::otp_ast_req_t otp_ctrl_otp_ast_pwr_seq_o,
   input              otp_ctrl_pkg::otp_ast_rsp_t otp_ctrl_otp_ast_pwr_seq_h_i,
   inout              otp_ext_voltage_h_io,
@@ -250,9 +248,15 @@ module opentitan
   // Compile-time random constants
   import top_earlgrey_rnd_cnst_pkg::*;
 
+  
+  pwrmgr_pkg::pwr_ast_req_t pwrmgr_ast_req_o;
+  pwrmgr_pkg::pwr_ast_rsp_t pwrmgr_ast_rsp_i = '1;
+
+  //pwrmgr_ast_rsp_i.main_pok = 1'b1;
    
- // Test Reset to provide as output to alsaqr to start the boot
- 
+   
+    
+  // Test Reset to provide as output to alsaqr to start the boot
   logic trigger;
   logic [31:0] count;
   logic t_enable;
@@ -2652,7 +2656,7 @@ module opentitan
     .RndCnstLfsrSeed(RndCnstSramCtrlMainLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlMainLfsrPerm),
     .MemSizeRam(131072),
-    .InstrExec(1)//SramCtrlMainInstrExec)
+    .InstrExec(SramCtrlMainInstrExec)
   ) u_sram_ctrl_main (
       // [62]: fatal_error
       .alert_tx_o  ( alert_tx[62] ),
@@ -2662,9 +2666,9 @@ module opentitan
       .sram_otp_key_o(otp_ctrl_sram_otp_key_req[0]),
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
-      .lc_escalate_en_i(lc_ctrl_lc_escalate_en),//lc_ctrl_pkg::On),
-      .lc_hw_debug_en_i(lc_ctrl_pkg::On),//lc_ctrl_lc_hw_debug_en),//
-      .otp_en_sram_ifetch_i(prim_mubi_pkg::MuBi8True),//sram_ctrl_main_otp_en_sram_ifetch),
+      .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
+      .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
+      .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),//prim_mubi_pkg::MuBi8True),//
       .regs_tl_i(sram_ctrl_main_regs_tl_req),
       .regs_tl_o(sram_ctrl_main_regs_tl_rsp),
       .ram_tl_i(sram_ctrl_main_ram_tl_req),
