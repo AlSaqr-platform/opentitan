@@ -57,7 +57,8 @@ _start:
   la x26, _bss_start
   la x27, _bss_end
   bge x26, x27, zero_loop_end
-
+  
+  
 zero_loop:
   sw x0, 0(x26)
   addi x26, x26, 4
