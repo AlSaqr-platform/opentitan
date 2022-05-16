@@ -32,7 +32,7 @@ module prim_generic_rom import prim_rom_pkg::*; #(
 
   initial begin
 
-     for(int i=0; i<Depth; i++) begin
+     for(int i=0; i< Depth; i++) begin
 
         mem[i] = '0;
         
