@@ -22,6 +22,8 @@ hw/ip/*/sw
 hw/top_titangrey/crossbar/xbar_main/data/*
 hw/top_titangrey/crossbar/xbar_main/xbar_main.core
 
+hw/ip/axi_scmi_mailbox/*
+
 hw/top_titangrey/crossbar/xbar_main/dv/*
 hw/top_titangrey/Bender.lock
 hw/top_titangrey/autogen/*

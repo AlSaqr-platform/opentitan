@@ -195,13 +195,13 @@ module testbench ();
      
      @(posedge rst_sys_n);
      irq_ibex_i = 1'b0;
-      
-     /*repeat (800) @(posedge clk_sys);
+     
+     repeat (70000) @(posedge clk_sys);
      irq_ibex_i = 1'b1;
       
      repeat (10)  @(posedge clk_sys);
      irq_ibex_i = 1'b0;
-      */
+     
    end
    
    initial begin  : main_clock_rst_process

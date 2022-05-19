@@ -103,10 +103,9 @@ module opentitan
   // parameters for rom_ctrl
   parameter SRAMInitFile = "",//home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/ram.vmem",
   parameter RomCtrlBootRomInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/scr_bootrom.vmem",
-  parameter bit SecRomCtrlDisableScrambling = 1'b0,//1'b0,  //
-  //parameter RndCnstRomCtrlScrKey = 128'h19346831865856761597628649319762,
+  parameter bit SecRomCtrlDisableScrambling = 1'b0,//1'b0,  
   // parameters for rv_core_ibex
-  parameter bit RvCoreIbexPMPEnable = 1,
+  parameter bit RvCoreIbexPMPEnable = 0,//1
   parameter int unsigned RvCoreIbexPMPGranularity = 0,
   parameter int unsigned RvCoreIbexPMPNumRegions = 16,
   parameter int unsigned RvCoreIbexMHPMCounterNum = 10,

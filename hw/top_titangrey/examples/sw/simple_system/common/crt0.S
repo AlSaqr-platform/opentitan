@@ -98,9 +98,9 @@ sleep_loop:
   
   jal x0, external_irq_handler
 
-  .org 0x34
+  .org 0x30
   .rept 18
-  nop
+  jal x0, default_exc_handler
   .endr
   jal x0, default_exc_handler
 

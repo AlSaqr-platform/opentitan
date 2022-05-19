@@ -17,20 +17,9 @@ int main(int argc, char **argv) {
 
   
   int volatile  * plic_prio, * plic_en;
-  /*int a;
-
-  for(int i = 0x10000000; i<0x1000001F; i = i + 0x4){
-    plic_en = (int *) i;
-    *plic_en = 0xdeadc0de;
-  }
-
-  for(int j = 0x10000000; j<0x1000001F; j = j + 0x4){
-    plic_en = (int *) j;
-    puthex(*plic_en);
-    puts("\n");
-  }
-  */
-
+ 
+  unsigned val = 0x10000001;
+  asm volatile("csrw mtvec, %0\n" : : "r"(val));
 
   unsigned val_1 = 0x00001808;  // Set global interrupt enable in ibex regs
   unsigned val_2 = 0x00000800;  // Set external interrupts
@@ -46,7 +35,7 @@ int main(int argc, char **argv) {
  *plic_prio  = 1;                   // Set mbox interrupt priority to 1
  *plic_en    = 0x00000010;          // Enable interrupt                       
  
-  /////////////////////////// shared memory test start ///////////////////////////////
+  /////////////////////////// Wait for shared memory test to start ///////////////////////////////
 
   while(1) asm volatile ("wfi"); // Ready to receive a command from the Agent --> Jump to the External_Irq_Handler 
   

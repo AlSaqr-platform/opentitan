@@ -637,14 +637,17 @@ sources:
 
 ##### axi_scmi_mailbox
 
-      #- hw/ip/axi_scmi_mailbox/include/typedef.svh
-      #- hw/ip/axi_scmi_mailbox/include/assign.svh
-      #- hw/ip/axi_scmi_mailbox/include/prim_subreg_scmi.sv
-      #- hw/ip/axi_scmi_mailbox/include/prim_subreg_arb_scmi.sv
-      #- hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
-      #- hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
-      #- hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
-
+     # - hw/ip/axi_scmi_mailbox/include/typedef.svh
+     # - hw/ip/axi_scmi_mailbox/include/assign.svh
+     # - hw/ip/axi_scmi_mailbox/include/axi_typedef.svh
+     # - hw/ip/axi_scmi_mailbox/include/axi_assign.svh
+     # - hw/ip/axi_scmi_mailbox/include/prim_subreg.sv
+     # - hw/ip/axi_scmi_mailbox/include/prim_subreg_arb.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
+     # - hw/ip/axi_scmi_mailbox/tb/mbox_tb.sv
+      
 ##### top module
 
       - hw/top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
