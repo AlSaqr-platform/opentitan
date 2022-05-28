@@ -221,9 +221,6 @@ module opentitan
   input              axi_resp_t axi_rsp,
 
   input logic        irq_ibex_i,
-   
-  //output             axi_resp_t ariane_axi_rsp,   
-  //input              axi_req_t  ariane_axi_req,
 
   input              scan_rst_ni, // reset used for test mode
   input              scan_en_i,
