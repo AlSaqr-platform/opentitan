@@ -13,8 +13,8 @@ clean: sim_clean
 # RTL SIMULATION
 # --------------
 
-VLOG_ARGS += -suppress vlog-2583 -suppress vlog-13314 -suppress vlog-13198 -suppress vopt-13276 -suppress vlog-13233 -timescale \"1 ns / 1 ps\"
-XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet
+VLOG_ARGS += -suppress vlog-2583 -suppress vlog-13314 -suppress vlog-13198 +nospecify +notimingchecks -suppress vopt-13276 -suppress vlog-13233 -timescale \"1 ns / 1 ps\" 
+XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingchecks
 
 define generate_vsim
 	echo 'set ROOT [file normalize [file dirname [info script]]/$3]' > $1
