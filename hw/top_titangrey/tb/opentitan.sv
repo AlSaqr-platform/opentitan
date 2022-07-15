@@ -58,7 +58,7 @@ module opentitan
   // parameters for rv_timer
   // parameters for usbdev
   // parameters for otp_ctrl
-  parameter OtpCtrlMemInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/otp-img.vmem",
+  parameter OtpCtrlMemInitFile = "/scratch/mciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/otp-img.vmem",
   // parameters for lc_ctrl
   // parameters for alert_handler
   // parameters for pwrmgr_aon
@@ -102,7 +102,7 @@ module opentitan
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
   parameter SRAMInitFile = "",//home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/ram.vmem",
-  parameter RomCtrlBootRomInitFile = "/home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/scr_bootrom.vmem",
+  parameter RomCtrlBootRomInitFile = "/scratch/mciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/scr_bootrom.vmem",
   parameter bit SecRomCtrlDisableScrambling = 1'b0,//1'b0,  
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1

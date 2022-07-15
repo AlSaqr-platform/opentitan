@@ -4,10 +4,11 @@ package:
   
 dependencies:
 
- tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git",     rev: "411bd43eadc46ae97e45d890fc3f916771c5491a"}
- ot_common_cells:     { git: "https://github.com/pulp-platform/common_cells.git",       version: 1.21.0                                }
- axi:                 { git: "https://github.com/pulp-platform/axi.git",                version: 0.29.1                                } 
- axi_scmi_mailbox:    { git: "git@github.com:AlSaqr-platform/axi_scmi_mailbox.git",     rev: "3aa56656468af6608e829d7fb2573af9191a416e"}
+# tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git",     rev: "411bd43eadc46ae97e45d890fc3f916771c5491a"}
+# ot_common_cells:     { git: "https://github.com/pulp-platform/common_cells.git",       version: 1.21.0                                }
+ axi:                  { git: "https://github.com/pulp-platform/axi.git",                version: 0.29.1                                } 
+# axi_scmi_mailbox:     { git: "git@github.com:AlSaqr-platform/axi_scmi_mailbox.git",     rev: "master"                                  }
+ register_interface:  { git: "https://github.com/pulp-platform/register_interface.git", version: 0.3.1  }
  
 # prim          : { path: "hw/ip/prim"          }
 # tlul          : { path: "hw/ip/tlul"          }
@@ -339,10 +340,10 @@ sources:
       
 ##### vendor otp
       
-      - vendor/eFuse/FB_22FDX_128X32.v
-      - vendor/eFuse/otp_ctrl_driver.sv
-      - vendor/eFuse/otp_ctrl_wrapper.sv
-      - vendor/eFuse/otp_ctrl_wrapper_tb.sv
+     # - vendor/eFuse/FB_22FDX_128X32.v
+     # - vendor/eFuse/otp_ctrl_driver.sv
+     # - vendor/eFuse/otp_ctrl_wrapper.sv
+     # - vendor/eFuse/otp_ctrl_wrapper_tb.sv
       #- vendor/eFuse/otp_tb.sv
 
 ##### otp_ctrl
@@ -642,7 +643,13 @@ sources:
       - hw/ip/tlul2axi/test/tlul_assign.svh
       - hw/ip/tlul2axi/test/tlul_functions.sv
       - hw/ip/tlul2axi/test/tlul2axi_testbench.sv
+      
+##### axi_mbox
 
+      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
+      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
+      - hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
+      
 ##### top module
 
       - hw/top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv

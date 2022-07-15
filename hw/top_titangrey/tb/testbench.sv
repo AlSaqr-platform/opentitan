@@ -167,7 +167,7 @@ module testbench ();
  
     .scan_rst_ni (rst_sys_n),
     .scan_en_i (1'b0),
-    .scanmode_i (lc_ctrl_pkg::On),
+    .scanmode_i (lc_ctrl_pkg::Off),
     .ast_clk_byp_ack_i(lc_ctrl_pkg::Off), 
     
     .por_n_i (rst_sys_n),
