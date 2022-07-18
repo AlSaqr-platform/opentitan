@@ -18,9 +18,9 @@
 */
 
 `include "prim_assert.sv"
-`include "../../ip/tlul2axi/test/tlul_assign.svh"
-`include "../../../../../deps/axi_scmi_mailbox/include/axi_typedef.svh"
-`include "../../../../../deps/axi_scmi_mailbox/include/axi_assign.svh"
+`include "tlul_assign.svh"
+`include "axi_typedef.svh"
+`include "axi_assign.svh"
 
 `ifndef RV32M
   `define RV32M ibex_pkg::RV32MFast

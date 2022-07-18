@@ -17,7 +17,9 @@ int main(int argc, char **argv) {
 
   
   int volatile  * plic_prio, * plic_en;
- 
+  int volatile * p_reg, * p_reg1;
+  int a;
+  
   unsigned val = 0x10000001;
   asm volatile("csrw mtvec, %0\n" : : "r"(val));
 
@@ -37,6 +39,12 @@ int main(int argc, char **argv) {
  
   /////////////////////////// Wait for shared memory test to start ///////////////////////////////
 
+  p_reg  = (int *) 0x50000004;
+  
+
+  *p_reg = 0xFFFFFFFF;
+  a = *p_reg;
+ 
   while(1) asm volatile ("wfi"); // Ready to receive a command from the Agent --> Jump to the External_Irq_Handler 
   
   return 0;
