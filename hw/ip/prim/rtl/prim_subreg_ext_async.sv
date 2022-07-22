@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Asynchronous implementation of prim_subreg_ext
+// Asynchronous implementation of prim_generic_subreg_ext
 
-module prim_subreg_ext_async #(
+module prim_generic_subreg_ext_async #(
   parameter int unsigned DW = 32
 ) (
   input          clk_src_i,
@@ -39,7 +39,7 @@ module prim_subreg_ext_async #(
   // Capture both data and write-enable
   // write enable is needed to determine whether qe or qre should be generated
   // in the desitnation domain.
-  prim_subreg_cdc #(
+  prim_generic_subreg_cdc #(
     .DW(DW + 1)
   ) u_reg_cdc (
     .clk_src_i,

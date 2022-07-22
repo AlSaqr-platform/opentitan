@@ -22,6 +22,8 @@
 `include "axi_typedef.svh"
 `include "axi_assign.svh"
 
+`define EXCLUDE_OTP_ROM
+
 `ifndef RV32M
   `define RV32M ibex_pkg::RV32MFast
 `endif
@@ -38,6 +40,7 @@
 module opentitan 
   import axi_pkg::*;
   import jtag_pkg::*;
+  import dm::*; 
   #(
 
   // Manually defined parameters
@@ -58,7 +61,7 @@ module opentitan
   // parameters for rv_timer
   // parameters for usbdev
   // parameters for otp_ctrl
-  parameter OtpCtrlMemInitFile = "/scratch/mciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/otp-img.vmem",
+  parameter OtpCtrlMemInitFile = "/scratch/mciani/test/he-soc/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/otp-img.vmem",
   // parameters for lc_ctrl
   // parameters for alert_handler
   // parameters for pwrmgr_aon
@@ -68,14 +71,15 @@ module opentitan
   // parameters for adc_ctrl_aon
   // parameters for pwm_aon
   // parameters for pinmux_aon
-  parameter pinmux_pkg::target_cfg_t PinmuxAonTargetCfg = pinmux_pkg::DefaultTargetCfg,
+//  parameter pinmux_pkg::target_cfg_t PinmuxAonTargetCfg = pinmux_pkg::DefaultTargetCfg,
   // parameters for aon_timer_aon
   // parameters for sensor_ctrl_aon
-  // parameters for sram_ctrl_ret_aon
+  // parameters for sram_ctrl_ret_aon 
   parameter bit SramCtrlRetAonInstrExec = 0,
   // parameters for flash_ctrl
   // parameters for rv_dm
-  parameter logic [31:0] RvDmIdcodeValue = 32'h 0000_0001,
+  parameter logic [15:0] PartNumber = 1,
+  parameter logic [31:0] RvDmIdcodeValue = (dm::DbgVersion013 << 28) | (PartNumber << 12) | 32'b1,
   // parameters for rv_plic
   // parameters for aes
   parameter bit AesMasking = 1,
@@ -102,7 +106,7 @@ module opentitan
   parameter otbn_pkg::regfile_e OtbnRegFile = otbn_pkg::RegFileFF,
   // parameters for rom_ctrl
   parameter SRAMInitFile = "",//home/mciani/Workspace/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/ram.vmem",
-  parameter RomCtrlBootRomInitFile = "/scratch/mciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/scr_bootrom.vmem",
+  parameter RomCtrlBootRomInitFile = "/scratch/mciani/test/he-soc/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/scr_bootrom.vmem",
   parameter bit SecRomCtrlDisableScrambling = 1'b0,//1'b0,  
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 0,//1
@@ -605,172 +609,9 @@ module opentitan
   logic intr_edn1_edn_cmd_req_done;
   logic intr_edn1_edn_fatal_err;
   logic intr_otbn_done;
-
-  // simctrl signals
-  logic           device_req;
-  logic [31:0]    device_addr;
-  logic           device_we;
-  logic [ 3:0]    device_be;
-  logic [31:0]    device_wdata;
-  logic           device_rvalid; 
-  logic [31:0]    device_rdata;
-  logic           device_err;
-
-  // simcontrol ibexprot2tlul
    
-   assign device_req             = core2simctrl.a_valid;
-   assign device_addr            = core2simctrl.a_address;
-   assign device_be              = core2simctrl.a_mask;
-   assign device_we              =  ~(core2simctrl.a_opcode[2] || core2simctrl.a_opcode[0]);
-   assign device_wdata           = core2simctrl.a_data;
-   assign simctrl2core.d_valid   = device_rvalid; 
-   assign simctrl2core.a_ready   = 1'b1; 
-   assign simctrl2core.d_data    = device_rdata;
-   assign simctrl2core.d_opcode  = tlul_pkg::AccessAckData;
-   assign simctrl2core.d_error   = device_err;
-   assign simctrl2core.d_param   = core2simctrl.a_param;
-   assign simctrl2core.d_size    = core2simctrl.a_size;
-   assign simctrl2core.d_source  = core2simctrl.a_source;
-   assign simctrl2core.d_user    = TL_D_USER_DEFAULT;
-   assign simctrl2core.d_sink    = '0;
-
-   assign device_err = 1'b0;
-
-  
-
-/*     
-  typedef enum logic[1:0] {
-    Ram,
-    SimCtrl,
-    Timer
-  } bus_device_e;
-
-  // host and device signals
-  logic           host_req    [NrHosts]; 
-  logic           host_gnt    [NrHosts];
-  logic [31:0]    host_addr   [NrHosts]; 
-  logic           host_we     [NrHosts];
-  logic [ 3:0]    host_be     [NrHosts];
-  logic [31:0]    host_wdata  [NrHosts];
-  logic           host_rvalid [NrHosts];
-  logic [31:0]    host_rdata  [NrHosts];
-  logic           host_err    [NrHosts];
-
-  // devices (slaves)
-  logic           device_req    [NrDevices];
-  logic [31:0]    device_addr   [NrDevices];
-  logic           device_we     [NrDevices];
-  logic [ 3:0]    device_be     [NrDevices];
-  logic [31:0]    device_wdata  [NrDevices];
-  logic           device_rvalid [NrDevices]; 
-  logic [31:0]    device_rdata  [NrDevices];
-  logic           device_err    [NrDevices];
-
-  logic           device_req_;
-  logic [31:0]    device_addr_;
-  logic           device_we_;
-  logic [ 3:0]    device_be_;
-  logic [31:0]    device_wdata_;
-  logic           device_rvalid_; 
-  logic [31:0]    device_rdata_;
-  logic           device_err_;
-   
-
-  // Instruction fetch signals
-  logic instr_req;
-  logic instr_gnt;
-  logic instr_rvalid;
-  logic [31:0] instr_addr;
-  logic [31:0] instr_rdata;
-  logic instr_err;
-
-  assign instr_gnt = instr_req;
-  assign instr_err = '0;
 
  
-
-  // Tie-off unused error signals
-  assign device_err[Ram] = 1'b0;
-  assign device_err_     = 1'b0;
-  assign device_err[SimCtrl] = 1'b0;
-
-// protocol conversion for the simctrl and ram, not opentitan ips so not implementing tile link
-// instructions interface
-
-    tlul_pkg::tl_d_user_t                  tieoff;
-   
-    assign instr_req                       = core2instr.a_valid;
-    assign instr_addr                      = core2instr.a_address;
-    assign instr2core.d_valid              = instr_rvalid; 
-    assign instr2core.d_data               = instr_rdata;
-    assign instr2core.a_ready              = 1'b1;
-    assign instr2core.d_error              = instr_err;
-    assign instr2core.d_opcode             = tlul_pkg::AccessAckData;  
-    assign instr2core.d_param              = core2instr.a_param;
-    assign instr2core.d_size               = core2instr.a_size;
-    assign instr2core.d_source             = core2instr.a_source;
-    assign instr2core.d_sink               = '0;
-    assign instr2core.d_user               = TL_D_USER_DEFAULT;
- 
-
-
-  
-// simcontrol ibexprot2tlul
-   
-    assign device_req[SimCtrl]             = core2simctrl.a_valid;
-    assign device_addr[SimCtrl]            = core2simctrl.a_address;
-    assign device_be[SimCtrl]              = core2simctrl.a_mask;
-    assign device_we[SimCtrl]              =  ~(core2simctrl.a_opcode[2] || core2simctrl.a_opcode[0]);
-    assign device_wdata[SimCtrl]           = core2simctrl.a_data;
-    assign simctrl2core.d_valid            = device_rvalid[SimCtrl]; 
-    assign simctrl2core.a_ready            = 1'b1; 
-    assign simctrl2core.d_data             = device_rdata[SimCtrl];
-    assign simctrl2core.d_opcode           = tlul_pkg::AccessAckData;
-    assign simctrl2core.d_error            = device_err[SimCtrl];
-    assign simctrl2core.d_param            = core2simctrl.a_param;
-    assign simctrl2core.d_size             = core2simctrl.a_size;
-    assign simctrl2core.d_source           = core2simctrl.a_source;
-    assign simctrl2core.d_user             = TL_D_USER_DEFAULT;
-    assign simctrl2core.d_sink               = '0;
-
-// test ram ibexprot2tlul
-   
-    assign device_req_              = tcore2simctrl.a_valid;
-    assign device_addr_             = tcore2simctrl.a_address;
-    assign device_be_               = tcore2simctrl.a_mask;
-    assign device_we_               =  ~(tcore2simctrl.a_opcode[2] || tcore2simctrl.a_opcode[0]);
-    assign device_wdata_            = tcore2simctrl.a_data;
-    assign tsimctrl2core.d_valid    = device_rvalid_; 
-    assign tsimctrl2core.a_ready    = 1'b1; 
-    assign tsimctrl2core.d_data     = device_rdata_;
-    assign tsimctrl2core.d_opcode   = tlul_pkg::AccessAckData;
-    assign tsimctrl2core.d_error    = device_err_;
-    assign tsimctrl2core.d_param    = tcore2simctrl.a_param;
-    assign tsimctrl2core.d_size     = tcore2simctrl.a_size;
-    assign tsimctrl2core.d_source   = tcore2simctrl.a_source;
-    assign tsimctrl2core.d_user     = TL_D_USER_DEFAULT;
-    assign tsimctrl2core.d_sink     = '0; 
-
-
-// ram ibexprot2tlul
-   
-    assign device_req[Ram]                 = core2ram.a_valid;
-    assign device_addr[Ram]                = core2ram.a_address;
-    assign device_be[Ram]                  = core2ram.a_mask;
-    assign device_we[Ram]                  =  ~(core2ram.a_opcode[2] ||  core2ram.a_opcode[0]);
-    assign device_wdata[Ram]               = core2ram.a_data;
-    assign ram2core.d_valid                = device_rvalid[Ram]; 
-    assign ram2core.a_ready                = 1'b1; 
-    assign ram2core.d_data                 = device_rdata[Ram];
-    assign ram2core.d_opcode               = tlul_pkg::AccessAckData;
-    assign ram2core.d_error                = device_err[Ram];
-    assign ram2core.d_param                = core2ram.a_param;
-    assign ram2core.d_size                 = core2ram.a_size;
-    assign ram2core.d_source               = core2ram.a_source;
-    assign ram2core.d_user                 = TL_D_USER_DEFAULT;
-    assign ram2core.d_sink                 = '0;
-   
-*/   
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
   prim_alert_pkg::alert_rx_t [alert_pkg::NAlerts-1:0]  alert_rx;
@@ -973,13 +814,6 @@ module opentitan
   tlul_pkg::tl_h2d_t       adc_ctrl_aon_tl_req;
   tlul_pkg::tl_d2h_t       adc_ctrl_aon_tl_rsp;
 
-
-  tlul_pkg::tl_h2d_t       core2simctrl;
-  tlul_pkg::tl_d2h_t       simctrl2core;
-  //tlul_pkg::tl_h2d_t       core2ram;
-  //tlul_pkg::tl_d2h_t       ram2core;
-  //tlul_pkg::tl_h2d_t       core2instr;
-  //tlul_pkg::tl_d2h_t       instr2core;
   tlul_pkg::tl_h2d_t       core2alsaqr;
   tlul_pkg::tl_d2h_t       alsaqr2core;
   
@@ -1143,46 +977,6 @@ module opentitan
     .tdo_i    (1'b0),
     .tdo_oe_i (1'b0)
   );
-
-  simulator_ctrl #(
-    .LogName("log.log")
-    ) u_simulator_ctrl (
-      .clk_i     (clk_main_i),
-      .rst_ni    (por_n_i),
-
-      .req_i     (device_req),
-      .we_i      (device_we),
-      .be_i      (device_be),
-      .addr_i    (device_addr),
-      .wdata_i   (device_wdata),
-      .rvalid_o  (device_rvalid),
-      .rdata_o   (device_rdata)
-
-    );
-  /* 
-  ram_2p #(
-      .Depth(1024*1024/4),
-      .MemInitFile(SRAMInitFile)
-    ) u_ram (
-      .clk_i       (clk_main_i),
-      .rst_ni      (por_n_i),
-
-      .a_req_i     (device_req[Ram]),
-      .a_we_i      (device_we[Ram]),
-      .a_be_i      (device_be[Ram]),
-      .a_addr_i    (device_addr[Ram]),
-      .a_wdata_i   (device_wdata[Ram]),
-      .a_rvalid_o  (device_rvalid[Ram]),
-      .a_rdata_o   (device_rdata[Ram]),
-
-      .b_req_i     (instr_req),
-      .b_we_i      (1'b0),
-      .b_be_i      (4'b0),
-      .b_addr_i    (instr_addr),
-      .b_wdata_i   (32'b0),
-      .b_rvalid_o  (instr_rvalid),
-      .b_rdata_o   (instr_rdata)
-    );*/
    
   axi_dw_converter #(
      .AxiMaxReads        ( AXI_MAX_READS           ),
@@ -2663,8 +2457,13 @@ module opentitan
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
       .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
+      `ifndef EXCLUDE_OTP_ROM
+      .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),
       .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
-      .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),//prim_mubi_pkg::MuBi8True),//
+      `else
+      .otp_en_sram_ifetch_i(prim_mubi_pkg::MuBi8True), 
+      .lc_hw_debug_en_i(lc_ctrl_pkg::On),         
+      `endif
       .regs_tl_i(sram_ctrl_main_regs_tl_req),
       .regs_tl_o(sram_ctrl_main_regs_tl_rsp),
       .ram_tl_i(sram_ctrl_main_ram_tl_req),
@@ -2981,9 +2780,6 @@ module opentitan
     //.tl_ram_2p_i(ram2core),
     //.tl_ram_2p_o(core2ram),
 
-    .tl_sim_ctrl_i(simctrl2core),
-    .tl_sim_ctrl_o(core2simctrl),
-
     .tl_alsaqr_i(alsaqr2core),
     .tl_alsaqr_o(core2alsaqr),
 
@@ -3072,8 +2868,8 @@ module opentitan
     .tl_sram_ctrl_main__regs_i(sram_ctrl_main_regs_tl_rsp),
 
     // port: tl_sram_ctrl_main__ram
-    .tl_sram_ctrl_main__ram_o(sram_ctrl_main_ram_tl_req),//tcore2simctrl),//
-    .tl_sram_ctrl_main__ram_i(sram_ctrl_main_ram_tl_rsp),//tsimctrl2core),//
+    .tl_sram_ctrl_main__ram_o(sram_ctrl_main_ram_tl_req),
+    .tl_sram_ctrl_main__ram_i(sram_ctrl_main_ram_tl_rsp),
 
     // port: tl_spi_host0
     .tl_spi_host0_o(spi_host0_tl_req),

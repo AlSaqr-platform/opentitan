@@ -51,7 +51,6 @@
       rom_ctrl.rom
       rom_ctrl.regs
       rv_dm.rom
-      sim_ctrl
       alsaqr
       rv_dm.regs
       sram_ctrl_main.ram
@@ -182,24 +181,6 @@
       [
         {
           base_addr: 0x50000000
-          size_byte: 0x1000
-        }
-      ]
-      xbar: false
-      stub: false
-      pipeline: "true"
-    }
-    {
-      name: sim_ctrl
-      type: device
-      clock: clk_main_i
-      reset: rst_main_ni
-      inst_type: sim_ctrl
-      pipeline_byp: "false"
-      addr_range:
-      [
-        {
-          base_addr: 0x20000
           size_byte: 0x1000
         }
       ]

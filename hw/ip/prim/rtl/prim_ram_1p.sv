@@ -15,6 +15,7 @@ module prim_ram_1p import prim_ram_1p_pkg::*; #(
   localparam int Aw              = $clog2(Depth)  // derived parameter
 ) (
   input  logic             clk_i,
+  input  logic             rst_ni,
 
   input  logic             req_i,
   input  logic             write_i,
@@ -24,7 +25,27 @@ module prim_ram_1p import prim_ram_1p_pkg::*; #(
   output logic [Width-1:0] rdata_o, // Read data. Data is returned one cycle after req_i is high.
   input ram_1p_cfg_t       cfg_i
 );
-
+   
+  logic unused_cfg;
+  assign unused_cfg = ^cfg_i;
+  
+  tc_sram #(
+     .NumWords(Depth),
+     .DataWidth(Width),
+     .NumPorts(32'd1)
+  ) ram_primitive (
+     .clk_i,
+     .rst_ni,
+     .req_i,
+     .addr_i,
+     .wdata_i,
+     .rdata_o,
+     .we_i(write_i),
+     .be_i('1)
+  );
+            
+endmodule
+/*
   // Width must be fully divisible by DataBitsPerMask
   `ASSERT_INIT(DataBitsPerMaskCheck_A, (Width % DataBitsPerMask) == 0)
 
@@ -66,3 +87,4 @@ module prim_ram_1p import prim_ram_1p_pkg::*; #(
 
   `include "prim_util_memload.svh"
 endmodule
+*/

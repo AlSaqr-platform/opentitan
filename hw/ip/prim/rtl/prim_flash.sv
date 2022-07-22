@@ -162,6 +162,7 @@ module prim_flash #(
     .Depth(CfgRegs)
   ) u_cfg_ram (
     .clk_i,
+    .rst_ni,
     .req_i(cfg_req),
     .write_i(cfg_we),
     .addr_i(cfg_addr),

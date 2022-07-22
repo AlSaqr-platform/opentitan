@@ -131,6 +131,7 @@ sources:
       - hw/ip/prim/rtl/prim_assert_dummy_macros.svh
       - hw/ip/prim/rtl/prim_filter_ctr.sv
       - hw/ip/prim/rtl/prim_ram_1p.sv
+      - hw/ip/prim/rtl/prim_ram_1p_dummy.sv
       - hw/ip/prim/rtl/prim_prince.sv
       - hw/ip/prim/rtl/prim_secded_64_57_dec.sv
       - hw/ip/prim/rtl/prim_subreg_ext.sv
@@ -141,6 +142,7 @@ sources:
       - hw/ip/prim/rtl/prim_assert.sv
       - hw/ip/prim/rtl/prim_gate_gen.sv
       - hw/ip/prim/rtl/prim_ram_1p_adv.sv
+      - hw/ip/prim/rtl/prim_ram_1p_adv_dummy.sv
       - hw/ip/prim/rtl/prim_secded_72_64_dec.sv
       - hw/ip/prim/rtl/prim_subreg_shadow.sv
       - hw/ip/prim/rtl/prim_assert_yosys_macros.svh
@@ -182,7 +184,7 @@ sources:
       - hw/ip/prim/rtl/prim_pad_attr.sv
       - hw/ip/prim/rtl/prim_mubi_pkg.sv
       - hw/ip/prim/rtl/prim_flop_2sync.sv
-      - hw/ip/prim/rtl/prim_clock_gating.sv
+      #- hw/ip/prim/rtl/prim_clock_gating.sv
       
 ##### tlul
 
@@ -232,11 +234,10 @@ sources:
       - hw/vendor/lowrisc_ibex/rtl/ibex_ex_block.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_id_stage.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_prefetch_buffer.sv
-      - hw/vendor/lowrisc_ibex/rtl/ibex_tracer.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_if_stage.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_core.sv
       - hw/vendor/lowrisc_ibex/rtl/ibex_top.sv
-      - hw/vendor/lowrisc_ibex/rtl/ibex_top_tracing.sv
+
       
 #### core wrapper
 
@@ -669,4 +670,7 @@ sources:
       - hw/top_titangrey/tb/mbox_ot_tb.sv
       
 
-      
+      - target: rtl
+        files:
+          - hw/vendor/lowrisc_ibex/rtl/ibex_tracer.sv
+          - hw/vendor/lowrisc_ibex/rtl/ibex_top_tracing.sv

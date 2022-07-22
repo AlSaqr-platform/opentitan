@@ -6,8 +6,8 @@
 
 `include "prim_assert.sv"
 
-module prim_subreg_shadow
-  import prim_subreg_pkg::*;
+module prim_generic_subreg_shadow
+  import prim_generic_subreg_pkg::*;
 #(
   parameter int            DW       = 32,
   parameter sw_access_e    SwAccess = SwAccessRW,
@@ -62,7 +62,7 @@ module prim_subreg_shadow
   logic          wr_en;
   logic [DW-1:0] wr_data;
 
-  prim_subreg_arb #(
+  prim_generic_subreg_arb #(
     .DW       ( DW       ),
     .SwAccess ( SwAccess )
   ) wr_en_data_arb (
@@ -99,7 +99,7 @@ module prim_subreg_shadow
   // - Once storage error occurs, do not allow any further update until reset
   assign staged_we = we & ~phase_q & ~err_storage;
   assign staged_de = de & ~phase_q & ~err_storage;
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW       ( DW               ),
     .SwAccess ( InvertedSwAccess ),
     .RESVAL   ( ~RESVAL          )
@@ -123,7 +123,7 @@ module prim_subreg_shadow
   // - Once storage error occurs, do not allow any further update until reset
   assign shadow_we = we & phase_q & ~err_update & ~err_storage;
   assign shadow_de = de & phase_q & ~err_update & ~err_storage;
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW       ( DW               ),
     .SwAccess ( InvertedSwAccess ),
     .RESVAL   ( ~RESVAL          )
@@ -144,7 +144,7 @@ module prim_subreg_shadow
   // - Writes are ignored in case of update errors.
   assign committed_we = shadow_we;
   assign committed_de = shadow_de;
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW       ( DW       ),
     .SwAccess ( SwAccess ),
     .RESVAL   ( RESVAL   )

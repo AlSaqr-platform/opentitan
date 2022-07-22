@@ -204,7 +204,7 @@ module lc_ctrl_reg_top (
   // R[alert_test]: V(True)
 
   //   F[fatal_prog_error]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_prog_error (
     .re     (1'b0),
@@ -219,7 +219,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[fatal_state_error]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_state_error (
     .re     (1'b0),
@@ -234,7 +234,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[fatal_bus_integ_error]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_bus_integ_error (
     .re     (1'b0),
@@ -251,7 +251,7 @@ module lc_ctrl_reg_top (
   // R[status]: V(True)
 
   //   F[ready]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_ready (
     .re     (status_re),
@@ -266,7 +266,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[transition_successful]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_transition_successful (
     .re     (status_re),
@@ -281,7 +281,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[transition_count_error]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_transition_count_error (
     .re     (status_re),
@@ -296,7 +296,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[transition_error]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_transition_error (
     .re     (status_re),
@@ -311,7 +311,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[token_error]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_token_error (
     .re     (status_re),
@@ -326,7 +326,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[flash_rma_error]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_flash_rma_error (
     .re     (status_re),
@@ -341,7 +341,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[otp_error]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_otp_error (
     .re     (status_re),
@@ -356,7 +356,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[state_error]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_state_error (
     .re     (status_re),
@@ -371,7 +371,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[bus_integ_error]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_bus_integ_error (
     .re     (status_re),
@@ -386,7 +386,7 @@ module lc_ctrl_reg_top (
 
 
   //   F[otp_partition_error]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_otp_partition_error (
     .re     (status_re),
@@ -402,7 +402,7 @@ module lc_ctrl_reg_top (
 
   // R[claim_transition_if]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (8)
   ) u_claim_transition_if (
     .re     (claim_transition_if_re),
@@ -418,7 +418,7 @@ module lc_ctrl_reg_top (
 
   // R[transition_regwen]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_transition_regwen (
     .re     (transition_regwen_re),
@@ -434,7 +434,7 @@ module lc_ctrl_reg_top (
 
   // R[transition_cmd]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_transition_cmd (
     .re     (1'b0),
@@ -450,7 +450,7 @@ module lc_ctrl_reg_top (
 
   // R[transition_ctrl]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_transition_ctrl (
     .re     (transition_ctrl_re),
@@ -468,7 +468,7 @@ module lc_ctrl_reg_top (
   // Subregister 0 of Multireg transition_token
   // R[transition_token_0]: V(True)
    
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_transition_token_0 (
     .re     (transition_token_0_re),
@@ -485,7 +485,7 @@ module lc_ctrl_reg_top (
   // Subregister 1 of Multireg transition_token
   // R[transition_token_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_transition_token_1 (
     .re     (transition_token_1_re),
@@ -501,7 +501,7 @@ module lc_ctrl_reg_top (
   // Subregister 2 of Multireg transition_token
   // R[transition_token_2]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_transition_token_2 (
     .re     (transition_token_2_re),
@@ -517,7 +517,7 @@ module lc_ctrl_reg_top (
   // Subregister 3 of Multireg transition_token
   // R[transition_token_3]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_transition_token_3 (
     .re     (transition_token_3_re),
@@ -533,7 +533,7 @@ module lc_ctrl_reg_top (
 
   // R[transition_target]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (5)
   ) u_transition_target (
     .re     (transition_target_re),
@@ -549,7 +549,7 @@ module lc_ctrl_reg_top (
 
   // R[otp_vendor_test_ctrl]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_otp_vendor_test_ctrl (
     .re     (otp_vendor_test_ctrl_re),
@@ -565,7 +565,7 @@ module lc_ctrl_reg_top (
 
   // R[otp_vendor_test_status]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_otp_vendor_test_status (
     .re     (otp_vendor_test_status_re),
@@ -581,7 +581,7 @@ module lc_ctrl_reg_top (
 
   // R[lc_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (5)
   ) u_lc_state (
     .re     (lc_state_re),
@@ -597,7 +597,7 @@ module lc_ctrl_reg_top (
 
   // R[lc_transition_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (5)
   ) u_lc_transition_cnt (
     .re     (lc_transition_cnt_re),
@@ -613,7 +613,7 @@ module lc_ctrl_reg_top (
 
   // R[lc_id_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (2)
   ) u_lc_id_state (
     .re     (lc_id_state_re),
@@ -631,7 +631,7 @@ module lc_ctrl_reg_top (
   // Subregister 0 of Multireg device_id
   // R[device_id_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_0 (
     .re     (device_id_0_re),
@@ -647,7 +647,7 @@ module lc_ctrl_reg_top (
   // Subregister 1 of Multireg device_id
   // R[device_id_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_1 (
     .re     (device_id_1_re),
@@ -663,7 +663,7 @@ module lc_ctrl_reg_top (
   // Subregister 2 of Multireg device_id
   // R[device_id_2]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_2 (
     .re     (device_id_2_re),
@@ -679,7 +679,7 @@ module lc_ctrl_reg_top (
   // Subregister 3 of Multireg device_id
   // R[device_id_3]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_3 (
     .re     (device_id_3_re),
@@ -695,7 +695,7 @@ module lc_ctrl_reg_top (
   // Subregister 4 of Multireg device_id
   // R[device_id_4]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_4 (
     .re     (device_id_4_re),
@@ -711,7 +711,7 @@ module lc_ctrl_reg_top (
   // Subregister 5 of Multireg device_id
   // R[device_id_5]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_5 (
     .re     (device_id_5_re),
@@ -727,7 +727,7 @@ module lc_ctrl_reg_top (
   // Subregister 6 of Multireg device_id
   // R[device_id_6]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_6 (
     .re     (device_id_6_re),
@@ -743,7 +743,7 @@ module lc_ctrl_reg_top (
   // Subregister 7 of Multireg device_id
   // R[device_id_7]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_device_id_7 (
     .re     (device_id_7_re),
@@ -761,7 +761,7 @@ module lc_ctrl_reg_top (
   // Subregister 0 of Multireg manuf_state
   // R[manuf_state_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_0 (
     .re     (manuf_state_0_re),
@@ -777,7 +777,7 @@ module lc_ctrl_reg_top (
   // Subregister 1 of Multireg manuf_state
   // R[manuf_state_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_1 (
     .re     (manuf_state_1_re),
@@ -793,7 +793,7 @@ module lc_ctrl_reg_top (
   // Subregister 2 of Multireg manuf_state
   // R[manuf_state_2]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_2 (
     .re     (manuf_state_2_re),
@@ -809,7 +809,7 @@ module lc_ctrl_reg_top (
   // Subregister 3 of Multireg manuf_state
   // R[manuf_state_3]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_3 (
     .re     (manuf_state_3_re),
@@ -825,7 +825,7 @@ module lc_ctrl_reg_top (
   // Subregister 4 of Multireg manuf_state
   // R[manuf_state_4]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_4 (
     .re     (manuf_state_4_re),
@@ -841,7 +841,7 @@ module lc_ctrl_reg_top (
   // Subregister 5 of Multireg manuf_state
   // R[manuf_state_5]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_5 (
     .re     (manuf_state_5_re),
@@ -857,7 +857,7 @@ module lc_ctrl_reg_top (
   // Subregister 6 of Multireg manuf_state
   // R[manuf_state_6]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_6 (
     .re     (manuf_state_6_re),
@@ -873,7 +873,7 @@ module lc_ctrl_reg_top (
   // Subregister 7 of Multireg manuf_state
   // R[manuf_state_7]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_manuf_state_7 (
     .re     (manuf_state_7_re),

@@ -347,8 +347,9 @@ module prim_generic_otp
     end
     rdata_o = rdata_reshaped;
   end
-
-  prim_ram_1p_adv #(
+   
+`ifndef EXCLUDE_OTP_ROM
+  prim_ram_1p_adv_dummy #(
     .Depth                (Depth),
     .Width                (Width + EccWidth),
     .MemInitFile          (MemInitFile),
@@ -367,6 +368,12 @@ module prim_generic_otp
     .rerror_o (                        ),
     .cfg_i    ( '0                     )
   );
+`else // !`ifndef EXCLUDE_OTP_ROM
+  logic unused;
+  assign rdata_ecc = '0;
+  assign rvalid    = '0;  
+  assign unused = ^{req, wren, addr, wdata_rmw, rdata_ecc, rvalid};
+`endif 
 
   // Currently it is assumed that no wrap arounds can occur.
   `ASSERT(NoWrapArounds_A, req |-> (addr >= addr_q))

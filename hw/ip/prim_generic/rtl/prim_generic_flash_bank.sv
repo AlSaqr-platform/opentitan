@@ -376,6 +376,7 @@ module prim_generic_flash_bank #(
     .DataBitsPerMask(MemWidth)
   ) u_mem (
     .clk_i,
+    .rst_ni,
     .req_i    (mem_req & (mem_part == flash_ctrl_pkg::FlashPartData)),
     .write_i  (mem_wr),
     .addr_i   (mem_addr),
@@ -391,6 +392,7 @@ module prim_generic_flash_bank #(
     .DataBitsPerMask(MetaDataWidth)
   ) u_mem_meta (
     .clk_i,
+    .rst_ni,
     .req_i    (mem_req & (mem_part == flash_ctrl_pkg::FlashPartData)),
     .write_i  (mem_wr),
     .addr_i   (mem_addr),
@@ -413,6 +415,7 @@ module prim_generic_flash_bank #(
       .DataBitsPerMask(MemWidth)
     ) u_info_mem (
       .clk_i,
+      .rst_ni,
       .req_i    (info_mem_req),
       .write_i  (mem_wr),
       .addr_i   (mem_addr[0 +: InfoAddrW]),
@@ -428,6 +431,7 @@ module prim_generic_flash_bank #(
       .DataBitsPerMask(MetaDataWidth)
     ) u_info_mem_meta (
       .clk_i,
+      .rst_ni,
       .req_i    (info_mem_req),
       .write_i  (mem_wr),
       .addr_i   (mem_addr[0 +: InfoAddrW]),

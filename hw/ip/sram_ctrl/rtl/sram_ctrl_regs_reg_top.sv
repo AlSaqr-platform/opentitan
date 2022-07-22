@@ -132,7 +132,7 @@ module sram_ctrl_regs_reg_top (
   // Register instances
   // R[alert_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -149,9 +149,9 @@ module sram_ctrl_regs_reg_top (
   // R[status]: V(False)
 
   //   F[bus_integ_error]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_bus_integ_error (
     .clk_i   (clk_i),
@@ -177,9 +177,9 @@ module sram_ctrl_regs_reg_top (
   
 
   //   F[init_error]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_init_error (
     .clk_i   (clk_i),
@@ -203,9 +203,9 @@ module sram_ctrl_regs_reg_top (
 
 
   //   F[escalated]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_escalated (
     .clk_i   (clk_i),
@@ -229,9 +229,9 @@ module sram_ctrl_regs_reg_top (
 
 
   //   F[scr_key_valid]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_scr_key_valid (
     .clk_i   (clk_i),
@@ -255,9 +255,9 @@ module sram_ctrl_regs_reg_top (
 
 
   //   F[scr_key_seed_valid]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_scr_key_seed_valid (
     .clk_i   (clk_i),
@@ -281,9 +281,9 @@ module sram_ctrl_regs_reg_top (
 
 
   //   F[init_done]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_init_done (
     .clk_i   (clk_i),
@@ -308,9 +308,9 @@ module sram_ctrl_regs_reg_top (
 
   // R[exec_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_exec_regwen (
     .clk_i   (clk_i),
@@ -335,9 +335,9 @@ module sram_ctrl_regs_reg_top (
 
   // R[exec]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (3),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (3'h0)
   ) u_exec (
     .clk_i   (clk_i),
@@ -362,9 +362,9 @@ module sram_ctrl_regs_reg_top (
 
   // R[ctrl_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_ctrl_regwen (
     .clk_i   (clk_i),
@@ -390,9 +390,9 @@ module sram_ctrl_regs_reg_top (
   // R[ctrl]: V(False)
 
   //   F[renew_scr_key]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_ctrl_renew_scr_key (
     .clk_i   (clk_i),
@@ -416,9 +416,9 @@ module sram_ctrl_regs_reg_top (
 
 
   //   F[init]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_ctrl_init (
     .clk_i   (clk_i),

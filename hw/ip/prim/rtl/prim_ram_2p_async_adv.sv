@@ -114,6 +114,7 @@ module prim_ram_2p_async_adv import prim_ram_2p_pkg::*; #(
   ) u_mem (
     .clk_a_i    (clk_a_i),
     .clk_b_i    (clk_b_i),
+    .rst_ni     (rst_a_ni),
 
     .a_req_i    (a_req_q),
     .a_write_i  (a_write_q),

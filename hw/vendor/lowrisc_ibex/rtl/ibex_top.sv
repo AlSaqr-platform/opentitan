@@ -171,7 +171,7 @@ module ibex_top import ibex_pkg::*; #(
   assign clock_en     = core_busy_q | debug_req_i | irq_pending | irq_nm_i;
   assign core_sleep_o = ~clock_en;
 
-  prim_clock_gating core_clock_gate_i (
+  tc_clk_gating core_clock_gate_i (
       .clk_i     ( clk_i           ),
       .en_i      ( clock_en        ),
       .test_en_i ( test_en_i       ),
@@ -377,6 +377,7 @@ module ibex_top import ibex_pkg::*; #(
         .MemInitFile     ("")
       ) tag_bank (
         .clk_i    (clk_i),
+        .rst_ni,
         .req_i    (ic_tag_req[way]),
         .cfg_i    (ram_cfg_i),
         .write_i  (ic_tag_write),
@@ -392,6 +393,7 @@ module ibex_top import ibex_pkg::*; #(
         .DataBitsPerMask (LineSizeECC)
       ) data_bank (
         .clk_i    (clk_i),
+        .rst_ni,
         .req_i    (ic_data_req[way]),
         .cfg_i    (ram_cfg_i),
         .write_i  (ic_data_write),

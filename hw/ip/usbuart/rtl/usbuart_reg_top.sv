@@ -220,9 +220,9 @@ module usbuart_reg_top (
   // R[intr_state]: V(False)
 
   //   F[tx_watermark]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_tx_watermark (
     .clk_i   (clk_i),
@@ -246,9 +246,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_watermark (
     .clk_i   (clk_i),
@@ -272,9 +272,9 @@ module usbuart_reg_top (
 
 
   //   F[tx_overflow]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_tx_overflow (
     .clk_i   (clk_i),
@@ -298,9 +298,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_overflow (
     .clk_i   (clk_i),
@@ -324,9 +324,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_frame_err]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_frame_err (
     .clk_i   (clk_i),
@@ -350,9 +350,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_break_err]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_break_err (
     .clk_i   (clk_i),
@@ -376,9 +376,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_timeout]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_timeout (
     .clk_i   (clk_i),
@@ -402,9 +402,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_parity_err]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_parity_err (
     .clk_i   (clk_i),
@@ -430,9 +430,9 @@ module usbuart_reg_top (
   // R[intr_enable]: V(False)
 
   //   F[tx_watermark]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_tx_watermark (
     .clk_i   (clk_i),
@@ -456,9 +456,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_watermark (
     .clk_i   (clk_i),
@@ -482,9 +482,9 @@ module usbuart_reg_top (
 
 
   //   F[tx_overflow]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_tx_overflow (
     .clk_i   (clk_i),
@@ -508,9 +508,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_overflow (
     .clk_i   (clk_i),
@@ -534,9 +534,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_frame_err]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_frame_err (
     .clk_i   (clk_i),
@@ -560,9 +560,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_break_err]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_break_err (
     .clk_i   (clk_i),
@@ -586,9 +586,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_timeout]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_timeout (
     .clk_i   (clk_i),
@@ -612,9 +612,9 @@ module usbuart_reg_top (
 
 
   //   F[rx_parity_err]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_parity_err (
     .clk_i   (clk_i),
@@ -640,7 +640,7 @@ module usbuart_reg_top (
   // R[intr_test]: V(True)
 
   //   F[tx_watermark]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_tx_watermark (
     .re     (1'b0),
@@ -655,7 +655,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_watermark (
     .re     (1'b0),
@@ -670,7 +670,7 @@ module usbuart_reg_top (
 
 
   //   F[tx_overflow]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_tx_overflow (
     .re     (1'b0),
@@ -685,7 +685,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_overflow (
     .re     (1'b0),
@@ -700,7 +700,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_frame_err]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_frame_err (
     .re     (1'b0),
@@ -715,7 +715,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_break_err]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_break_err (
     .re     (1'b0),
@@ -730,7 +730,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_timeout]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_timeout (
     .re     (1'b0),
@@ -745,7 +745,7 @@ module usbuart_reg_top (
 
 
   //   F[rx_parity_err]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_parity_err (
     .re     (1'b0),
@@ -761,7 +761,7 @@ module usbuart_reg_top (
 
   // R[alert_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -778,9 +778,9 @@ module usbuart_reg_top (
   // R[ctrl]: V(False)
 
   //   F[tx]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_tx (
     .clk_i   (clk_i),
@@ -804,9 +804,9 @@ module usbuart_reg_top (
 
 
   //   F[rx]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_rx (
     .clk_i   (clk_i),
@@ -830,9 +830,9 @@ module usbuart_reg_top (
 
 
   //   F[nf]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_nf (
     .clk_i   (clk_i),
@@ -856,9 +856,9 @@ module usbuart_reg_top (
 
 
   //   F[slpbk]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_slpbk (
     .clk_i   (clk_i),
@@ -882,9 +882,9 @@ module usbuart_reg_top (
 
 
   //   F[llpbk]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_llpbk (
     .clk_i   (clk_i),
@@ -908,9 +908,9 @@ module usbuart_reg_top (
 
 
   //   F[parity_en]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_parity_en (
     .clk_i   (clk_i),
@@ -934,9 +934,9 @@ module usbuart_reg_top (
 
 
   //   F[parity_odd]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_parity_odd (
     .clk_i   (clk_i),
@@ -960,9 +960,9 @@ module usbuart_reg_top (
 
 
   //   F[rxblvl]: 9:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ctrl_rxblvl (
     .clk_i   (clk_i),
@@ -986,9 +986,9 @@ module usbuart_reg_top (
 
 
   //   F[nco]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_ctrl_nco (
     .clk_i   (clk_i),
@@ -1014,7 +1014,7 @@ module usbuart_reg_top (
   // R[status]: V(True)
 
   //   F[txfull]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_txfull (
     .re     (status_re),
@@ -1029,7 +1029,7 @@ module usbuart_reg_top (
 
 
   //   F[rxfull]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_rxfull (
     .re     (status_re),
@@ -1044,7 +1044,7 @@ module usbuart_reg_top (
 
 
   //   F[txempty]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_txempty (
     .re     (status_re),
@@ -1059,7 +1059,7 @@ module usbuart_reg_top (
 
 
   //   F[txidle]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_txidle (
     .re     (status_re),
@@ -1074,7 +1074,7 @@ module usbuart_reg_top (
 
 
   //   F[rxidle]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_rxidle (
     .re     (status_re),
@@ -1089,7 +1089,7 @@ module usbuart_reg_top (
 
 
   //   F[rxempty]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_rxempty (
     .re     (status_re),
@@ -1105,7 +1105,7 @@ module usbuart_reg_top (
 
   // R[rdata]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (8)
   ) u_rdata (
     .re     (rdata_re),
@@ -1121,9 +1121,9 @@ module usbuart_reg_top (
 
   // R[wdata]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (8),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (8'h0)
   ) u_wdata (
     .clk_i   (clk_i),
@@ -1149,9 +1149,9 @@ module usbuart_reg_top (
   // R[fifo_ctrl]: V(False)
 
   //   F[rxrst]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_rxrst (
     .clk_i   (clk_i),
@@ -1175,9 +1175,9 @@ module usbuart_reg_top (
 
 
   //   F[txrst]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_txrst (
     .clk_i   (clk_i),
@@ -1201,9 +1201,9 @@ module usbuart_reg_top (
 
 
   //   F[rxilvl]: 4:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (3),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (3'h0)
   ) u_fifo_ctrl_rxilvl (
     .clk_i   (clk_i),
@@ -1227,9 +1227,9 @@ module usbuart_reg_top (
 
 
   //   F[txilvl]: 6:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_fifo_ctrl_txilvl (
     .clk_i   (clk_i),
@@ -1255,7 +1255,7 @@ module usbuart_reg_top (
   // R[fifo_status]: V(True)
 
   //   F[txlvl]: 5:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (6)
   ) u_fifo_status_txlvl (
     .re     (fifo_status_re),
@@ -1270,7 +1270,7 @@ module usbuart_reg_top (
 
 
   //   F[rxlvl]: 21:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (6)
   ) u_fifo_status_rxlvl (
     .re     (fifo_status_re),
@@ -1287,9 +1287,9 @@ module usbuart_reg_top (
   // R[ovrd]: V(False)
 
   //   F[txen]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ovrd_txen (
     .clk_i   (clk_i),
@@ -1313,9 +1313,9 @@ module usbuart_reg_top (
 
 
   //   F[txval]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ovrd_txval (
     .clk_i   (clk_i),
@@ -1340,7 +1340,7 @@ module usbuart_reg_top (
 
   // R[val]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_val (
     .re     (val_re),
@@ -1357,9 +1357,9 @@ module usbuart_reg_top (
   // R[timeout_ctrl]: V(False)
 
   //   F[val]: 23:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (24),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (24'h0)
   ) u_timeout_ctrl_val (
     .clk_i   (clk_i),
@@ -1383,9 +1383,9 @@ module usbuart_reg_top (
 
 
   //   F[en]: 31:31
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_timeout_ctrl_en (
     .clk_i   (clk_i),
@@ -1411,7 +1411,7 @@ module usbuart_reg_top (
   // R[usbstat]: V(True)
 
   //   F[frame]: 10:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (11)
   ) u_usbstat_frame (
     .re     (usbstat_re),
@@ -1426,7 +1426,7 @@ module usbuart_reg_top (
 
 
   //   F[host_timeout]: 14:14
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_usbstat_host_timeout (
     .re     (usbstat_re),
@@ -1441,7 +1441,7 @@ module usbuart_reg_top (
 
 
   //   F[host_lost]: 15:15
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_usbstat_host_lost (
     .re     (usbstat_re),
@@ -1456,7 +1456,7 @@ module usbuart_reg_top (
 
 
   //   F[device_address]: 22:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (7)
   ) u_usbstat_device_address (
     .re     (usbstat_re),
@@ -1473,7 +1473,7 @@ module usbuart_reg_top (
   // R[usbparam]: V(True)
 
   //   F[baud_req]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_usbparam_baud_req (
     .re     (usbparam_re),
@@ -1488,7 +1488,7 @@ module usbuart_reg_top (
 
 
   //   F[parity_req]: 17:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (2)
   ) u_usbparam_parity_req (
     .re     (usbparam_re),

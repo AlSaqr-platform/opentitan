@@ -8,15 +8,15 @@ description: "Register slices"
 filesets:
   files_rtl:
     files:
-      - rtl/prim_subreg_pkg.sv
-      - rtl/prim_subreg_arb.sv
-      - rtl/prim_subreg_cdc.sv
+      - rtl/prim_generic_subreg_pkg.sv
+      - rtl/prim_generic_subreg_arb.sv
+      - rtl/prim_generic_subreg_cdc.sv
       - rtl/prim_reg_cdc.sv
-      - rtl/prim_subreg.sv
-      - rtl/prim_subreg_async.sv
-      - rtl/prim_subreg_ext.sv
-      - rtl/prim_subreg_ext_async.sv
-      - rtl/prim_subreg_shadow.sv
+      - rtl/prim_generic_subreg.sv
+      - rtl/prim_generic_subreg_async.sv
+      - rtl/prim_generic_subreg_ext.sv
+      - rtl/prim_generic_subreg_ext_async.sv
+      - rtl/prim_generic_subreg_shadow.sv
     file_type: systemVerilogSource
 
   files_verilator_waiver:
@@ -24,7 +24,7 @@ filesets:
       # common waivers
       - lowrisc:lint:common
     files:
-      - lint/prim_subreg.vlt
+      - lint/prim_generic_subreg.vlt
     file_type: vlt
 
   files_ascentlint_waiver:
@@ -32,7 +32,7 @@ filesets:
       # common waivers
       - lowrisc:lint:common
     files:
-      - lint/prim_subreg.waiver
+      - lint/prim_generic_subreg.waiver
     file_type: waiver
 
   files_veriblelint_waiver:

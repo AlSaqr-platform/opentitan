@@ -125,9 +125,9 @@ module clkmgr_reg_top (
   // R[clk_enables]: V(False)
 
   //   F[clk_fixed_peri_en]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_fixed_peri_en (
     .clk_i   (clk_i),
@@ -151,9 +151,9 @@ module clkmgr_reg_top (
 
 
   //   F[clk_usb_48mhz_peri_en]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_usb_48mhz_peri_en (
     .clk_i   (clk_i),
@@ -179,9 +179,9 @@ module clkmgr_reg_top (
   // R[clk_hints]: V(False)
 
   //   F[clk_main_aes_hint]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_aes_hint (
     .clk_i   (clk_i),
@@ -205,9 +205,9 @@ module clkmgr_reg_top (
 
 
   //   F[clk_main_hmac_hint]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_hmac_hint (
     .clk_i   (clk_i),
@@ -233,9 +233,9 @@ module clkmgr_reg_top (
   // R[clk_hints_status]: V(False)
 
   //   F[clk_main_aes_val]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_aes_val (
     .clk_i   (clk_i),
@@ -259,9 +259,9 @@ module clkmgr_reg_top (
 
 
   //   F[clk_main_hmac_val]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_hmac_val (
     .clk_i   (clk_i),

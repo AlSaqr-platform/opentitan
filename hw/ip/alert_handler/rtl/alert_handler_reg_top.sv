@@ -566,9 +566,9 @@ module alert_handler_reg_top (
   // R[intr_state]: V(False)
 
   //   F[classa]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_classa (
     .clk_i   (clk_i),
@@ -592,9 +592,9 @@ module alert_handler_reg_top (
 
 
   //   F[classb]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_classb (
     .clk_i   (clk_i),
@@ -618,9 +618,9 @@ module alert_handler_reg_top (
 
 
   //   F[classc]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_classc (
     .clk_i   (clk_i),
@@ -644,9 +644,9 @@ module alert_handler_reg_top (
 
 
   //   F[classd]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_classd (
     .clk_i   (clk_i),
@@ -672,9 +672,9 @@ module alert_handler_reg_top (
   // R[intr_enable]: V(False)
 
   //   F[classa]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_classa (
     .clk_i   (clk_i),
@@ -698,9 +698,9 @@ module alert_handler_reg_top (
 
 
   //   F[classb]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_classb (
     .clk_i   (clk_i),
@@ -724,9 +724,9 @@ module alert_handler_reg_top (
 
 
   //   F[classc]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_classc (
     .clk_i   (clk_i),
@@ -750,9 +750,9 @@ module alert_handler_reg_top (
 
 
   //   F[classd]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_classd (
     .clk_i   (clk_i),
@@ -778,7 +778,7 @@ module alert_handler_reg_top (
   // R[intr_test]: V(True)
 
   //   F[classa]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_classa (
     .re     (1'b0),
@@ -793,7 +793,7 @@ module alert_handler_reg_top (
 
 
   //   F[classb]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_classb (
     .re     (1'b0),
@@ -808,7 +808,7 @@ module alert_handler_reg_top (
 
 
   //   F[classc]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_classc (
     .re     (1'b0),
@@ -823,7 +823,7 @@ module alert_handler_reg_top (
 
 
   //   F[classd]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_classd (
     .re     (1'b0),
@@ -839,9 +839,9 @@ module alert_handler_reg_top (
 
   // R[ping_timer_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_ping_timer_regwen (
     .clk_i   (clk_i),
@@ -866,9 +866,9 @@ module alert_handler_reg_top (
 
   // R[ping_timeout_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h20)
   ) u_ping_timeout_cyc_shadowed (
     .clk_i   (clk_i),
@@ -899,9 +899,9 @@ module alert_handler_reg_top (
 
   // R[ping_timer_en_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1S),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1S),
     .RESVAL  (1'h0)
   ) u_ping_timer_en_shadowed (
     .clk_i   (clk_i),
@@ -934,9 +934,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg alert_regwen
   // R[alert_regwen_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_alert_regwen_0 (
     .clk_i   (clk_i),
@@ -961,9 +961,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg alert_regwen
   // R[alert_regwen_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_alert_regwen_1 (
     .clk_i   (clk_i),
@@ -988,9 +988,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg alert_regwen
   // R[alert_regwen_2]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_alert_regwen_2 (
     .clk_i   (clk_i),
@@ -1015,9 +1015,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg alert_regwen
   // R[alert_regwen_3]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_alert_regwen_3 (
     .clk_i   (clk_i),
@@ -1044,9 +1044,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg alert_en_shadowed
   // R[alert_en_shadowed_0]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_en_shadowed_0 (
     .clk_i   (clk_i),
@@ -1077,9 +1077,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg alert_en_shadowed
   // R[alert_en_shadowed_1]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_en_shadowed_1 (
     .clk_i   (clk_i),
@@ -1110,9 +1110,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg alert_en_shadowed
   // R[alert_en_shadowed_2]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_en_shadowed_2 (
     .clk_i   (clk_i),
@@ -1143,9 +1143,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg alert_en_shadowed
   // R[alert_en_shadowed_3]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_en_shadowed_3 (
     .clk_i   (clk_i),
@@ -1178,9 +1178,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg alert_class_shadowed
   // R[alert_class_shadowed_0]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_alert_class_shadowed_0 (
     .clk_i   (clk_i),
@@ -1211,9 +1211,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg alert_class_shadowed
   // R[alert_class_shadowed_1]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_alert_class_shadowed_1 (
     .clk_i   (clk_i),
@@ -1244,9 +1244,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg alert_class_shadowed
   // R[alert_class_shadowed_2]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_alert_class_shadowed_2 (
     .clk_i   (clk_i),
@@ -1277,9 +1277,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg alert_class_shadowed
   // R[alert_class_shadowed_3]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_alert_class_shadowed_3 (
     .clk_i   (clk_i),
@@ -1312,9 +1312,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg alert_cause
   // R[alert_cause_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_cause_0 (
     .clk_i   (clk_i),
@@ -1339,9 +1339,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg alert_cause
   // R[alert_cause_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_cause_1 (
     .clk_i   (clk_i),
@@ -1366,9 +1366,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg alert_cause
   // R[alert_cause_2]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_cause_2 (
     .clk_i   (clk_i),
@@ -1393,9 +1393,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg alert_cause
   // R[alert_cause_3]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_cause_3 (
     .clk_i   (clk_i),
@@ -1422,9 +1422,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_0 (
     .clk_i   (clk_i),
@@ -1449,9 +1449,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_1 (
     .clk_i   (clk_i),
@@ -1476,9 +1476,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_2]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_2 (
     .clk_i   (clk_i),
@@ -1503,9 +1503,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_3]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_3 (
     .clk_i   (clk_i),
@@ -1530,9 +1530,9 @@ module alert_handler_reg_top (
   // Subregister 4 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_4]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_4 (
     .clk_i   (clk_i),
@@ -1557,9 +1557,9 @@ module alert_handler_reg_top (
   // Subregister 5 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_5]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_5 (
     .clk_i   (clk_i),
@@ -1584,9 +1584,9 @@ module alert_handler_reg_top (
   // Subregister 6 of Multireg loc_alert_regwen
   // R[loc_alert_regwen_6]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_loc_alert_regwen_6 (
     .clk_i   (clk_i),
@@ -1613,9 +1613,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_0]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_0 (
     .clk_i   (clk_i),
@@ -1646,9 +1646,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_1]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_1 (
     .clk_i   (clk_i),
@@ -1679,9 +1679,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_2]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_2 (
     .clk_i   (clk_i),
@@ -1712,9 +1712,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_3]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_3 (
     .clk_i   (clk_i),
@@ -1745,9 +1745,9 @@ module alert_handler_reg_top (
   // Subregister 4 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_4]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_4 (
     .clk_i   (clk_i),
@@ -1778,9 +1778,9 @@ module alert_handler_reg_top (
   // Subregister 5 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_5]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_5 (
     .clk_i   (clk_i),
@@ -1811,9 +1811,9 @@ module alert_handler_reg_top (
   // Subregister 6 of Multireg loc_alert_en_shadowed
   // R[loc_alert_en_shadowed_6]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_loc_alert_en_shadowed_6 (
     .clk_i   (clk_i),
@@ -1846,9 +1846,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_0]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_0 (
     .clk_i   (clk_i),
@@ -1879,9 +1879,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_1]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_1 (
     .clk_i   (clk_i),
@@ -1912,9 +1912,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_2]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_2 (
     .clk_i   (clk_i),
@@ -1945,9 +1945,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_3]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_3 (
     .clk_i   (clk_i),
@@ -1978,9 +1978,9 @@ module alert_handler_reg_top (
   // Subregister 4 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_4]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_4 (
     .clk_i   (clk_i),
@@ -2011,9 +2011,9 @@ module alert_handler_reg_top (
   // Subregister 5 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_5]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_5 (
     .clk_i   (clk_i),
@@ -2044,9 +2044,9 @@ module alert_handler_reg_top (
   // Subregister 6 of Multireg loc_alert_class_shadowed
   // R[loc_alert_class_shadowed_6]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_loc_alert_class_shadowed_6 (
     .clk_i   (clk_i),
@@ -2079,9 +2079,9 @@ module alert_handler_reg_top (
   // Subregister 0 of Multireg loc_alert_cause
   // R[loc_alert_cause_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_0 (
     .clk_i   (clk_i),
@@ -2106,9 +2106,9 @@ module alert_handler_reg_top (
   // Subregister 1 of Multireg loc_alert_cause
   // R[loc_alert_cause_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_1 (
     .clk_i   (clk_i),
@@ -2133,9 +2133,9 @@ module alert_handler_reg_top (
   // Subregister 2 of Multireg loc_alert_cause
   // R[loc_alert_cause_2]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_2 (
     .clk_i   (clk_i),
@@ -2160,9 +2160,9 @@ module alert_handler_reg_top (
   // Subregister 3 of Multireg loc_alert_cause
   // R[loc_alert_cause_3]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_3 (
     .clk_i   (clk_i),
@@ -2187,9 +2187,9 @@ module alert_handler_reg_top (
   // Subregister 4 of Multireg loc_alert_cause
   // R[loc_alert_cause_4]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_4 (
     .clk_i   (clk_i),
@@ -2214,9 +2214,9 @@ module alert_handler_reg_top (
   // Subregister 5 of Multireg loc_alert_cause
   // R[loc_alert_cause_5]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_5 (
     .clk_i   (clk_i),
@@ -2241,9 +2241,9 @@ module alert_handler_reg_top (
   // Subregister 6 of Multireg loc_alert_cause
   // R[loc_alert_cause_6]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_loc_alert_cause_6 (
     .clk_i   (clk_i),
@@ -2268,9 +2268,9 @@ module alert_handler_reg_top (
 
   // R[classa_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classa_regwen (
     .clk_i   (clk_i),
@@ -2296,9 +2296,9 @@ module alert_handler_reg_top (
   // R[classa_ctrl_shadowed]: V(False)
 
   //   F[en]: 0:0
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classa_ctrl_shadowed_en (
     .clk_i   (clk_i),
@@ -2328,9 +2328,9 @@ module alert_handler_reg_top (
 
 
   //   F[lock]: 1:1
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classa_ctrl_shadowed_lock (
     .clk_i   (clk_i),
@@ -2360,9 +2360,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e0]: 2:2
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classa_ctrl_shadowed_en_e0 (
     .clk_i   (clk_i),
@@ -2392,9 +2392,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e1]: 3:3
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classa_ctrl_shadowed_en_e1 (
     .clk_i   (clk_i),
@@ -2424,9 +2424,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e2]: 4:4
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classa_ctrl_shadowed_en_e2 (
     .clk_i   (clk_i),
@@ -2456,9 +2456,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e3]: 5:5
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classa_ctrl_shadowed_en_e3 (
     .clk_i   (clk_i),
@@ -2488,9 +2488,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e0]: 7:6
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classa_ctrl_shadowed_map_e0 (
     .clk_i   (clk_i),
@@ -2520,9 +2520,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e1]: 9:8
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h1)
   ) u_classa_ctrl_shadowed_map_e1 (
     .clk_i   (clk_i),
@@ -2552,9 +2552,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e2]: 11:10
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h2)
   ) u_classa_ctrl_shadowed_map_e2 (
     .clk_i   (clk_i),
@@ -2584,9 +2584,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e3]: 13:12
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h3)
   ) u_classa_ctrl_shadowed_map_e3 (
     .clk_i   (clk_i),
@@ -2617,9 +2617,9 @@ module alert_handler_reg_top (
 
   // R[classa_clr_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classa_clr_regwen (
     .clk_i   (clk_i),
@@ -2644,9 +2644,9 @@ module alert_handler_reg_top (
 
   // R[classa_clr_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classa_clr_shadowed (
     .clk_i   (clk_i),
@@ -2677,7 +2677,7 @@ module alert_handler_reg_top (
 
   // R[classa_accum_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_classa_accum_cnt (
     .re     (classa_accum_cnt_re),
@@ -2693,9 +2693,9 @@ module alert_handler_reg_top (
 
   // R[classa_accum_thresh_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_classa_accum_thresh_shadowed (
     .clk_i   (clk_i),
@@ -2726,9 +2726,9 @@ module alert_handler_reg_top (
 
   // R[classa_timeout_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classa_timeout_cyc_shadowed (
     .clk_i   (clk_i),
@@ -2759,9 +2759,9 @@ module alert_handler_reg_top (
 
   // R[classa_crashdump_trigger_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classa_crashdump_trigger_shadowed (
     .clk_i   (clk_i),
@@ -2792,9 +2792,9 @@ module alert_handler_reg_top (
 
   // R[classa_phase0_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classa_phase0_cyc_shadowed (
     .clk_i   (clk_i),
@@ -2825,9 +2825,9 @@ module alert_handler_reg_top (
 
   // R[classa_phase1_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classa_phase1_cyc_shadowed (
     .clk_i   (clk_i),
@@ -2858,9 +2858,9 @@ module alert_handler_reg_top (
 
   // R[classa_phase2_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classa_phase2_cyc_shadowed (
     .clk_i   (clk_i),
@@ -2891,9 +2891,9 @@ module alert_handler_reg_top (
 
   // R[classa_phase3_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classa_phase3_cyc_shadowed (
     .clk_i   (clk_i),
@@ -2924,7 +2924,7 @@ module alert_handler_reg_top (
 
   // R[classa_esc_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_classa_esc_cnt (
     .re     (classa_esc_cnt_re),
@@ -2940,7 +2940,7 @@ module alert_handler_reg_top (
 
   // R[classa_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_classa_state (
     .re     (classa_state_re),
@@ -2956,9 +2956,9 @@ module alert_handler_reg_top (
 
   // R[classb_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classb_regwen (
     .clk_i   (clk_i),
@@ -2984,9 +2984,9 @@ module alert_handler_reg_top (
   // R[classb_ctrl_shadowed]: V(False)
 
   //   F[en]: 0:0
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classb_ctrl_shadowed_en (
     .clk_i   (clk_i),
@@ -3016,9 +3016,9 @@ module alert_handler_reg_top (
 
 
   //   F[lock]: 1:1
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classb_ctrl_shadowed_lock (
     .clk_i   (clk_i),
@@ -3048,9 +3048,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e0]: 2:2
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classb_ctrl_shadowed_en_e0 (
     .clk_i   (clk_i),
@@ -3080,9 +3080,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e1]: 3:3
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classb_ctrl_shadowed_en_e1 (
     .clk_i   (clk_i),
@@ -3112,9 +3112,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e2]: 4:4
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classb_ctrl_shadowed_en_e2 (
     .clk_i   (clk_i),
@@ -3144,9 +3144,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e3]: 5:5
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classb_ctrl_shadowed_en_e3 (
     .clk_i   (clk_i),
@@ -3176,9 +3176,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e0]: 7:6
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classb_ctrl_shadowed_map_e0 (
     .clk_i   (clk_i),
@@ -3208,9 +3208,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e1]: 9:8
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h1)
   ) u_classb_ctrl_shadowed_map_e1 (
     .clk_i   (clk_i),
@@ -3240,9 +3240,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e2]: 11:10
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h2)
   ) u_classb_ctrl_shadowed_map_e2 (
     .clk_i   (clk_i),
@@ -3272,9 +3272,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e3]: 13:12
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h3)
   ) u_classb_ctrl_shadowed_map_e3 (
     .clk_i   (clk_i),
@@ -3305,9 +3305,9 @@ module alert_handler_reg_top (
 
   // R[classb_clr_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classb_clr_regwen (
     .clk_i   (clk_i),
@@ -3332,9 +3332,9 @@ module alert_handler_reg_top (
 
   // R[classb_clr_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classb_clr_shadowed (
     .clk_i   (clk_i),
@@ -3365,7 +3365,7 @@ module alert_handler_reg_top (
 
   // R[classb_accum_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_classb_accum_cnt (
     .re     (classb_accum_cnt_re),
@@ -3381,9 +3381,9 @@ module alert_handler_reg_top (
 
   // R[classb_accum_thresh_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_classb_accum_thresh_shadowed (
     .clk_i   (clk_i),
@@ -3414,9 +3414,9 @@ module alert_handler_reg_top (
 
   // R[classb_timeout_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classb_timeout_cyc_shadowed (
     .clk_i   (clk_i),
@@ -3447,9 +3447,9 @@ module alert_handler_reg_top (
 
   // R[classb_crashdump_trigger_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classb_crashdump_trigger_shadowed (
     .clk_i   (clk_i),
@@ -3480,9 +3480,9 @@ module alert_handler_reg_top (
 
   // R[classb_phase0_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classb_phase0_cyc_shadowed (
     .clk_i   (clk_i),
@@ -3513,9 +3513,9 @@ module alert_handler_reg_top (
 
   // R[classb_phase1_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classb_phase1_cyc_shadowed (
     .clk_i   (clk_i),
@@ -3546,9 +3546,9 @@ module alert_handler_reg_top (
 
   // R[classb_phase2_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classb_phase2_cyc_shadowed (
     .clk_i   (clk_i),
@@ -3579,9 +3579,9 @@ module alert_handler_reg_top (
 
   // R[classb_phase3_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classb_phase3_cyc_shadowed (
     .clk_i   (clk_i),
@@ -3612,7 +3612,7 @@ module alert_handler_reg_top (
 
   // R[classb_esc_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_classb_esc_cnt (
     .re     (classb_esc_cnt_re),
@@ -3628,7 +3628,7 @@ module alert_handler_reg_top (
 
   // R[classb_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_classb_state (
     .re     (classb_state_re),
@@ -3644,9 +3644,9 @@ module alert_handler_reg_top (
 
   // R[classc_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classc_regwen (
     .clk_i   (clk_i),
@@ -3672,9 +3672,9 @@ module alert_handler_reg_top (
   // R[classc_ctrl_shadowed]: V(False)
 
   //   F[en]: 0:0
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classc_ctrl_shadowed_en (
     .clk_i   (clk_i),
@@ -3704,9 +3704,9 @@ module alert_handler_reg_top (
 
 
   //   F[lock]: 1:1
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classc_ctrl_shadowed_lock (
     .clk_i   (clk_i),
@@ -3736,9 +3736,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e0]: 2:2
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classc_ctrl_shadowed_en_e0 (
     .clk_i   (clk_i),
@@ -3768,9 +3768,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e1]: 3:3
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classc_ctrl_shadowed_en_e1 (
     .clk_i   (clk_i),
@@ -3800,9 +3800,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e2]: 4:4
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classc_ctrl_shadowed_en_e2 (
     .clk_i   (clk_i),
@@ -3832,9 +3832,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e3]: 5:5
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classc_ctrl_shadowed_en_e3 (
     .clk_i   (clk_i),
@@ -3864,9 +3864,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e0]: 7:6
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classc_ctrl_shadowed_map_e0 (
     .clk_i   (clk_i),
@@ -3896,9 +3896,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e1]: 9:8
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h1)
   ) u_classc_ctrl_shadowed_map_e1 (
     .clk_i   (clk_i),
@@ -3928,9 +3928,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e2]: 11:10
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h2)
   ) u_classc_ctrl_shadowed_map_e2 (
     .clk_i   (clk_i),
@@ -3960,9 +3960,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e3]: 13:12
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h3)
   ) u_classc_ctrl_shadowed_map_e3 (
     .clk_i   (clk_i),
@@ -3993,9 +3993,9 @@ module alert_handler_reg_top (
 
   // R[classc_clr_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classc_clr_regwen (
     .clk_i   (clk_i),
@@ -4020,9 +4020,9 @@ module alert_handler_reg_top (
 
   // R[classc_clr_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classc_clr_shadowed (
     .clk_i   (clk_i),
@@ -4053,7 +4053,7 @@ module alert_handler_reg_top (
 
   // R[classc_accum_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_classc_accum_cnt (
     .re     (classc_accum_cnt_re),
@@ -4069,9 +4069,9 @@ module alert_handler_reg_top (
 
   // R[classc_accum_thresh_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_classc_accum_thresh_shadowed (
     .clk_i   (clk_i),
@@ -4102,9 +4102,9 @@ module alert_handler_reg_top (
 
   // R[classc_timeout_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classc_timeout_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4135,9 +4135,9 @@ module alert_handler_reg_top (
 
   // R[classc_crashdump_trigger_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classc_crashdump_trigger_shadowed (
     .clk_i   (clk_i),
@@ -4168,9 +4168,9 @@ module alert_handler_reg_top (
 
   // R[classc_phase0_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classc_phase0_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4201,9 +4201,9 @@ module alert_handler_reg_top (
 
   // R[classc_phase1_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classc_phase1_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4234,9 +4234,9 @@ module alert_handler_reg_top (
 
   // R[classc_phase2_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classc_phase2_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4267,9 +4267,9 @@ module alert_handler_reg_top (
 
   // R[classc_phase3_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classc_phase3_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4300,7 +4300,7 @@ module alert_handler_reg_top (
 
   // R[classc_esc_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_classc_esc_cnt (
     .re     (classc_esc_cnt_re),
@@ -4316,7 +4316,7 @@ module alert_handler_reg_top (
 
   // R[classc_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_classc_state (
     .re     (classc_state_re),
@@ -4332,9 +4332,9 @@ module alert_handler_reg_top (
 
   // R[classd_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classd_regwen (
     .clk_i   (clk_i),
@@ -4360,9 +4360,9 @@ module alert_handler_reg_top (
   // R[classd_ctrl_shadowed]: V(False)
 
   //   F[en]: 0:0
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classd_ctrl_shadowed_en (
     .clk_i   (clk_i),
@@ -4392,9 +4392,9 @@ module alert_handler_reg_top (
 
 
   //   F[lock]: 1:1
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classd_ctrl_shadowed_lock (
     .clk_i   (clk_i),
@@ -4424,9 +4424,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e0]: 2:2
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classd_ctrl_shadowed_en_e0 (
     .clk_i   (clk_i),
@@ -4456,9 +4456,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e1]: 3:3
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classd_ctrl_shadowed_en_e1 (
     .clk_i   (clk_i),
@@ -4488,9 +4488,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e2]: 4:4
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classd_ctrl_shadowed_en_e2 (
     .clk_i   (clk_i),
@@ -4520,9 +4520,9 @@ module alert_handler_reg_top (
 
 
   //   F[en_e3]: 5:5
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_classd_ctrl_shadowed_en_e3 (
     .clk_i   (clk_i),
@@ -4552,9 +4552,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e0]: 7:6
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classd_ctrl_shadowed_map_e0 (
     .clk_i   (clk_i),
@@ -4584,9 +4584,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e1]: 9:8
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h1)
   ) u_classd_ctrl_shadowed_map_e1 (
     .clk_i   (clk_i),
@@ -4616,9 +4616,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e2]: 11:10
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h2)
   ) u_classd_ctrl_shadowed_map_e2 (
     .clk_i   (clk_i),
@@ -4648,9 +4648,9 @@ module alert_handler_reg_top (
 
 
   //   F[map_e3]: 13:12
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h3)
   ) u_classd_ctrl_shadowed_map_e3 (
     .clk_i   (clk_i),
@@ -4681,9 +4681,9 @@ module alert_handler_reg_top (
 
   // R[classd_clr_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_classd_clr_regwen (
     .clk_i   (clk_i),
@@ -4708,9 +4708,9 @@ module alert_handler_reg_top (
 
   // R[classd_clr_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_classd_clr_shadowed (
     .clk_i   (clk_i),
@@ -4741,7 +4741,7 @@ module alert_handler_reg_top (
 
   // R[classd_accum_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_classd_accum_cnt (
     .re     (classd_accum_cnt_re),
@@ -4757,9 +4757,9 @@ module alert_handler_reg_top (
 
   // R[classd_accum_thresh_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_classd_accum_thresh_shadowed (
     .clk_i   (clk_i),
@@ -4790,9 +4790,9 @@ module alert_handler_reg_top (
 
   // R[classd_timeout_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classd_timeout_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4823,9 +4823,9 @@ module alert_handler_reg_top (
 
   // R[classd_crashdump_trigger_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_classd_crashdump_trigger_shadowed (
     .clk_i   (clk_i),
@@ -4856,9 +4856,9 @@ module alert_handler_reg_top (
 
   // R[classd_phase0_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classd_phase0_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4889,9 +4889,9 @@ module alert_handler_reg_top (
 
   // R[classd_phase1_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classd_phase1_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4922,9 +4922,9 @@ module alert_handler_reg_top (
 
   // R[classd_phase2_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classd_phase2_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4955,9 +4955,9 @@ module alert_handler_reg_top (
 
   // R[classd_phase3_cyc_shadowed]: V(False)
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_classd_phase3_cyc_shadowed (
     .clk_i   (clk_i),
@@ -4988,7 +4988,7 @@ module alert_handler_reg_top (
 
   // R[classd_esc_cnt]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_classd_esc_cnt (
     .re     (classd_esc_cnt_re),
@@ -5004,7 +5004,7 @@ module alert_handler_reg_top (
 
   // R[classd_state]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_classd_state (
     .re     (classd_state_re),

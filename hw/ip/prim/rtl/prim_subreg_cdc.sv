@@ -6,7 +6,7 @@
 
 `include "prim_assert.sv"
 
-module prim_subreg_cdc #(
+module prim_generic_subreg_cdc #(
   parameter int            DW       = 32,
   parameter logic [DW-1:0] RESVAL   = '0    // Reset value
 ) (
@@ -61,7 +61,7 @@ module prim_subreg_cdc #(
   // window from which hardware writes are ignored.  Once the busy window completes,
   // the cdc portion then begins sampling once more.
   //
-  // This is consistent with prim_subreg_arb where during software / hardware conflicts,
+  // This is consistent with prim_generic_subreg_arb where during software / hardware conflicts,
   // software is always prioritized.  The main difference is the conflict resolution window
   // is now larger instead of just one destination clock cycle.
 
@@ -132,4 +132,4 @@ module prim_subreg_cdc #(
   `endif
 
 
-endmodule // prim_subreg_cdc
+endmodule // prim_generic_subreg_cdc

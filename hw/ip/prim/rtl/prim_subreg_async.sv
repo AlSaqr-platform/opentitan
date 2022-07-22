@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 //
-// Asynchronous implementation of prim_subreg
+// Asynchronous implementation of prim_generic_subreg
 
-module prim_subreg_async
-  import prim_subreg_pkg::*;
+module prim_generic_subreg_async
+  import prim_generic_subreg_pkg::*;
 #(
   parameter int            DW       = 32  ,
   parameter sw_access_e    SwAccess = SwAccessRW,
@@ -43,7 +43,7 @@ module prim_subreg_async
   logic [DW-1:0] dst_wdata;
   logic [DW-1:0] q_int;
 
-  prim_subreg_cdc #(
+  prim_generic_subreg_cdc #(
     .DW(DW),
     .RESVAL(RESVAL)
   ) u_reg_cdc (
@@ -65,7 +65,7 @@ module prim_subreg_async
     .dst_data_o(dst_wdata)
   );
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW(DW),
     .SwAccess(SwAccess),
     .RESVAL(RESVAL)

@@ -335,9 +335,9 @@ module kmac_reg_top (
   // R[intr_state]: V(False)
 
   //   F[kmac_done]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_kmac_done (
     .clk_i   (clk_i),
@@ -361,9 +361,9 @@ module kmac_reg_top (
 
 
   //   F[fifo_empty]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_fifo_empty (
     .clk_i   (clk_i),
@@ -387,9 +387,9 @@ module kmac_reg_top (
 
 
   //   F[kmac_err]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_kmac_err (
     .clk_i   (clk_i),
@@ -415,9 +415,9 @@ module kmac_reg_top (
   // R[intr_enable]: V(False)
 
   //   F[kmac_done]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_kmac_done (
     .clk_i   (clk_i),
@@ -441,9 +441,9 @@ module kmac_reg_top (
 
 
   //   F[fifo_empty]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_fifo_empty (
     .clk_i   (clk_i),
@@ -467,9 +467,9 @@ module kmac_reg_top (
 
 
   //   F[kmac_err]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_kmac_err (
     .clk_i   (clk_i),
@@ -495,7 +495,7 @@ module kmac_reg_top (
   // R[intr_test]: V(True)
 
   //   F[kmac_done]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_kmac_done (
     .re     (1'b0),
@@ -510,7 +510,7 @@ module kmac_reg_top (
 
 
   //   F[fifo_empty]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_fifo_empty (
     .re     (1'b0),
@@ -525,7 +525,7 @@ module kmac_reg_top (
 
 
   //   F[kmac_err]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_kmac_err (
     .re     (1'b0),
@@ -541,7 +541,7 @@ module kmac_reg_top (
 
   // R[alert_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -557,7 +557,7 @@ module kmac_reg_top (
 
   // R[cfg_regwen]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_cfg_regwen (
     .re     (cfg_regwen_re),
@@ -574,9 +574,9 @@ module kmac_reg_top (
   // R[cfg]: V(False)
 
   //   F[kmac_en]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_kmac_en (
     .clk_i   (clk_i),
@@ -600,9 +600,9 @@ module kmac_reg_top (
 
 
   //   F[kstrength]: 3:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (3),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (3'h0)
   ) u_cfg_kstrength (
     .clk_i   (clk_i),
@@ -626,9 +626,9 @@ module kmac_reg_top (
 
 
   //   F[mode]: 5:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_cfg_mode (
     .clk_i   (clk_i),
@@ -652,9 +652,9 @@ module kmac_reg_top (
 
 
   //   F[msg_endianness]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_msg_endianness (
     .clk_i   (clk_i),
@@ -678,9 +678,9 @@ module kmac_reg_top (
 
 
   //   F[state_endianness]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_state_endianness (
     .clk_i   (clk_i),
@@ -704,9 +704,9 @@ module kmac_reg_top (
 
 
   //   F[sideload]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_sideload (
     .clk_i   (clk_i),
@@ -730,9 +730,9 @@ module kmac_reg_top (
 
 
   //   F[entropy_mode]: 17:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_cfg_entropy_mode (
     .clk_i   (clk_i),
@@ -756,9 +756,9 @@ module kmac_reg_top (
 
 
   //   F[entropy_fast_process]: 19:19
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_entropy_fast_process (
     .clk_i   (clk_i),
@@ -782,9 +782,9 @@ module kmac_reg_top (
 
 
   //   F[entropy_ready]: 24:24
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_entropy_ready (
     .clk_i   (clk_i),
@@ -808,9 +808,9 @@ module kmac_reg_top (
 
 
   //   F[err_processed]: 25:25
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_cfg_err_processed (
     .clk_i   (clk_i),
@@ -836,7 +836,7 @@ module kmac_reg_top (
   // R[cmd]: V(True)
 
   //   F[cmd]: 3:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (4)
   ) u_cmd_cmd (
     .re     (1'b0),
@@ -851,7 +851,7 @@ module kmac_reg_top (
 
 
   //   F[entropy_req]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_cmd_entropy_req (
     .re     (1'b0),
@@ -866,7 +866,7 @@ module kmac_reg_top (
 
 
   //   F[hash_cnt_clr]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_cmd_hash_cnt_clr (
     .re     (1'b0),
@@ -883,7 +883,7 @@ module kmac_reg_top (
   // R[status]: V(True)
 
   //   F[sha3_idle]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_sha3_idle (
     .re     (status_re),
@@ -898,7 +898,7 @@ module kmac_reg_top (
 
 
   //   F[sha3_absorb]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_sha3_absorb (
     .re     (status_re),
@@ -913,7 +913,7 @@ module kmac_reg_top (
 
 
   //   F[sha3_squeeze]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_sha3_squeeze (
     .re     (status_re),
@@ -928,7 +928,7 @@ module kmac_reg_top (
 
 
   //   F[fifo_depth]: 12:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (5)
   ) u_status_fifo_depth (
     .re     (status_re),
@@ -943,7 +943,7 @@ module kmac_reg_top (
 
 
   //   F[fifo_empty]: 14:14
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_fifo_empty (
     .re     (status_re),
@@ -958,7 +958,7 @@ module kmac_reg_top (
 
 
   //   F[fifo_full]: 15:15
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_fifo_full (
     .re     (status_re),
@@ -975,9 +975,9 @@ module kmac_reg_top (
   // R[entropy_period]: V(False)
 
   //   F[prescaler]: 9:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h0)
   ) u_entropy_period_prescaler (
     .clk_i   (clk_i),
@@ -1001,9 +1001,9 @@ module kmac_reg_top (
 
 
   //   F[wait_timer]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_entropy_period_wait_timer (
     .clk_i   (clk_i),
@@ -1029,9 +1029,9 @@ module kmac_reg_top (
   // R[entropy_refresh]: V(False)
 
   //   F[threshold]: 9:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h0)
   ) u_entropy_refresh_threshold (
     .clk_i   (clk_i),
@@ -1055,9 +1055,9 @@ module kmac_reg_top (
 
 
   //   F[hash_cnt]: 25:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (10'h0)
   ) u_entropy_refresh_hash_cnt (
     .clk_i   (clk_i),
@@ -1082,9 +1082,9 @@ module kmac_reg_top (
 
   // R[entropy_seed_lower]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_entropy_seed_lower (
     .clk_i   (clk_i),
@@ -1109,9 +1109,9 @@ module kmac_reg_top (
 
   // R[entropy_seed_upper]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_entropy_seed_upper (
     .clk_i   (clk_i),
@@ -1138,7 +1138,7 @@ module kmac_reg_top (
   // Subregister 0 of Multireg key_share0
   // R[key_share0_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_0 (
     .re     (1'b0),
@@ -1154,7 +1154,7 @@ module kmac_reg_top (
   // Subregister 1 of Multireg key_share0
   // R[key_share0_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_1 (
     .re     (1'b0),
@@ -1170,7 +1170,7 @@ module kmac_reg_top (
   // Subregister 2 of Multireg key_share0
   // R[key_share0_2]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_2 (
     .re     (1'b0),
@@ -1186,7 +1186,7 @@ module kmac_reg_top (
   // Subregister 3 of Multireg key_share0
   // R[key_share0_3]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_3 (
     .re     (1'b0),
@@ -1202,7 +1202,7 @@ module kmac_reg_top (
   // Subregister 4 of Multireg key_share0
   // R[key_share0_4]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_4 (
     .re     (1'b0),
@@ -1218,7 +1218,7 @@ module kmac_reg_top (
   // Subregister 5 of Multireg key_share0
   // R[key_share0_5]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_5 (
     .re     (1'b0),
@@ -1234,7 +1234,7 @@ module kmac_reg_top (
   // Subregister 6 of Multireg key_share0
   // R[key_share0_6]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_6 (
     .re     (1'b0),
@@ -1250,7 +1250,7 @@ module kmac_reg_top (
   // Subregister 7 of Multireg key_share0
   // R[key_share0_7]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_7 (
     .re     (1'b0),
@@ -1266,7 +1266,7 @@ module kmac_reg_top (
   // Subregister 8 of Multireg key_share0
   // R[key_share0_8]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_8 (
     .re     (1'b0),
@@ -1282,7 +1282,7 @@ module kmac_reg_top (
   // Subregister 9 of Multireg key_share0
   // R[key_share0_9]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_9 (
     .re     (1'b0),
@@ -1298,7 +1298,7 @@ module kmac_reg_top (
   // Subregister 10 of Multireg key_share0
   // R[key_share0_10]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_10 (
     .re     (1'b0),
@@ -1314,7 +1314,7 @@ module kmac_reg_top (
   // Subregister 11 of Multireg key_share0
   // R[key_share0_11]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_11 (
     .re     (1'b0),
@@ -1330,7 +1330,7 @@ module kmac_reg_top (
   // Subregister 12 of Multireg key_share0
   // R[key_share0_12]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_12 (
     .re     (1'b0),
@@ -1346,7 +1346,7 @@ module kmac_reg_top (
   // Subregister 13 of Multireg key_share0
   // R[key_share0_13]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_13 (
     .re     (1'b0),
@@ -1362,7 +1362,7 @@ module kmac_reg_top (
   // Subregister 14 of Multireg key_share0
   // R[key_share0_14]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_14 (
     .re     (1'b0),
@@ -1378,7 +1378,7 @@ module kmac_reg_top (
   // Subregister 15 of Multireg key_share0
   // R[key_share0_15]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share0_15 (
     .re     (1'b0),
@@ -1396,7 +1396,7 @@ module kmac_reg_top (
   // Subregister 0 of Multireg key_share1
   // R[key_share1_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_0 (
     .re     (1'b0),
@@ -1412,7 +1412,7 @@ module kmac_reg_top (
   // Subregister 1 of Multireg key_share1
   // R[key_share1_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_1 (
     .re     (1'b0),
@@ -1428,7 +1428,7 @@ module kmac_reg_top (
   // Subregister 2 of Multireg key_share1
   // R[key_share1_2]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_2 (
     .re     (1'b0),
@@ -1444,7 +1444,7 @@ module kmac_reg_top (
   // Subregister 3 of Multireg key_share1
   // R[key_share1_3]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_3 (
     .re     (1'b0),
@@ -1460,7 +1460,7 @@ module kmac_reg_top (
   // Subregister 4 of Multireg key_share1
   // R[key_share1_4]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_4 (
     .re     (1'b0),
@@ -1476,7 +1476,7 @@ module kmac_reg_top (
   // Subregister 5 of Multireg key_share1
   // R[key_share1_5]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_5 (
     .re     (1'b0),
@@ -1492,7 +1492,7 @@ module kmac_reg_top (
   // Subregister 6 of Multireg key_share1
   // R[key_share1_6]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_6 (
     .re     (1'b0),
@@ -1508,7 +1508,7 @@ module kmac_reg_top (
   // Subregister 7 of Multireg key_share1
   // R[key_share1_7]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_7 (
     .re     (1'b0),
@@ -1524,7 +1524,7 @@ module kmac_reg_top (
   // Subregister 8 of Multireg key_share1
   // R[key_share1_8]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_8 (
     .re     (1'b0),
@@ -1540,7 +1540,7 @@ module kmac_reg_top (
   // Subregister 9 of Multireg key_share1
   // R[key_share1_9]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_9 (
     .re     (1'b0),
@@ -1556,7 +1556,7 @@ module kmac_reg_top (
   // Subregister 10 of Multireg key_share1
   // R[key_share1_10]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_10 (
     .re     (1'b0),
@@ -1572,7 +1572,7 @@ module kmac_reg_top (
   // Subregister 11 of Multireg key_share1
   // R[key_share1_11]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_11 (
     .re     (1'b0),
@@ -1588,7 +1588,7 @@ module kmac_reg_top (
   // Subregister 12 of Multireg key_share1
   // R[key_share1_12]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_12 (
     .re     (1'b0),
@@ -1604,7 +1604,7 @@ module kmac_reg_top (
   // Subregister 13 of Multireg key_share1
   // R[key_share1_13]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_13 (
     .re     (1'b0),
@@ -1620,7 +1620,7 @@ module kmac_reg_top (
   // Subregister 14 of Multireg key_share1
   // R[key_share1_14]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_14 (
     .re     (1'b0),
@@ -1636,7 +1636,7 @@ module kmac_reg_top (
   // Subregister 15 of Multireg key_share1
   // R[key_share1_15]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_key_share1_15 (
     .re     (1'b0),
@@ -1652,9 +1652,9 @@ module kmac_reg_top (
 
   // R[key_len]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (3),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (3'h0)
   ) u_key_len (
     .clk_i   (clk_i),
@@ -1681,9 +1681,9 @@ module kmac_reg_top (
   // Subregister 0 of Multireg prefix
   // R[prefix_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_0 (
     .clk_i   (clk_i),
@@ -1708,9 +1708,9 @@ module kmac_reg_top (
   // Subregister 1 of Multireg prefix
   // R[prefix_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_1 (
     .clk_i   (clk_i),
@@ -1735,9 +1735,9 @@ module kmac_reg_top (
   // Subregister 2 of Multireg prefix
   // R[prefix_2]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_2 (
     .clk_i   (clk_i),
@@ -1762,9 +1762,9 @@ module kmac_reg_top (
   // Subregister 3 of Multireg prefix
   // R[prefix_3]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_3 (
     .clk_i   (clk_i),
@@ -1789,9 +1789,9 @@ module kmac_reg_top (
   // Subregister 4 of Multireg prefix
   // R[prefix_4]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_4 (
     .clk_i   (clk_i),
@@ -1816,9 +1816,9 @@ module kmac_reg_top (
   // Subregister 5 of Multireg prefix
   // R[prefix_5]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_5 (
     .clk_i   (clk_i),
@@ -1843,9 +1843,9 @@ module kmac_reg_top (
   // Subregister 6 of Multireg prefix
   // R[prefix_6]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_6 (
     .clk_i   (clk_i),
@@ -1870,9 +1870,9 @@ module kmac_reg_top (
   // Subregister 7 of Multireg prefix
   // R[prefix_7]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_7 (
     .clk_i   (clk_i),
@@ -1897,9 +1897,9 @@ module kmac_reg_top (
   // Subregister 8 of Multireg prefix
   // R[prefix_8]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_8 (
     .clk_i   (clk_i),
@@ -1924,9 +1924,9 @@ module kmac_reg_top (
   // Subregister 9 of Multireg prefix
   // R[prefix_9]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_9 (
     .clk_i   (clk_i),
@@ -1951,9 +1951,9 @@ module kmac_reg_top (
   // Subregister 10 of Multireg prefix
   // R[prefix_10]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prefix_10 (
     .clk_i   (clk_i),
@@ -1978,9 +1978,9 @@ module kmac_reg_top (
 
   // R[err_code]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_err_code (
     .clk_i   (clk_i),

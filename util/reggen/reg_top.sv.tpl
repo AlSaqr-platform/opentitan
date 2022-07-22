@@ -720,9 +720,9 @@ ${bits.msb}\
     if reg.async_clk:
       update_expr = "sync_" + reg.async_clk.clock.strip("_iclk_")+ "_update"
 %>\
-  % if reg.hwext:       ## if hwext, instantiate prim_subreg_ext
+  % if reg.hwext:       ## if hwext, instantiate prim_generic_subreg_ext
 <%
-    subreg_block = "prim_subreg_ext"
+    subreg_block = "prim_generic_subreg_ext"
 %>\
   ${subreg_block} #(
     .DW    (${field.bits.width()})
@@ -738,8 +738,8 @@ ${bits.msb}\
   );
   % else:
 <%
-      # This isn't a field in a hwext register. Instantiate prim_subreg,
-      # prim_subreg_shadow or constant assign.
+      # This isn't a field in a hwext register. Instantiate prim_generic_subreg,
+      # prim_generic_subreg_shadow or constant assign.
 
       resval_expr = f"{field.bits.width()}'h{field.resval or 0:x}"
       is_const_reg = not (field.hwaccess.allows_read() or
@@ -747,7 +747,7 @@ ${bits.msb}\
                           field.swaccess.allows_write() or
                           field.swaccess.swrd() != SwRdAccess.RD)
 
-      subreg_block = 'prim_subreg' + ('_shadow' if reg.shadowed else '')
+      subreg_block = 'prim_generic_subreg' + ('_shadow' if reg.shadowed else '')
 %>\
     % if is_const_reg:
   // constant-only read
@@ -755,7 +755,7 @@ ${bits.msb}\
     % else:
   ${subreg_block} #(
     .DW      (${field.bits.width()}),
-    .SwAccess(prim_subreg_pkg::SwAccess${field.swaccess.value[1].name.upper()}),
+    .SwAccess(prim_generic_subreg_pkg::SwAccess${field.swaccess.value[1].name.upper()}),
     .RESVAL  (${resval_expr})
   ) u_${finst_name} (
     .clk_i   (${clk_expr}),
@@ -790,7 +790,7 @@ ${bits.msb}\
     .err_storage (reg2hw.${fsig_name}.err_storage)
       % endif
   );
-    % endif  ## end non-constant prim_subreg
+    % endif  ## end non-constant prim_generic_subreg
   % endif
 </%def>\
 <%def name="reg_enable_gen(reg, idx)">\

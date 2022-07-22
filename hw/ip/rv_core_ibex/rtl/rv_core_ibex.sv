@@ -26,6 +26,7 @@ module rv_core_ibex
   parameter bit                   WritebackStage   = 1'b1,
   parameter bit                   ICache           = 1'b0,
   parameter bit                   ICacheECC        = 1'b0,
+  parameter bit                   ICacheScramble   = 1'b0,
   parameter bit                   BranchPredictor  = 1'b0,
   parameter bit                   DbgTriggerEn     = 1'b1,
   parameter bit                   SecureIbex       = 1'b0,
@@ -244,76 +245,175 @@ module rv_core_ibex
     .lc_en_i(pwrmgr_cpu_en_i),
     .lc_en_o(pwrmgr_cpu_en)
   );
+  `ifndef EXCLUDE_OTP_ROM
+      ibex_top_tracing #(
+        .PMPEnable                ( PMPEnable                ),
+        .PMPGranularity           ( PMPGranularity           ),
+        .PMPNumRegions            ( PMPNumRegions            ),
+        .MHPMCounterNum           ( MHPMCounterNum           ),
+        .MHPMCounterWidth         ( MHPMCounterWidth         ),
+        .RV32E                    ( RV32E                    ),
+        .RV32M                    ( RV32M                    ),
+        .RV32B                    ( RV32B                    ),
+        .RegFile                  ( RegFile                  ),
+        .BranchTargetALU          ( BranchTargetALU          ),
+        .WritebackStage           ( WritebackStage           ),
+        .ICache                   ( ICache                   ),
+        .ICacheECC                ( ICacheECC                ),
+        .BranchPredictor          ( BranchPredictor          ),
+        .DbgTriggerEn             ( DbgTriggerEn             ),
+        .SecureIbex               ( SecureIbex               ),
+        .RndCnstLfsrSeed          ( RndCnstLfsrSeed          ),
+        .RndCnstLfsrPerm          ( RndCnstLfsrPerm          ),
+        .DmHaltAddr               ( DmHaltAddr               ),
+        .DmExceptionAddr          ( DmExceptionAddr          )
+     ) u_core (
+       .clk_i,
+       .rst_ni,
 
-  ibex_top_tracing #(
-    .PMPEnable                ( PMPEnable                ),
-    .PMPGranularity           ( PMPGranularity           ),
-    .PMPNumRegions            ( PMPNumRegions            ),
-    .MHPMCounterNum           ( MHPMCounterNum           ),
-    .MHPMCounterWidth         ( MHPMCounterWidth         ),
-    .RV32E                    ( RV32E                    ),
-    .RV32M                    ( RV32M                    ),
-    .RV32B                    ( RV32B                    ),
-    .RegFile                  ( RegFile                  ),
-    .BranchTargetALU          ( BranchTargetALU          ),
-    .WritebackStage           ( WritebackStage           ),
-    .ICache                   ( ICache                   ),
-    .ICacheECC                ( ICacheECC                ),
-    .BranchPredictor          ( BranchPredictor          ),
-    .DbgTriggerEn             ( DbgTriggerEn             ),
-    .SecureIbex               ( SecureIbex               ),
-    .RndCnstLfsrSeed          ( RndCnstLfsrSeed          ),
-    .RndCnstLfsrPerm          ( RndCnstLfsrPerm          ),
-    .DmHaltAddr               ( DmHaltAddr               ),
-    .DmExceptionAddr          ( DmExceptionAddr          )
-  ) u_core (
-    .clk_i,
-    .rst_ni,
+
+       .test_en_i      (scanmode_i == lc_ctrl_pkg::On),
+       .scan_rst_ni,
+
+       .ram_cfg_i,
+
+       .hart_id_i,
+       .boot_addr_i,
+
+       .instr_req_o        ( instr_req        ),
+       .instr_gnt_i        ( instr_gnt        ),
+       .instr_rvalid_i     ( instr_rvalid     ),
+       .instr_addr_o       ( instr_addr       ),
+       .instr_rdata_i      ( instr_rdata      ),
+       .instr_rdata_intg_i ( instr_rdata_intg ),
+       .instr_err_i        ( instr_err        ),
+
+       .data_req_o         ( data_req         ),
+       .data_gnt_i         ( data_gnt         ),
+       .data_rvalid_i      ( data_rvalid      ),
+       .data_we_o          ( data_we          ),
+       .data_be_o          ( data_be          ),
+       .data_addr_o        ( data_addr        ),
+       .data_wdata_o       ( data_wdata       ),
+       .data_wdata_intg_o  ( data_wdata_intg  ),
+       .data_rdata_i       ( data_rdata       ),
+       .data_rdata_intg_i  ( data_rdata_intg  ),
+       .data_err_i         ( data_err         ),
+
+       .irq_software_i,
+       .irq_timer_i,
+       .irq_external_i,
+       .irq_fast_i     ( '0           ),
+       .irq_nm_i       ( irq_nm       ),
+
+       .debug_req_i,
+       .crash_dump_o,
+       .fetch_enable_i   (lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),
+       .alert_minor_o    (alert_minor),
+       .alert_major_o    (alert_major),
+       .core_sleep_o     (pwrmgr_o.core_sleeping)
+     );
+  `else 
+
+     ibex_top #(
+        .PMPEnable                ( PMPEnable                ),
+        .PMPGranularity           ( PMPGranularity           ),
+        .PMPNumRegions            ( PMPNumRegions            ),
+        .MHPMCounterNum           ( MHPMCounterNum           ),
+        .MHPMCounterWidth         ( MHPMCounterWidth         ),
+        .RV32E                    ( RV32E                    ),
+        .RV32M                    ( RV32M                    ),
+        .RV32B                    ( RV32B                    ),
+        .RegFile                  ( RegFile                  ),
+        .BranchTargetALU          ( BranchTargetALU          ),
+        .WritebackStage           ( WritebackStage           ),
+        .ICache                   ( ICache                   ),
+        .ICacheECC                ( ICacheECC                ),
+        .BranchPredictor          ( BranchPredictor          ),
+        .DbgTriggerEn             ( DbgTriggerEn             ),
+        .SecureIbex               ( SecureIbex               ),
+        .RndCnstLfsrSeed          ( RndCnstLfsrSeed          ),
+        .RndCnstLfsrPerm          ( RndCnstLfsrPerm          ),
+        .DmHaltAddr               ( DmHaltAddr               ),
+        .DmExceptionAddr          ( DmExceptionAddr          )
+     ) u_core (
+       .clk_i,
+       .rst_ni,
 
 
-    .test_en_i      (scanmode_i == lc_ctrl_pkg::On),
-    .scan_rst_ni,
+       .test_en_i      (scanmode_i == lc_ctrl_pkg::On),
+       .scan_rst_ni,
 
-    .ram_cfg_i,
+       .ram_cfg_i,
 
-    .hart_id_i,
-    .boot_addr_i,
+       .hart_id_i,
+       .boot_addr_i,
 
-    .instr_req_o        ( instr_req        ),
-    .instr_gnt_i        ( instr_gnt        ),
-    .instr_rvalid_i     ( instr_rvalid     ),
-    .instr_addr_o       ( instr_addr       ),
-    .instr_rdata_i      ( instr_rdata      ),
-    .instr_rdata_intg_i ( instr_rdata_intg ),
-    .instr_err_i        ( instr_err        ),
+       .instr_req_o        ( instr_req        ),
+       .instr_gnt_i        ( instr_gnt        ),
+       .instr_rvalid_i     ( instr_rvalid     ),
+       .instr_addr_o       ( instr_addr       ),
+       .instr_rdata_i      ( instr_rdata      ),
+       .instr_rdata_intg_i ( instr_rdata_intg ),
+       .instr_err_i        ( instr_err        ),
 
-    .data_req_o         ( data_req         ),
-    .data_gnt_i         ( data_gnt         ),
-    .data_rvalid_i      ( data_rvalid      ),
-    .data_we_o          ( data_we          ),
-    .data_be_o          ( data_be          ),
-    .data_addr_o        ( data_addr        ),
-    .data_wdata_o       ( data_wdata       ),
-    .data_wdata_intg_o  ( data_wdata_intg  ),
-    .data_rdata_i       ( data_rdata       ),
-    .data_rdata_intg_i  ( data_rdata_intg  ),
-    .data_err_i         ( data_err         ),
+       .data_req_o         ( data_req         ),
+       .data_gnt_i         ( data_gnt         ),
+       .data_rvalid_i      ( data_rvalid      ),
+       .data_we_o          ( data_we          ),
+       .data_be_o          ( data_be          ),
+       .data_addr_o        ( data_addr        ),
+       .data_wdata_o       ( data_wdata       ),
+       .data_wdata_intg_o  ( data_wdata_intg  ),
+       .data_rdata_i       ( data_rdata       ),
+       .data_rdata_intg_i  ( data_rdata_intg  ),
+       .data_err_i         ( data_err         ),
 
-    .irq_software_i,
-    .irq_timer_i,
-    .irq_external_i,
-    .irq_fast_i     ( '0           ),
-    .irq_nm_i       ( irq_nm       ),
+       .irq_software_i,
+       .irq_timer_i,
+       .irq_external_i,
+       .irq_fast_i     ( '0           ),
+       .irq_nm_i       ( irq_nm       ),
 
-    .debug_req_i,
-    .crash_dump_o,
-            
-    .fetch_enable_i   (lc_cpu_en[0] == lc_ctrl_pkg::On && pwrmgr_cpu_en[0] == lc_ctrl_pkg::On),//1'b1),//
-    .alert_minor_o    (alert_minor),
-    .alert_major_o    (alert_major),
-    .core_sleep_o     (pwrmgr_o.core_sleeping)
-  );
+       .debug_req_i,
+       .crash_dump_o,
 
+       `ifdef RVFI
+        .rvfi_valid,
+        .rvfi_order,
+        .rvfi_insn,
+        .rvfi_trap,
+        .rvfi_halt,
+        .rvfi_intr,
+        .rvfi_mode,
+        .rvfi_ixl,
+        .rvfi_rs1_addr,
+        .rvfi_rs2_addr,
+        .rvfi_rs3_addr,
+        .rvfi_rs1_rdata,
+        .rvfi_rs2_rdata,
+        .rvfi_rs3_rdata,
+        .rvfi_rd_addr,
+        .rvfi_rd_wdata,
+        .rvfi_pc_rdata,
+        .rvfi_pc_wdata,
+        .rvfi_mem_addr,
+        .rvfi_mem_rmask,
+        .rvfi_mem_wmask,
+        .rvfi_mem_rdata,
+        .rvfi_mem_wdata,
+       `endif
+       
+       .fetch_enable_i   (lc_ctrl_pkg::On),
+              
+       .alert_minor_o    (alert_minor),
+       .alert_major_o    (alert_major),
+       .core_sleep_o     (pwrmgr_o.core_sleeping)
+     );
+  `endif // !`ifndef TARGET_SYNTHESIS
+   
+
+   
   //
   // Convert ibex data/instruction bus to TL-UL
   //
@@ -433,7 +533,7 @@ module rv_core_ibex
 //assign cored_tl_h_o = tl_d_o_int;
 //assign tl_d_i_int = cored_tl_h_i;
 `endif
-
+/*
 `ifdef RVFI
   ibex_tracer ibex_tracer_i (
     .clk_i,
@@ -466,7 +566,7 @@ module rv_core_ibex
     .rvfi_mem_wdata
   );
 `endif
-
+*/
   //////////////////////////////////
   // Peripheral functions
   //////////////////////////////////

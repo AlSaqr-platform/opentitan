@@ -168,9 +168,9 @@ module gpio_reg_top (
   // Register instances
   // R[intr_state]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (32'h0)
   ) u_intr_state (
     .clk_i   (clk_i),
@@ -195,9 +195,9 @@ module gpio_reg_top (
 
   // R[intr_enable]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_intr_enable (
     .clk_i   (clk_i),
@@ -222,7 +222,7 @@ module gpio_reg_top (
 
   // R[intr_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_intr_test (
     .re     (1'b0),
@@ -238,7 +238,7 @@ module gpio_reg_top (
 
   // R[alert_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -254,9 +254,9 @@ module gpio_reg_top (
 
   // R[data_in]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_data_in (
     .clk_i   (clk_i),
@@ -281,7 +281,7 @@ module gpio_reg_top (
 
   // R[direct_out]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_direct_out (
     .re     (direct_out_re),
@@ -298,7 +298,7 @@ module gpio_reg_top (
   // R[masked_out_lower]: V(True)
 
   //   F[data]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_out_lower_data (
     .re     (masked_out_lower_re),
@@ -313,7 +313,7 @@ module gpio_reg_top (
 
 
   //   F[mask]: 31:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_out_lower_mask (
     .re     (1'b0),
@@ -330,7 +330,7 @@ module gpio_reg_top (
   // R[masked_out_upper]: V(True)
 
   //   F[data]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_out_upper_data (
     .re     (masked_out_upper_re),
@@ -345,7 +345,7 @@ module gpio_reg_top (
 
 
   //   F[mask]: 31:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_out_upper_mask (
     .re     (1'b0),
@@ -361,7 +361,7 @@ module gpio_reg_top (
 
   // R[direct_oe]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_direct_oe (
     .re     (direct_oe_re),
@@ -378,7 +378,7 @@ module gpio_reg_top (
   // R[masked_oe_lower]: V(True)
 
   //   F[data]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_oe_lower_data (
     .re     (masked_oe_lower_re),
@@ -393,7 +393,7 @@ module gpio_reg_top (
 
 
   //   F[mask]: 31:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_oe_lower_mask (
     .re     (masked_oe_lower_re),
@@ -410,7 +410,7 @@ module gpio_reg_top (
   // R[masked_oe_upper]: V(True)
 
   //   F[data]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_oe_upper_data (
     .re     (masked_oe_upper_re),
@@ -425,7 +425,7 @@ module gpio_reg_top (
 
 
   //   F[mask]: 31:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_masked_oe_upper_mask (
     .re     (masked_oe_upper_re),
@@ -441,9 +441,9 @@ module gpio_reg_top (
 
   // R[intr_ctrl_en_rising]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_intr_ctrl_en_rising (
     .clk_i   (clk_i),
@@ -468,9 +468,9 @@ module gpio_reg_top (
 
   // R[intr_ctrl_en_falling]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_intr_ctrl_en_falling (
     .clk_i   (clk_i),
@@ -495,9 +495,9 @@ module gpio_reg_top (
 
   // R[intr_ctrl_en_lvlhigh]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_intr_ctrl_en_lvlhigh (
     .clk_i   (clk_i),
@@ -522,9 +522,9 @@ module gpio_reg_top (
 
   // R[intr_ctrl_en_lvllow]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_intr_ctrl_en_lvllow (
     .clk_i   (clk_i),
@@ -549,9 +549,9 @@ module gpio_reg_top (
 
   // R[ctrl_en_input_filter]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_ctrl_en_input_filter (
     .clk_i   (clk_i),

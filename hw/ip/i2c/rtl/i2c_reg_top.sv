@@ -305,9 +305,9 @@ module i2c_reg_top (
   // R[intr_state]: V(False)
 
   //   F[fmt_watermark]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_fmt_watermark (
     .clk_i   (clk_i),
@@ -331,9 +331,9 @@ module i2c_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_watermark (
     .clk_i   (clk_i),
@@ -357,9 +357,9 @@ module i2c_reg_top (
 
 
   //   F[fmt_overflow]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_fmt_overflow (
     .clk_i   (clk_i),
@@ -383,9 +383,9 @@ module i2c_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_rx_overflow (
     .clk_i   (clk_i),
@@ -409,9 +409,9 @@ module i2c_reg_top (
 
 
   //   F[nak]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_nak (
     .clk_i   (clk_i),
@@ -435,9 +435,9 @@ module i2c_reg_top (
 
 
   //   F[scl_interference]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_scl_interference (
     .clk_i   (clk_i),
@@ -461,9 +461,9 @@ module i2c_reg_top (
 
 
   //   F[sda_interference]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_sda_interference (
     .clk_i   (clk_i),
@@ -487,9 +487,9 @@ module i2c_reg_top (
 
 
   //   F[stretch_timeout]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_stretch_timeout (
     .clk_i   (clk_i),
@@ -513,9 +513,9 @@ module i2c_reg_top (
 
 
   //   F[sda_unstable]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_sda_unstable (
     .clk_i   (clk_i),
@@ -539,9 +539,9 @@ module i2c_reg_top (
 
 
   //   F[trans_complete]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_trans_complete (
     .clk_i   (clk_i),
@@ -565,9 +565,9 @@ module i2c_reg_top (
 
 
   //   F[tx_empty]: 10:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_tx_empty (
     .clk_i   (clk_i),
@@ -591,9 +591,9 @@ module i2c_reg_top (
 
 
   //   F[tx_nonempty]: 11:11
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_tx_nonempty (
     .clk_i   (clk_i),
@@ -617,9 +617,9 @@ module i2c_reg_top (
 
 
   //   F[tx_overflow]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_tx_overflow (
     .clk_i   (clk_i),
@@ -643,9 +643,9 @@ module i2c_reg_top (
 
 
   //   F[acq_overflow]: 13:13
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_acq_overflow (
     .clk_i   (clk_i),
@@ -669,9 +669,9 @@ module i2c_reg_top (
 
 
   //   F[ack_stop]: 14:14
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_ack_stop (
     .clk_i   (clk_i),
@@ -695,9 +695,9 @@ module i2c_reg_top (
 
 
   //   F[host_timeout]: 15:15
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_host_timeout (
     .clk_i   (clk_i),
@@ -723,9 +723,9 @@ module i2c_reg_top (
   // R[intr_enable]: V(False)
 
   //   F[fmt_watermark]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_fmt_watermark (
     .clk_i   (clk_i),
@@ -749,9 +749,9 @@ module i2c_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_watermark (
     .clk_i   (clk_i),
@@ -775,9 +775,9 @@ module i2c_reg_top (
 
 
   //   F[fmt_overflow]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_fmt_overflow (
     .clk_i   (clk_i),
@@ -801,9 +801,9 @@ module i2c_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_rx_overflow (
     .clk_i   (clk_i),
@@ -827,9 +827,9 @@ module i2c_reg_top (
 
 
   //   F[nak]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_nak (
     .clk_i   (clk_i),
@@ -853,9 +853,9 @@ module i2c_reg_top (
 
 
   //   F[scl_interference]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_scl_interference (
     .clk_i   (clk_i),
@@ -879,9 +879,9 @@ module i2c_reg_top (
 
 
   //   F[sda_interference]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_sda_interference (
     .clk_i   (clk_i),
@@ -905,9 +905,9 @@ module i2c_reg_top (
 
 
   //   F[stretch_timeout]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_stretch_timeout (
     .clk_i   (clk_i),
@@ -931,9 +931,9 @@ module i2c_reg_top (
 
 
   //   F[sda_unstable]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_sda_unstable (
     .clk_i   (clk_i),
@@ -957,9 +957,9 @@ module i2c_reg_top (
 
 
   //   F[trans_complete]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_trans_complete (
     .clk_i   (clk_i),
@@ -983,9 +983,9 @@ module i2c_reg_top (
 
 
   //   F[tx_empty]: 10:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_tx_empty (
     .clk_i   (clk_i),
@@ -1009,9 +1009,9 @@ module i2c_reg_top (
 
 
   //   F[tx_nonempty]: 11:11
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_tx_nonempty (
     .clk_i   (clk_i),
@@ -1035,9 +1035,9 @@ module i2c_reg_top (
 
 
   //   F[tx_overflow]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_tx_overflow (
     .clk_i   (clk_i),
@@ -1061,9 +1061,9 @@ module i2c_reg_top (
 
 
   //   F[acq_overflow]: 13:13
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_acq_overflow (
     .clk_i   (clk_i),
@@ -1087,9 +1087,9 @@ module i2c_reg_top (
 
 
   //   F[ack_stop]: 14:14
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_ack_stop (
     .clk_i   (clk_i),
@@ -1113,9 +1113,9 @@ module i2c_reg_top (
 
 
   //   F[host_timeout]: 15:15
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_host_timeout (
     .clk_i   (clk_i),
@@ -1141,7 +1141,7 @@ module i2c_reg_top (
   // R[intr_test]: V(True)
 
   //   F[fmt_watermark]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_fmt_watermark (
     .re     (1'b0),
@@ -1156,7 +1156,7 @@ module i2c_reg_top (
 
 
   //   F[rx_watermark]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_watermark (
     .re     (1'b0),
@@ -1171,7 +1171,7 @@ module i2c_reg_top (
 
 
   //   F[fmt_overflow]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_fmt_overflow (
     .re     (1'b0),
@@ -1186,7 +1186,7 @@ module i2c_reg_top (
 
 
   //   F[rx_overflow]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_rx_overflow (
     .re     (1'b0),
@@ -1201,7 +1201,7 @@ module i2c_reg_top (
 
 
   //   F[nak]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_nak (
     .re     (1'b0),
@@ -1216,7 +1216,7 @@ module i2c_reg_top (
 
 
   //   F[scl_interference]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_scl_interference (
     .re     (1'b0),
@@ -1231,7 +1231,7 @@ module i2c_reg_top (
 
 
   //   F[sda_interference]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_sda_interference (
     .re     (1'b0),
@@ -1246,7 +1246,7 @@ module i2c_reg_top (
 
 
   //   F[stretch_timeout]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_stretch_timeout (
     .re     (1'b0),
@@ -1261,7 +1261,7 @@ module i2c_reg_top (
 
 
   //   F[sda_unstable]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_sda_unstable (
     .re     (1'b0),
@@ -1276,7 +1276,7 @@ module i2c_reg_top (
 
 
   //   F[trans_complete]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_trans_complete (
     .re     (1'b0),
@@ -1291,7 +1291,7 @@ module i2c_reg_top (
 
 
   //   F[tx_empty]: 10:10
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_tx_empty (
     .re     (1'b0),
@@ -1306,7 +1306,7 @@ module i2c_reg_top (
 
 
   //   F[tx_nonempty]: 11:11
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_tx_nonempty (
     .re     (1'b0),
@@ -1321,7 +1321,7 @@ module i2c_reg_top (
 
 
   //   F[tx_overflow]: 12:12
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_tx_overflow (
     .re     (1'b0),
@@ -1336,7 +1336,7 @@ module i2c_reg_top (
 
 
   //   F[acq_overflow]: 13:13
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_acq_overflow (
     .re     (1'b0),
@@ -1351,7 +1351,7 @@ module i2c_reg_top (
 
 
   //   F[ack_stop]: 14:14
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_ack_stop (
     .re     (1'b0),
@@ -1366,7 +1366,7 @@ module i2c_reg_top (
 
 
   //   F[host_timeout]: 15:15
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_host_timeout (
     .re     (1'b0),
@@ -1382,7 +1382,7 @@ module i2c_reg_top (
 
   // R[alert_test]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -1399,9 +1399,9 @@ module i2c_reg_top (
   // R[ctrl]: V(False)
 
   //   F[enablehost]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_enablehost (
     .clk_i   (clk_i),
@@ -1425,9 +1425,9 @@ module i2c_reg_top (
 
 
   //   F[enabletarget]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_enabletarget (
     .clk_i   (clk_i),
@@ -1451,9 +1451,9 @@ module i2c_reg_top (
 
 
   //   F[llpbk]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_llpbk (
     .clk_i   (clk_i),
@@ -1479,7 +1479,7 @@ module i2c_reg_top (
   // R[status]: V(True)
 
   //   F[fmtfull]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_fmtfull (
     .re     (status_re),
@@ -1494,7 +1494,7 @@ module i2c_reg_top (
 
 
   //   F[rxfull]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_rxfull (
     .re     (status_re),
@@ -1509,7 +1509,7 @@ module i2c_reg_top (
 
 
   //   F[fmtempty]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_fmtempty (
     .re     (status_re),
@@ -1524,7 +1524,7 @@ module i2c_reg_top (
 
 
   //   F[hostidle]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_hostidle (
     .re     (status_re),
@@ -1539,7 +1539,7 @@ module i2c_reg_top (
 
 
   //   F[targetidle]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_targetidle (
     .re     (status_re),
@@ -1554,7 +1554,7 @@ module i2c_reg_top (
 
 
   //   F[rxempty]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_rxempty (
     .re     (status_re),
@@ -1569,7 +1569,7 @@ module i2c_reg_top (
 
 
   //   F[txfull]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_txfull (
     .re     (status_re),
@@ -1584,7 +1584,7 @@ module i2c_reg_top (
 
 
   //   F[acqfull]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_acqfull (
     .re     (status_re),
@@ -1599,7 +1599,7 @@ module i2c_reg_top (
 
 
   //   F[txempty]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_txempty (
     .re     (status_re),
@@ -1614,7 +1614,7 @@ module i2c_reg_top (
 
 
   //   F[acqempty]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_acqempty (
     .re     (status_re),
@@ -1630,7 +1630,7 @@ module i2c_reg_top (
 
   // R[rdata]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (8)
   ) u_rdata (
     .re     (rdata_re),
@@ -1647,9 +1647,9 @@ module i2c_reg_top (
   // R[fdata]: V(False)
 
   //   F[fbyte]: 7:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (8),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (8'h0)
   ) u_fdata_fbyte (
     .clk_i   (clk_i),
@@ -1673,9 +1673,9 @@ module i2c_reg_top (
 
 
   //   F[start]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fdata_start (
     .clk_i   (clk_i),
@@ -1699,9 +1699,9 @@ module i2c_reg_top (
 
 
   //   F[stop]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fdata_stop (
     .clk_i   (clk_i),
@@ -1725,9 +1725,9 @@ module i2c_reg_top (
 
 
   //   F[read]: 10:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fdata_read (
     .clk_i   (clk_i),
@@ -1751,9 +1751,9 @@ module i2c_reg_top (
 
 
   //   F[rcont]: 11:11
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fdata_rcont (
     .clk_i   (clk_i),
@@ -1777,9 +1777,9 @@ module i2c_reg_top (
 
 
   //   F[nakok]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fdata_nakok (
     .clk_i   (clk_i),
@@ -1805,9 +1805,9 @@ module i2c_reg_top (
   // R[fifo_ctrl]: V(False)
 
   //   F[rxrst]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_rxrst (
     .clk_i   (clk_i),
@@ -1831,9 +1831,9 @@ module i2c_reg_top (
 
 
   //   F[fmtrst]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_fmtrst (
     .clk_i   (clk_i),
@@ -1857,9 +1857,9 @@ module i2c_reg_top (
 
 
   //   F[rxilvl]: 4:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (3),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (3'h0)
   ) u_fifo_ctrl_rxilvl (
     .clk_i   (clk_i),
@@ -1883,9 +1883,9 @@ module i2c_reg_top (
 
 
   //   F[fmtilvl]: 6:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_fifo_ctrl_fmtilvl (
     .clk_i   (clk_i),
@@ -1909,9 +1909,9 @@ module i2c_reg_top (
 
 
   //   F[acqrst]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_acqrst (
     .clk_i   (clk_i),
@@ -1935,9 +1935,9 @@ module i2c_reg_top (
 
 
   //   F[txrst]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_fifo_ctrl_txrst (
     .clk_i   (clk_i),
@@ -1963,7 +1963,7 @@ module i2c_reg_top (
   // R[fifo_status]: V(True)
 
   //   F[fmtlvl]: 6:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (7)
   ) u_fifo_status_fmtlvl (
     .re     (fifo_status_re),
@@ -1978,7 +1978,7 @@ module i2c_reg_top (
 
 
   //   F[txlvl]: 14:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (7)
   ) u_fifo_status_txlvl (
     .re     (fifo_status_re),
@@ -1993,7 +1993,7 @@ module i2c_reg_top (
 
 
   //   F[rxlvl]: 22:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (7)
   ) u_fifo_status_rxlvl (
     .re     (fifo_status_re),
@@ -2008,7 +2008,7 @@ module i2c_reg_top (
 
 
   //   F[acqlvl]: 30:24
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (7)
   ) u_fifo_status_acqlvl (
     .re     (fifo_status_re),
@@ -2025,9 +2025,9 @@ module i2c_reg_top (
   // R[ovrd]: V(False)
 
   //   F[txovrden]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ovrd_txovrden (
     .clk_i   (clk_i),
@@ -2051,9 +2051,9 @@ module i2c_reg_top (
 
 
   //   F[sclval]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ovrd_sclval (
     .clk_i   (clk_i),
@@ -2077,9 +2077,9 @@ module i2c_reg_top (
 
 
   //   F[sdaval]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ovrd_sdaval (
     .clk_i   (clk_i),
@@ -2105,7 +2105,7 @@ module i2c_reg_top (
   // R[val]: V(True)
 
   //   F[scl_rx]: 15:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_val_scl_rx (
     .re     (val_re),
@@ -2120,7 +2120,7 @@ module i2c_reg_top (
 
 
   //   F[sda_rx]: 31:16
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (16)
   ) u_val_sda_rx (
     .re     (val_re),
@@ -2137,9 +2137,9 @@ module i2c_reg_top (
   // R[timing0]: V(False)
 
   //   F[thigh]: 15:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing0_thigh (
     .clk_i   (clk_i),
@@ -2163,9 +2163,9 @@ module i2c_reg_top (
 
 
   //   F[tlow]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing0_tlow (
     .clk_i   (clk_i),
@@ -2191,9 +2191,9 @@ module i2c_reg_top (
   // R[timing1]: V(False)
 
   //   F[t_r]: 15:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing1_t_r (
     .clk_i   (clk_i),
@@ -2217,9 +2217,9 @@ module i2c_reg_top (
 
 
   //   F[t_f]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing1_t_f (
     .clk_i   (clk_i),
@@ -2245,9 +2245,9 @@ module i2c_reg_top (
   // R[timing2]: V(False)
 
   //   F[tsu_sta]: 15:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing2_tsu_sta (
     .clk_i   (clk_i),
@@ -2271,9 +2271,9 @@ module i2c_reg_top (
 
 
   //   F[thd_sta]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing2_thd_sta (
     .clk_i   (clk_i),
@@ -2299,9 +2299,9 @@ module i2c_reg_top (
   // R[timing3]: V(False)
 
   //   F[tsu_dat]: 15:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing3_tsu_dat (
     .clk_i   (clk_i),
@@ -2325,9 +2325,9 @@ module i2c_reg_top (
 
 
   //   F[thd_dat]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing3_thd_dat (
     .clk_i   (clk_i),
@@ -2353,9 +2353,9 @@ module i2c_reg_top (
   // R[timing4]: V(False)
 
   //   F[tsu_sto]: 15:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing4_tsu_sto (
     .clk_i   (clk_i),
@@ -2379,9 +2379,9 @@ module i2c_reg_top (
 
 
   //   F[t_buf]: 31:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (16),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (16'h0)
   ) u_timing4_t_buf (
     .clk_i   (clk_i),
@@ -2407,9 +2407,9 @@ module i2c_reg_top (
   // R[timeout_ctrl]: V(False)
 
   //   F[val]: 30:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (31),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (31'h0)
   ) u_timeout_ctrl_val (
     .clk_i   (clk_i),
@@ -2433,9 +2433,9 @@ module i2c_reg_top (
 
 
   //   F[en]: 31:31
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_timeout_ctrl_en (
     .clk_i   (clk_i),
@@ -2461,9 +2461,9 @@ module i2c_reg_top (
   // R[target_id]: V(False)
 
   //   F[address0]: 6:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (7),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (7'h0)
   ) u_target_id_address0 (
     .clk_i   (clk_i),
@@ -2487,9 +2487,9 @@ module i2c_reg_top (
 
 
   //   F[mask0]: 13:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (7),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (7'h0)
   ) u_target_id_mask0 (
     .clk_i   (clk_i),
@@ -2513,9 +2513,9 @@ module i2c_reg_top (
 
 
   //   F[address1]: 20:14
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (7),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (7'h0)
   ) u_target_id_address1 (
     .clk_i   (clk_i),
@@ -2539,9 +2539,9 @@ module i2c_reg_top (
 
 
   //   F[mask1]: 27:21
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (7),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (7'h0)
   ) u_target_id_mask1 (
     .clk_i   (clk_i),
@@ -2567,7 +2567,7 @@ module i2c_reg_top (
   // R[acqdata]: V(True)
 
   //   F[abyte]: 7:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (8)
   ) u_acqdata_abyte (
     .re     (acqdata_re),
@@ -2582,7 +2582,7 @@ module i2c_reg_top (
 
 
   //   F[signal]: 9:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (2)
   ) u_acqdata_signal (
     .re     (acqdata_re),
@@ -2598,9 +2598,9 @@ module i2c_reg_top (
 
   // R[txdata]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (8),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (8'h0)
   ) u_txdata (
     .clk_i   (clk_i),
@@ -2626,9 +2626,9 @@ module i2c_reg_top (
   // R[stretch_ctrl]: V(False)
 
   //   F[en_addr_tx]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_stretch_ctrl_en_addr_tx (
     .clk_i   (clk_i),
@@ -2652,9 +2652,9 @@ module i2c_reg_top (
 
 
   //   F[en_addr_acq]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_stretch_ctrl_en_addr_acq (
     .clk_i   (clk_i),
@@ -2678,9 +2678,9 @@ module i2c_reg_top (
 
 
   //   F[stop_tx]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_stretch_ctrl_stop_tx (
     .clk_i   (clk_i),
@@ -2704,9 +2704,9 @@ module i2c_reg_top (
 
 
   //   F[stop_acq]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_stretch_ctrl_stop_acq (
     .clk_i   (clk_i),
@@ -2731,9 +2731,9 @@ module i2c_reg_top (
 
   // R[host_timeout_ctrl]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_host_timeout_ctrl (
     .clk_i   (clk_i),

@@ -213,7 +213,7 @@ module sensor_ctrl_reg_top (
   // R[alert_test]: V(True)
 
   //   F[recov_as]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_as (
     .re     (1'b0),
@@ -228,7 +228,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_cg]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_cg (
     .re     (1'b0),
@@ -243,7 +243,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_gd]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_gd (
     .re     (1'b0),
@@ -258,7 +258,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ts_hi]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ts_hi (
     .re     (1'b0),
@@ -273,7 +273,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ts_lo]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ts_lo (
     .re     (1'b0),
@@ -288,7 +288,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_fla]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_fla (
     .re     (1'b0),
@@ -303,7 +303,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_otp]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_otp (
     .re     (1'b0),
@@ -318,7 +318,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot0]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot0 (
     .re     (1'b0),
@@ -333,7 +333,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot1]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot1 (
     .re     (1'b0),
@@ -348,7 +348,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot2]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot2 (
     .re     (1'b0),
@@ -363,7 +363,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot3]: 10:10
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot3 (
     .re     (1'b0),
@@ -378,7 +378,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot4]: 11:11
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot4 (
     .re     (1'b0),
@@ -393,7 +393,7 @@ module sensor_ctrl_reg_top (
 
 
   //   F[recov_ot5]: 12:12
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_ot5 (
     .re     (1'b0),
@@ -409,9 +409,9 @@ module sensor_ctrl_reg_top (
 
   // R[cfg_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_cfg_regwen (
     .clk_i   (clk_i),
@@ -439,9 +439,9 @@ module sensor_ctrl_reg_top (
   // R[ack_mode]: V(False)
 
   // F[val_0]: 1:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_0 (
     .clk_i   (clk_i),
@@ -465,9 +465,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_1]: 3:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_1 (
     .clk_i   (clk_i),
@@ -491,9 +491,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_2]: 5:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_2 (
     .clk_i   (clk_i),
@@ -517,9 +517,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_3]: 7:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_3 (
     .clk_i   (clk_i),
@@ -543,9 +543,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_4]: 9:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_4 (
     .clk_i   (clk_i),
@@ -569,9 +569,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_5]: 11:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_5 (
     .clk_i   (clk_i),
@@ -595,9 +595,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_6]: 13:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_6 (
     .clk_i   (clk_i),
@@ -621,9 +621,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_7]: 15:14
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_7 (
     .clk_i   (clk_i),
@@ -647,9 +647,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_8]: 17:16
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_8 (
     .clk_i   (clk_i),
@@ -673,9 +673,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_9]: 19:18
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_9 (
     .clk_i   (clk_i),
@@ -699,9 +699,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_10]: 21:20
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_10 (
     .clk_i   (clk_i),
@@ -725,9 +725,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_11]: 23:22
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_11 (
     .clk_i   (clk_i),
@@ -751,9 +751,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_12]: 25:24
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (2'h0)
   ) u_ack_mode_val_12 (
     .clk_i   (clk_i),
@@ -782,9 +782,9 @@ module sensor_ctrl_reg_top (
   // R[alert_trig]: V(False)
 
   // F[val_0]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_0 (
     .clk_i   (clk_i),
@@ -808,9 +808,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_1]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_1 (
     .clk_i   (clk_i),
@@ -834,9 +834,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_2]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_2 (
     .clk_i   (clk_i),
@@ -860,9 +860,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_3]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_3 (
     .clk_i   (clk_i),
@@ -886,9 +886,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_4]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_4 (
     .clk_i   (clk_i),
@@ -912,9 +912,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_5]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_5 (
     .clk_i   (clk_i),
@@ -938,9 +938,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_6]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_6 (
     .clk_i   (clk_i),
@@ -964,9 +964,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_7]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_7 (
     .clk_i   (clk_i),
@@ -990,9 +990,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_8]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_8 (
     .clk_i   (clk_i),
@@ -1016,9 +1016,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_9]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_9 (
     .clk_i   (clk_i),
@@ -1042,9 +1042,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_10]: 10:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_10 (
     .clk_i   (clk_i),
@@ -1068,9 +1068,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_11]: 11:11
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_11 (
     .clk_i   (clk_i),
@@ -1094,9 +1094,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_12]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_trig_val_12 (
     .clk_i   (clk_i),
@@ -1125,9 +1125,9 @@ module sensor_ctrl_reg_top (
   // R[alert_state]: V(False)
 
   // F[val_0]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_0 (
     .clk_i   (clk_i),
@@ -1151,9 +1151,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_1]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_1 (
     .clk_i   (clk_i),
@@ -1177,9 +1177,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_2]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_2 (
     .clk_i   (clk_i),
@@ -1203,9 +1203,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_3]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_3 (
     .clk_i   (clk_i),
@@ -1229,9 +1229,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_4]: 4:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_4 (
     .clk_i   (clk_i),
@@ -1255,9 +1255,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_5]: 5:5
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_5 (
     .clk_i   (clk_i),
@@ -1281,9 +1281,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_6]: 6:6
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_6 (
     .clk_i   (clk_i),
@@ -1307,9 +1307,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_7]: 7:7
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_7 (
     .clk_i   (clk_i),
@@ -1333,9 +1333,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_8]: 8:8
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_8 (
     .clk_i   (clk_i),
@@ -1359,9 +1359,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_9]: 9:9
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_9 (
     .clk_i   (clk_i),
@@ -1385,9 +1385,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_10]: 10:10
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_10 (
     .clk_i   (clk_i),
@@ -1411,9 +1411,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_11]: 11:11
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_11 (
     .clk_i   (clk_i),
@@ -1437,9 +1437,9 @@ module sensor_ctrl_reg_top (
 
 
   // F[val_12]: 12:12
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_alert_state_val_12 (
     .clk_i   (clk_i),
@@ -1466,9 +1466,9 @@ module sensor_ctrl_reg_top (
   // R[status]: V(False)
 
   //   F[ast_init_done]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_ast_init_done (
     .clk_i   (clk_i),
@@ -1492,9 +1492,9 @@ module sensor_ctrl_reg_top (
 
 
   //   F[io_pok]: 2:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (2),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRO),
     .RESVAL  (2'h3)
   ) u_status_io_pok (
     .clk_i   (clk_i),

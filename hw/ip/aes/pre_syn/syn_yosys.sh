@@ -54,10 +54,10 @@ OT_DEP_SOURCES=(
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_secded_64_57_enc.sv
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_secded_39_32_dec.sv
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_secded_39_32_enc.sv
-    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_subreg.sv
-    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_subreg_ext.sv
-    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_subreg_shadow.sv
-    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_subreg_arb.sv
+    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_generic_subreg.sv
+    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_generic_subreg_ext.sv
+    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_generic_subreg_shadow.sv
+    "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_generic_subreg_arb.sv
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_alert_sender.sv
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_diff_decode.sv
     "$LR_SYNTH_SRC_DIR"/../prim/rtl/prim_lc_sync.sv

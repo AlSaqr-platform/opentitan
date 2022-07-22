@@ -98,9 +98,9 @@ module aes_ctrl_reg_shadowed
 
   // Instantiate one shadowed register primitive per field. An update error in a field should
   // only prevent the update of the affected field.
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      ($bits(aes_op_e)),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (AES_CTRL_SHADOWED_OPERATION_RESVAL)
   ) u_ctrl_reg_shadowed_operation (
     .clk_i,
@@ -118,9 +118,9 @@ module aes_ctrl_reg_shadowed
     .err_storage(err_storage_operation)
   );
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      ($bits(aes_mode_e)),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (AES_CTRL_SHADOWED_MODE_RESVAL)
   ) u_ctrl_reg_shadowed_mode (
     .clk_i,
@@ -138,9 +138,9 @@ module aes_ctrl_reg_shadowed
     .err_storage(err_storage_mode)
   );
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      ($bits(key_len_e)),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (AES_CTRL_SHADOWED_KEY_LEN_RESVAL)
   ) u_ctrl_reg_shadowed_key_len (
     .clk_i,
@@ -158,9 +158,9 @@ module aes_ctrl_reg_shadowed
     .err_storage(err_storage_key_len)
   );
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (AES_CTRL_SHADOWED_MANUAL_OPERATION_RESVAL)
   ) u_ctrl_reg_shadowed_manual_operation (
     .clk_i,
@@ -178,9 +178,9 @@ module aes_ctrl_reg_shadowed
     .err_storage(err_storage_manual_operation)
   );
 
-  prim_subreg_shadow #(
+  prim_generic_subreg_shadow #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessWO),
     .RESVAL  (AES_CTRL_SHADOWED_FORCE_ZERO_MASKS_RESVAL)
   ) u_ctrl_reg_shadowed_force_zero_masks (
     .clk_i,

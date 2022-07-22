@@ -278,7 +278,7 @@ module otp_ctrl_reg_top (
   // R[intr_state]: V(False)
 
   //   F[otp_operation_done]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W1C"),
     .RESVAL  (1'h0)
@@ -304,7 +304,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[otp_error]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W1C"),
     .RESVAL  (1'h0)
@@ -332,7 +332,7 @@ module otp_ctrl_reg_top (
   // R[intr_enable]: V(False)
 
   //   F[otp_operation_done]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("RW"),
     .RESVAL  (1'h0)
@@ -358,7 +358,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[otp_error]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("RW"),
     .RESVAL  (1'h0)
@@ -386,7 +386,7 @@ module otp_ctrl_reg_top (
   // R[intr_test]: V(True)
 
   //   F[otp_operation_done]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_otp_operation_done (
     .re     (1'b0),
@@ -401,7 +401,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[otp_error]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_intr_test_otp_error (
     .re     (1'b0),
@@ -418,7 +418,7 @@ module otp_ctrl_reg_top (
   // R[alert_test]: V(True)
 
   //   F[fatal_macro_error]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_macro_error (
     .re     (1'b0),
@@ -433,7 +433,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[fatal_check_error]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_check_error (
     .re     (1'b0),
@@ -448,7 +448,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[fatal_bus_integ_error]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_bus_integ_error (
     .re     (1'b0),
@@ -465,7 +465,7 @@ module otp_ctrl_reg_top (
   // R[status]: V(True)
 
   //   F[creator_sw_cfg_error]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_creator_sw_cfg_error (
     .re     (status_re),
@@ -480,7 +480,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[owner_sw_cfg_error]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_owner_sw_cfg_error (
     .re     (status_re),
@@ -495,7 +495,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[hw_cfg_error]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_hw_cfg_error (
     .re     (status_re),
@@ -510,7 +510,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[secret0_error]: 3:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_secret0_error (
     .re     (status_re),
@@ -525,7 +525,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[secret1_error]: 4:4
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_secret1_error (
     .re     (status_re),
@@ -540,7 +540,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[secret2_error]: 5:5
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_secret2_error (
     .re     (status_re),
@@ -555,7 +555,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[life_cycle_error]: 6:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_life_cycle_error (
     .re     (status_re),
@@ -570,7 +570,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[dai_error]: 7:7
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_dai_error (
     .re     (status_re),
@@ -585,7 +585,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[lci_error]: 8:8
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_lci_error (
     .re     (status_re),
@@ -600,7 +600,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[timeout_error]: 9:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_timeout_error (
     .re     (status_re),
@@ -615,7 +615,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[lfsr_fsm_error]: 10:10
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_lfsr_fsm_error (
     .re     (status_re),
@@ -630,7 +630,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[scrambling_fsm_error]: 11:11
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_scrambling_fsm_error (
     .re     (status_re),
@@ -645,7 +645,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[key_deriv_fsm_error]: 12:12
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_key_deriv_fsm_error (
     .re     (status_re),
@@ -660,7 +660,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[bus_integ_error]: 13:13
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_bus_integ_error (
     .re     (status_re),
@@ -675,7 +675,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[dai_idle]: 14:14
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_dai_idle (
     .re     (status_re),
@@ -690,7 +690,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[check_pending]: 15:15
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_status_check_pending (
     .re     (status_re),
@@ -709,7 +709,7 @@ module otp_ctrl_reg_top (
   // R[err_code]: V(True)
 
   // F[err_code_0]: 2:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_0 (
     .re     (err_code_re),
@@ -724,7 +724,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_1]: 5:3
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_1 (
     .re     (err_code_re),
@@ -739,7 +739,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_2]: 8:6
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_2 (
     .re     (err_code_re),
@@ -754,7 +754,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_3]: 11:9
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_3 (
     .re     (err_code_re),
@@ -769,7 +769,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_4]: 14:12
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_4 (
     .re     (err_code_re),
@@ -784,7 +784,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_5]: 17:15
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_5 (
     .re     (err_code_re),
@@ -799,7 +799,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_6]: 20:18
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_6 (
     .re     (err_code_re),
@@ -814,7 +814,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_7]: 23:21
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_7 (
     .re     (err_code_re),
@@ -829,7 +829,7 @@ module otp_ctrl_reg_top (
 
 
   // F[err_code_8]: 26:24
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (3)
   ) u_err_code_err_code_8 (
     .re     (err_code_re),
@@ -846,7 +846,7 @@ module otp_ctrl_reg_top (
 
   // R[direct_access_regwen]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_direct_access_regwen (
     .re     (direct_access_regwen_re),
@@ -863,7 +863,7 @@ module otp_ctrl_reg_top (
   // R[direct_access_cmd]: V(True)
 
   //   F[rd]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_direct_access_cmd_rd (
     .re     (1'b0),
@@ -878,7 +878,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[wr]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_direct_access_cmd_wr (
     .re     (1'b0),
@@ -893,7 +893,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[digest]: 2:2
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_direct_access_cmd_digest (
     .re     (1'b0),
@@ -909,7 +909,7 @@ module otp_ctrl_reg_top (
 
   // R[direct_access_address]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (11),
     .SWACCESS("RW"),
     .RESVAL  (11'h0)
@@ -938,9 +938,9 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg direct_access_wdata
   // R[direct_access_wdata_0]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
-    .SWACCESS(prim_subreg_pkg::SwAccessRW),
+    .SWACCESS(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_direct_access_wdata_0 (
     .clk_i   (clk_i),
@@ -965,7 +965,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg direct_access_wdata
   // R[direct_access_wdata_1]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
     .SWACCESS("RW"),
     .RESVAL  (32'h0)
@@ -994,7 +994,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg direct_access_rdata
   // R[direct_access_rdata_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_direct_access_rdata_0 (
     .re     (direct_access_rdata_0_re),
@@ -1010,7 +1010,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg direct_access_rdata
   // R[direct_access_rdata_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_direct_access_rdata_1 (
     .re     (direct_access_rdata_1_re),
@@ -1026,7 +1026,7 @@ module otp_ctrl_reg_top (
 
   // R[check_trigger_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W0C"),
     .RESVAL  (1'h1)
@@ -1054,7 +1054,7 @@ module otp_ctrl_reg_top (
   // R[check_trigger]: V(True)
 
   //   F[integrity]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_check_trigger_integrity (
     .re     (1'b0),
@@ -1069,7 +1069,7 @@ module otp_ctrl_reg_top (
 
 
   //   F[consistency]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_check_trigger_consistency (
     .re     (1'b0),
@@ -1085,7 +1085,7 @@ module otp_ctrl_reg_top (
 
   // R[check_regwen]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W0C"),
     .RESVAL  (1'h1)
@@ -1112,7 +1112,7 @@ module otp_ctrl_reg_top (
 
   // R[check_timeout]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
     .SWACCESS("RW"),
     .RESVAL  (32'h0)
@@ -1139,7 +1139,7 @@ module otp_ctrl_reg_top (
 
   // R[integrity_check_period]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
     .SWACCESS("RW"),
     .RESVAL  (32'h0)
@@ -1166,7 +1166,7 @@ module otp_ctrl_reg_top (
 
   // R[consistency_check_period]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (32),
     .SWACCESS("RW"),
     .RESVAL  (32'h0)
@@ -1193,7 +1193,7 @@ module otp_ctrl_reg_top (
 
   // R[creator_sw_cfg_read_lock]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W0C"),
     .RESVAL  (1'h1)
@@ -1220,7 +1220,7 @@ module otp_ctrl_reg_top (
 
   // R[owner_sw_cfg_read_lock]: V(False)
 
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
     .SWACCESS("W0C"),
     .RESVAL  (1'h1)
@@ -1249,7 +1249,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg creator_sw_cfg_digest
   // R[creator_sw_cfg_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_creator_sw_cfg_digest_0 (
     .re     (creator_sw_cfg_digest_0_re),
@@ -1265,7 +1265,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg creator_sw_cfg_digest
   // R[creator_sw_cfg_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_creator_sw_cfg_digest_1 (
     .re     (creator_sw_cfg_digest_1_re),
@@ -1283,7 +1283,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg owner_sw_cfg_digest
   // R[owner_sw_cfg_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_owner_sw_cfg_digest_0 (
     .re     (owner_sw_cfg_digest_0_re),
@@ -1299,7 +1299,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg owner_sw_cfg_digest
   // R[owner_sw_cfg_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_owner_sw_cfg_digest_1 (
     .re     (owner_sw_cfg_digest_1_re),
@@ -1317,7 +1317,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg hw_cfg_digest
   // R[hw_cfg_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_hw_cfg_digest_0 (
     .re     (hw_cfg_digest_0_re),
@@ -1333,7 +1333,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg hw_cfg_digest
   // R[hw_cfg_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_hw_cfg_digest_1 (
     .re     (hw_cfg_digest_1_re),
@@ -1351,7 +1351,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg secret0_digest
   // R[secret0_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret0_digest_0 (
     .re     (secret0_digest_0_re),
@@ -1367,7 +1367,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg secret0_digest
   // R[secret0_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret0_digest_1 (
     .re     (secret0_digest_1_re),
@@ -1385,7 +1385,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg secret1_digest
   // R[secret1_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret1_digest_0 (
     .re     (secret1_digest_0_re),
@@ -1401,7 +1401,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg secret1_digest
   // R[secret1_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret1_digest_1 (
     .re     (secret1_digest_1_re),
@@ -1419,7 +1419,7 @@ module otp_ctrl_reg_top (
   // Subregister 0 of Multireg secret2_digest
   // R[secret2_digest_0]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret2_digest_0 (
     .re     (secret2_digest_0_re),
@@ -1435,7 +1435,7 @@ module otp_ctrl_reg_top (
   // Subregister 1 of Multireg secret2_digest
   // R[secret2_digest_1]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_secret2_digest_1 (
     .re     (secret2_digest_1_re),

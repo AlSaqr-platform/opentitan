@@ -219,7 +219,7 @@ module tlul2axi
         axi_req.r_ready   = 1'b0;
         axi_req.w_valid   = 1'b0;
         axi_req.aw_valid  = 1'b0;
-        axi_req.w_last    = 1'b0;
+        axi_req.w.last    = 1'b0;
         axi_req.ar_valid  = 1'b0;
       end
           

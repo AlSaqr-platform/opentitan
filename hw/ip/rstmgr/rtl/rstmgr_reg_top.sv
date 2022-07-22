@@ -142,9 +142,9 @@ module rstmgr_reg_top (
   // R[reset_info]: V(False)
 
   //   F[por]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h1)
   ) u_reset_info_por (
     .clk_i   (clk_i),
@@ -168,9 +168,9 @@ module rstmgr_reg_top (
 
 
   //   F[low_power_exit]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_reset_info_low_power_exit (
     .clk_i   (clk_i),
@@ -194,9 +194,9 @@ module rstmgr_reg_top (
 
 
   //   F[ndm_reset]: 2:2
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_reset_info_ndm_reset (
     .clk_i   (clk_i),
@@ -220,9 +220,9 @@ module rstmgr_reg_top (
 
 
   //   F[hw_req]: 3:3
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_reset_info_hw_req (
     .clk_i   (clk_i),
@@ -248,9 +248,9 @@ module rstmgr_reg_top (
   // R[alert_info_ctrl]: V(False)
 
   //   F[en]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_alert_info_ctrl_en (
     .clk_i   (clk_i),
@@ -274,9 +274,9 @@ module rstmgr_reg_top (
 
 
   //   F[index]: 7:4
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h0)
   ) u_alert_info_ctrl_index (
     .clk_i   (clk_i),
@@ -301,7 +301,7 @@ module rstmgr_reg_top (
 
   // R[alert_info_attr]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (4)
   ) u_alert_info_attr (
     .re     (alert_info_attr_re),
@@ -317,7 +317,7 @@ module rstmgr_reg_top (
 
   // R[alert_info]: V(True)
 
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (32)
   ) u_alert_info (
     .re     (alert_info_re),
@@ -336,9 +336,9 @@ module rstmgr_reg_top (
   // R[sw_rst_regen]: V(False)
 
   // F[en_0]: 0:0
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_sw_rst_regen_en_0 (
     .clk_i   (clk_i),
@@ -362,9 +362,9 @@ module rstmgr_reg_top (
 
 
   // F[en_1]: 1:1
-  prim_subreg #(
+  prim_generic_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_generic_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_sw_rst_regen_en_1 (
     .clk_i   (clk_i),
@@ -393,7 +393,7 @@ module rstmgr_reg_top (
   // R[sw_rst_ctrl_n]: V(True)
 
   // F[val_0]: 0:0
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_sw_rst_ctrl_n_val_0 (
     .re     (sw_rst_ctrl_n_re),
@@ -408,7 +408,7 @@ module rstmgr_reg_top (
 
 
   // F[val_1]: 1:1
-  prim_subreg_ext #(
+  prim_generic_subreg_ext #(
     .DW    (1)
   ) u_sw_rst_ctrl_n_val_1 (
     .re     (sw_rst_ctrl_n_re),
