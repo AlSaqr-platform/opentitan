@@ -78,8 +78,7 @@ module opentitan
   parameter bit SramCtrlRetAonInstrExec = 0,
   // parameters for flash_ctrl
   // parameters for rv_dm
-  parameter logic [15:0] PartNumber = 1,
-  parameter logic [31:0] RvDmIdcodeValue = (dm::DbgVersion013 << 28) | (PartNumber << 12) | 32'b1,
+  parameter logic [31:0] RvDmIdcodeValue = 32'h 00000001,
   // parameters for rv_plic
   // parameters for aes
   parameter bit AesMasking = 1,

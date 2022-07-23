@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   //#else
   // set_flls();
   int baud_rate = 115200;
-  int test_freq = 50000000;
+  int test_freq = 100000000;
   //#endif
   
   int volatile  * plic_prio, * plic_en;

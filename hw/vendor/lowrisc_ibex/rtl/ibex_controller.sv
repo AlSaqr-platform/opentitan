@@ -10,6 +10,8 @@
 `include "prim_assert.sv"
 `include "dv_fcov_macros.svh"
 
+`define EXCLUDE_OTP_ROM
+
 module ibex_controller #(
     parameter bit WritebackStage  = 0,
     parameter bit BranchPredictor = 0
@@ -165,7 +167,7 @@ module ibex_controller #(
   logic csr_pipe_flush;
   logic instr_fetch_err;
 
-`ifndef SYNTHESIS
+`ifndef EXCLUDE_OTP_ROM
   // synopsys translate_off
   // make sure we are called later so that we do not generate messages for
   // glitches
