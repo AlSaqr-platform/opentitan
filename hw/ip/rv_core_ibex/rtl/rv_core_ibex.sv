@@ -8,6 +8,8 @@
  * 32 bit RISC-V core supporting the RV32I + optionally EMC instruction sets.
  * Instruction and data bus are 32 bit wide TileLink-UL (TL-UL).
  */
+`define EXCLUDE_OTP_ROM
+
 module rv_core_ibex
   import rv_core_ibex_pkg::*;
   import rv_core_ibex_reg_pkg::*;
@@ -404,7 +406,7 @@ module rv_core_ibex
         .rvfi_mem_wdata,
        `endif
        
-       .fetch_enable_i   (lc_ctrl_pkg::On),
+       .fetch_enable_i   (1'b1),
               
        .alert_minor_o    (alert_minor),
        .alert_major_o    (alert_major),

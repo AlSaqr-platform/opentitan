@@ -2457,13 +2457,17 @@ module opentitan
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
       .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
-      `ifndef EXCLUDE_OTP_ROM
+`ifndef EXCLUDE_OTP_ROM
+      .rst_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
+      .rst_otp_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::Domain0Sel]),
       .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),
       .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
-      `else
-      .otp_en_sram_ifetch_i(prim_mubi_pkg::MuBi8True), 
+`else
+      .rst_ni (por_n_i),
+      .rst_otp_ni (por_n_i),
+      .otp_en_sram_ifetch_i(otp_ctrl_pkg::Disabled), 
       .lc_hw_debug_en_i(lc_ctrl_pkg::On),         
-      `endif
+`endif
       .regs_tl_i(sram_ctrl_main_regs_tl_req),
       .regs_tl_o(sram_ctrl_main_regs_tl_rsp),
       .ram_tl_i(sram_ctrl_main_ram_tl_req),
@@ -2471,9 +2475,7 @@ module opentitan
 
       // Clock and reset connections
       .clk_i (clkmgr_aon_clocks.clk_main_infra),
-      .clk_otp_i (clkmgr_aon_clocks.clk_io_div4_infra),
-      .rst_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
-      .rst_otp_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::Domain0Sel])
+      .clk_otp_i (clkmgr_aon_clocks.clk_io_div4_infra)
   );
 
   otbn #(
@@ -2763,8 +2765,13 @@ module opentitan
   xbar_main u_xbar_main (
     .clk_main_i (clkmgr_aon_clocks.clk_main_infra),//clk_main_i),//c
     .clk_fixed_i (clkmgr_aon_clocks.clk_io_div4_infra),//clk_main_i),//
-    .rst_main_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),//por_n_i),//
-    .rst_fixed_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),//(por_n_i),//
+  `ifndef EXCLUDE_OTP_ROM
+    .rst_main_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
+    .rst_fixed_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
+  `else
+    .rst_main_ni (por_n_i),//
+    .rst_fixed_ni (por_n_i),//
+  `endif
 
     // port: tl_rv_core_ibex__corei
     .tl_rv_core_ibex__corei_i(main_tl_rv_core_ibex__corei_req),
@@ -2773,12 +2780,6 @@ module opentitan
     // port: tl_rv_core_ibex__cored
     .tl_rv_core_ibex__cored_i(main_tl_rv_core_ibex__cored_req),
     .tl_rv_core_ibex__cored_o(main_tl_rv_core_ibex__cored_rsp),
-
-    //.tl_instr_mem_i(instr2core),
-    //.tl_instr_mem_o(core2instr),
-
-    //.tl_ram_2p_i(ram2core),
-    //.tl_ram_2p_o(core2ram),
 
     .tl_alsaqr_i(alsaqr2core),
     .tl_alsaqr_o(core2alsaqr),
@@ -2884,8 +2885,11 @@ module opentitan
    
   xbar_peri u_xbar_peri (
     .clk_peri_i (clkmgr_aon_clocks.clk_io_div4_infra),
+  `ifndef EXCLUDE_OTP_ROM
     .rst_peri_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
-
+  `else
+    .rst_peri_ni (por_n_i),
+  `endif
     // port: tl_main
     .tl_main_i(main_tl_peri_req),
     .tl_main_o(main_tl_peri_rsp),

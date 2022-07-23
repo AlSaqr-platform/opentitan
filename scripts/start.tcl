@@ -1,4 +1,4 @@
-vsim testbench -t 1ps -voptargs=+acc -classdebug +OT_STRING=/scratch/mciani/cva6/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.elf \
+vsim testbench -t 1ps -voptargs=+acc -classdebug  +OT_STRING=/scratch/mciani/test/he-soc/hardware/working_dir/opentitan/hw/top_titangrey/examples/sw/simple_system/hello_test/hello_test.elf \
     -sv_lib work-dpi/ariane_dpi
 
 set StdArithNoWarnings 1

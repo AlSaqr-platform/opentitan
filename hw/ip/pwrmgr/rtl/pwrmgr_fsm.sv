@@ -6,6 +6,7 @@
 //
 
 `include "prim_assert.sv"
+`define EXCLUDE_OTP_ROM
 
 module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
   input clk_i,
@@ -202,7 +203,8 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
     reset_cause_d = reset_cause_q;
     low_power_d = low_power_q;
     fetch_en_d = fetch_en_q;
-
+     
+ `ifndef EXCLUDE_OTP_ROM
     unique case(state_q)
 
       FastPwrStateLowPower: begin
@@ -374,6 +376,163 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
       end
 
     endcase // unique case (state_q)
+     
+ `else
+
+    unique case(state_q)
+
+      FastPwrStateLowPower: begin
+        if (req_pwrup_i || reset_ongoing_q) begin
+          state_d = FastPwrStateEnableClocks;
+        end
+      end
+
+      FastPwrStateEnableClocks: begin
+        ip_clk_en_d = 1'b1;
+
+        if (clk_en_status_i) begin
+          state_d = FastPwrStateReleaseLcRst;
+        end
+      end
+
+      FastPwrStateReleaseLcRst: begin
+        rst_lc_req_d = '0;  // release rst_lc_n for all power domains
+
+        if (&pwr_rst_i.rst_lc_src_n) begin // once all resets are released
+          state_d = FastPwrStateStrap; //FastPwrStateLcInit;// my test
+        end
+      end
+
+      FastPwrStateStrap: begin
+        strap_o = ~strap_sampled;
+        state_d =  FastPwrStateAckPwrUp;
+      end
+
+      FastPwrStateAckPwrUp: begin
+        // only ack the slow_fsm if we actually transitioned through it
+        ack_pwrup_d = !reset_ongoing_q;
+
+        // wait for request power up to drop relative to ack
+        if (!req_pwrup_i || reset_ongoing_q) begin
+          ack_pwrup_d = 1'b0;
+          clr_cfg_lock_o = 1'b1;
+          wkup_o = pwrup_cause_i == Wake;
+          state_d = FastPwrStateRomCheck;
+        end
+      end // case: FastPwrStateAckPwrUp
+
+      
+      FastPwrStateRomCheck: begin
+        // zero outgoing low power indication
+        low_power_d = '0;
+        rst_sys_req_d = '0;
+        reset_cause_d = ResetNone;
+        state_d = FastPwrStateActive;
+      end
+
+
+      FastPwrStateActive: begin
+        // only in active state, allow processor to execute
+        fetch_en_d = lc_ctrl_pkg::On;
+
+        // when handling reset request or low power entry of any
+        // kind, stop processor from fetching
+        if (reset_req || low_power_entry_i) begin
+          fetch_en_d = lc_ctrl_pkg::Off;
+          reset_cause_d = ResetUndefined;
+          state_d = FastPwrStateDisClks;
+        end
+      end
+
+      FastPwrStateDisClks: begin
+        ip_clk_en_d = 1'b0;
+
+        if (!clk_en_status_i) begin
+          state_d = reset_req ? FastPwrStateNvmShutDown : FastPwrStateFallThrough;
+          low_power_d = ~reset_req;
+        end
+      end
+
+      // Low Power Path
+      FastPwrStateFallThrough: begin
+        clr_hint_o = 1'b1;
+
+        // The processor was interrupted after it asserted WFI and is executing again
+        if (!low_power_entry_i) begin
+          ip_clk_en_d = 1'b1;
+          wkup_o = 1'b1;
+          fall_through_o = 1'b1;
+          state_d = FastPwrStateRomCheck;
+        end else begin
+          state_d = FastPwrStateNvmIdleChk;
+        end
+      end
+
+      FastPwrStateNvmIdleChk: begin
+
+        if (otp_idle_i && lc_idle_i && flash_idle_i) begin
+          state_d = FastPwrStateLowPowerPrep;
+        end else begin
+          ip_clk_en_d = 1'b1;
+          wkup_o = 1'b1;
+          abort_o = 1'b1;
+          state_d = FastPwrStateRomCheck;
+        end
+      end
+
+      FastPwrStateLowPowerPrep: begin
+        // reset cause is set only if main power domain will be turned off
+        reset_cause_d = LowPwrEntry;
+
+        // reset non-always-on domains if requested
+        // this includes the clock manager, which implies pwr/rst managers must
+        // be fed directly from the source
+        for (int i = OffDomainSelStart; i < PowerDomains; i++) begin
+          rst_lc_req_d[i] = ~main_pd_ni;
+          rst_sys_req_d[i] = ~main_pd_ni;
+        end
+
+        if (reset_valid) begin
+          state_d = FastPwrStateReqPwrDn;
+        end
+      end
+
+      FastPwrStateReqPwrDn: begin
+        req_pwrdn_d = 1'b1;
+
+        if (ack_pwrdn_i) begin
+          req_pwrdn_d = 1'b0;
+          state_d = FastPwrStateLowPower;
+        end
+      end
+
+      // Reset Path
+      // This state is TODO, the details are still under discussion
+      FastPwrStateNvmShutDown: begin
+        clr_hint_o = 1'b1;
+        reset_ongoing_d = 1'b1;
+        state_d = FastPwrStateResetPrep;
+      end
+
+      FastPwrStateResetPrep: begin
+        reset_cause_d = HwReq;
+        rst_lc_req_d = {PowerDomains{1'b1}};
+        rst_sys_req_d = {PowerDomains{1'b1}};
+
+        if (reset_valid) begin
+          state_d = FastPwrStateLowPower;
+        end
+      end
+
+      // Terminal state, kill everything
+      default: begin
+        rst_lc_req_d = {PowerDomains{1'b1}};
+        rst_sys_req_d = {PowerDomains{1'b1}};
+        ip_clk_en_d = 1'b0;
+      end
+
+    endcase // unique case (state_q)
+ `endif
   end // always_comb
 
   assign ack_pwrup_o = ack_pwrup_q;

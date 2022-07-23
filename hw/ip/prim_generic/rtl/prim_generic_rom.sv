@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `include "prim_assert.sv"
+`define EXCLUDE_OTP_ROM
 
 module prim_generic_rom import prim_rom_pkg::*; #(
   parameter  int Width       = 32,
