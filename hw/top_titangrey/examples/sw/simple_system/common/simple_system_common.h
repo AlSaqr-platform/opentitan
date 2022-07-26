@@ -4,130 +4,21 @@
 
 #ifndef SIMPLE_SYSTEM_COMMON_H__
 
-#include <stdint.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stddef.h>
-
-
 #include "simple_system_regs.h"
+#include <stdint.h>
+
+#define STRING_LIB_H
 
 #define DEV_WRITE(addr, val) (*((volatile uint32_t *)(addr)) = val)
 #define DEV_READ(addr, val) (*((volatile uint32_t *)(addr)))
 #define PCOUNT_READ(name, dst) asm volatile("csrr %0, " #name ";" : "=r"(dst))
 
-/**
- * Writes character to simulator out log. Signature matches c stdlib function
- * of the same name.
- *
- * @param c Character to output
- * @returns Character output (never fails so no EOF ever returned)
- */
+#define UART_H
+#define UART_BASE_ADDR 0x40000000
 
-void external_irq_handler(void) __attribute__((interrupt));
-
-int putchar(int c);
-
-bool putbool(bool c);
-
-int putint(int c);
-
-int putrom(int c);
-
-/**
- * Writes string to simulator out log.  Signature matches c stdlib function of
- * the same name.
- *
- * @param str String to output
- * @returns 0 always (never fails so no error)
- */
-//int puts(char *str);
-
-/**
- * Writes ASCII hex representation of number to simulator out log.
- *
- * @param h Number to output in hex
- */
-void puthex(uint32_t h);
-
-/**
- * Immediately halts the simulation
- */
-void sim_halt();
-
-/**
- * Enables/disables performance counters.  This effects mcycle and minstret as
- * well as the mhpmcounterN counters.
- *
- * @param enable if non-zero enables, otherwise disables
- */
-void pcount_enable(int enable);
-
-/**
- * Resets all performance counters.  This effects mcycle and minstret as well
- * as the mhpmcounterN counters.
- */
-void pcount_reset();
-
-/**
- * Enables timer interrupt
- *
- * @param time_base Number of time ticks to count before interrupt
- */
-void timer_enable(uint64_t time_base);
-
-/**
- * Returns current mtime value
- */
-uint64_t timer_read(void);
-
-/**
- * Set a new timer value
- *
- * @param new_time New value for time
- */
-void timecmp_update(uint64_t new_time);
-
-/**
- * Disables timer interrupt
- */
-void timer_disable(void);
-
-/**
- * Returns current global time value
- */
-uint64_t get_elapsed_time(void);
-
-#endif
-
-// Copyright 2017 ETH Zurich and University of Bologna.
-// Copyright and related rights are licensed under the Solderpad Hardware
-// License, Version 0.51 (the ?License?); you may not use this file except in
-// compliance with the License.  You may obtain a copy of the License at
-// http://solderpad.org/licenses/SHL-0.51. Unless required by applicable law
-// or agreed to in writing, software, hardware and materials distributed under
-// this License is distributed on an ?AS IS? BASIS, WITHOUT WARRANTIES OR
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the
-// specific language governing permissions and limitations under the License.
-
-/**
- * @file
- * @brief 16750 UART library.
- *
- * Provides UART helper function like setting
- * control registers and reading/writing over
- * the serial interface.
- *
- */
-#ifndef _UART_H
-#define _UART_H
-
-#include <stdint.h>
-#ifdef CLUSTER_UART
-  #define UART_BASE_ADDR 0x1A222000
-#else
-  #define UART_BASE_ADDR 0x40000000
-#endif
 
 #define UART_REG_RBR ( UART_BASE_ADDR + 0x00) // Receiver Buffer Register (Read Only)
 #define UART_REG_DLL ( UART_BASE_ADDR + 0x00) // Divisor Latch (LS)
@@ -162,10 +53,7 @@ uint64_t get_elapsed_time(void);
 #define THRE 1<<5 	//THRE bit in LSR reg
 #define DR 1	 	//DR bit in LSR reg
 
-
 #define UART_FIFO_DEPTH 64
-
-//UART_FIFO_DEPTH but to be compatible with Arduino_libs and also if in future designs it differed
 #define SERIAL_RX_BUFFER_SIZE UART_FIFO_DEPTH
 #define SERIAL_TX_BUFFER_SIZE UART_FIFO_DEPTH
 
@@ -178,18 +66,10 @@ char uart_getchar();
 
 void uart_wait_tx_done(void);
 
-#endif
 
+void external_irq_handler(void) __attribute__((interrupt));
+void simple_exc_handler(void) ;
 
-#ifndef STRING_LIB_H
-#define STRING_LIB_H
-
-#include <stddef.h>
-
-// putchar is defined as a macro which gets in the way of our prototype below
-#ifdef putchar
-#undef putchar
-#endif
 
 size_t strlen (const char *str);
 int  strcmp (const char *s1, const char *s2);

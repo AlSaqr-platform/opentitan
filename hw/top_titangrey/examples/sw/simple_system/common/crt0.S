@@ -7,10 +7,7 @@
 .section .text
 
 default_exc_handler:
-  jal x0, simple_exc_handler
-
-timer_handler:
-  jal x0, simple_timer_handler
+  jal x0, sleep_loop //exc handler
 
 reset_handler:
   /* set all registers to zero */
