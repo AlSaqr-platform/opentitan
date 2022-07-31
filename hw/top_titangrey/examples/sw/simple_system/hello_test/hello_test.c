@@ -18,20 +18,20 @@
 int main(int argc, char **argv) {
 
    
-  #ifdef TARGET_SYNTHESIS                
+  //  #ifdef TARGET_SYNTHESIS                
   int baud_rate = 115200;
   int test_freq = 50000000;
-  #else
+  //#else
   // set_flls();
-  int baud_rate = 115200;
-  int test_freq = 100000000;
-  #endif
+  //int baud_rate = 115200;
+  //int test_freq = 100000000;
+  //#endif
   
   int volatile  * plic_prio, * plic_en;
   int volatile * p_reg, * p_reg1;
-  int a = 0xbaadf00d;
+  int a = 0;
  
-  unsigned val = 0x10000001;
+  unsigned val = 0xE0000001;
   asm volatile("csrw mtvec, %0\n" : : "r"(val));
   uart_set_cfg(0,(test_freq/baud_rate)>>4);
 
@@ -46,19 +46,21 @@ int main(int argc, char **argv) {
   asm volatile("csrw  mie, %0\n"     : : "r"(val_2));
 
   printf("Enabling the interrupt controller and the mbox irq\r\n");
-  plic_prio  = (int *) 0x480001C0;  // Priority reg
-  plic_en    = (int *) 0x4800030C;  // Enable reg
+  plic_prio  = (int *) 0xC80001C0;  // Priority reg
+  plic_en    = (int *) 0xC800030C;  // Enable reg
 
  *plic_prio  = 1;                   // Set mbox interrupt priority to 1
  *plic_en    = 0x00000010;          // Enable interrupt
  
   printf("Writing and reading to the mailbox\r\n");
-  p_reg = (int *) 0x40002000;
- *p_reg = 0xbaadf00d;
+  p_reg = (int *) 0x10404000;
+ *p_reg = 0xbaadc0de;
+
+  a = *p_reg;
  
-  if(*p_reg == 0xbaadf00d){
+  if(a == 0xbaadc0de){
     printf("R & W succeeded\r\n");
-    p_reg1 = (int *) 40002020;
+    p_reg1 = (int *) 0x10404020;
     *p_reg1 = 0x1;
   }
   else{

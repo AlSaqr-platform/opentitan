@@ -632,8 +632,8 @@ end
                   ~(ADDR_MASK_RV_DM__ROM)) == ADDR_SPACE_RV_DM__ROM) begin
       dev_sel_s1n_31 = 5'd2;
 
-    end else if ((tl_s1n_31_us_h2d.a_address &
-                  ~(ADDR_MASK_ALSAQR)) == ADDR_SPACE_ALSAQR) begin
+    end else if (((tl_s1n_31_us_h2d.a_address <= (ADDR_MASK_ALSAQR + ADDR_SPACE_ALSAQR)) &&
+       (tl_s1n_31_us_h2d.a_address >= ADDR_SPACE_ALSAQR))) begin
       dev_sel_s1n_31 = 5'd3;
 
     end else if ((tl_s1n_31_us_h2d.a_address &

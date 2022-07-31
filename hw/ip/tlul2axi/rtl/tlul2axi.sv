@@ -36,6 +36,8 @@ module tlul2axi
 
    always_comb  begin
 
+    state_d = state_q; 
+
     case(state_q)
 
       IDLE: begin

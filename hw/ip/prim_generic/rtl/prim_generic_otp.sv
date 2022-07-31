@@ -369,9 +369,26 @@ module prim_generic_otp
     .cfg_i    ( '0                     )
   );
 `else // !`ifndef EXCLUDE_OTP_ROM
+  /*otp_ctrl_wrapper #(
+    .Depth                (Depth),
+    .Width                (Width + EccWidth),
+    .MemInitFile          (MemInitFile)
+  ) u_prim_ram_1p_adv (
+    .VDD_EFUSE(1'b1),
+    .VSS_EFUSE(1'b0),
+    .VQPS_EFUSE(1'b1),
+    .clk_i,
+    .rst_ni,
+    .req_i    ( req                    ),
+    .write_i  ( wren                   ),
+    .addr_i   ( addr                   ),
+    .wdata_i  ( wdata_rmw              ),
+    .rdata_o  ( rdata_ecc              ),
+    .rvalid_o ( rvalid                 )
+  );*/
   logic unused;
   assign rdata_ecc = '0;
-  assign rvalid    = '0;  
+  assign rvalid    = '0; 
   assign unused = ^{req, wren, addr, wdata_rmw, rdata_ecc, rvalid};
 `endif 
 

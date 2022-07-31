@@ -2,6 +2,13 @@ GIT ?= git
 BENDER ?= bender
 VSIM ?= vsim
 DPI-LIB ?= work-dpi
+
+
+ifdef exclude_otp_rom
+	VLOG_ARGS += +define+EXCLUDE_OTP_ROM
+	questa-cmd += +define+EXCLUDE_OTP_ROM
+endif
+
 all: sim_all 
 
 clean: sim_clean
@@ -13,7 +20,7 @@ clean: sim_clean
 # RTL SIMULATION
 # --------------
 
-VLOG_ARGS += -suppress vlog-2583 -suppress vlog-13314 -suppress vlog-13198 +nospecify +notimingchecks -suppress vopt-13276 -suppress vlog-13233 -timescale \"1 ns / 1 ps\" 
+VLOG_ARGS += -suppress vlog-2583 -suppress vlog-13314 -suppress vlog-13198 +nospecify +define+EXCLUDE_OTP_ROM +notimingchecks -suppress vopt-13276 -suppress vlog-13233 -timescale \"1 ns / 1 ps\" 
 XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingchecks
 
 define generate_vsim

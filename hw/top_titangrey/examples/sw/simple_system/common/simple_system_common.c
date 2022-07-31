@@ -30,37 +30,38 @@ void external_irq_handler(void)  {
   int volatile * p_reg, * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5, * plic_check;
 
   //init pointer to check memory
-  p_reg  = (int *) 0x40002004;
-  p_reg1 = (int *) 0x40002008;
-  p_reg2 = (int *) 0x40002010;
-  p_reg3 = (int *) 0x40002014;
-  p_reg4 = (int *) 0x40002018;
-  p_reg5 = (int *) 0x4000201C;
+  p_reg1  = (int *) 0x10404000;
+  //p_reg1 = (int *) 0x10404008;
+  /* p_reg2 = (int *) 0x10404010;
+  p_reg3 = (int *) 0x10404014;
+  p_reg4 = (int *) 0x10404018;
+  p_reg5 = (int *) 0x1040401C;*/
   
   // start of """Interrupt Service Routine"""
   
-  plic_check = (int *) 0x4800031C;
+  plic_check = (int *) 0xC800031C;
   while(*plic_check != mbox_id);   //check wether the intr is the correct one
   
-  p_reg = (int *) 0x40002020;
+  p_reg = (int *) 0x10404020;
  *p_reg = 0x00000000;        //clearing the pending interrupt signal
  
  *plic_check = mbox_id;      //completing interrupt
  
   a = *p_reg1;
-  b = *p_reg2;
+  /*b = *p_reg2;
   c = *p_reg3;
   d = *p_reg4;
-  e = *p_reg5;
+  e = *p_reg5;*/
   
   
-  if( a == 0xBAADC0DE && b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
-      p_reg = (int *) 0x40002024; // completion interrupt to ariane agent
+  if( a == 0xBAADC0DE /*&& b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE*/){
+      p_reg = (int *) 0x10404024; // completion interrupt to ariane agent
      *p_reg = 0x00000001;
   }
   
   else{
-      sim_halt();
+      printf("Failed to check mailbox: values don't match\r\n");
+      return;
       }
   
   printf("Interrupt correctly received and processed!\r\n");
@@ -68,8 +69,9 @@ void external_irq_handler(void)  {
   return;
 }
 void simple_exc_handler(void) {
-  /* puts("EXCEPTION!!!\n");
-  puts("============\n");
+  printf("EXCEPTION!!!\r\n");
+  
+  /*rputs("============\n");
   puts("MEPC:   0x");
   puthex(get_mepc());
   puts("\nMCAUSE: 0x");

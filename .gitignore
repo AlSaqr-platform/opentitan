@@ -10,7 +10,7 @@ build/
 
 # build directories with special suffixes
 build*/
-
+vendor/*
 # Sphinx result
 _build/
 
