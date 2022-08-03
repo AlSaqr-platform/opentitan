@@ -22,7 +22,7 @@
 `include "axi_typedef.svh"
 `include "axi_assign.svh"
 
-`define EXCLUDE_OTP_ROM
+`define FPGA_EMUL
 
 `ifndef RV32M
   `define RV32M ibex_pkg::RV32MFast
@@ -2456,7 +2456,7 @@ module opentitan
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
       .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
-`ifndef EXCLUDE_OTP_ROM
+`ifndef FPGA_EMUL
       .rst_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
       .rst_otp_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::Domain0Sel]),
       .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),
@@ -2764,7 +2764,7 @@ module opentitan
   xbar_main u_xbar_main (
     .clk_main_i (clkmgr_aon_clocks.clk_main_infra),//clk_main_i),//c
     .clk_fixed_i (clkmgr_aon_clocks.clk_io_div4_infra),//clk_main_i),//
-  `ifndef EXCLUDE_OTP_ROM
+  `ifndef FPGA_EMUL
     .rst_main_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
     .rst_fixed_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
   `else
@@ -2884,7 +2884,7 @@ module opentitan
    
   xbar_peri u_xbar_peri (
     .clk_peri_i (clkmgr_aon_clocks.clk_io_div4_infra),
-  `ifndef EXCLUDE_OTP_ROM
+  `ifndef FPGA_EMUL
     .rst_peri_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
   `else
     .rst_peri_ni (por_n_i),

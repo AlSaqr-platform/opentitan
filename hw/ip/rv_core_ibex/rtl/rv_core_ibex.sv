@@ -8,7 +8,7 @@
  * 32 bit RISC-V core supporting the RV32I + optionally EMC instruction sets.
  * Instruction and data bus are 32 bit wide TileLink-UL (TL-UL).
  */
-`define EXCLUDE_OTP_ROM
+`define FPGA_EMUL
 
 module rv_core_ibex
   import rv_core_ibex_pkg::*;
@@ -247,7 +247,7 @@ module rv_core_ibex
     .lc_en_i(pwrmgr_cpu_en_i),
     .lc_en_o(pwrmgr_cpu_en)
   );
-  `ifndef EXCLUDE_OTP_ROM
+  `ifndef FPGA_EMUL
       ibex_top_tracing #(
         .PMPEnable                ( PMPEnable                ),
         .PMPGranularity           ( PMPGranularity           ),

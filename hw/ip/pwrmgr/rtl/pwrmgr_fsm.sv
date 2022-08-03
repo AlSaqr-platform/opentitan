@@ -6,7 +6,7 @@
 //
 
 `include "prim_assert.sv"
-`define EXCLUDE_OTP_ROM
+`define FPGA_EMUL
 
 module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
   input clk_i,
@@ -204,7 +204,7 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
     low_power_d = low_power_q;
     fetch_en_d = fetch_en_q;
      
- `ifndef EXCLUDE_OTP_ROM
+ `ifndef FPGA_EMUL
     unique case(state_q)
 
       FastPwrStateLowPower: begin

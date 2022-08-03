@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `include "prim_assert.sv"
-`define EXCLUDE_OTP_ROM
+`define FPGA_EMUL
 
 module prim_generic_rom import prim_rom_pkg::*; #(
   parameter  int Width       = 32,
@@ -18,7 +18,7 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   output logic [Width-1:0] rdata_o,
   input rom_cfg_t          cfg_i
 );
-`ifndef EXCLUDE_OTP_ROM
+`ifndef FPGA_EMUL
   logic unused_cfg;
   assign unused_cfg = ^cfg_i;
 
@@ -54,6 +54,6 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   logic unused; 
   assign rdata_o = '0;
   assign unused = ^{clk_i, addr_i, req_i, cfg_i}; 
-`endif // !`ifndef EXCLUDE_OTP_ROM
+`endif // !`ifndef FPGA_EMUL
    
 endmodule

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `include "prim_assert.sv"
-`define EXCLUDE_OTP_ROM
+`define FPGA_EMUL
 module prim_generic_otp
   import prim_otp_pkg::*;
 #(
@@ -348,7 +348,7 @@ module prim_generic_otp
     rdata_o = rdata_reshaped;
   end
    
-`ifndef EXCLUDE_OTP_ROM
+`ifndef FPGA_EMUL
   prim_ram_1p_adv_dummy #(
     .Depth                (Depth),
     .Width                (Width + EccWidth),
@@ -368,7 +368,7 @@ module prim_generic_otp
     .rerror_o (                        ),
     .cfg_i    ( '0                     )
   );
-`else // !`ifndef EXCLUDE_OTP_ROM
+`else // !`ifndef FPGA_EMUL
   /*otp_ctrl_wrapper #(
     .Depth                (Depth),
     .Width                (Width + EccWidth),
