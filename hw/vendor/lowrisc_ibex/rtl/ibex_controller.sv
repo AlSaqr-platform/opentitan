@@ -10,7 +10,7 @@
 `include "prim_assert.sv"
 `include "dv_fcov_macros.svh"
 
-`define FPGA_EMUL
+`define DUMMYBOY
 
 module ibex_controller #(
     parameter bit WritebackStage  = 0,

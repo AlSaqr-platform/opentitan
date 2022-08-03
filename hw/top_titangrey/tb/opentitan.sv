@@ -22,7 +22,7 @@
 `include "axi_typedef.svh"
 `include "axi_assign.svh"
 
-`define FPGA_EMUL
+`define DUMMYBOY
 
 `ifndef RV32M
   `define RV32M ibex_pkg::RV32MFast

@@ -8,7 +8,7 @@
  * 32 bit RISC-V core supporting the RV32I + optionally EMC instruction sets.
  * Instruction and data bus are 32 bit wide TileLink-UL (TL-UL).
  */
-`define FPGA_EMUL
+`define DUMMYBOY
 
 module rv_core_ibex
   import rv_core_ibex_pkg::*;

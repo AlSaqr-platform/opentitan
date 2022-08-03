@@ -647,10 +647,10 @@ sources:
       
 ##### axi_mbox
 
-      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
-      - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
-      - hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
-      - hw/ip/axi_scmi_mailbox/tb/mbox_tb.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_pkg.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/scmi_reg_top.sv
+     # - hw/ip/axi_scmi_mailbox/rtl/axi_scmi_mailbox.sv
+     # - hw/ip/axi_scmi_mailbox/tb/mbox_tb.sv
       
 ##### top module
 

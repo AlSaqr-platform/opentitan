@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 `include "prim_assert.sv"
-`define FPGA_EMUL
+`define DUMMYBOY
 module prim_generic_otp
   import prim_otp_pkg::*;
 #(
