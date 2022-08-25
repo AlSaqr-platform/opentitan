@@ -26,8 +26,8 @@ unsigned int get_mtval() {
 
 void simple_exc_handler(void) {
   printf("EXCEPTION!!!\r\n");
-  
-  /*rputs("============\n");
+  /*
+  rputs("============\n");
   puts("MEPC:   0x");
   puthex(get_mepc());
   puts("\nMCAUSE: 0x");
@@ -35,7 +35,7 @@ void simple_exc_handler(void) {
   puts("\nMTVAL:  0x");
   puthex(get_mtval());
   putchar('\n');
-  sim_halt();*/
+  */
 }
 
 
@@ -351,7 +351,6 @@ void external_irq_handler(void)  {
 
   // start of """Interrupt Service Routine"""
   
-  //printf("Executing the mbox irq handler!");
   plic_check = (int *) 0xC800031C;
   while(*plic_check != mbox_id);   //check wether the intr is the correct one
   
@@ -372,12 +371,5 @@ void external_irq_handler(void)  {
      *p_reg = 0x00000001;
   }
   
-  else{
-    //    printf("Failed to check mailbox: values don't match\r\n");
-      return;
-  }
-  
-  //printf("Interrupt correctly processed! Returning...\r\n");
-  //uart_wait_tx_done();
   return;
 }
