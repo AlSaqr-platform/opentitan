@@ -18,7 +18,7 @@ module prim_generic_rom import prim_rom_pkg::*; #(
   output logic [Width-1:0] rdata_o,
   input rom_cfg_t          cfg_i
 );
-`ifndef FPGA_EMUL
+`ifndef TARGET_SYNTHESIS
   logic unused_cfg;
   assign unused_cfg = ^cfg_i;
 

@@ -167,7 +167,7 @@ module ibex_controller #(
   logic csr_pipe_flush;
   logic instr_fetch_err;
 
-`ifndef FPGA_EMUL
+`ifndef TARGET_SYNTHESIS
   // synopsys translate_off
   // make sure we are called later so that we do not generate messages for
   // glitches

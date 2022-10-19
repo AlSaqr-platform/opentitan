@@ -204,7 +204,7 @@ module pwrmgr_fsm import pwrmgr_pkg::*; import pwrmgr_reg_pkg::*;(
     low_power_d = low_power_q;
     fetch_en_d = fetch_en_q;
      
- `ifndef FPGA_EMUL
+ `ifndef TARGET_SYNTHESIS
     unique case(state_q)
 
       FastPwrStateLowPower: begin

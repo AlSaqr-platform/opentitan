@@ -247,7 +247,7 @@ module rv_core_ibex
     .lc_en_i(pwrmgr_cpu_en_i),
     .lc_en_o(pwrmgr_cpu_en)
   );
-  `ifndef FPGA_EMUL
+  `ifndef TARGET_SYNTHESIS
       ibex_top_tracing #(
         .PMPEnable                ( PMPEnable                ),
         .PMPGranularity           ( PMPGranularity           ),

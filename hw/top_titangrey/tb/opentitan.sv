@@ -2456,7 +2456,7 @@ module opentitan
       .sram_otp_key_i(otp_ctrl_sram_otp_key_rsp[0]),
       .cfg_i(ast_ram_1p_cfg),
       .lc_escalate_en_i(lc_ctrl_lc_escalate_en),
-`ifndef FPGA_EMUL
+`ifndef TARGET_SYNTHESIS
       .rst_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
       .rst_otp_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::Domain0Sel]),
       .otp_en_sram_ifetch_i(sram_ctrl_main_otp_en_sram_ifetch),

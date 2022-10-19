@@ -642,8 +642,7 @@ sources:
       - hw/ip/tlul2axi/test/axi_typedef.svh
       - hw/ip/tlul2axi/test/tlul_intf.sv
       - hw/ip/tlul2axi/test/tlul_assign.svh
-      - hw/ip/tlul2axi/test/tlul_functions.sv
-      - hw/ip/tlul2axi/test/tlul2axi_testbench.sv
+
       
 ##### axi_mbox
 
@@ -657,20 +656,24 @@ sources:
       - hw/top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
       - hw/top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv    
       - hw/top_titangrey/tb/prim_generic_ram_2p.sv
-      - hw/top_titangrey/tb/simulator_ctrl.sv
       - hw/top_titangrey/tb/ram_2p.sv
       - hw/top_titangrey/tb/opentitan.sv
+      - hw/top_titangrey/tb/opentitan_synth_wrap.sv
 
 ##### testbench
 
       #- hw/top_titangrey/tb/adapter_testbench.sv
       - hw/top_titangrey/tb/jtag_intf.sv
-      - hw/top_titangrey/tb/jtag_test.sv
-      - hw/top_titangrey/tb/testbench.sv
-      - hw/top_titangrey/tb/mbox_ot_tb.sv
+
       
 
-      - target: rtl
+      - target: test
         files:
           - hw/vendor/lowrisc_ibex/rtl/ibex_tracer.sv
           - hw/vendor/lowrisc_ibex/rtl/ibex_top_tracing.sv
+          - hw/top_titangrey/tb/jtag_test.sv
+          - hw/top_titangrey/tb/testbench.sv
+          - hw/top_titangrey/tb/mbox_ot_tb.sv
+          - hw/top_titangrey/tb/simulator_ctrl.sv
+          - hw/ip/tlul2axi/test/tlul_functions.sv
+          - hw/ip/tlul2axi/test/tlul2axi_testbench.sv
