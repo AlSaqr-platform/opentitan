@@ -373,7 +373,8 @@ module prim_generic_flash_bank #(
   prim_generic_ram_1p #(
     .Width(MemWidth),
     .Depth(WordsPerBank),
-    .DataBitsPerMask(MemWidth)
+    .DataBitsPerMask(MemWidth),
+    .PrintSimCfg(1'b0)
   ) u_mem (
     .clk_i,
     .rst_ni,
@@ -389,7 +390,8 @@ module prim_generic_flash_bank #(
   prim_generic_ram_1p #(
     .Width(MetaDataWidth),
     .Depth(WordsPerBank),
-    .DataBitsPerMask(MetaDataWidth)
+    .DataBitsPerMask(MetaDataWidth),
+    .PrintSimCfg(1'b0)
   ) u_mem_meta (
     .clk_i,
     .rst_ni,
@@ -412,7 +414,8 @@ module prim_generic_flash_bank #(
     prim_generic_ram_1p #(
       .Width(MemWidth),
       .Depth(WordsPerInfoBank),
-      .DataBitsPerMask(MemWidth)
+      .DataBitsPerMask(MemWidth),
+      .PrintSimCfg(1'b0)
     ) u_info_mem (
       .clk_i,
       .rst_ni,
@@ -428,7 +431,8 @@ module prim_generic_flash_bank #(
     prim_generic_ram_1p #(
       .Width(MetaDataWidth),
       .Depth(WordsPerInfoBank),
-      .DataBitsPerMask(MetaDataWidth)
+      .DataBitsPerMask(MetaDataWidth),
+      .PrintSimCfg(1'b0)
     ) u_info_mem_meta (
       .clk_i,
       .rst_ni,

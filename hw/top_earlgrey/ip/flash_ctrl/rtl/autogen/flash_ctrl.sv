@@ -1103,7 +1103,7 @@ module flash_ctrl
     .rvalid_i    (flash_host_req_done),
     .rerror_i    ({flash_host_rderr,1'b0})
   );
-
+/*
   flash_phy u_eflash (
     .clk_i,
     .rst_ni,
@@ -1129,7 +1129,7 @@ module flash_ctrl
     .scanmode_i,
     .scan_en_i,
     .scan_rst_ni
-  );
+  );*/
 
   /////////////////////////////////
   // Assertions

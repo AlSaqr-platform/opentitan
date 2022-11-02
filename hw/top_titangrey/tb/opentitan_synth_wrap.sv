@@ -95,7 +95,7 @@ module opentitan_synth_wrap
    input logic		 r_last_i,
    input logic [UW-1:0]	 r_user_i,
    input logic		 r_valid_i,
-   output logic		 r_ready_0
+   output logic		 r_ready_o
 );
 
    `AXI_TYPEDEF_AW_CHAN_T(aw_chan_t, axi_addr_t, axi_id_t, axi_user_t)

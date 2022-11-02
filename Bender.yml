@@ -341,12 +341,11 @@ sources:
       
 ##### vendor otp
       
-      #- vendor/eFuse/FB_22FDX_128X32.v
-      #- vendor/eFuse/otp_ctrl_driver.sv
-      #- vendor/eFuse/otp_ctrl_wrapper.sv
-      #- vendor/eFuse/otp_ctrl_wrapper_tb.sv
+      - vendor/eFuse/FB_22FDX_128X32.v
+      - vendor/eFuse/otp_ctrl_driver.sv
+      - vendor/eFuse/otp_ctrl_wrapper.sv
+      - vendor/eFuse/otp_ctrl_wrapper_tb.sv
      
-
 ##### otp_ctrl
 
       - hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv

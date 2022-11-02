@@ -65,7 +65,8 @@ module prim_ram_2p import prim_ram_2p_pkg::*; #(
   tc_sram #(
      .NumWords(Depth),
      .DataWidth(Width),
-     .NumPorts(32'd2)
+     .NumPorts(32'd2),
+     .PrintSimCfg(1'b1)
   ) ram_primitive (
      .clk_i(clk_a_i),
      .rst_ni,

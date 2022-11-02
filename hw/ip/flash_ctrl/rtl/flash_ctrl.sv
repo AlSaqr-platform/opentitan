@@ -1097,7 +1097,8 @@ module flash_ctrl
     .rvalid_i    (flash_host_req_done),
     .rerror_i    ({flash_host_rderr,1'b0})
   );
-
+   /*
+`ifndef TARGET_SYNTHESIS
   flash_phy u_eflash (
     .clk_i,
     .rst_ni,
@@ -1124,7 +1125,16 @@ module flash_ctrl
     .scan_en_i,
     .scan_rst_ni
   );
-
+`else // !`ifndef TARGET_SYNTHESIS
+   assign flash_host_req_rdy = '0;
+   assign flash_host_req_done = '0;
+   assign flash_host_rderr = '0;
+   assign flash_host_rdata = '0;
+   assign flash_phy_rsp = '0;
+   assign prim_tl_o = '0;
+   assign flash_alert_o = '0;   
+`endif // !`ifndef TARGET_SYNTHESIS
+   */
   /////////////////////////////////
   // Assertions
   /////////////////////////////////

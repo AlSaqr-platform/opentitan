@@ -11,7 +11,7 @@ module prim_generic_ram_1p import prim_ram_1p_pkg::*; #(
   parameter  int Depth           = 128,
   parameter  int DataBitsPerMask = 1, // Number of data bits per bit of write mask
   parameter      MemInitFile     = "", // VMEM file to initialize the memory with
-
+  parameter  bit PrintSimCfg     = 1'b1,
   localparam int Aw              = $clog2(Depth)  // derived parameter
 ) (
   input  logic             clk_i,
@@ -32,7 +32,8 @@ module prim_generic_ram_1p import prim_ram_1p_pkg::*; #(
   tc_sram #(
      .NumWords(Depth),
      .DataWidth(Width),
-     .NumPorts(32'd1)
+     .NumPorts(32'd1),
+     .PrintSimCfg(PrintSimCfg)
   ) ram_primitive (
      .clk_i,
      .rst_ni,

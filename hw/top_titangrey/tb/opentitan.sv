@@ -1019,7 +1019,7 @@ module opentitan
 
    assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
    assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
-
+/*
   uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[0:0])
   ) u_uart0 (
@@ -1253,7 +1253,7 @@ module opentitan
       .rst_ni (rstmgr_aon_resets.rst_spi_host0_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host0_core_n[rstmgr_pkg::Domain0Sel])
   );
-/*
+
   spi_host #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[7:7])
   ) u_spi_host1 (
@@ -1288,8 +1288,8 @@ module opentitan
       .clk_core_i (clkmgr_aon_clocks.clk_io_div2_peri),
       .rst_ni (rstmgr_aon_resets.rst_spi_host1_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host1_core_n[rstmgr_pkg::Domain0Sel])
-  );*/
-/*
+  );
+
   i2c #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[8:8])
   ) u_i2c0 (
@@ -3008,7 +3008,7 @@ module opentitan
 
     .scanmode_i
   );
-  
+  /*
   // Pinmux connections
   // All muxed inputs
   assign cio_gpio_gpio_p2d[0] = mio_p2d[MioInGpioGpio0];
@@ -3282,7 +3282,7 @@ module opentitan
   assign dio_en_d2p[DioUsbdevSuspend] = cio_usbdev_suspend_en_d2p;
   assign dio_en_d2p[DioUsbdevRxEnable] = cio_usbdev_rx_enable_en_d2p;
   assign dio_en_d2p[DioSysrstCtrlAonFlashWpL] = cio_sysrst_ctrl_aon_flash_wp_l_en_d2p;
-
+*/
 
   // make sure scanmode_i is never X (including during reset)
   `ASSERT_KNOWN(scanmodeKnown, scanmode_i, clk_main_i, 0)
