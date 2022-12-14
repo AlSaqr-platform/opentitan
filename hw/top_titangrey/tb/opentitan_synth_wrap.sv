@@ -13,7 +13,7 @@
 module opentitan_synth_wrap
    import axi_pkg::*;
    import jtag_pkg::*;
-   import dm::*;
+   import dm_ot::*;
    import lc_ctrl_pkg::*;
    #(
    parameter AW = 64,
@@ -33,7 +33,8 @@ module opentitan_synth_wrap
     
    input logic		 por_n_i,
    input logic		 irq_ibex_i,
-
+   output logic    test_rst_o,
+   
    // JTAG port
    input logic		 jtag_tck_i,
    input logic		 jtag_tms_i,
@@ -210,7 +211,7 @@ module opentitan_synth_wrap
     .ast_clk_byp_ack_i(4'b0101), 
 
     .ast_edn_req_i ('0),
-               
+    .test_reset(test_rst_o),           
     .jtag_i,
     .jtag_o,
            

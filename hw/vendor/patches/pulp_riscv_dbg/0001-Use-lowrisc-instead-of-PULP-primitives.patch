@@ -18,8 +18,8 @@ index 4b0f254..8f12ac4 100644
    localparam int unsigned HartSelLen = (NrHarts == 1) ? 1 : $clog2(NrHarts);
    localparam int unsigned NrHartsAligned = 2**HartSelLen;
 @@ -85,10 +86,6 @@ module dm_csrs #(
-   dm::dtm_op_e dtm_op;
-   assign dtm_op = dm::dtm_op_e'(dmi_req_i.op);
+   dm_ot::dtm_op_e dtm_op;
+   assign dtm_op = dm_ot::dtm_op_e'(dmi_req_i.op);
  
 -  logic        resp_queue_full;
 -  logic        resp_queue_empty;
@@ -27,11 +27,11 @@ index 4b0f254..8f12ac4 100644
 -  logic        resp_queue_pop;
    logic [31:0] resp_queue_data;
  
-   localparam dm::dm_csr_e DataEnd = dm::dm_csr_e'(dm::Data0 + {4'h0, dm::DataCount} - 8'h1);
+   localparam dm_ot::dm_csr_e DataEnd = dm_ot::dm_csr_e'(dm_ot::Data0 + {4'h0, dm_ot::DataCount} - 8'h1);
 @@ -180,9 +177,6 @@ module dm_csrs #(
  
    // a successful response returns zero
-   assign dmi_resp_o.resp = dm::DTM_SUCCESS;
+   assign dmi_resp_o.resp = dm_ot::DTM_SUCCESS;
 -  assign dmi_resp_valid_o     = ~resp_queue_empty;
 -  assign dmi_req_ready_o      = ~resp_queue_full;
 -  assign resp_queue_push      = dmi_req_valid_i & dmi_req_ready_o;
@@ -92,7 +92,7 @@ index 4665c91..1299b09 100644
    input  logic             core_dmi_valid_i
  );
  
--  cdc_2phase #(.T(dm::dmi_req_t)) i_cdc_req (
+-  cdc_2phase #(.T(dm_ot::dmi_req_t)) i_cdc_req (
 -    .src_rst_ni  ( trst_ni          ),
 -    .src_clk_i   ( tck_i            ),
 -    .src_data_i  ( jtag_dmi_req_i   ),
@@ -106,7 +106,7 @@ index 4665c91..1299b09 100644
 -    .dst_valid_o ( core_dmi_valid_o ),
 -    .dst_ready_i ( core_dmi_ready_i )
 +  prim_fifo_async #(
-+    .Width       ( $bits(dm::dmi_req_t) ),
++    .Width       ( $bits(dm_ot::dmi_req_t) ),
 +    .Depth       ( 4 )
 +  ) i_cdc_req (
 +    .clk_wr_i    ( tck_i            ),
@@ -124,14 +124,14 @@ index 4665c91..1299b09 100644
 +    .rdepth_o    (                  )
    );
  
--  cdc_2phase #(.T(dm::dmi_resp_t)) i_cdc_resp (
+-  cdc_2phase #(.T(dm_ot::dmi_resp_t)) i_cdc_resp (
 -    .src_rst_ni  ( rst_ni           ),
 -    .src_clk_i   ( clk_i            ),
 -    .src_data_i  ( core_dmi_resp_i  ),
 -    .src_valid_i ( core_dmi_valid_i ),
 -    .src_ready_o ( core_dmi_ready_o ),
 +  prim_fifo_async #(
-+    .Width       ( $bits(dm::dmi_resp_t) ),
++    .Width       ( $bits(dm_ot::dmi_resp_t) ),
 +    .Depth       ( 4 )
 +  ) i_cdc_resp (
 +    .clk_wr_i    ( clk_i            ),

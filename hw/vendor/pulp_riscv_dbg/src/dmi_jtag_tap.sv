@@ -16,7 +16,7 @@
  *
  */
 
-module dmi_jtag_tap #(
+module dmi_ot_jtag_tap #(
   parameter int unsigned IrLength = 5,
   // JTAG IDCODE Value
   parameter logic [31:0] IdcodeValue = 32'h00000001
@@ -342,4 +342,4 @@ module dmi_jtag_tap #(
     end
   end
 
-endmodule : dmi_jtag_tap
+endmodule 

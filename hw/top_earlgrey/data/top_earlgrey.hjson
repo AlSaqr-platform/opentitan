@@ -617,8 +617,8 @@
                    BranchPredictor: "0",
                    DbgTriggerEn: "1",
                    SecureIbex: "1",
-                   DmHaltAddr: "tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0]",
-                   DmExceptionAddr: "tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0]",
+                   DmHaltAddr: "tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::HaltAddress[31:0]",
+                   DmExceptionAddr: "tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::ExceptionAddress[31:0]",
                    PipeLine: "0"
                   }
       clock_srcs: {clk_i: "main", clk_esc_i: "io_div4"},

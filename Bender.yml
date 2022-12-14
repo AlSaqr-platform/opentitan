@@ -341,10 +341,10 @@ sources:
       
 ##### vendor otp
       
-      - vendor/eFuse/FB_22FDX_128X32.v
-      - vendor/eFuse/otp_ctrl_driver.sv
-      - vendor/eFuse/otp_ctrl_wrapper.sv
-      - vendor/eFuse/otp_ctrl_wrapper_tb.sv
+     # - vendor/eFuse/FB_22FDX_128X32.v
+     # - vendor/eFuse/otp_ctrl_driver.sv
+     # - vendor/eFuse/otp_ctrl_wrapper.sv
+     # - vendor/eFuse/otp_ctrl_wrapper_tb.sv
      
 ##### otp_ctrl
 
@@ -672,7 +672,7 @@ sources:
           - hw/vendor/lowrisc_ibex/rtl/ibex_top_tracing.sv
           - hw/top_titangrey/tb/jtag_test.sv
           - hw/top_titangrey/tb/testbench.sv
-          - hw/top_titangrey/tb/mbox_ot_tb.sv
+          #- hw/top_titangrey/tb/mbox_ot_tb.sv
           - hw/top_titangrey/tb/simulator_ctrl.sv
           - hw/ip/tlul2axi/test/tlul_functions.sv
           - hw/ip/tlul2axi/test/tlul2axi_testbench.sv

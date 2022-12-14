@@ -6,7 +6,7 @@
 // Author: Florian Zaruba <zarubaf@iis.ee.ethz.ch>
 // Author: Fabian Schuiki <fschuiki@iis.ee.ethz.ch>
 
-package jtag_test;
+package jtag_ot_test;
   localparam BYPASS0   = 'h0;
   localparam IDCODE    = 'h1;
   localparam DTMCSR    = 'h10;
@@ -155,10 +155,10 @@ package jtag_test;
     parameter int unsigned JtagSampleDelay = 0 // sample the read bits after JtagSampleDelay cycles
   );
 
-    typedef jtag_test::jtag_driver#(.IrLength(IrLength), .TA(TA), .TT(TT), .JtagSampleDelay(JtagSampleDelay)) jtag_driver_t;
+    typedef jtag_ot_test::jtag_driver#(.IrLength(IrLength), .TA(TA), .TT(TT), .JtagSampleDelay(JtagSampleDelay)) jtag_driver_t;
     jtag_driver_t jtag;
 
-    localparam DMIWidth = $bits(dm::dmi_req_t);
+    localparam DMIWidth = $bits(dm_ot::dmi_req_t);
 
     function new (jtag_driver_t jtag);
       this.jtag = jtag;
@@ -183,9 +183,9 @@ package jtag_test;
       idcode = {<<{read_data}};
     endtask
 
-    task write_dmi(input dm::dm_csr_e address, input logic [31:0] data);
+    task write_dmi(input dm_ot::dm_csr_e address, input logic [31:0] data);
       logic write_data [DMIWidth];
-      logic [DMIWidth-1:0] write_data_packed = {address, data, dm::DTM_WRITE};
+      logic [DMIWidth-1:0] write_data_packed = {address, data, dm_ot::DTM_WRITE};
       {<<{write_data}} = write_data_packed;
       jtag.set_ir(DMIACCESS);
       jtag.shift_dr();
@@ -193,10 +193,10 @@ package jtag_test;
       jtag.update_dr(1'b0);
     endtask
 
-    task read_dmi(input dm::dm_csr_e address, output logic [31:0] data, input int wait_cycles = 10);
+    task read_dmi(input dm_ot::dm_csr_e address, output logic [31:0] data, input int wait_cycles = 10);
       logic read_data [DMIWidth], write_data [DMIWidth];
       logic [DMIWidth-1:0] data_out = 0;
-      automatic logic [DMIWidth-1:0] write_data_packed = {address, 32'b0, dm::DTM_READ};
+      automatic logic [DMIWidth-1:0] write_data_packed = {address, 32'b0, dm_ot::DTM_READ};
       {<<{write_data}} = write_data_packed;
       jtag.set_ir(DMIACCESS);
       jtag.shift_dr();
@@ -206,7 +206,7 @@ package jtag_test;
       jtag.wait_idle(wait_cycles);
       jtag.shift_dr();
       // shift out read data
-      write_data_packed = {address, 32'b0, dm::DTM_NOP};
+      write_data_packed = {address, 32'b0, dm_ot::DTM_NOP};
       {<<{write_data}} = write_data_packed;
       jtag.readwrite_bits(read_data, write_data, 1'b1);
       // When we use a delay, we wait in PAUSE-DR after the SHIFT-DR

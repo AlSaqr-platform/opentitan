@@ -6368,8 +6368,8 @@
         BranchPredictor: "0"
         DbgTriggerEn: "1"
         SecureIbex: "1"
-        DmHaltAddr: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0]
-        DmExceptionAddr: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0]
+        DmHaltAddr: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::HaltAddress[31:0]
+        DmExceptionAddr: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::ExceptionAddress[31:0]
         PipeLine: "0"
       }
       clock_srcs:
@@ -6539,14 +6539,14 @@
         {
           name: DmHaltAddr
           type: int unsigned
-          default: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0]
+          default: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::HaltAddress[31:0]
           expose: "true"
           name_top: RvCoreIbexDmHaltAddr
         }
         {
           name: DmExceptionAddr
           type: int unsigned
-          default: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0]
+          default: tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::ExceptionAddress[31:0]
           expose: "true"
           name_top: RvCoreIbexDmExceptionAddr
         }

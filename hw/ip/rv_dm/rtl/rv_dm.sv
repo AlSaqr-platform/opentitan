@@ -133,7 +133,7 @@ module rv_dm
 
 
   // Debug CSRs
-  dm::hartinfo_t [NrHarts-1:0]      hartinfo;
+  dm_ot::hartinfo_t [NrHarts-1:0]      hartinfo;
   logic [NrHarts-1:0]               halted;
   // logic [NrHarts-1:0]               running;
   logic [NrHarts-1:0]               resumeack;
@@ -141,14 +141,14 @@ module rv_dm
   logic [NrHarts-1:0]               resumereq;
   logic                             clear_resumeack;
   logic                             cmd_valid;
-  dm::command_t                     cmd;
+  dm_ot::command_t                     cmd;
 
   logic                             cmderror_valid;
-  dm::cmderr_e                      cmderror;
+  dm_ot::cmderr_e                      cmderror;
   logic                             cmdbusy;
-  logic [dm::ProgBufSize-1:0][31:0] progbuf;
-  logic [dm::DataCount-1:0][31:0]   data_csrs_mem;
-  logic [dm::DataCount-1:0][31:0]   data_mem_csrs;
+  logic [dm_ot::ProgBufSize-1:0][31:0] progbuf;
+  logic [dm_ot::DataCount-1:0][31:0]   data_csrs_mem;
+  logic [dm_ot::DataCount-1:0][31:0]   data_mem_csrs;
   logic                             data_valid;
   logic [19:0]                      hartsel;
   // System Bus Access Module
@@ -168,8 +168,8 @@ module rv_dm
   logic                             sberror_valid;
   logic [2:0]                       sberror;
 
-  dm::dmi_req_t  dmi_req;
-  dm::dmi_resp_t dmi_rsp;
+  dm_ot::dmi_req_t  dmi_req;
+  dm_ot::dmi_resp_t dmi_rsp;
   logic dmi_req_valid, dmi_req_ready;
   logic dmi_rsp_valid, dmi_rsp_ready;
   logic dmi_rst_n;
@@ -179,13 +179,13 @@ module rv_dm
   assign testmode = (scanmode_i == lc_ctrl_pkg::On);
 
   // static debug hartinfo
-  localparam dm::hartinfo_t DebugHartInfo = '{
+  localparam dm_ot::hartinfo_t DebugHartInfo = '{
     zero1:      '0,
     nscratch:   2, // Debug module needs at least two scratch regs
     zero0:      0,
     dataaccess: 1'b1, // data registers are memory mapped in the debugger
-    datasize:   dm::DataCount,
-    dataaddr:   dm::DataAddr
+    datasize:   dm_ot::DataCount,
+    dataaddr:   dm_ot::DataAddr
   };
   for (genvar i = 0; i < NrHarts; i++) begin : gen_dm_hart_ctrl
     assign hartinfo[i] = DebugHartInfo;
@@ -199,7 +199,7 @@ module rv_dm
   logic dmi_en;
   assign dmi_en = (lc_hw_debug_en[EnDmiReq] == lc_ctrl_pkg::On);
 
-  dm_csrs #(
+  dm_ot_csrs #(
     .NrHarts(NrHarts),
     .BusWidth(BusWidth),
     .SelectableHarts(SelectableHarts)
@@ -260,7 +260,7 @@ module rv_dm
   logic   [BusWidth-1:0]  host_r_rdata;
   logic                   host_r_err;
 
-  dm_sba #(
+  dm_ot_sba #(
     .BusWidth(BusWidth)
   ) i_dm_sba (
     .clk_i                   ( clk_i                 ),
@@ -356,7 +356,7 @@ module rv_dm
   assign debug_req_o = debug_req & debug_req_en;
 
 
-  dm_mem #(
+  dm_ot_mem #(
     .NrHarts(NrHarts),
     .BusWidth(BusWidth),
     .SelectableHarts(SelectableHarts),
@@ -417,7 +417,7 @@ module rv_dm
   );
 
   // JTAG TAP
-  dmi_jtag #(
+  dmi_ot_jtag #(
     .IdcodeValue    (IdcodeValue)
   ) dap (
     .clk_i            (clk_i),

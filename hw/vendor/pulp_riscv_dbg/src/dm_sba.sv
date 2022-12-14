@@ -15,7 +15,7 @@
 * Description: System Bus Access Module
 *
 */
-module dm_sba #(
+module dm_ot_sba #(
   parameter int unsigned BusWidth = 32,
   parameter bit          ReadByteEnable = 1
 ) (
@@ -53,7 +53,7 @@ module dm_sba #(
   output logic [2:0]             sberror_o // bus error occurred
 );
 
-  dm::sba_state_e state_d, state_q;
+  dm_ot::sba_state_e state_d, state_q;
 
   logic [BusWidth-1:0]           address;
   logic                          req;
@@ -63,7 +63,7 @@ module dm_sba #(
   logic [BusWidth/8-1:0]         be_mask;
   logic [$clog2(BusWidth/8)-1:0] be_idx;
 
-  assign sbbusy_o = logic'(state_q != dm::Idle);
+  assign sbbusy_o = logic'(state_q != dm_ot::Idle);
 
   always_comb begin : p_be_mask
     be_mask = '0;
@@ -99,51 +99,51 @@ module dm_sba #(
     state_d = state_q;
 
     unique case (state_q)
-      dm::Idle: begin
+      dm_ot::Idle: begin
         // debugger requested a read
-        if (sbaddress_write_valid_i && sbreadonaddr_i)  state_d = dm::Read;
+        if (sbaddress_write_valid_i && sbreadonaddr_i)  state_d = dm_ot::Read;
         // debugger requested a write
-        if (sbdata_write_valid_i) state_d = dm::Write;
+        if (sbdata_write_valid_i) state_d = dm_ot::Write;
         // perform another read
-        if (sbdata_read_valid_i && sbreadondata_i) state_d = dm::Read;
+        if (sbdata_read_valid_i && sbreadondata_i) state_d = dm_ot::Read;
       end
 
-      dm::Read: begin
+      dm_ot::Read: begin
         req = 1'b1;
         if (ReadByteEnable) be = be_mask;
-        if (gnt) state_d = dm::WaitRead;
+        if (gnt) state_d = dm_ot::WaitRead;
       end
 
-      dm::Write: begin
+      dm_ot::Write: begin
         req = 1'b1;
         we  = 1'b1;
         be = be_mask;
-        if (gnt) state_d = dm::WaitWrite;
+        if (gnt) state_d = dm_ot::WaitWrite;
       end
 
-      dm::WaitRead: begin
+      dm_ot::WaitRead: begin
         if (sbdata_valid_o) begin
-          state_d = dm::Idle;
+          state_d = dm_ot::Idle;
           // auto-increment address
           if (sbautoincrement_i) sbaddress_o = sbaddress_i + (32'h1 << sbaccess_i);
         end
       end
 
-      dm::WaitWrite: begin
+      dm_ot::WaitWrite: begin
         if (sbdata_valid_o) begin
-          state_d = dm::Idle;
+          state_d = dm_ot::Idle;
           // auto-increment address
           if (sbautoincrement_i) sbaddress_o = sbaddress_i + (32'h1 << sbaccess_i);
         end
       end
 
-      default: state_d = dm::Idle; // catch parasitic state
+      default: state_d = dm_ot::Idle; // catch parasitic state
     endcase
 
     // handle error case
-    if (sbaccess_i > 3 && state_q != dm::Idle) begin
+    if (sbaccess_i > 3 && state_q != dm_ot::Idle) begin
       req             = 1'b0;
-      state_d         = dm::Idle;
+      state_d         = dm_ot::Idle;
       sberror_valid_o = 1'b1;
       sberror_o       = 3'd3;
     end
@@ -152,7 +152,7 @@ module dm_sba #(
 
   always_ff @(posedge clk_i or negedge rst_ni) begin : p_regs
     if (!rst_ni) begin
-      state_q <= dm::Idle;
+      state_q <= dm_ot::Idle;
     end else begin
       state_q <= state_d;
     end
@@ -167,4 +167,4 @@ module dm_sba #(
   assign sbdata_valid_o  = master_r_valid_i;
   assign sbdata_o        = master_r_rdata_i[BusWidth-1:0];
 
-endmodule : dm_sba
+endmodule 

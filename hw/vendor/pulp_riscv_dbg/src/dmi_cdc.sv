@@ -16,16 +16,16 @@
 *              on previous work by Andreas Traber for the PULP project.
 *              This is mainly a wrapper around the existing CDCs.
 */
-module dmi_cdc (
+module dmi_ot_cdc (
   // JTAG side (master side)
   input  logic             tck_i,
   input  logic             trst_ni,
 
-  input  dm::dmi_req_t     jtag_dmi_req_i,
+  input  dm_ot::dmi_req_t     jtag_dmi_req_i,
   output logic             jtag_dmi_ready_o,
   input  logic             jtag_dmi_valid_i,
 
-  output dm::dmi_resp_t    jtag_dmi_resp_o,
+  output dm_ot::dmi_resp_t    jtag_dmi_resp_o,
   output logic             jtag_dmi_valid_o,
   input  logic             jtag_dmi_ready_i,
 
@@ -33,11 +33,11 @@ module dmi_cdc (
   input  logic             clk_i,
   input  logic             rst_ni,
 
-  output dm::dmi_req_t     core_dmi_req_o,
+  output dm_ot::dmi_req_t     core_dmi_req_o,
   output logic             core_dmi_valid_o,
   input  logic             core_dmi_ready_i,
 
-  input dm::dmi_resp_t     core_dmi_resp_i,
+  input dm_ot::dmi_resp_t     core_dmi_resp_i,
   output logic             core_dmi_ready_o,
   input  logic             core_dmi_valid_i
 );
@@ -45,7 +45,7 @@ module dmi_cdc (
   // TODO: Make it clean for synthesis.
 
   prim_fifo_async #(
-    .Width       ( $bits(dm::dmi_req_t) ),
+    .Width       ( $bits(dm_ot::dmi_req_t) ),
     .Depth       ( 4 )
   ) i_cdc_req (
     .clk_wr_i    ( tck_i            ),
@@ -64,7 +64,7 @@ module dmi_cdc (
   );
 
   prim_fifo_async #(
-    .Width       ( $bits(dm::dmi_resp_t) ),
+    .Width       ( $bits(dm_ot::dmi_resp_t) ),
     .Depth       ( 4 )
   ) i_cdc_resp (
     .clk_wr_i    ( clk_i            ),
@@ -82,4 +82,4 @@ module dmi_cdc (
     .rdepth_o    (                  )
   );
 
-endmodule : dmi_cdc
+endmodule

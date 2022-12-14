@@ -16,7 +16,7 @@ module testbench ();
    import lc_ctrl_pkg::*;
    import jtag_pkg::*;
    import jtag_test::*;
-   import dm::*;
+   import dm_ot::*;
    
    import "DPI-C" function read_elf(input string filename);
    import "DPI-C" function byte get_section(output longint address, output longint len); 
@@ -293,7 +293,7 @@ module testbench ();
    
    initial  begin : local_jtag_preload
 
-      automatic dm::sbcs_t sbcs = '{
+      automatic dm_ot::sbcs_t sbcs = '{
         sbautoincrement: 1'b1,
         sbreadondata   : 1'b1,
         default        : 1'b0
@@ -325,7 +325,7 @@ module testbench ();
    task debug_module_init;
       
      logic [31:0]  idcode;
-     automatic dm::sbcs_t sbcs;
+     automatic dm_ot::sbcs_t sbcs;
 
      $info(" JTAG Preloading start time");
      riscv_dbg.wait_idle(300);
@@ -343,11 +343,11 @@ module testbench ();
 
      $info(" Activating Debug Module");
      // Activate Debug Module
-     riscv_dbg.write_dmi(dm::DMControl, 32'h0000_0001);
+     riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
 
      $info(" SBA BUSY ");
      // Wait until SBA is free
-     do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
      while (sbcs.sbbusy);
      $info(" SBA FREE");      
       
@@ -356,7 +356,7 @@ module testbench ();
    task jtag_data_preload;
      logic [31:0] rdata;
 
-     automatic dm::sbcs_t sbcs = '{
+     automatic dm_ot::sbcs_t sbcs = '{
        sbautoincrement: 1'b1,
        sbreadondata   : 1'b1,
        default        : 1'b0
@@ -365,8 +365,8 @@ module testbench ();
      $display("======== Initializing the Debug Module ========");
 
      debug_module_init();
-     riscv_dbg.write_dmi(dm::SBCS, sbcs);
-     do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+     riscv_dbg.write_dmi(dm_ot::SBCS, sbcs);
+     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
      while (sbcs.sbbusy);
 
      $display("======== Preload data to SRAM ========");
@@ -374,16 +374,16 @@ module testbench ();
      // Start writing to SRAM
      foreach (sections[addr]) begin
        $display("Writing %h with %0d words", addr << 2, sections[addr]); // word = 8 bytes here
-       riscv_dbg.write_dmi(dm::SBAddress0, (addr << 2));
-       do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+       riscv_dbg.write_dmi(dm_ot::SBAddress0, (addr << 2));
+       do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
        while (sbcs.sbbusy);
        
        for (int i = 0; i < sections[addr]; i++) begin
          // $info(" Loading words to SRAM ");
          $display(" -- Word %0d/%0d", i, sections[addr]);      
-         riscv_dbg.write_dmi(dm::SBData0, memory[addr + i]);
+         riscv_dbg.write_dmi(dm_ot::SBData0, memory[addr + i]);
          // Wait until SBA is free to write next 32 bits
-         do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+         do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
          while (sbcs.sbbusy);
        end // for (int i = 0; i < sections[addr]; i++)
        
@@ -395,7 +395,7 @@ module testbench ();
     // Preloading finished. Can now start executing
     sbcs.sbreadonaddr = 0;
     sbcs.sbreadondata = 0;
-    riscv_dbg.write_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::SBCS, sbcs);
 
   endtask // jtag_data_preload
 
@@ -432,7 +432,7 @@ module testbench ();
     input logic [31:0] start_addr;
     logic [31:0] dm_status;
      
-    automatic dm::sbcs_t sbcs = '{
+    automatic dm_ot::sbcs_t sbcs = '{
       sbautoincrement: 1'b1,
       sbreadondata   : 1'b1,
       default        : 1'b0
@@ -441,34 +441,34 @@ module testbench ();
     $info("======== Waking up Ibex using JTAG ========");
     // Initialize the dm module again, otherwise it will not work
     debug_module_init();
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
     // Write PC to Data0 and Data1
-    riscv_dbg.write_dmi(dm::Data0, start_addr);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::Data0, start_addr);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
     // Halt Req
-    riscv_dbg.write_dmi(dm::DMControl, 32'h8000_0001);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h8000_0001);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
     // Wait for CVA6 to be halted
-    do riscv_dbg.read_dmi(dm::DMStatus, dm_status);
+    do riscv_dbg.read_dmi(dm_ot::DMStatus, dm_status);
     while (!dm_status[8]);
     // Ensure haltreq, resumereq and ackhavereset all equal to 0
-    riscv_dbg.write_dmi(dm::DMControl, 32'h0000_0001);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
     // Register Access Abstract Command  
-    riscv_dbg.write_dmi(dm::Command, {8'h0,1'b0,3'h2,1'b0,1'b0,1'b1,1'b1,4'h0,dm::CSR_DPC});
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::Command, {8'h0,1'b0,3'h2,1'b0,1'b0,1'b1,1'b1,4'h0,dm_ot::CSR_DPC});
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
     // Resume req. Exiting from debug mode CVA6 will jump at the DPC address.
     // Ensure haltreq, resumereq and ackhavereset all equal to 0
-    riscv_dbg.write_dmi(dm::DMControl, 32'h4000_0001);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h4000_0001);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
-    riscv_dbg.write_dmi(dm::DMControl, 32'h0000_0001);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
      
     // Wait till end of computation
@@ -487,7 +487,7 @@ module testbench ();
   task jtag_read_eoc;
     input logic [31:0] start_addr;
      
-    automatic dm::sbcs_t sbcs = '{
+    automatic dm_ot::sbcs_t sbcs = '{
       sbautoincrement: 1'b1,
       sbreadondata   : 1'b1,
       default        : 1'b0
@@ -500,19 +500,19 @@ module testbench ();
     debug_module_init();
     sbcs.sbreadonaddr = 1;
     sbcs.sbautoincrement = 0;
-    riscv_dbg.write_dmi(dm::SBCS, sbcs);
-    do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+    riscv_dbg.write_dmi(dm_ot::SBCS, sbcs);
+    do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
     while (sbcs.sbbusy);
 
-    riscv_dbg.write_dmi(dm::SBAddress0, to_host_addr); // tohost address
+    riscv_dbg.write_dmi(dm_ot::SBAddress0, to_host_addr); // tohost address
     riscv_dbg.wait_idle(10);
     do begin 
-	     do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+	     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
 	     while (sbcs.sbbusy);
-       riscv_dbg.write_dmi(dm::SBAddress0, to_host_addr); // tohost address
-	     do riscv_dbg.read_dmi(dm::SBCS, sbcs);
+       riscv_dbg.write_dmi(dm_ot::SBAddress0, to_host_addr); // tohost address
+	     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs);
 	     while (sbcs.sbbusy);
-       riscv_dbg.read_dmi(dm::SBData0, retval);
+       riscv_dbg.read_dmi(dm_ot::SBData0, retval);
        # 100ns;
     end while (~retval[0]);
      

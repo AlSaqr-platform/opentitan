@@ -40,7 +40,7 @@
 module opentitan 
   import axi_pkg::*;
   import jtag_pkg::*;
-  import dm::*; 
+  import dm_ot::*; 
   #(
 
   // Manually defined parameters
@@ -125,9 +125,9 @@ module opentitan
   parameter bit RvCoreIbexDbgTriggerEn = 1,
   parameter bit RvCoreIbexSecureIbex = 1,
   parameter int unsigned RvCoreIbexDmHaltAddr =
-      tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0],
+      tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::HaltAddress[31:0],
   parameter int unsigned RvCoreIbexDmExceptionAddr =
-      tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0],
+      tl_main_pkg::ADDR_SPACE_RV_DM__ROM + dm_ot::ExceptionAddress[31:0],
   parameter bit RvCoreIbexPipeLine = 0,
   parameter type axi_req_t  = logic,
   parameter type axi_resp_t = logic
@@ -1017,9 +1017,9 @@ module opentitan
       .axi_rsp(axi_rsp32)
   );
 
-   assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
-   assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
-/*
+   //assert property (@(posedge axi_req32.w_valid) (core2alsaqr.a_data == axi_req32.w.data));
+   //assert property (@(posedge axi_req32.r_valid) (alsaqr2core.d_data == axi_rsp32.r.data));
+
   uart #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[0:0])
   ) u_uart0 (
@@ -1253,7 +1253,7 @@ module opentitan
       .rst_ni (rstmgr_aon_resets.rst_spi_host0_n[rstmgr_pkg::Domain0Sel]),
       .rst_core_ni (rstmgr_aon_resets.rst_spi_host0_core_n[rstmgr_pkg::Domain0Sel])
   );
-
+/*
   spi_host #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[7:7])
   ) u_spi_host1 (
@@ -2764,7 +2764,7 @@ module opentitan
   xbar_main u_xbar_main (
     .clk_main_i (clkmgr_aon_clocks.clk_main_infra),//clk_main_i),//c
     .clk_fixed_i (clkmgr_aon_clocks.clk_io_div4_infra),//clk_main_i),//
-  `ifndef FPGA_EMUL
+  `ifndef TARGET_SYNTHESIS
     .rst_main_ni (rstmgr_aon_resets.rst_sys_n[rstmgr_pkg::Domain0Sel]),
     .rst_fixed_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
   `else
@@ -2884,7 +2884,7 @@ module opentitan
    
   xbar_peri u_xbar_peri (
     .clk_peri_i (clkmgr_aon_clocks.clk_io_div4_infra),
-  `ifndef FPGA_EMUL
+  `ifndef TARGET_SYNTHESIS
     .rst_peri_ni (rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::Domain0Sel]),
   `else
     .rst_peri_ni (por_n_i),

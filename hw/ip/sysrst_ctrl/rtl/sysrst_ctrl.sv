@@ -354,10 +354,10 @@ module sysrst_ctrl
   `ASSERT_KNOWN(AlertKnownO_A, alert_tx_o)
   `ASSERT_KNOWN(BatOKnown, cio_bat_disable_o)
   `ASSERT_KNOWN(ECRSTOKnown, cio_ec_rst_l_o)
-  `ASSERT_KNOWN(PwrbOKnown, cio_pwrb_out_o)
+ /* `ASSERT_KNOWN(PwrbOKnown, cio_pwrb_out_o)
   `ASSERT_KNOWN(Key0OKnown, cio_key0_out_o)
   `ASSERT_KNOWN(Key1OKnown, cio_key1_out_o)
-  `ASSERT_KNOWN(Key2OKnown, cio_key2_out_o)
+  `ASSERT_KNOWN(Key2OKnown, cio_key2_out_o)*/
   `ASSERT_KNOWN(Z3WwakupOKnown, cio_z3_wakeup_o)
   `ASSERT_KNOWN(BatOEnKnown, cio_bat_disable_en_o)
   `ASSERT_KNOWN(ECRSTOEnKnown, cio_ec_rst_l_en_o)

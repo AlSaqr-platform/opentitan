@@ -16,7 +16,7 @@
 *
 */
 
-module dmi_jtag #(
+module dmi_ot_jtag #(
   parameter logic [31:0] IdcodeValue = 32'h00000001
 ) (
   input  logic         clk_i,      // DMI Clock
@@ -24,11 +24,11 @@ module dmi_jtag #(
   input  logic         testmode_i,
 
   output logic         dmi_rst_no, // hard reset
-  output dm::dmi_req_t dmi_req_o,
+  output dm_ot::dmi_req_t dmi_req_o,
   output logic         dmi_req_valid_o,
   input  logic         dmi_req_ready_i,
 
-  input dm::dmi_resp_t dmi_resp_i,
+  input dm_ot::dmi_resp_t dmi_resp_i,
   output logic         dmi_resp_ready_o,
   input  logic         dmi_resp_valid_i,
 
@@ -51,11 +51,11 @@ module dmi_jtag #(
   logic        dmi_tdi;
   logic        dmi_tdo;
 
-  dm::dmi_req_t  dmi_req;
+  dm_ot::dmi_req_t  dmi_req;
   logic          dmi_req_ready;
   logic          dmi_req_valid;
 
-  dm::dmi_resp_t dmi_resp;
+  dm_ot::dmi_resp_t dmi_resp;
   logic          dmi_resp_valid;
   logic          dmi_resp_ready;
 
@@ -81,7 +81,7 @@ module dmi_jtag #(
   assign dmi          = dmi_t'(dr_q);
   assign dmi_req.addr = address_q;
   assign dmi_req.data = data_q;
-  assign dmi_req.op   = (state_q == Write) ? dm::DTM_WRITE : dm::DTM_READ;
+  assign dmi_req.op   = (state_q == Write) ? dm_ot::DTM_WRITE : dm_ot::DTM_READ;
   // we'will always be ready to accept the data we requested
   assign dmi_resp_ready = 1'b1;
 
@@ -105,9 +105,9 @@ module dmi_jtag #(
           // save address and value
           address_d = dmi.address;
           data_d = dmi.data;
-          if (dm::dtm_op_e'(dmi.op) == dm::DTM_READ) begin
+          if (dm_ot::dtm_op_e'(dmi.op) == dm_ot::DTM_READ) begin
             state_d = Read;
-          end else if (dm::dtm_op_e'(dmi.op) == dm::DTM_WRITE) begin
+          end else if (dm_ot::dtm_op_e'(dmi.op) == dm_ot::DTM_WRITE) begin
             state_d = Write;
           end
           // else this is a nop and we can stay here
@@ -221,7 +221,7 @@ module dmi_jtag #(
   // ---------
   // TAP
   // ---------
-  dmi_jtag_tap #(
+  dmi_ot_jtag_tap #(
     .IrLength (5),
     .IdcodeValue(IdcodeValue)
   ) i_dmi_jtag_tap (
@@ -247,7 +247,7 @@ module dmi_jtag #(
   // ---------
   // CDC
   // ---------
-  dmi_cdc i_dmi_cdc (
+  dmi_ot_cdc i_dmi_cdc (
     // JTAG side (master side)
     .tck_i,
     .trst_ni,
@@ -268,4 +268,4 @@ module dmi_jtag #(
     .core_dmi_valid_i  ( dmi_resp_valid_i )
   );
 
-endmodule : dmi_jtag
+endmodule 

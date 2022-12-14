@@ -369,7 +369,7 @@ module prim_generic_otp
     .cfg_i    ( '0                     )
   );
 `else // !`ifndef FPGA_EMUL
-  otp_ctrl_wrapper #(
+/*  otp_ctrl_wrapper #(
     .Depth                (Depth),
     .Width                (Width + EccWidth),
     .MemInitFile          (MemInitFile)
@@ -385,11 +385,11 @@ module prim_generic_otp
     .wdata_i  ( wdata_rmw              ),
     .rdata_o  ( rdata_ecc              ),
     .rvalid_o ( rvalid                 )
-  );/*
+  );*/
   logic unused;
   assign rdata_ecc = '0;
   assign rvalid    = '0; 
-  assign unused = ^{req, wren, addr, wdata_rmw, rdata_ecc, rvalid};*/
+  assign unused = ^{req, wren, addr, wdata_rmw, rdata_ecc, rvalid};
 `endif 
 
   // Currently it is assumed that no wrap arounds can occur.

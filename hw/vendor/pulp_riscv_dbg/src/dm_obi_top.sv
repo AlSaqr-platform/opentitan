@@ -78,7 +78,7 @@ module dm_obi_top #(
   output logic [NrHarts-1:0]    debug_req_o,     // async debug request
   // communicate whether the hart is unavailable (e.g.: power down)
   input  logic [NrHarts-1:0]    unavailable_i,
-  input  dm::hartinfo_t [NrHarts-1:0]  hartinfo_i,
+  input  dm_ot::hartinfo_t [NrHarts-1:0]  hartinfo_i,
 
   input  logic                  slave_req_i,
   // OBI grant for slave_req_i (not present on dm_top)
@@ -108,11 +108,11 @@ module dm_obi_top #(
   input  logic                  dmi_rst_ni,
   input  logic                  dmi_req_valid_i,
   output logic                  dmi_req_ready_o,
-  input  dm::dmi_req_t          dmi_req_i,
+  input  dm_ot::dmi_req_t          dmi_req_i,
 
   output logic                  dmi_resp_valid_o,
   input  logic                  dmi_resp_ready_i,
-  output dm::dmi_resp_t         dmi_resp_o
+  output dm_ot::dmi_resp_t         dmi_resp_o
 );
 
   // Slave response phase (rvalid and identifier)
