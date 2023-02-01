@@ -19,30 +19,36 @@ typedef uint64_t ssptr_t;
  * System-on-Chip Memory Map
  * ===========================================================================*/
 
-#define HRAM_BASE    (uint32_t*)0x80000000
-#define SRAM_BASE    (uint32_t*)0xE0000000
-#define MAILBOX_BASE (uint32_t*)0x10404000
+#define MAILBOX_BASE           0x10404000
+#define HRAM_BASE              0x80000000
+#define SRAM_BASE              0xE0000000
+#define SHADOWSTACK_BASE       0xE0010000
+
+#define MAILBOX_IRQ_ID         68
+#define MAILBOX_REG_DATA       ((uint32_t*)(MAILBOX_BASE + 0x00))
+#define MAILBOX_REG_DOORBELL   ((uint32_t*)(MAILBOX_BASE + 0x20))
+#define MAILBOX_REG_COMPLETION ((uint32_t*)(MAILBOX_BASE + 0x24))
+
+#define SHADOWSTACK_REG_BASE   ((uint32_t*)(SHADOWSTACK_BASE + 0X00000))
+#define SHADOWSTACK_REG_LIMIT  ((uint32_t*)(SHADOWSTACK_BASE + 0X01000))
+#define SHADOWSTACK_REG_HEAP   ((uint32_t*)(HRAM_BASE + 0X10000))
 
 /* =============================================================================
  * MailBox definitions and functions
  * 
- * Address    Field              Commit Log (PHMon)
+ * Address    Field              Commit Log (PHMon64)   Commit Log (PHMon32)
  * -----------------------------------------------------------------------------
- * 0x00       Reserved 1         instruction
- * 0x04       Channel Status     pc_src (LSB)
- * 0x08       Reserved 2         pc_src (MSB)
- * 0x0c       Reserved 3         pc_dst (LSB)
- * 0x10       Channel Flags      pc_dst (MSB)
+ * 0x00       Reserved 1         instruction            instruction
+ * 0x04       Channel Status     pc_src (LSB)           pc_src
+ * 0x08       Reserved 2         pc_src (MSB)           pc_dst
+ * 0x0c       Reserved 3         pc_dst (LSB)           address
+ * 0x10       Channel Flags      pc_dst (MSB)           data
  * 0x14       Length             address (LSB)
  * 0x18       Message Header     address (MSB)
  * 0x1c       Message Payload    data (LSB)
  * 0x20       Doorbell IRQ       data (MSB)
  * 0x24       Completion IRQ
  * ===========================================================================*/
-
-#define MAILBOX_DATA           (MAILBOX_BASE + 0)
-#define MAILBOX_DOORBELL_IRQ   (MAILBOX_BASE + 8)
-#define MAILBOX_COMPLETION_IRQ (MAILBOX_BASE + 9)
 
 static inline bool
 mailbox_is_call()
@@ -51,8 +57,8 @@ mailbox_is_call()
 	/*
 	 * Verify if the instruction in the PHMon mailbox is a RVI32 `call`.
 	 *
-	 * This function assumes that any compressed instruction decoded by the core
-	 * is expanded to its 32-bits equivalent.
+	 * This function assumes that any compressed instruction decoded by the
+	 * core is expanded to its 32-bits equivalent.
 	 *
 	 * RVI Call
 	 * -----------------------------------------------------------
@@ -64,7 +70,7 @@ mailbox_is_call()
 	 *           MASK   0x    0    0    0    0    0    d    f    7
 	 *         RESULT   0x    0    0    0    0    0    0    e    7
 	 */
-	return (MAILBOX_DATA[0] & 0x00000df7) == 0x000000e7;
+	return (MAILBOX_REG_DATA[0] & 0x00000df7) == 0x000000e7;
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
@@ -88,7 +94,7 @@ mailbox_is_return()
 	 *           MASK   0x    0    0    0    d    8    0    7    f
 	 *         RESULT   0x    0    0    0    0    8    0    6    7
 	 */
-	return (MAILBOX_DATA[0] & 0x000d807f) == 0x00008067;
+	return (MAILBOX_REG_DATA[0] & 0x000d807f) == 0x00008067;
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
@@ -98,7 +104,7 @@ static inline uint64_t
 mailbox_get_pc_src()
 {
 #ifdef COMMIT_LOG_PHMON
-	return *(ssptr_t*)(MAILBOX_DATA + 1);
+	return *(ssptr_t*)MAILBOX_REG_DATA[1];
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
@@ -108,7 +114,7 @@ static inline uint64_t
 mailbox_get_pc_dst()
 {
 #ifdef COMMIT_LOG_PHMON
-	return *(ssptr_t*)(MAILBOX_DATA + 1 + sizeof(ssptr_t)/sizeof(uint32_t));
+	return *(ssptr_t*)(MAILBOX_REG_DATA[1] + sizeof(ssptr_t)/sizeof(uint32_t));
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
@@ -117,17 +123,19 @@ mailbox_get_pc_dst()
 static inline void
 mailbox_complete(uint32_t data)
 {
-	MAILBOX_DATA[0] = data;
-	*MAILBOX_COMPLETION_IRQ = 1;
+	MAILBOX_REG_DATA[0] = data;
+	*MAILBOX_REG_COMPLETION = 1;
+}
+
+static inline void
+mailbox_clear_doorbell()
+{
+	*MAILBOX_REG_DOORBELL = 0;
 }
 
 /* =============================================================================
  * Shadow Stack definitions and functions
  * ===========================================================================*/
-
-#define SHADOW_STACK_BASE (uint32_t*)(SRAM_BASE + 0x10000)
-#define SHADOW_STACK_SIZE 0x2000
-#define SHADOW_STACK_HEAP (uint32_t*)(HRAM_BASE + 0x10000)
 
 typedef struct shadow_stack {
 	uint32_t *base;
@@ -137,10 +145,10 @@ typedef struct shadow_stack {
 } shadow_stack_t;
 
 shadow_stack_t shadow_stack = {
-	.base  = SHADOW_STACK_BASE,
-	.limit = SHADOW_STACK_BASE + SHADOW_STACK_SIZE,
-	.ptr   = SHADOW_STACK_BASE,
-	.heap  = SHADOW_STACK_HEAP
+	.base  = SHADOWSTACK_REG_BASE,
+	.limit = SHADOWSTACK_REG_LIMIT,
+	.ptr   = SHADOWSTACK_REG_BASE,
+	.heap  = SHADOWSTACK_REG_HEAP
 };
 
 static inline void
@@ -176,25 +184,27 @@ shadow_stack_is_empty()
 static inline void
 shadow_stack_save()
 {
-	uint32_t i = 0;
+	uint32_t size = SHADOWSTACK_REG_LIMIT - SHADOWSTACK_REG_BASE;
+	uint32_t i    = 0;
 
-	for (i=0; i<SHADOW_STACK_SIZE/sizeof(uint32_t); i++) {
+	for (i=0; i<size; i++) {
 		shadow_stack.heap[i] = shadow_stack.base[i];
 	}
-	shadow_stack.heap += SHADOW_STACK_SIZE;
-	shadow_stack.ptr = SHADOW_STACK_BASE;
+	shadow_stack.heap += size;
+	shadow_stack.ptr = SHADOWSTACK_REG_BASE;
 }
 
 static inline void
 shadow_stack_restore()
 {
-	uint32_t i = 0;
+	uint32_t size = SHADOWSTACK_REG_LIMIT - SHADOWSTACK_REG_BASE;
+	uint32_t i    = 0;
 
-	for (i=0; i<SHADOW_STACK_SIZE/sizeof(uint32_t); i++) {
+	for (i=0; i<size; i++) {
 		shadow_stack.base[i] = (shadow_stack.heap - i - 1)[i];
 	}
-	shadow_stack.heap -= SHADOW_STACK_SIZE;
-	shadow_stack.ptr = SHADOW_STACK_BASE + SHADOW_STACK_SIZE;
+	shadow_stack.heap -= size;
+	shadow_stack.ptr = SHADOWSTACK_REG_LIMIT;
 }
 
 /* =============================================================================
@@ -206,17 +216,12 @@ external_irq_handler(void)
 {
 	// PLIC IRQ Complete register address
 	volatile uint32_t *IRQ_COMPLETE = (uint32_t*)0xC8200004;
-	// MailBox Completion IRQ register address
-	volatile uint32_t *IRQ_PENDING  = (uint32_t*)0x10404020;
-	uint32_t          MAILBOX_IRQ   = 68;
-
-	// Clear the pending interrupt signal.
-	*IRQ_PENDING = 0x00000000;
 
 	// Shadow Stack.
 	uint64_t address = 0x0;
 	bool     fault   = false;
 
+	mailbox_clear_doorbell();
 	if (mailbox_is_call()) {
 		if (shadow_stack_is_full()) {
 			shadow_stack_save();
@@ -230,12 +235,11 @@ external_irq_handler(void)
 		address = mailbox_get_pc_dst();
 		fault = shadow_stack_check(address);
 	}
-
-	// Complete interrupt writing analysis result in the mailbox, setting
-	// the MailBox Complete IRQ and writing the interrupt ID to the 
-	// Interrupt Completion register.
 	mailbox_complete(fault);
-	*IRQ_COMPLETE = MAILBOX_IRQ;
+
+	// Complete interrupt writing the interrupt ID to the PLIC Completion
+	// register.
+	*IRQ_COMPLETE = MAILBOX_IRQ_ID;
 }
 
 /* =============================================================================
