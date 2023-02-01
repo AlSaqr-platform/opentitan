@@ -221,6 +221,9 @@ external_irq_handler(void)
 	uint64_t address = 0x0;
 	bool     fault   = false;
 
+	// Claim the IRQ to serve the interrupt request.
+	(void)*IRQ_COMPLETE;
+
 	mailbox_clear_doorbell();
 	if (mailbox_is_call()) {
 		if (shadow_stack_is_full()) {
