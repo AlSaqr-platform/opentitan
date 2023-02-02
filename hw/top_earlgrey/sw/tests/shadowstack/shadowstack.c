@@ -272,6 +272,7 @@ main(int argc, char **argv)
 	uint32_t          val        = 0;
 	volatile uint32_t *plic_prio = (volatile uint32_t*)0xc8000110;
 	volatile uint32_t *plic_en   = (volatile uint32_t*)0xc8002008;
+	uint32_t          *ptr       = NULL;
 
 	// Set the Machine Trap-Vector base address to 0xe0000000 and configure the
 	// core to serve interrupt in vectorized mode.
@@ -287,6 +288,15 @@ main(int argc, char **argv)
 	// Configure PLIC to enable MailBox interrupt and setting its priority to 1.
 	*plic_prio = 1;
 	*plic_en = 0x00000010;
+
+	// Initialize the shadow stack memory content. This is required to run
+	// the tests on QuestaSim, otherwise reading the OpenTitan SRAM returns
+	// 'X' and the simulation crashes.
+	ptr = SHADOWSTACK_REG_BASE;
+	while (ptr != SHADOWSTACK_REG_LIMIT) {
+		*ptr = 0;
+		ptr += 1;
+	}
 
 	// React to CVA6 command executing the `external_irq_handler` function.
 	while(1) {
