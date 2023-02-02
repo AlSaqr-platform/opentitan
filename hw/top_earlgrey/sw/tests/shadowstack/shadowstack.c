@@ -104,7 +104,7 @@ static inline uint64_t
 mailbox_get_pc_src()
 {
 #ifdef COMMIT_LOG_PHMON
-	return *(ssptr_t*)MAILBOX_REG_DATA[1];
+	return *(ssptr_t*)(MAILBOX_REG_DATA + 1);
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
@@ -114,7 +114,7 @@ static inline uint64_t
 mailbox_get_pc_dst()
 {
 #ifdef COMMIT_LOG_PHMON
-	return *(ssptr_t*)(MAILBOX_REG_DATA[1] + sizeof(ssptr_t)/sizeof(uint32_t));
+	return *(ssptr_t*)(MAILBOX_REG_DATA + 1 + sizeof(ssptr_t)/sizeof(uint32_t));
 #elif COMMIT_LOG_CVA6
 	return false;
 #endif
