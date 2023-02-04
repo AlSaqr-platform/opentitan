@@ -13,7 +13,7 @@
 #endif
 #endif
 
-typedef uint64_t ssptr_t;
+typedef uint32_t ssptr_t;
 
 /* =============================================================================
  * System-on-Chip Memory Map
@@ -266,7 +266,7 @@ main(int argc, char **argv)
 		(test_freq/baud_rate) >> 4
 	);
 
-	printf("[IBEX] Start Shadow Stack testbench\n");
+	printf("[IBEX] Shadow stack, 32 bit, 1 ISR, call\n");
 	uart_wait_tx_done();
 
 	uint32_t          val        = 0;
