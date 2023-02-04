@@ -30,7 +30,7 @@ typedef uint64_t ssptr_t;
 #define MAILBOX_REG_COMPLETION ((uint32_t*)(MAILBOX_BASE + 0x24))
 
 #define SHADOWSTACK_REG_BASE   ((uint32_t*)(SHADOWSTACK_BASE + 0X00000))
-#define SHADOWSTACK_REG_LIMIT  ((uint32_t*)(SHADOWSTACK_BASE + 0X01000))
+#define SHADOWSTACK_REG_LIMIT  ((uint32_t*)(SHADOWSTACK_BASE + 0X00100))
 #define SHADOWSTACK_REG_HEAP   ((uint32_t*)(HRAM_BASE + 0X10000))
 
 /* =============================================================================
@@ -274,6 +274,15 @@ main(int argc, char **argv)
 	volatile uint32_t *plic_en   = (volatile uint32_t*)0xc8002008;
 	uint32_t          *ptr       = NULL;
 
+	// Initialize the shadow stack memory content. This is required to run
+	// the tests on QuestaSim, otherwise reading the OpenTitan SRAM returns
+	// 'X' and the simulation crashes.
+	ptr = SHADOWSTACK_REG_BASE;
+	while (ptr != SHADOWSTACK_REG_LIMIT) {
+		*ptr = 0;
+		ptr += 1;
+	}
+
 	// Set the Machine Trap-Vector base address to 0xe0000000 and configure the
 	// core to serve interrupt in vectorized mode.
 	val = 0xe0000001;
@@ -288,15 +297,6 @@ main(int argc, char **argv)
 	// Configure PLIC to enable MailBox interrupt and setting its priority to 1.
 	*plic_prio = 1;
 	*plic_en = 0x00000010;
-
-	// Initialize the shadow stack memory content. This is required to run
-	// the tests on QuestaSim, otherwise reading the OpenTitan SRAM returns
-	// 'X' and the simulation crashes.
-	ptr = SHADOWSTACK_REG_BASE;
-	while (ptr != SHADOWSTACK_REG_LIMIT) {
-		*ptr = 0;
-		ptr += 1;
-	}
 
 	// React to CVA6 command executing the `external_irq_handler` function.
 	while(1) {
