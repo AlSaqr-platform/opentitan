@@ -7,7 +7,7 @@ dependencies:
 # tech_cells_generic:  { git: "git@github.com:pulp-platform/tech_cells_generic.git",     rev: "411bd43eadc46ae97e45d890fc3f916771c5491a"}
 # ot_common_cells:     { git: "https://github.com/pulp-platform/common_cells.git",       version: 1.21.0                                }
  axi:                  { git: "https://github.com/pulp-platform/axi.git",                version: 0.29.1                                } 
- axi_scmi_mailbox:     { git: "git@github.com:AlSaqr-platform/axi_scmi_mailbox.git",     rev: "master"                                  }
+ axi_scmi_mailbox:     { git: "git@github.com:AlSaqr-platform/axi_scmi_mailbox.git",     rev: "feature/cfi-backend"                     }
  register_interface:  { git: "https://github.com/pulp-platform/register_interface.git", version: 0.3.1  }
  
 # prim          : { path: "hw/ip/prim"          }
