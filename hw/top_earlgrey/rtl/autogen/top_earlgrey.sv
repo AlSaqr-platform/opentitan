@@ -124,6 +124,7 @@ module top_earlgrey #(
   output lc_ctrl_pkg::lc_tx_t       ast_lc_dft_en_o,
   output tlul2axi_pkg::slv_req_t       axi_req_o,
   input  tlul2axi_pkg::slv_rsp_t       axi_rsp_i,
+  input  logic       cfi_doorbell_i,
   input  logic       irq_ibex_i,
   input  jtag_pkg::jtag_req_t       jtag_req_i,
   output jtag_pkg::jtag_rsp_t       jtag_rsp_o,
@@ -288,7 +289,8 @@ module top_earlgrey #(
   // rv_core_ibex
 
 
-  logic [88:0]  intr_vector;
+  //logic [88:0]  intr_vector;
+  logic [89:0] intr_vector;
   // Interrupt source list
   logic [31:0] intr_gpio_gpio;
   logic intr_pattgen_done_ch0;
@@ -2027,6 +2029,7 @@ module top_earlgrey #(
   );
   // interrupt assignments
   assign intr_vector = {
+      cfi_doorbell_i, // IDs [89 +1]
       intr_edn1_edn_fatal_err, // IDs [88 +: 1]
       intr_edn1_edn_cmd_req_done, // IDs [87 +: 1]
       intr_edn0_edn_fatal_err, // IDs [86 +: 1]

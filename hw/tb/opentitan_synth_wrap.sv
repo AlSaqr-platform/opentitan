@@ -25,6 +25,7 @@ module opentitan_synth_wrap
    input logic                                                clk_i,
     
    input logic                                                por_n_i,
+   input logic     					      cfi_doorbell_i,
    input logic                                                irq_ibex_i,
 
    // JTAG port
@@ -211,6 +212,7 @@ module opentitan_synth_wrap
     .axi_req_o(axi_req),
     .axi_rsp_i(axi_rsp),
     .irq_ibex_i,
+    .cfi_doorbell_i(cfi_doorbell_i),
     .jtag_req_i(jtag_i),
     .jtag_rsp_o(jtag_o)
     );

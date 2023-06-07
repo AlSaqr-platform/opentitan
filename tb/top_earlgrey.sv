@@ -133,6 +133,7 @@ module top_earlgrey #(
   input clk_aon_i,
   
   input logic irq_ibex_i,
+  input logic cfi_doorbell_i,
   input logic [1:0] por_n_i,
 
   // All clocks forwarded to ast

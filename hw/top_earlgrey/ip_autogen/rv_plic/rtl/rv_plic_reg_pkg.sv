@@ -7,7 +7,7 @@
 package rv_plic_reg_pkg;
 
   // Param list
-  parameter int NumSrc = 89;
+  parameter int NumSrc = 90;
   parameter int NumTarget = 1;
   parameter int PrioWidth = 2;
   parameter int NumAlerts = 1;
@@ -374,6 +374,10 @@ package rv_plic_reg_pkg;
   typedef struct packed {
     logic [1:0]  q;
   } rv_plic_reg2hw_prio88_reg_t;
+  
+  typedef struct packed {
+    logic [1:0]  q;
+  } rv_plic_reg2hw_prio89_reg_t;
 
   typedef struct packed {
     logic        q;
@@ -498,6 +502,7 @@ package rv_plic_reg_pkg;
     rv_plic_reg2hw_prio86_reg_t prio86; // [108:107]
     rv_plic_reg2hw_prio87_reg_t prio87; // [106:105]
     rv_plic_reg2hw_prio88_reg_t prio88; // [104:103]
+    rv_plic_reg2hw_prio89_reg_t prio89; // [104:103]
     rv_plic_reg2hw_ie0_mreg_t [88:0] ie0; // [102:14]
     rv_plic_reg2hw_threshold0_reg_t threshold0; // [13:12]
     rv_plic_reg2hw_cc0_reg_t cc0; // [11:3]
@@ -507,7 +512,7 @@ package rv_plic_reg_pkg;
 
   // HW -> register type
   typedef struct packed {
-    rv_plic_hw2reg_ip_mreg_t [88:0] ip; // [184:7]
+    rv_plic_hw2reg_ip_mreg_t [90:0] ip; // [184:7]
     rv_plic_hw2reg_cc0_reg_t cc0; // [6:0]
   } rv_plic_hw2reg_t;
 
@@ -601,6 +606,7 @@ package rv_plic_reg_pkg;
   parameter logic [BlockAw-1:0] RV_PLIC_PRIO86_OFFSET = 27'h 158;
   parameter logic [BlockAw-1:0] RV_PLIC_PRIO87_OFFSET = 27'h 15c;
   parameter logic [BlockAw-1:0] RV_PLIC_PRIO88_OFFSET = 27'h 160;
+  parameter logic [BlockAw-1:0] RV_PLIC_PRIO89_OFFSET = 27'h 164;
   parameter logic [BlockAw-1:0] RV_PLIC_IP_0_OFFSET = 27'h 1000;
   parameter logic [BlockAw-1:0] RV_PLIC_IP_1_OFFSET = 27'h 1004;
   parameter logic [BlockAw-1:0] RV_PLIC_IP_2_OFFSET = 27'h 1008;
@@ -707,6 +713,7 @@ package rv_plic_reg_pkg;
     RV_PLIC_PRIO86,
     RV_PLIC_PRIO87,
     RV_PLIC_PRIO88,
+    RV_PLIC_PRIO89,
     RV_PLIC_IP_0,
     RV_PLIC_IP_1,
     RV_PLIC_IP_2,
@@ -810,6 +817,7 @@ package rv_plic_reg_pkg;
     4'b 0001, // index[86] RV_PLIC_PRIO86
     4'b 0001, // index[87] RV_PLIC_PRIO87
     4'b 0001, // index[88] RV_PLIC_PRIO88
+    4'b 0001, // index[88] RV_PLIC_PRIO89
     4'b 1111, // index[89] RV_PLIC_IP_0
     4'b 1111, // index[90] RV_PLIC_IP_1
     4'b 1111, // index[91] RV_PLIC_IP_2
