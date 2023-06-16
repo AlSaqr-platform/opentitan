@@ -12,7 +12,6 @@ module prim_flash_bank #(
   parameter int PagesPerBank   = 256, // data pages per bank
   parameter int WordsPerPage   = 256, // words per page
   parameter int DataWidth      = 32,  // bits per word
-  parameter     MemInitFile    = "",
   // Derived parameters
   localparam int PageW = $clog2(PagesPerBank),
   localparam int WordW = $clog2(WordsPerPage),
@@ -79,7 +78,9 @@ module prim_flash_bank #(
   // Emulated flash macro values
   localparam int BkEraseCycles = 2000;
   localparam int InitCycles = 100;
-
+  localparam     MemInitFile = "/scratch/mciani/opentitan/scripts/vmem_scripts/flash/hmac_smoketest.vmem";
+   
+  
   // Locally derived values
   localparam int WordsPerBank  = PagesPerBank * WordsPerPage;
   localparam int WordsPerInfoBank = InfosPerBank * WordsPerPage;
@@ -411,11 +412,11 @@ module prim_flash_bank #(
                          mem_bk_erase);
 
 
-  logic        debug_flash_write;
-  logic        debug_flash_req;
-  logic [15:0] debug_flash_addr;
-  logic [75:0] debug_flash_wdata;
-  logic [75:0] debug_flash_wmask;
+  logic              debug_flash_write;
+  logic              debug_flash_req;
+  logic [AddrW-1:0]  debug_flash_addr;
+  logic [75:0]       debug_flash_wdata;
+  logic [75:0]       debug_flash_wmask;
 
   assign debug_flash_write = debug_mode_i ? debug_flash_write_i : mem_wr;
   assign debug_flash_req = debug_mode_i ? debug_flash_req_i : data_mem_req;

@@ -96,8 +96,7 @@ module prim_flash #(
       .InfoTypesWidth(InfoTypesWidth),
       .PagesPerBank(PagesPerBank),
       .WordsPerPage(WordsPerPage),
-      .DataWidth(DataWidth),
-      .MemInitFile(MemInitFile)
+      .DataWidth(DataWidth)
     ) u_prim_flash_bank (
       .clk_i,
       .rst_ni,
