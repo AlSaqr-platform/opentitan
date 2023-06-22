@@ -272,7 +272,13 @@ module testbench_asynch ();
       .jtag_tdi_i       ( jtag_i.tdi    ),
       .jtag_tdo_o       ( jtag_o.tdo    ),
       .jtag_tdo_oe_o    (               ),
-   // Asynch axi port
+      .gpio_0_i         ( 1'b0          ),
+      .gpio_1_i         ( 1'b0          ),
+      .gpio_0_o         (               ),
+      .gpio_1_o         (               ),
+      .gpio_0_oe_o      (               ),
+      .gpio_1_oe_o      (               ),
+  // Asynch axi port
       .async_axi_out_aw_data_o,
       .async_axi_out_aw_wptr_o,
       .async_axi_out_aw_rptr_i,
