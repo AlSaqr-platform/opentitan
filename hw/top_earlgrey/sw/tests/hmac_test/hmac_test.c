@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
   // UART setup
   #ifdef TARGET_SYNTHESIS                
   int baud_rate = 115200;
-  int test_freq = 40000000;
+  int test_freq = 50000000;
   #else
   int baud_rate = 115200;
   int test_freq = 100000000;

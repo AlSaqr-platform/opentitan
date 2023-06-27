@@ -134,6 +134,7 @@ _rom_shadow_stack:
   .option push
   .option norelax
 
+	
   /**
    * Entry point after reset.
    */
@@ -142,6 +143,11 @@ _rom_shadow_stack:
   .type _rom_start_boot, @function
 _rom_start_boot:
   // Set up the global pointer and re-enable linker relaxations.
+
+  //li a0, 0xff000000
+  //lw t0, 0x14(a0)
+  //bnez t0, .L_halt_loop
+	
   la gp, __global_pointer$
   .option pop
 

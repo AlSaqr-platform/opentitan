@@ -1112,6 +1112,7 @@ opentitan_functest(
         "//sw/device/lib/runtime:log",
         "//sw/device/lib/testing:hmac_testutils",
         "//sw/device/lib/testing/test_framework:ottf_main",
+	"//sw/device/silicon_creator/rom:alsaqr_print"
     ],
 )
 

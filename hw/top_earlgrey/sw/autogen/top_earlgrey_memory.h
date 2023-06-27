@@ -250,6 +250,9 @@
  * `TOP_EARLGREY_RV_TIMER_BASE_ADDR + TOP_EARLGREY_RV_TIMER_SIZE_BYTES`.
  */
 #define TOP_EARLGREY_RV_TIMER_SIZE_BYTES 0x200
+
+#define DEBUG_MODE_REG_ADDR 0xff000014
+
 /**
  * Peripheral base address for core device on otp_ctrl in top earlgrey.
  *

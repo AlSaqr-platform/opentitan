@@ -40,6 +40,7 @@
 #include "sw/device/silicon_creator/lib/sigverify/sigverify.h"
 #include "sw/device/silicon_creator/rom/boot_policy.h"
 #include "sw/device/silicon_creator/rom/bootstrap.h"
+#include "sw/device/silicon_creator/rom/uart.h"
 #include "sw/device/silicon_creator/rom/string_lib.h"
 #include "sw/device/silicon_creator/rom/rom_epmp.h"
 #include "sw/device/silicon_creator/rom/sigverify_keys.h"
@@ -93,6 +94,7 @@
 #define SPI_HOST_STATUS_READY_BIT 31
 #define DATA_SET_SIZE 16
 #define MSG 0xbaadc0de
+#define TARGET_SYNTHESIS
 // Define counters and constant values required by the CFI counter macros.
 CFI_DEFINE_COUNTERS(rom_counters, ROM_CFI_FUNC_COUNTERS_TABLE);
 
@@ -124,19 +126,31 @@ static rom_error_t rom_irq_error(void) {
  * Prints a status message indicating that the ROM is entering bootstrap mode.
  */
 static void rom_bootstrap_message(void) {
-  uart_putchar('b');
+  uart_putchar('c');
   uart_putchar('o');
-  uart_putchar('o');
-  uart_putchar('t');
-  uart_putchar('s');
-  uart_putchar('t');
-  uart_putchar('r');
+  uart_putchar('c');
+  uart_putchar('h');
+  uart_putchar('i');
+  uart_putchar('n');
   uart_putchar('a');
-  uart_putchar('p');
-  uart_putchar(':');
-  uart_putchar('1');
+  uart_putchar('?');
   uart_putchar('\r');
   uart_putchar('\n');
+  uart_putchar('b');
+  uart_putchar('e');
+  uart_putchar('l');
+  uart_putchar('l');
+  uart_putchar('a');
+  uart_putchar(' ');
+  uart_putchar('f');
+  uart_putchar('r');
+  uart_putchar('e');
+  uart_putchar('s');
+  uart_putchar('c');
+  uart_putchar('a');
+  uart_putchar('\r');
+  uart_putchar('\n');
+  // printf("secure boot ongoing!\r\n");
 }
 
 /**
@@ -149,6 +163,15 @@ static rom_error_t rom_init(void) {
   pinmux_init();
   // Configure UART0 as stdout.
   uart_init(kUartNCOValue);
+  //#ifdef TARGET_SYNTHESIS                
+  //int baud_rate = 115200;
+  //int test_freq = 40000000;
+  //#else
+  ////set_flls();
+  //int baud_rate = 115200;
+  //int test_freq = 100000000;
+  //#endif
+  //uart_set_cfg(0,(test_freq/baud_rate)>>4);
 
   // There are no conditional checks before writing to this CSR because it is
   // expected that if relevant Ibex countermeasures are disabled, this will
@@ -460,12 +483,19 @@ static rom_error_t rom_try_boot(void) {
 }
 
 void rom_main(void) {
+
   CFI_FUNC_COUNTER_INIT(rom_counters, kCfiRomMain);
-  bool t;
   CFI_FUNC_COUNTER_PREPCALL(rom_counters, kCfiRomMain, 1, kCfiRomInit);
   SHUTDOWN_IF_ERROR(rom_init());
   
-  /* rom_bootstrap_message();
+  rom_bootstrap_message();
+
+  volatile int * debug_mode;
+  debug_mode = (int *) 0xff000014;
+  if(*debug_mode)
+     while(1)
+       asm volatile ("wfi");
+
   CFI_FUNC_COUNTER_INCREMENT(rom_counters, kCfiRomMain, 3);
   CFI_FUNC_COUNTER_CHECK(rom_counters, kCfiRomInit, 3);
 
@@ -478,10 +508,10 @@ void rom_main(void) {
   }
 
   // `rom_try_boot` will not return unless there is an error.
-  //CFI_FUNC_COUNTER_PREPCALL(rom_counters, kCfiRomMain, 4, kCfiRomTryBoot);*/
+  CFI_FUNC_COUNTER_PREPCALL(rom_counters, kCfiRomMain, 4, kCfiRomTryBoot);
   
-  t = spi_test();
-  while(true);//shutdown_finalize(rom_try_boot());
+
+  shutdown_finalize(rom_try_boot());
 }
 
 void rom_interrupt_handler(void) {
