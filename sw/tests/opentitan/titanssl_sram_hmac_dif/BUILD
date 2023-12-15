@@ -41,6 +41,7 @@ opentitan_ram_binary(
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
         "//sw/device/lib/base:memory",
         "//sw/device/lib/base:mmio",
+        "//sw/device/lib/dif:kmac",
         "//sw/device/lib/dif:hmac",
         "//sw/device/lib/dif:aes",
         "//sw/device/silicon_creator/rom:alsaqr_print"

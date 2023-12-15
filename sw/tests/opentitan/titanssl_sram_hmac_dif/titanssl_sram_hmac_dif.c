@@ -9,10 +9,12 @@
 #include "sw/device/lib/base/bitfield.h"
 #include "sw/device/lib/base/memory.h"
 #include "sw/device/lib/dif/dif_hmac.h"
-#include "sw/device/lib/dif/dif_aes.h"  
+#include "sw/device/lib/dif/dif_aes.h"
+#include "sw/device/lib/dif/dif_kmac.h"
 #include "sw/device/silicon_creator/rom/uart.h"
 #include "sw/device/silicon_creator/rom/string_lib.h"
 
+#include "kmac_regs.h"  // Generated
 #include "hmac_regs.h"  // Generated.
 #include "aes_regs.h"  // Generated.
 
@@ -32,7 +34,6 @@ static titanssl_buffer_t titanssl_data_dst;
 static titanssl_buffer_t titanssl_data_key;
 static titanssl_buffer_t titanssl_data_iv;
 
-
 /* ============================================================================
  * Benchmark setup
  * ========================================================================= */
@@ -49,9 +50,10 @@ static titanssl_buffer_t titanssl_data_iv;
 #define TITANSSL_BENCHMARK_PAYLOAD_65536 0
 
 // Configure cryptographic operation.
-#define TITANSSL_BENCHMARK_SHA256 1
+#define TITANSSL_BENCHMARK_SHA256 0
 #define TITANSSL_BENCHMARK_HMAC   0
 #define TITANSSL_BENCHMARK_AES    0
+#define TITANSSL_BENCHMARK_SHA3   1
 
 /* ============================================================================
  * Benchmark automatic configuration
@@ -100,9 +102,41 @@ static titanssl_buffer_t titanssl_data_iv;
 #define TITANSSL_IV_SIZE 16
 #define titanssl_benchmark titanssl_benchmark_aes
 
+
+#elif TITANSSL_BENCHMARK_SHA3
+
+#define TITANSSL_OUTPUT_SIZE 32
+#define TITANSSL_KEY_SIZE 0
+#define TITANSSL_IV_SIZE 0
+#define titanssl_benchmark titanssl_benchmark_sha3
+
 #else
 #error "Wrong benchmark operation configuration"
 #endif
+
+/**
+ * SHA-3 tests.
+ */
+const sha3_test_t sha3_tests = {
+        .mode = kDifKmacModeSha3Len512,
+        .message =
+            "\x66\x4e\xf2\xe3\xa7\x05\x9d\xaf\x1c\x58\xca\xf5\x20\x08\xc5\x22"
+            "\x7e\x85\xcd\xcb\x83\xb4\xc5\x94\x57\xf0\x2c\x50\x8d\x4f\x4f\x69"
+            "\xf8\x26\xbd\x82\xc0\xcf\xfc\x5c\xb6\xa9\x7a\xf6\xe5\x61\xc6\xf9"
+            "\x69\x70\x00\x52\x85\xe5\x8f\x21\xef\x65\x11\xd2\x6e\x70\x98\x89"
+            "\xa7\xe5\x13\xc4\x34\xc9\x0a\x3c\xf7\x44\x8f\x0c\xae\xec\x71\x14"
+            "\xc7\x47\xb2\xa0\x75\x8a\x3b\x45\x03\xa7\xcf\x0c\x69\x87\x3e\xd3"
+            "\x1d\x94\xdb\xef\x2b\x7b\x2f\x16\x88\x30\xef\x7d\xa3\x32\x2c\x3d"
+            "\x3e\x10\xca\xfb\x7c\x2c\x33\xc8\x3b\xbf\x4c\x46\xa3\x1d\xa9\x0c"
+            "\xff\x3b\xfd\x4c\xcc\x6e\xd4\xb3\x10\x75\x84\x91\xee\xba\x60\x3a"
+            "\x76",
+        .message_len = 1160 / 8,
+        .digest = {0xf15f82e5, 0xd570c0a3, 0xe7bb2fa5, 0x444a8511, 0x5f295405,
+                   0x69797afb, 0xd10879a1, 0xbebf6301, 0xa6521d8f, 0x13a0e876,
+                   0x1ca1567b, 0xb4fb0fdf, 0x9f89bc56, 0x4bd127c7, 0x322288d8,
+                   0x4e919d54},
+        .digest_len = DIGEST_LEN_SHA3_512,
+};
 
 /* ============================================================================
  * Benchmark implementation
@@ -414,6 +448,210 @@ void titanssl_benchmark_aes(
 #endif
 }
 
+void titanssl_benchmark_sha3(
+        titanssl_buffer_t *const src,
+        titanssl_buffer_t *const dst,
+        titanssl_buffer_t *const key,
+        titanssl_buffer_t *const iv)
+{
+    mmio_region_t kmac = mmio_region_from_addr(TOP_EARLGREY_KMAC_BASE_ADDR);
+
+    dif_kmac_config_t config = (dif_kmac_config_t){
+      .entropy_mode = kDifKmacEntropyModeSoftware,
+      .entropy_seed = {0xaa25b4bf, 0x48ce8fff, 0x5a78282a, 0x48465647,
+                       0x70410fef},
+      .entropy_fast_process = kDifToggleEnabled,
+    };
+
+    // Entropy mode.
+    uint32_t entropy_mode_value;
+    bool entropy_ready = false;
+    entropy_mode_value = KMAC_CFG_SHADOWED_ENTROPY_MODE_VALUE_SW_MODE;
+    entropy_ready = true;
+
+    // Check that the hardware is in an idle state.
+    if (!is_state_idle(kmac)) {
+      return kDifLocked;
+    }
+    // Write entropy period register.
+    uint32_t entropy_period_reg = 0;
+    entropy_period_reg = bitfield_field32_write(
+                                                entropy_period_reg, KMAC_ENTROPY_PERIOD_WAIT_TIMER_FIELD,
+                                                config.entropy_wait_timer);
+    entropy_period_reg = bitfield_field32_write(
+                                                entropy_period_reg, KMAC_ENTROPY_PERIOD_PRESCALER_FIELD,
+                                                config.entropy_prescaler);
+
+    mmio_region_write32(kmac->base_addr, KMAC_ENTROPY_PERIOD_REG_OFFSET,
+                        entropy_period_reg);
+
+    // Write threshold register.
+    uint32_t entropy_threshold_reg =
+      KMAC_ENTROPY_REFRESH_THRESHOLD_SHADOWED_REG_RESVAL;
+    entropy_threshold_reg = bitfield_field32_write(
+                                                   entropy_threshold_reg,
+                                                   KMAC_ENTROPY_REFRESH_THRESHOLD_SHADOWED_THRESHOLD_FIELD,
+                                                   config.entropy_hash_threshold);
+
+    mmio_region_write32_shadowed(
+                                 kmac->base_addr, KMAC_ENTROPY_REFRESH_THRESHOLD_SHADOWED_REG_OFFSET,
+                                 entropy_threshold_reg);
+
+    // Write configuration register.
+    uint32_t cfg_reg = 0;
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_MSG_ENDIANNESS_BIT, config.message_big_endian);
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_STATE_ENDIANNESS_BIT, config.output_big_endian);
+    cfg_reg = bitfield_field32_write(cfg_reg, KMAC_CFG_SHADOWED_ENTROPY_MODE_FIELD, entropy_mode_value);
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_ENTROPY_FAST_PROCESS_BIT, onfig.entropy_fast_process);
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_SIDELOAD_BIT, config.sideload);
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_ENTROPY_READY_BIT, entropy_ready);
+    cfg_reg = bitfield_bit32_write(cfg_reg, KMAC_CFG_SHADOWED_MSG_MASK_BIT, config.msg_mask);
+    mmio_region_write32_shadowed(kmac->base_addr, KMAC_CFG_SHADOWED_REG_OFFSET, cfg_reg);
+    // Write entropy seed registers.
+    for (int i = 0; i < kDifKmacEntropySeedWords; ++i) {
+      mmio_region_write32(kmac->base_addr,
+                          KMAC_ENTROPY_SEED_0_REG_OFFSET + i * sizeof(uint32_t),
+                          config.entropy_seed[i]);
+    }
+
+    dif_kmac_operation_state_t operation_state;
+    sha3_test_t test = sha3_tests;
+    uint32_t kstrength = KMAC_CFG_SHADOWED_KSTRENGTH_VALUE_L512;
+    
+    operation_state->offset = 0;
+    operation_state->r = calculate_rate_bits(512) / 32;
+    operation_state->d = 512 / 32;
+
+    if (!is_state_idle(kmac)) {
+      return kDifError;
+    }
+
+    operation_state->squeezing = false;
+    operation_state->append_d = false;
+
+    // Configure SHA-3 mode with the given strength.
+    uint32_t cfg_reg = mmio_region_read32(kmac->base_addr, KMAC_CFG_SHADOWED_REG_OFFSET);
+    cfg_reg = bitfield_field32_write(cfg_reg, KMAC_CFG_SHADOWED_KSTRENGTH_FIELD, kstrength);
+    cfg_reg = bitfield_field32_write(cfg_reg, KMAC_CFG_SHADOWED_MODE_FIELD, KMAC_CFG_SHADOWED_MODE_VALUE_SHA3);
+    mmio_region_write32(kmac->base_addr, KMAC_CFG_SHADOWED_REG_OFFSET, cfg_reg);
+    mmio_region_write32(kmac->base_addr, KMAC_CFG_SHADOWED_REG_OFFSET, cfg_reg);
+
+    // Issue start command.
+    uint32_t cmd_reg = bitfield_field32_write(0, KMAC_CMD_CMD_FIELD, KMAC_CMD_CMD_VALUE_START);
+    mmio_region_write32(kmac->base_addr, KMAC_CMD_REG_OFFSET, cmd_reg);
+
+    // Poll until the status register is in the 'absorb' state.
+    poll_state(kmac, KMAC_STATUS_SHA3_ABSORB_BIT);
+
+    // Poll until the the status register is in the 'absorb' state.
+    if (!is_state_absorb(kmac)) {
+      return kDifError;
+    }
+
+    // Copy message using aligned word sized loads and stores where possible to
+    // improve performance. Note: the parts of the message copied a byte at a time
+    // will not be byte swapped in big-endian mode.
+    const uint8_t *data = (const uint8_t *)msg;
+    for (; len != 0 && ((uintptr_t)data) % sizeof(uint32_t); --len) {
+      mmio_region_write8(kmac->base_addr, KMAC_MSG_FIFO_REG_OFFSET, *data++);
+    }
+    for (; len >= sizeof(uint32_t); len -= sizeof(uint32_t)) {
+      mmio_region_write32(kmac->base_addr, KMAC_MSG_FIFO_REG_OFFSET, read_32(data));
+      data += sizeof(uint32_t);
+    }
+    for (; len != 0; --len) {
+      mmio_region_write8(kmac->base_addr, KMAC_MSG_FIFO_REG_OFFSET, *data++);
+    }
+
+    uint32_t out[DIGEST_LEN_SHA3_MAX];
+    size_t len = test.digest_len;
+
+    // Move into squeezing state (if not already in it).
+    // Do this even if the length requested is 0 or too big.
+    if (!operation_state->squeezing) {
+        if (operation_state->append_d) {
+          // The KMAC operation requires that the output length (d) in bits be right
+          // encoded and appended to the end of the message.
+          // Note: kDifKmacMaxOutputLenWords could be reduced to make this code
+          // simpler. For example, a maximum of `(UINT16_MAX - 32) / 32` (just under
+          // 8 KiB) would mean that d is guaranteed to be less than 0xFFFF.
+          uint32_t d = operation_state->d * 32;
+          int len = 1 + (d > 0xFF) + (d > 0xFFFF) + (d > 0xFFFFFF);
+          int shift = (len - 1) * 8;
+          while (shift >= 8) {
+            mmio_region_write8(base, KMAC_MSG_FIFO_REG_OFFSET,(uint8_t)(d >> shift));
+            shift -= 8;
+          }
+          mmio_region_write8(base, KMAC_MSG_FIFO_REG_OFFSET, (uint8_t)d);
+          mmio_region_write8(base, KMAC_MSG_FIFO_REG_OFFSET, (uint8_t)len);
+        }
+
+        operation_state->squeezing = true;
+
+        // Issue squeeze command.
+        uint32_t cmd_reg = bitfield_field32_write(0, KMAC_CMD_CMD_FIELD, KMAC_CMD_CMD_VALUE_PROCESS);
+        mmio_region_write32(base, KMAC_CMD_REG_OFFSET, cmd_reg);
+    }
+
+    if (len == 0) {
+      return kDifOk;
+    }
+
+    while (len > 0) {
+      size_t n = len;
+      size_t remaining = operation_state->r - operation_state->offset;
+      if (operation_state->d != 0 && operation_state->d < operation_state->r) {
+        remaining = operation_state->d - operation_state->offset;
+      }
+      if (n > remaining) {
+        n = remaining;
+      }
+      if (n == 0) {
+        // Reduce the digest length to reflect consumed output state.
+        if (operation_state->d != 0) {
+          operation_state->d -= operation_state->r;
+        }
+        // Issue run command to generate more state.
+        uint32_t cmd_reg = bitfield_field32_write(0, KMAC_CMD_CMD_FIELD, KMAC_CMD_CMD_VALUE_RUN);
+        mmio_region_write32(base, KMAC_CMD_REG_OFFSET, cmd_reg);
+        operation_state->offset = 0;
+        continue;
+      }
+      // Poll the status register until in the 'squeeze' state.
+      poll_state(kmac, KMAC_STATUS_SHA3_SQUEEZE_BIT);
+
+      uint32_t offset = KMAC_STATE_REG_OFFSET + operation_state->offset * sizeof(uint32_t);
+      for (size_t i = 0; i < n; ++i) {
+        // Read both shares from state register and combine using XOR.
+        uint32_t share0 = mmio_region_read32(base, offset);
+        uint32_t share1 = mmio_region_read32(base, offset + kDifKmacStateShareOffset);
+        *out++ = share0 ^ share1;
+        offset += sizeof(uint32_t);
+      }
+      operation_state->offset += n;
+      len -= n;
+      if (processed != NULL) {
+        *processed += n;
+      }
+    }
+
+    uint32_t cmd_reg = bitfield_field32_write(0, KMAC_CMD_CMD_FIELD, KMAC_CMD_CMD_VALUE_DONE);
+    mmio_region_write32(kmac->base_addr, KMAC_CMD_REG_OFFSET, cmd_reg);
+
+    // Reset operation state.
+    operation_state->squeezing = false;
+    operation_state->append_d = false;
+    operation_state->offset = 0;
+    operation_state->r = 0;
+    operation_state->d = 0;
+ 
+    for (int j = 0; j < test.digest_len; ++j) {
+      CHECK(out[j] == test.digest[j],
+         "test %d: mismatch at %d got=0x%x want=0x%x", i, j, out[j],
+         test.digest[j]);
+       }
+  }
+}
 int main(
         int argc, 
         char **argv)
