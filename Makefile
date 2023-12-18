@@ -21,7 +21,7 @@ test_name   ?=
 test_path   := $(common_test_path)/$(test_name)
 destination := $(OT_ROOT)/$(test_path)/bazel-out/
 
-bazel        := ./bazelisk.sh build
+bazel        := ./bazelisk.sh   --output_base=/scratch2/mciani/bazel  build  --sandbox_debug
 bazel_tests  := $(common_test_path)/$(test_name)
 
 rom_path     := sw/device/silicon_creator/rom
@@ -54,11 +54,11 @@ clean-rom:
 
 .PHONY: bazel-compile-rom
 bazel-compile-rom:
-	$(shell $(bazel) --define DISABLE_VERILATOR_BUILD=true //sw/device/silicon_creator/rom:all)
+	$(shell $(bazel)   --define DISABLE_VERILATOR_BUILD=true //sw/device/silicon_creator/rom:all)
 
 .PHONY: bazel-compile-test
 bazel-compile-test:
-	$(shell $(bazel) --define DISABLE_VERILATOR_BUILD=true //$(bazel_tests):all)
+	$(shell $(bazel)   --define DISABLE_VERILATOR_BUILD=true //$(bazel_tests):all)
 
 .PHONY: compile-bazel-flash
 compile-bazel-flash: bazel-compile-test clean-flash
