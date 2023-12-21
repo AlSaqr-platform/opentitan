@@ -648,8 +648,8 @@ module chip_earlgrey_cw310 #(
   ast_pkg::ast_pwst_t ast_pwst_h;
 
   // TLUL interface
-  tlul_pkg::tl_h2d_t base_ast_bus;
-  tlul_pkg::tl_d2h_t ast_base_bus;
+  tlul_ot_pkg::tl_h2d_t base_ast_bus;
+  tlul_ot_pkg::tl_d2h_t ast_base_bus;
 
   // synchronization clocks / rests
   clkmgr_pkg::clkmgr_out_t clkmgr_aon_clocks;
@@ -1127,7 +1127,7 @@ module chip_earlgrey_cw310 #(
   assign clk_io_div4_trigger_oe = mio_oe[MioOutGpioGpio8];
 
   // Synchronize signals to manual_in_io_clk.
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width ($bits(clk_trans_idle) + 2)
   ) u_sync_trigger (
     .clk_i (manual_in_io_clk),

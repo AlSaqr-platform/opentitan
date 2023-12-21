@@ -27,6 +27,12 @@
  *   for use as a call stack
  * - triple error detection
  */
+
+
+`include "prim_assert.sv"
+
+`include "prim_flop_macros.sv"
+
 module otbn_rf_base
   import otbn_pkg::*;
 #(
@@ -163,7 +169,7 @@ module otbn_rf_base
 
   if (RegFile == RegFileFF) begin : gen_rf_base_ff
     otbn_rf_base_ff #(
-      .WordZeroVal(prim_secded_pkg::SecdedInv3932ZeroWord)
+      .WordZeroVal(prim_ot_secded_pkg::SecdedInv3932ZeroWord)
     ) u_otbn_rf_base_inner (
       .clk_i,
       .rst_ni,
@@ -181,7 +187,7 @@ module otbn_rf_base
     );
   end else if (RegFile == RegFileFPGA) begin : gen_rf_base_fpga
     otbn_rf_base_fpga #(
-      .WordZeroVal(prim_secded_pkg::SecdedInv3932ZeroWord)
+      .WordZeroVal(prim_ot_secded_pkg::SecdedInv3932ZeroWord)
     ) u_otbn_rf_base_inner (
       .clk_i,
       .rst_ni,

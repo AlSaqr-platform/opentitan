@@ -5,6 +5,8 @@
 // Flash Controller for life cycle / key management handling
 //
 
+`include "prim_assert.sv"
+
 module flash_ctrl_lcmgr
   import flash_ctrl_pkg::*;
   import lc_ctrl_pkg::lc_tx_t;
@@ -294,7 +296,7 @@ module flash_ctrl_lcmgr
   // synchronize inputs
   logic init_q;
 
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue(0)
   ) u_sync_flash_init (
@@ -327,7 +329,7 @@ module flash_ctrl_lcmgr
   logic data_key_ack_q;
 
   // req/ack to otp
-  prim_sync_reqack u_addr_sync_reqack (
+  prim_ot_sync_reqack u_addr_sync_reqack (
     .clk_src_i(clk_i),
     .rst_src_ni(rst_ni),
     .clk_dst_i(clk_otp_i),
@@ -340,7 +342,7 @@ module flash_ctrl_lcmgr
   );
 
   // req/ack to otp
-  prim_sync_reqack u_data_sync_reqack (
+  prim_ot_sync_reqack u_data_sync_reqack (
     .clk_src_i(clk_i),
     .rst_src_ni(rst_ni),
     .clk_dst_i(clk_otp_i),

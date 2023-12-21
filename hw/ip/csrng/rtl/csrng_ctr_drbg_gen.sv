@@ -6,8 +6,14 @@
 //
 // This module will process the second half of the generate function.
 // It takes in the key, v, and reseed counter values processed by the
+
+
 // ctr_drbg cmd module.
 
+
+`include "prim_flop_macros.sv"
+
+`include "prim_assert.sv"
 module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   parameter int NApps = 4,
   parameter int Cmd = 3,
@@ -235,12 +241,12 @@ module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   // input request fifo for staging gen request
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(GenreqFifoWidth),
     .Pass(0),
     .Depth(GenreqFifoDepth),
     .OutputZeroIfEmpty(1'b0)
-  ) u_prim_fifo_sync_genreq (
+  ) u_prim_ot_fifo_sync_genreq (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .clr_i          (!ctr_drbg_gen_enable_i),
@@ -386,12 +392,12 @@ module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   // fifo to stage key, v, rc, and adata, waiting for update block to ack
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(AdstageFifoWidth),
     .Pass(0),
     .Depth(AdstageFifoDepth),
     .OutputZeroIfEmpty(1'b0)
-  ) u_prim_fifo_sync_adstage (
+  ) u_prim_ot_fifo_sync_adstage (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .clr_i          (!ctr_drbg_gen_enable_i),
@@ -446,12 +452,12 @@ module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   // block_encrypt response fifo from block encrypt
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(BlkEncAckFifoWidth),
     .Pass(0),
     .Depth(BlkEncAckFifoDepth),
     .OutputZeroIfEmpty(1'b0)
-  ) u_prim_fifo_sync_bencack (
+  ) u_prim_ot_fifo_sync_bencack (
     .clk_i    (clk_i),
     .rst_ni   (rst_ni),
     .clr_i    (!ctr_drbg_gen_enable_i),
@@ -501,12 +507,12 @@ module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   // fifo to stage rc, waiting for update block to ack
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(RCStageFifoWidth),
     .Pass(0),
     .Depth(RCStageFifoDepth),
     .OutputZeroIfEmpty(1'b0)
-  ) u_prim_fifo_sync_rcstage (
+  ) u_prim_ot_fifo_sync_rcstage (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .clr_i          (!ctr_drbg_gen_enable_i),
@@ -544,12 +550,12 @@ module csrng_ctr_drbg_gen import csrng_pkg::*; #(
   // final cmd block processing
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(GenbitsFifoWidth),
     .Pass(0),
     .Depth(GenbitsFifoDepth),
     .OutputZeroIfEmpty(1'b0)
-  ) u_prim_fifo_sync_genbits (
+  ) u_prim_ot_fifo_sync_genbits (
     .clk_i          (clk_i),
     .rst_ni         (rst_ni),
     .clr_i          (!ctr_drbg_gen_enable_i),

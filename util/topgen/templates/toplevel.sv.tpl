@@ -1,6 +1,10 @@
 // Copyright lowRISC contributors.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
+
+`include "prim_assert.sv"
+
+
 ${gencmd}
 <%
 import re
@@ -109,7 +113,7 @@ module top_${top["name"]} #(
   input prim_mubi_pkg::mubi4_t scanmode_i   // lc_ctrl_pkg::On for Scan
 );
 
-  import tlul_pkg::*;
+  import tlul_ot_pkg::*;
   import top_pkg::*;
   import tl_main_pkg::*;
   import top_${top["name"]}_pkg::*;

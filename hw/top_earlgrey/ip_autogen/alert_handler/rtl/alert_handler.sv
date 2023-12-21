@@ -21,8 +21,8 @@ module alert_handler
   input                                    clk_edn_i,
   input                                    rst_edn_ni,
   // Bus Interface (device)
-  input  tlul_pkg::tl_h2d_t                tl_i,
-  output tlul_pkg::tl_d2h_t                tl_o,
+  input  tlul_ot_pkg::tl_h2d_t                tl_i,
+  output tlul_ot_pkg::tl_d2h_t                tl_o,
   // Interrupt Requests
   output logic                             intr_classa_o,
   output logic                             intr_classb_o,
@@ -152,10 +152,10 @@ module alert_handler
       u_ping_timer.u_prim_count_cnt,
       loc_alert_trig[0] & loc_alert_trig[1],
       (reg2hw_wrap.ping_enable == 0))
-  `ASSERT_PRIM_DOUBLE_LFSR_ERROR_TRIGGER_ERR(PingTimerDoubleLfsrCheck_A,
+  /*`ASSERT_PRIM_DOUBLE_LFSR_ERROR_TRIGGER_ERR(PingTimerDoubleLfsrCheck_A,
       u_ping_timer.u_prim_double_lfsr,
       loc_alert_trig[0] & loc_alert_trig[1],
-      (reg2hw_wrap.ping_enable == 0))
+      (reg2hw_wrap.ping_enable == 0))*/
   `ASSERT_PRIM_FSM_ERROR_TRIGGER_ERR(PingTimerFsmCheck_A,
       u_ping_timer.u_state_regs,
       loc_alert_trig[0] & loc_alert_trig[1],

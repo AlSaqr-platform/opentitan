@@ -11,8 +11,8 @@ module aon_timer_reg_top (
   input rst_ni,
   input clk_aon_i,
   input rst_aon_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output aon_timer_reg_pkg::aon_timer_reg2hw_t reg2hw, // Write
   input  aon_timer_reg_pkg::aon_timer_hw2reg_t hw2reg, // Read
@@ -44,8 +44,8 @@ module aon_timer_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -82,7 +82,7 @@ module aon_timer_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -497,7 +497,7 @@ module aon_timer_reg_top (
   logic alert_test_qe;
   logic [0:0] alert_test_flds_we;
   assign alert_test_qe = &alert_test_flds_we;
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -515,9 +515,9 @@ module aon_timer_reg_top (
 
   // R[wkup_ctrl]: V(False)
   //   F[enable]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_wkup_ctrl_enable (
     .clk_i   (clk_aon_i),
@@ -541,9 +541,9 @@ module aon_timer_reg_top (
   );
 
   //   F[prescaler]: 12:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (12),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (12'h0)
   ) u_wkup_ctrl_prescaler (
     .clk_i   (clk_aon_i),
@@ -568,9 +568,9 @@ module aon_timer_reg_top (
 
 
   // R[wkup_thold]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_wkup_thold (
     .clk_i   (clk_aon_i),
@@ -597,9 +597,9 @@ module aon_timer_reg_top (
   // R[wkup_count]: V(False)
   logic [0:0] wkup_count_flds_we;
   assign aon_wkup_count_qe = |wkup_count_flds_we;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_wkup_count (
     .clk_i   (clk_aon_i),
@@ -624,9 +624,9 @@ module aon_timer_reg_top (
 
 
   // R[wdog_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_wdog_regwen (
     .clk_i   (clk_i),
@@ -655,9 +655,9 @@ module aon_timer_reg_top (
   logic aon_wdog_ctrl_gated_we;
   assign aon_wdog_ctrl_gated_we = aon_wdog_ctrl_we & aon_wdog_ctrl_regwen;
   //   F[enable]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_wdog_ctrl_enable (
     .clk_i   (clk_aon_i),
@@ -681,9 +681,9 @@ module aon_timer_reg_top (
   );
 
   //   F[pause_in_sleep]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_wdog_ctrl_pause_in_sleep (
     .clk_i   (clk_aon_i),
@@ -711,9 +711,9 @@ module aon_timer_reg_top (
   // Create REGWEN-gated WE signal
   logic aon_wdog_bark_thold_gated_we;
   assign aon_wdog_bark_thold_gated_we = aon_wdog_bark_thold_we & aon_wdog_bark_thold_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_wdog_bark_thold (
     .clk_i   (clk_aon_i),
@@ -741,9 +741,9 @@ module aon_timer_reg_top (
   // Create REGWEN-gated WE signal
   logic aon_wdog_bite_thold_gated_we;
   assign aon_wdog_bite_thold_gated_we = aon_wdog_bite_thold_we & aon_wdog_bite_thold_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_wdog_bite_thold (
     .clk_i   (clk_aon_i),
@@ -770,9 +770,9 @@ module aon_timer_reg_top (
   // R[wdog_count]: V(False)
   logic [0:0] wdog_count_flds_we;
   assign aon_wdog_count_qe = |wdog_count_flds_we;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_wdog_count (
     .clk_i   (clk_aon_i),
@@ -798,9 +798,9 @@ module aon_timer_reg_top (
 
   // R[intr_state]: V(False)
   //   F[wkup_timer_expired]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_wkup_timer_expired (
     .clk_i   (clk_i),
@@ -824,9 +824,9 @@ module aon_timer_reg_top (
   );
 
   //   F[wdog_timer_bark]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_wdog_timer_bark (
     .clk_i   (clk_i),
@@ -855,7 +855,7 @@ module aon_timer_reg_top (
   logic [1:0] intr_test_flds_we;
   assign intr_test_qe = &intr_test_flds_we;
   //   F[wkup_timer_expired]: 0:0
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_intr_test_wkup_timer_expired (
     .re     (1'b0),
@@ -871,7 +871,7 @@ module aon_timer_reg_top (
   assign reg2hw.intr_test.wkup_timer_expired.qe = intr_test_qe;
 
   //   F[wdog_timer_bark]: 1:1
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_intr_test_wdog_timer_bark (
     .re     (1'b0),
@@ -890,9 +890,9 @@ module aon_timer_reg_top (
   // R[wkup_cause]: V(False)
   logic [0:0] wkup_cause_flds_we;
   assign aon_wkup_cause_qe = |wkup_cause_flds_we;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h0)
   ) u_wkup_cause (
     .clk_i   (clk_aon_i),
@@ -1118,6 +1118,6 @@ module aon_timer_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

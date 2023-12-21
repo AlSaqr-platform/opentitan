@@ -9,8 +9,8 @@
 module clkmgr_reg_top (
   input clk_i,
   input rst_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output clkmgr_reg_pkg::clkmgr_reg2hw_t reg2hw, // Write
   input  clkmgr_reg_pkg::clkmgr_hw2reg_t hw2reg, // Read
@@ -42,8 +42,8 @@ module clkmgr_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -80,7 +80,7 @@ module clkmgr_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -140,9 +140,9 @@ module clkmgr_reg_top (
   // Register instances
   // R[clk_enables]: V(False)
   //   F[clk_fixed_peri_en]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_fixed_peri_en (
     .clk_i   (clk_i),
@@ -166,9 +166,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_usb_48mhz_peri_en]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_usb_48mhz_peri_en (
     .clk_i   (clk_i),
@@ -194,9 +194,9 @@ module clkmgr_reg_top (
 
   // R[clk_hints]: V(False)
   //   F[clk_main_aes_hint]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_aes_hint (
     .clk_i   (clk_i),
@@ -220,9 +220,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_hmac_hint]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_hmac_hint (
     .clk_i   (clk_i),
@@ -248,9 +248,9 @@ module clkmgr_reg_top (
 
   // R[clk_hints_status]: V(False)
   //   F[clk_main_aes_val]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_aes_val (
     .clk_i   (clk_i),
@@ -274,9 +274,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_hmac_val]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_hmac_val (
     .clk_i   (clk_i),
@@ -390,6 +390,6 @@ module clkmgr_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

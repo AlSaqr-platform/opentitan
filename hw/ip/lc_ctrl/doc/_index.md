@@ -224,7 +224,7 @@ The CHECK_BYP_EN signal is only asserted when a transition command is issued.
 
 If the life cycle state is in RAW, TEST* or RMA, and if {{< regref TRANSITION_CTRL.EXT_CLOCK_EN >}} is set to one, the CLK_BYP_REQ signal is asserted in order to switch the main system clock to an external clock signal.
 This functionality is needed in certain life cycle states where the internal clock source may not be fully calibrated yet, since the OTP macro requires a stable clock frequency in order to reliably program the fuse array.
-The CLK_BYP_REQ signal is only asserted when a transition command is issued.
+Note that the {{< regref TRANSITION_CTRL.EXT_CLOCK_EN >}} register can only be set to one if the transition interface has been claimed via the {{< regref "CLAIM_TRANSITION_IF" >}} mutex.
 This function is not available in production life cycle states.
 
 For details on the clock switch, please see [clkmgr]({{< relref "hw/ip/clkmgr/doc/_index.md#life-cycle-requested-external-clock" >}}).
@@ -373,8 +373,8 @@ Parameter                      | Default (Max)         | Top Earlgrey   | Descri
 
 Signal                       | Direction        | Type                                     | Description
 -----------------------------|------------------|------------------------------------------|---------------
-`jtag_i`                     | `input`          | `jtag_pkg::jtag_req_t`                   | JTAG input signals for life cycle TAP.
-`jtag_o`                     | `output`         | `jtag_pkg::jtag_rsp_t`                   | JTAG output signals for life cycle TAP.
+`jtag_i`                     | `input`          | `jtag_ot_pkg::jtag_req_t`                   | JTAG input signals for life cycle TAP.
+`jtag_o`                     | `output`         | `jtag_ot_pkg::jtag_rsp_t`                   | JTAG output signals for life cycle TAP.
 `esc_scrap_state0_tx_i`      | `input`          | `prim_esc_pkg::esc_tx_t`                 | Escalation input from alert handler. Moves the life cycle state into an invalid state upon assertion.
 `esc_scrap_state0_rx_o`      | `output`         | `prim_esc_pkg::esc_rx_t`                 | Escalation feedback to alert handler
 `esc_scrap_state1_tx_i`      | `input`          | `prim_esc_pkg::esc_tx_t`                 | Escalation input from alert handler. Moves the life cycle state into an invalid state upon assertion.

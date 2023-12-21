@@ -14,7 +14,9 @@
 // Verilog parameter
 //   MAX_PRIO: Maximum value of interrupt priority
 
-module rv_plic import rv_plic_reg_pkg::*; #(
+`include "prim_assert.sv"
+
+module rv_plic_ot import rv_plic_ot_reg_pkg::*; #(
   parameter logic [NumAlerts-1:0] AlertAsyncOn  = {NumAlerts{1'b1}},
   // OpenTitan IP standardizes on level triggered interrupts,
   // hence LevelEdgeTrig is set to all-zeroes by default.
@@ -29,8 +31,8 @@ module rv_plic import rv_plic_reg_pkg::*; #(
   input     rst_ni,
 
   // Bus Interface (device)
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
 
   // Interrupt Sources
   input  [NumSrc-1:0] intr_src_i,
@@ -70,7 +72,7 @@ module rv_plic import rv_plic_reg_pkg::*; #(
 
   logic [PRIOW-1:0] threshold [NumTarget];
 
-  // Glue logic between rv_plic_reg_top and others
+  // Glue logic between rv_plic_ot_reg_top and others
   assign cc_id = irq_id_o;
 
   always_comb begin
@@ -281,11 +283,12 @@ module rv_plic import rv_plic_reg_pkg::*; #(
   assign prio[182] = reg2hw.prio182.q;
   assign prio[183] = reg2hw.prio183.q;
   assign prio[184] = reg2hw.prio184.q;
+  assign prio[185] = reg2hw.prio185.q;
 
   //////////////////////
   // Interrupt Enable //
   //////////////////////
-  for (genvar s = 0; s < 185; s++) begin : gen_ie0
+  for (genvar s = 0; s < 186; s++) begin : gen_ie0
     assign ie[0][s] = reg2hw.ie0[s].q;
   end
 
@@ -311,7 +314,7 @@ module rv_plic import rv_plic_reg_pkg::*; #(
   ////////
   // IP //
   ////////
-  for (genvar s = 0; s < 185; s++) begin : gen_ip
+  for (genvar s = 0; s < 186; s++) begin : gen_ip
     assign hw2reg.ip[s].de = 1'b1; // Always write
     assign hw2reg.ip[s].d  = ip[s];
   end
@@ -322,16 +325,16 @@ module rv_plic import rv_plic_reg_pkg::*; #(
 
   // Synchronize all incoming interrupt requests.
   logic [NumSrc-1:0] intr_src_synced;
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(NumSrc)
-  ) u_prim_flop_2sync (
+  ) u_prim_ot_flop_2sync (
     .clk_i,
     .rst_ni,
     .d_i(intr_src_i),
     .q_o(intr_src_synced)
   );
 
-  rv_plic_gateway #(
+  rv_plic_ot_gateway #(
     .N_SOURCE   (NumSrc)
   ) u_gateway (
     .clk_i,
@@ -350,7 +353,7 @@ module rv_plic import rv_plic_reg_pkg::*; #(
   // Target interrupt notification //
   ///////////////////////////////////
   for (genvar i = 0 ; i < NumTarget ; i++) begin : gen_target
-    rv_plic_target #(
+    rv_plic_ot_target #(
       .N_SOURCE    (NumSrc),
       .MAX_PRIO    (MAX_PRIO)
     ) u_target (
@@ -401,7 +404,7 @@ module rv_plic import rv_plic_reg_pkg::*; #(
   ////////////////////////
   //  Limitation of register tool prevents the module from having flexibility to parameters
   //  So, signals are manually tied at the top.
-  rv_plic_reg_top u_reg (
+  rv_plic_ot_reg_top u_reg (
     .clk_i,
     .rst_ni,
 

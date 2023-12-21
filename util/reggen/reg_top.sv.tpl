@@ -125,13 +125,13 @@ module ${mod_name} (
   input ${clock.clock},
   input ${clock.reset},
 % endfor
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
 % if num_wins != 0:
 
   // Output port for window
-  output tlul_pkg::tl_h2d_t tl_win_o${win_array_decl},
-  input  tlul_pkg::tl_d2h_t tl_win_i${win_array_decl},
+  output tlul_ot_pkg::tl_h2d_t tl_win_o${win_array_decl},
+  input  tlul_ot_pkg::tl_d2h_t tl_win_i${win_array_decl},
 
 % endif
   // To HW
@@ -177,8 +177,8 @@ module ${mod_name} (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 % endif
 
 ## The clock and reset inputs aren't used if this device interface has no
@@ -200,8 +200,8 @@ module ${mod_name} (
 
 % endif
 % if rb.async_if:
-  tlul_pkg::tl_h2d_t tl_async_h2d;
-  tlul_pkg::tl_d2h_t tl_async_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_async_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_async_d2h;
   tlul_fifo_async #(
     .ReqDepth(2),
     .RspDepth(2)
@@ -272,7 +272,7 @@ module ${mod_name} (
 % endif
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(${common_data_intg_gen})
@@ -292,8 +292,8 @@ module ${mod_name} (
   assign tl_o_pre = tl_win_i;
   % endif
 % else:
-  tlul_pkg::tl_h2d_t tl_socket_h2d [${num_dsp}];
-  tlul_pkg::tl_d2h_t tl_socket_d2h [${num_dsp}];
+  tlul_ot_pkg::tl_h2d_t tl_socket_h2d [${num_dsp}];
+  tlul_ot_pkg::tl_d2h_t tl_socket_d2h [${num_dsp}];
 
   logic [${steer_msb}:0] reg_steer;
 
@@ -831,7 +831,7 @@ ${rdata_gen(f, r.name.lower() + "_" + f.name.lower())}\
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 % endif
 endmodule
@@ -930,9 +930,9 @@ ${bits.msb}\
     ds_expr = f'{clk_base_name}{finst_name}_ds{async_suffix}' if reg.async_clk and reg.is_hw_writable() else ''
 
 %>\
-  % if reg.hwext:       ## if hwext, instantiate prim_subreg_ext
+  % if reg.hwext:       ## if hwext, instantiate prim_ot_subreg_ext
 <%
-    subreg_block = "prim_subreg_ext"
+    subreg_block = "prim_ot_subreg_ext"
 %>\
   ${subreg_block} #(
     .DW    (${field.bits.width()})
@@ -949,8 +949,8 @@ ${bits.msb}\
   );
   % else:
 <%
-      # This isn't a field in a hwext register. Instantiate prim_subreg,
-      # prim_subreg_shadow or constant assign.
+      # This isn't a field in a hwext register. Instantiate prim_ot_subreg,
+      # prim_ot_subreg_shadow or constant assign.
 
       resval_expr = f"{field.bits.width()}'h{field.resval or 0:x}"
       is_const_reg = not (field.hwaccess.allows_read() or
@@ -958,7 +958,7 @@ ${bits.msb}\
                           field.swaccess.allows_write() or
                           field.swaccess.swrd() != SwRdAccess.RD)
 
-      subreg_block = 'prim_subreg' + ('_shadow' if reg.shadowed else '')
+      subreg_block = 'prim_ot_subreg' + ('_shadow' if reg.shadowed else '')
 %>\
     % if is_const_reg:
   // constant-only read
@@ -969,7 +969,7 @@ ${bits.msb}\
   logic async_${finst_name}_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_${finst_name}_err_storage_sync (
@@ -980,7 +980,7 @@ ${bits.msb}\
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_${finst_name}_err_update_sync (
+  prim_ot_pulse_sync u_${finst_name}_err_update_sync (
     .clk_src_i(${reg.async_clk.clock}),
     .rst_src_ni(${reg.async_clk.reset}),
     .src_pulse_i(async_${finst_name}_err_update),
@@ -991,7 +991,7 @@ ${bits.msb}\
       % endif
   ${subreg_block} #(
     .DW      (${field.bits.width()}),
-    .SwAccess(prim_subreg_pkg::SwAccess${field.swaccess.value[1].name.upper()}),
+    .SwAccess(prim_ot_subreg_pkg::SwAccess${field.swaccess.value[1].name.upper()}),
     .RESVAL  (${resval_expr})
   ) u_${finst_name} (
       % if reg.sync_clk:
@@ -1041,7 +1041,7 @@ ${bits.msb}\
         % endif
       % endif
   );
-    % endif  ## end non-constant prim_subreg
+    % endif  ## end non-constant prim_ot_subreg
   % endif
   % if field.hwaccess.allows_read() and field.hwqe:
   assign ${qe_reg_expr} = ${reg_name}_qe;

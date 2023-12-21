@@ -41,6 +41,13 @@
       randcount: "128",
       randtype:  "data", // randomize randcount databits
     },
+    { name:      "MemInitFile",
+      desc:      "VMEM file to initialize the SRAM.",
+      type:      "",
+      default:   '""',
+      expose:    "true",
+      local:     "false"
+    }
     { name:      "RndCnstLfsrSeed",
       desc:      "Compile-time random bits for initial LFSR seed",
       type:      "sram_ctrl_pkg::lfsr_seed_t"
@@ -314,6 +321,30 @@
                   '''
           },
         ]
+      },
+      { name: "EOC",
+        desc: "Reports end of computation to TB",
+        swaccess: "rw",
+        hwaccess: "none",
+        fields: [
+          { bits: "31:0",
+            name: "eoc",
+            resval: "0",
+            desc: "Reports end of computation to TB",
+          }
+        ],
+      },
+      { name: "dummy_register",
+        desc: "Needed for testing purposes",
+        swaccess: "rw",
+        hwaccess: "hro",
+        fields: [
+          { bits: "31:0",
+            name: "dummy_register",
+            resval: "0",
+            desc: "Needed for testing purposes",
+          }
+        ],
       },
     ],
 

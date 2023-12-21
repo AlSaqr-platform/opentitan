@@ -6,6 +6,9 @@
 /*
 */
 
+
+`include "prim_assert.sv"
+
 module spi_tpm
   import spi_device_pkg::*;
   import spi_device_reg_pkg::NumLocality;
@@ -1151,7 +1154,7 @@ module spi_tpm
   //////////////
   // Instance //
   //////////////
-  prim_fifo_async #(
+  prim_ot_fifo_async #(
     .Width (CmdAddrSize),
     .Depth (CmdAddrFifoDepth),
     .OutputZeroIfEmpty (1'b 1)
@@ -1171,7 +1174,7 @@ module spi_tpm
     .rdepth_o  (sys_cmdaddr_rdepth)
   );
 
-  prim_fifo_async #(
+  prim_ot_fifo_async #(
     .Width (WrFifoWidth),
     .Depth (WrFifoDepth),
     .OutputZeroIfEmpty (1'b 1)
@@ -1195,7 +1198,7 @@ module spi_tpm
   // The content inside the Read FIFO needs to be flush out when a TPM
   // transaction is completed (CSb deasserted).  So, everytime CSb is
   // deasserted --> rst_n asserted. So, reset the read FIFO.
-  prim_fifo_async #(
+  prim_ot_fifo_async #(
     .Width (RdFifoWidth),
     .Depth (RdFifoDepth),
     .OutputZeroIfEmpty (1'b 1)

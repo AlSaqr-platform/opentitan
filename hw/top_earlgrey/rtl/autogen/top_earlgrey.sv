@@ -1,6 +1,10 @@
 // Copyright lowRISC contributors.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
+
+`include "prim_assert.sv"
+
+
 //
 // ------------------- W A R N I N G: A U T O - G E N E R A T E D   C O D E !! -------------------//
 // PLEASE DO NOT HAND-EDIT THIS FILE. IT HAS BEEN AUTO-GENERATED WITH THE FOLLOWING COMMAND:
@@ -26,7 +30,7 @@ module top_earlgrey #(
   // parameters for pattgen
   // parameters for rv_timer
   // parameters for otp_ctrl
-  parameter OtpCtrlMemInitFile = "",
+  parameter OtpCtrlMemInitFile = "../hw/top_earlgrey/sw/tests/hello_test/otp-img.mem",
   // parameters for lc_ctrl
   parameter logic [15:0] LcCtrlChipGen = 16'h 0000,
   parameter logic [15:0] LcCtrlChipRev = 16'h 0000,
@@ -49,7 +53,9 @@ module top_earlgrey #(
   parameter pinmux_pkg::target_cfg_t PinmuxAonTargetCfg = pinmux_pkg::DefaultTargetCfg,
   // parameters for aon_timer_aon
   // parameters for sensor_ctrl
+  // parameters for tlul2axi
   // parameters for sram_ctrl_ret_aon
+  parameter SramCtrlRetAonMemInitFile = "",
   parameter bit SramCtrlRetAonInstrExec = 0,
   // parameters for flash_ctrl
   parameter bit SecFlashCtrlScrambleEn = 1,
@@ -81,9 +87,10 @@ module top_earlgrey #(
   // parameters for edn0
   // parameters for edn1
   // parameters for sram_ctrl_main
+  parameter SramCtrlMainMemInitFile = "",
   parameter bit SramCtrlMainInstrExec = 1,
   // parameters for rom_ctrl
-  parameter RomCtrlBootRomInitFile = "",
+  parameter RomCtrlBootRomInitFile = "../hw/top_earlgrey/sw/tests/hello_test/bootrom.vmem",
   parameter bit SecRomCtrlDisableScrambling = 1'b0,
   // parameters for rv_core_ibex
   parameter bit RvCoreIbexPMPEnable = 1,
@@ -105,9 +112,9 @@ module top_earlgrey #(
   parameter int RvCoreIbexDbgHwBreakNum = 4,
   parameter bit RvCoreIbexSecureIbex = 1,
   parameter int unsigned RvCoreIbexDmHaltAddr =
-      tl_main_pkg::ADDR_SPACE_RV_DM__MEM + dm::HaltAddress[31:0],
+      tl_main_pkg::ADDR_SPACE_RV_DM__MEM + dm_ot::HaltAddress[31:0],
   parameter int unsigned RvCoreIbexDmExceptionAddr =
-      tl_main_pkg::ADDR_SPACE_RV_DM__MEM + dm::ExceptionAddress[31:0],
+      tl_main_pkg::ADDR_SPACE_RV_DM__MEM + dm_ot::ExceptionAddress[31:0],
   parameter bit RvCoreIbexPipeLine = 0
 ) (
   // Multiplexed I/O
@@ -127,6 +134,11 @@ module top_earlgrey #(
   // Inter-module Signal External type
   output ast_pkg::adc_ast_req_t       adc_req_o,
   input  ast_pkg::adc_ast_rsp_t       adc_rsp_i,
+  output tlul2axi_pkg::slv_req_t       axi_req_o,
+  input  tlul2axi_pkg::slv_rsp_t       axi_rsp_i,
+  input  logic       irq_ibex_i,
+  input  jtag_ot_pkg::jtag_req_t       jtag_req_i,
+  output jtag_ot_pkg::jtag_rsp_t       jtag_rsp_o,
   input  edn_pkg::edn_req_t       ast_edn_req_i,
   output edn_pkg::edn_rsp_t       ast_edn_rsp_o,
   output lc_ctrl_pkg::lc_tx_t       ast_lc_dft_en_o,
@@ -151,8 +163,8 @@ module top_earlgrey #(
   output entropy_src_pkg::entropy_src_rng_req_t       es_rng_req_o,
   input  entropy_src_pkg::entropy_src_rng_rsp_t       es_rng_rsp_i,
   output logic       es_rng_fips_o,
-  output tlul_pkg::tl_h2d_t       ast_tl_req_o,
-  input  tlul_pkg::tl_d2h_t       ast_tl_rsp_i,
+  output tlul_ot_pkg::tl_h2d_t       ast_tl_req_o,
+  input  tlul_ot_pkg::tl_d2h_t       ast_tl_rsp_i,
   output pinmux_pkg::dft_strap_test_req_t       dft_strap_test_o,
   input  logic       dft_hold_tap_sel_i,
   output logic       usb_dp_pullup_en_o,
@@ -195,7 +207,7 @@ module top_earlgrey #(
   input prim_mubi_pkg::mubi4_t scanmode_i   // lc_ctrl_pkg::On for Scan
 );
 
-  import tlul_pkg::*;
+  import tlul_ot_pkg::*;
   import top_pkg::*;
   import tl_main_pkg::*;
   import top_earlgrey_pkg::*;
@@ -333,6 +345,7 @@ module top_earlgrey #(
   // sensor_ctrl
   logic [8:0]  cio_sensor_ctrl_ast_debug_out_d2p;
   logic [8:0]  cio_sensor_ctrl_ast_debug_out_en_d2p;
+  // tlul2axi
   // sram_ctrl_ret_aon
   // flash_ctrl
   logic        cio_flash_ctrl_tck_p2d;
@@ -356,7 +369,7 @@ module top_earlgrey #(
   // rv_core_ibex
 
 
-  logic [184:0]  intr_vector;
+  logic [185:0]  intr_vector;
   // Interrupt source list
   logic intr_uart0_tx_watermark;
   logic intr_uart0_rx_watermark;
@@ -485,6 +498,7 @@ module top_earlgrey #(
   logic intr_aon_timer_aon_wdog_timer_bark;
   logic intr_sensor_ctrl_io_status_change;
   logic intr_sensor_ctrl_init_status_change;
+  logic intr_tlul2axi_mbox_irq;
   logic intr_flash_ctrl_prog_empty;
   logic intr_flash_ctrl_prog_lvl;
   logic intr_flash_ctrl_rd_full;
@@ -576,10 +590,8 @@ module top_earlgrey #(
   kmac_pkg::app_rsp_t [2:0] kmac_app_rsp;
   logic       kmac_en_masking;
   prim_mubi_pkg::mubi4_t [3:0] clkmgr_aon_idle;
-  jtag_pkg::jtag_req_t       pinmux_aon_lc_jtag_req;
-  jtag_pkg::jtag_rsp_t       pinmux_aon_lc_jtag_rsp;
-  jtag_pkg::jtag_req_t       pinmux_aon_rv_jtag_req;
-  jtag_pkg::jtag_rsp_t       pinmux_aon_rv_jtag_rsp;
+  jtag_ot_pkg::jtag_req_t       pinmux_aon_lc_jtag_req;
+  jtag_ot_pkg::jtag_rsp_t       pinmux_aon_lc_jtag_rsp;
   lc_ctrl_pkg::lc_tx_t       pinmux_aon_pinmux_hw_debug_en;
   otp_ctrl_pkg::otp_lc_data_t       otp_ctrl_otp_lc_data;
   otp_ctrl_pkg::lc_otp_program_req_t       lc_ctrl_lc_otp_program_req;
@@ -612,112 +624,114 @@ module top_earlgrey #(
   prim_mubi_pkg::mubi4_t       rstmgr_aon_sw_rst_req;
   logic [5:0] pwrmgr_aon_wakeups;
   logic [1:0] pwrmgr_aon_rstreqs;
-  tlul_pkg::tl_h2d_t       main_tl_rv_core_ibex__corei_req;
-  tlul_pkg::tl_d2h_t       main_tl_rv_core_ibex__corei_rsp;
-  tlul_pkg::tl_h2d_t       main_tl_rv_core_ibex__cored_req;
-  tlul_pkg::tl_d2h_t       main_tl_rv_core_ibex__cored_rsp;
-  tlul_pkg::tl_h2d_t       main_tl_rv_dm__sba_req;
-  tlul_pkg::tl_d2h_t       main_tl_rv_dm__sba_rsp;
-  tlul_pkg::tl_h2d_t       rv_dm_regs_tl_d_req;
-  tlul_pkg::tl_d2h_t       rv_dm_regs_tl_d_rsp;
-  tlul_pkg::tl_h2d_t       rv_dm_mem_tl_d_req;
-  tlul_pkg::tl_d2h_t       rv_dm_mem_tl_d_rsp;
-  tlul_pkg::tl_h2d_t       rom_ctrl_rom_tl_req;
-  tlul_pkg::tl_d2h_t       rom_ctrl_rom_tl_rsp;
-  tlul_pkg::tl_h2d_t       rom_ctrl_regs_tl_req;
-  tlul_pkg::tl_d2h_t       rom_ctrl_regs_tl_rsp;
-  tlul_pkg::tl_h2d_t       main_tl_peri_req;
-  tlul_pkg::tl_d2h_t       main_tl_peri_rsp;
-  tlul_pkg::tl_h2d_t       spi_host0_tl_req;
-  tlul_pkg::tl_d2h_t       spi_host0_tl_rsp;
-  tlul_pkg::tl_h2d_t       spi_host1_tl_req;
-  tlul_pkg::tl_d2h_t       spi_host1_tl_rsp;
-  tlul_pkg::tl_h2d_t       usbdev_tl_req;
-  tlul_pkg::tl_d2h_t       usbdev_tl_rsp;
-  tlul_pkg::tl_h2d_t       flash_ctrl_core_tl_req;
-  tlul_pkg::tl_d2h_t       flash_ctrl_core_tl_rsp;
-  tlul_pkg::tl_h2d_t       flash_ctrl_prim_tl_req;
-  tlul_pkg::tl_d2h_t       flash_ctrl_prim_tl_rsp;
-  tlul_pkg::tl_h2d_t       flash_ctrl_mem_tl_req;
-  tlul_pkg::tl_d2h_t       flash_ctrl_mem_tl_rsp;
-  tlul_pkg::tl_h2d_t       hmac_tl_req;
-  tlul_pkg::tl_d2h_t       hmac_tl_rsp;
-  tlul_pkg::tl_h2d_t       kmac_tl_req;
-  tlul_pkg::tl_d2h_t       kmac_tl_rsp;
-  tlul_pkg::tl_h2d_t       aes_tl_req;
-  tlul_pkg::tl_d2h_t       aes_tl_rsp;
-  tlul_pkg::tl_h2d_t       entropy_src_tl_req;
-  tlul_pkg::tl_d2h_t       entropy_src_tl_rsp;
-  tlul_pkg::tl_h2d_t       csrng_tl_req;
-  tlul_pkg::tl_d2h_t       csrng_tl_rsp;
-  tlul_pkg::tl_h2d_t       edn0_tl_req;
-  tlul_pkg::tl_d2h_t       edn0_tl_rsp;
-  tlul_pkg::tl_h2d_t       edn1_tl_req;
-  tlul_pkg::tl_d2h_t       edn1_tl_rsp;
-  tlul_pkg::tl_h2d_t       rv_plic_tl_req;
-  tlul_pkg::tl_d2h_t       rv_plic_tl_rsp;
-  tlul_pkg::tl_h2d_t       otbn_tl_req;
-  tlul_pkg::tl_d2h_t       otbn_tl_rsp;
-  tlul_pkg::tl_h2d_t       keymgr_tl_req;
-  tlul_pkg::tl_d2h_t       keymgr_tl_rsp;
-  tlul_pkg::tl_h2d_t       rv_core_ibex_cfg_tl_d_req;
-  tlul_pkg::tl_d2h_t       rv_core_ibex_cfg_tl_d_rsp;
-  tlul_pkg::tl_h2d_t       sram_ctrl_main_regs_tl_req;
-  tlul_pkg::tl_d2h_t       sram_ctrl_main_regs_tl_rsp;
-  tlul_pkg::tl_h2d_t       sram_ctrl_main_ram_tl_req;
-  tlul_pkg::tl_d2h_t       sram_ctrl_main_ram_tl_rsp;
-  tlul_pkg::tl_h2d_t       uart0_tl_req;
-  tlul_pkg::tl_d2h_t       uart0_tl_rsp;
-  tlul_pkg::tl_h2d_t       uart1_tl_req;
-  tlul_pkg::tl_d2h_t       uart1_tl_rsp;
-  tlul_pkg::tl_h2d_t       uart2_tl_req;
-  tlul_pkg::tl_d2h_t       uart2_tl_rsp;
-  tlul_pkg::tl_h2d_t       uart3_tl_req;
-  tlul_pkg::tl_d2h_t       uart3_tl_rsp;
-  tlul_pkg::tl_h2d_t       i2c0_tl_req;
-  tlul_pkg::tl_d2h_t       i2c0_tl_rsp;
-  tlul_pkg::tl_h2d_t       i2c1_tl_req;
-  tlul_pkg::tl_d2h_t       i2c1_tl_rsp;
-  tlul_pkg::tl_h2d_t       i2c2_tl_req;
-  tlul_pkg::tl_d2h_t       i2c2_tl_rsp;
-  tlul_pkg::tl_h2d_t       pattgen_tl_req;
-  tlul_pkg::tl_d2h_t       pattgen_tl_rsp;
-  tlul_pkg::tl_h2d_t       pwm_aon_tl_req;
-  tlul_pkg::tl_d2h_t       pwm_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       gpio_tl_req;
-  tlul_pkg::tl_d2h_t       gpio_tl_rsp;
-  tlul_pkg::tl_h2d_t       spi_device_tl_req;
-  tlul_pkg::tl_d2h_t       spi_device_tl_rsp;
-  tlul_pkg::tl_h2d_t       rv_timer_tl_req;
-  tlul_pkg::tl_d2h_t       rv_timer_tl_rsp;
-  tlul_pkg::tl_h2d_t       pwrmgr_aon_tl_req;
-  tlul_pkg::tl_d2h_t       pwrmgr_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       rstmgr_aon_tl_req;
-  tlul_pkg::tl_d2h_t       rstmgr_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       clkmgr_aon_tl_req;
-  tlul_pkg::tl_d2h_t       clkmgr_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       pinmux_aon_tl_req;
-  tlul_pkg::tl_d2h_t       pinmux_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       otp_ctrl_core_tl_req;
-  tlul_pkg::tl_d2h_t       otp_ctrl_core_tl_rsp;
-  tlul_pkg::tl_h2d_t       otp_ctrl_prim_tl_req;
-  tlul_pkg::tl_d2h_t       otp_ctrl_prim_tl_rsp;
-  tlul_pkg::tl_h2d_t       lc_ctrl_tl_req;
-  tlul_pkg::tl_d2h_t       lc_ctrl_tl_rsp;
-  tlul_pkg::tl_h2d_t       sensor_ctrl_tl_req;
-  tlul_pkg::tl_d2h_t       sensor_ctrl_tl_rsp;
-  tlul_pkg::tl_h2d_t       alert_handler_tl_req;
-  tlul_pkg::tl_d2h_t       alert_handler_tl_rsp;
-  tlul_pkg::tl_h2d_t       sram_ctrl_ret_aon_regs_tl_req;
-  tlul_pkg::tl_d2h_t       sram_ctrl_ret_aon_regs_tl_rsp;
-  tlul_pkg::tl_h2d_t       sram_ctrl_ret_aon_ram_tl_req;
-  tlul_pkg::tl_d2h_t       sram_ctrl_ret_aon_ram_tl_rsp;
-  tlul_pkg::tl_h2d_t       aon_timer_aon_tl_req;
-  tlul_pkg::tl_d2h_t       aon_timer_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       sysrst_ctrl_aon_tl_req;
-  tlul_pkg::tl_d2h_t       sysrst_ctrl_aon_tl_rsp;
-  tlul_pkg::tl_h2d_t       adc_ctrl_aon_tl_req;
-  tlul_pkg::tl_d2h_t       adc_ctrl_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       main_tl_rv_core_ibex__corei_req;
+  tlul_ot_pkg::tl_d2h_t       main_tl_rv_core_ibex__corei_rsp;
+  tlul_ot_pkg::tl_h2d_t       main_tl_rv_core_ibex__cored_req;
+  tlul_ot_pkg::tl_d2h_t       main_tl_rv_core_ibex__cored_rsp;
+  tlul_ot_pkg::tl_h2d_t       main_tl_rv_dm__sba_req;
+  tlul_ot_pkg::tl_d2h_t       main_tl_rv_dm__sba_rsp;
+  tlul_ot_pkg::tl_h2d_t       rv_dm_regs_tl_d_req;
+  tlul_ot_pkg::tl_d2h_t       rv_dm_regs_tl_d_rsp;
+  tlul_ot_pkg::tl_h2d_t       rv_dm_mem_tl_d_req;
+  tlul_ot_pkg::tl_d2h_t       rv_dm_mem_tl_d_rsp;
+  tlul_ot_pkg::tl_h2d_t       rom_ctrl_rom_tl_req;
+  tlul_ot_pkg::tl_d2h_t       rom_ctrl_rom_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       rom_ctrl_regs_tl_req;
+  tlul_ot_pkg::tl_d2h_t       rom_ctrl_regs_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       main_tl_peri_req;
+  tlul_ot_pkg::tl_d2h_t       main_tl_peri_rsp;
+  tlul_ot_pkg::tl_h2d_t       spi_host0_tl_req;
+  tlul_ot_pkg::tl_d2h_t       spi_host0_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       spi_host1_tl_req;
+  tlul_ot_pkg::tl_d2h_t       spi_host1_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       usbdev_tl_req;
+  tlul_ot_pkg::tl_d2h_t       usbdev_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       flash_ctrl_core_tl_req;
+  tlul_ot_pkg::tl_d2h_t       flash_ctrl_core_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       flash_ctrl_prim_tl_req;
+  tlul_ot_pkg::tl_d2h_t       flash_ctrl_prim_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       flash_ctrl_mem_tl_req;
+  tlul_ot_pkg::tl_d2h_t       flash_ctrl_mem_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       hmac_tl_req;
+  tlul_ot_pkg::tl_d2h_t       hmac_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       kmac_tl_req;
+  tlul_ot_pkg::tl_d2h_t       kmac_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       aes_tl_req;
+  tlul_ot_pkg::tl_d2h_t       aes_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       entropy_src_tl_req;
+  tlul_ot_pkg::tl_d2h_t       entropy_src_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       csrng_tl_req;
+  tlul_ot_pkg::tl_d2h_t       csrng_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       edn0_tl_req;
+  tlul_ot_pkg::tl_d2h_t       edn0_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       edn1_tl_req;
+  tlul_ot_pkg::tl_d2h_t       edn1_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       rv_plic_tl_req;
+  tlul_ot_pkg::tl_d2h_t       rv_plic_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       otbn_tl_req;
+  tlul_ot_pkg::tl_d2h_t       otbn_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       keymgr_tl_req;
+  tlul_ot_pkg::tl_d2h_t       keymgr_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       rv_core_ibex_cfg_tl_d_req;
+  tlul_ot_pkg::tl_d2h_t       rv_core_ibex_cfg_tl_d_rsp;
+  tlul_ot_pkg::tl_h2d_t       sram_ctrl_main_regs_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sram_ctrl_main_regs_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       sram_ctrl_main_ram_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sram_ctrl_main_ram_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       tlul2axi_tl_req;
+  tlul_ot_pkg::tl_d2h_t       tlul2axi_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       uart0_tl_req;
+  tlul_ot_pkg::tl_d2h_t       uart0_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       uart1_tl_req;
+  tlul_ot_pkg::tl_d2h_t       uart1_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       uart2_tl_req;
+  tlul_ot_pkg::tl_d2h_t       uart2_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       uart3_tl_req;
+  tlul_ot_pkg::tl_d2h_t       uart3_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       i2c0_tl_req;
+  tlul_ot_pkg::tl_d2h_t       i2c0_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       i2c1_tl_req;
+  tlul_ot_pkg::tl_d2h_t       i2c1_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       i2c2_tl_req;
+  tlul_ot_pkg::tl_d2h_t       i2c2_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       pattgen_tl_req;
+  tlul_ot_pkg::tl_d2h_t       pattgen_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       pwm_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       pwm_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       gpio_tl_req;
+  tlul_ot_pkg::tl_d2h_t       gpio_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       spi_device_tl_req;
+  tlul_ot_pkg::tl_d2h_t       spi_device_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       rv_timer_tl_req;
+  tlul_ot_pkg::tl_d2h_t       rv_timer_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       pwrmgr_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       pwrmgr_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       rstmgr_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       rstmgr_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       clkmgr_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       clkmgr_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       pinmux_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       pinmux_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       otp_ctrl_core_tl_req;
+  tlul_ot_pkg::tl_d2h_t       otp_ctrl_core_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       otp_ctrl_prim_tl_req;
+  tlul_ot_pkg::tl_d2h_t       otp_ctrl_prim_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       lc_ctrl_tl_req;
+  tlul_ot_pkg::tl_d2h_t       lc_ctrl_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       sensor_ctrl_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sensor_ctrl_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       alert_handler_tl_req;
+  tlul_ot_pkg::tl_d2h_t       alert_handler_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       sram_ctrl_ret_aon_regs_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sram_ctrl_ret_aon_regs_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       sram_ctrl_ret_aon_ram_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sram_ctrl_ret_aon_ram_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       aon_timer_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       aon_timer_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       sysrst_ctrl_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       sysrst_ctrl_aon_tl_rsp;
+  tlul_ot_pkg::tl_h2d_t       adc_ctrl_aon_tl_req;
+  tlul_ot_pkg::tl_d2h_t       adc_ctrl_aon_tl_rsp;
   clkmgr_pkg::clkmgr_out_t       clkmgr_aon_clocks;
   clkmgr_pkg::clkmgr_cg_en_t       clkmgr_aon_cg_en;
   rstmgr_pkg::rstmgr_out_t       rstmgr_aon_resets;
@@ -725,8 +739,8 @@ module top_earlgrey #(
   logic       rv_core_ibex_irq_timer;
   logic [31:0] rv_core_ibex_hart_id;
   logic [31:0] rv_core_ibex_boot_addr;
-  jtag_pkg::jtag_req_t       pinmux_aon_dft_jtag_req;
-  jtag_pkg::jtag_rsp_t       pinmux_aon_dft_jtag_rsp;
+  jtag_ot_pkg::jtag_req_t       pinmux_aon_dft_jtag_req;
+  jtag_ot_pkg::jtag_rsp_t       pinmux_aon_dft_jtag_rsp;
   otp_ctrl_part_pkg::otp_hw_cfg_t       otp_ctrl_otp_hw_cfg;
   prim_mubi_pkg::mubi8_t       csrng_otp_en_csrng_sw_app_read;
   prim_mubi_pkg::mubi8_t       entropy_src_otp_en_entropy_src_fw_read;
@@ -1906,8 +1920,8 @@ module top_earlgrey #(
       .pinmux_hw_debug_en_o(pinmux_aon_pinmux_hw_debug_en),
       .lc_jtag_o(pinmux_aon_lc_jtag_req),
       .lc_jtag_i(pinmux_aon_lc_jtag_rsp),
-      .rv_jtag_o(pinmux_aon_rv_jtag_req),
-      .rv_jtag_i(pinmux_aon_rv_jtag_rsp),
+      .rv_jtag_o(),
+      .rv_jtag_i(jtag_ot_pkg::JTAG_RSP_DEFAULT),
       .dft_jtag_o(pinmux_aon_dft_jtag_req),
       .dft_jtag_i(pinmux_aon_dft_jtag_rsp),
       .dft_strap_test_o(dft_strap_test_o),
@@ -2013,10 +2027,27 @@ module top_earlgrey #(
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel]),
       .rst_aon_ni (rstmgr_aon_resets.rst_lc_aon_n[rstmgr_pkg::DomainAonSel])
   );
+  tlul2axi u_tlul2axi (
+
+      // Interrupt
+      .intr_mbox_irq_o (intr_tlul2axi_mbox_irq),
+
+      // Inter-module signals
+      .axi_req_o(axi_req_o),
+      .intr_mbox_irq_i(irq_ibex_i),
+      .axi_rsp_i(axi_rsp_i),
+      .tl_i(tlul2axi_tl_req),
+      .tl_o(tlul2axi_tl_rsp),
+
+      // Clock and reset connections
+      .clk_i (clkmgr_aon_clocks.clk_main_secure),
+      .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel])
+  );
   sram_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[34:34]),
     .RndCnstSramKey(RndCnstSramCtrlRetAonSramKey),
     .RndCnstSramNonce(RndCnstSramCtrlRetAonSramNonce),
+    .MemInitFile(SramCtrlRetAonMemInitFile),
     .RndCnstLfsrSeed(RndCnstSramCtrlRetAonLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlRetAonLfsrPerm),
     .MemSizeRam(4096),
@@ -2128,8 +2159,8 @@ module top_earlgrey #(
       .alert_rx_i  ( alert_rx[40:40] ),
 
       // Inter-module signals
-      .jtag_i(pinmux_aon_rv_jtag_req),
-      .jtag_o(pinmux_aon_rv_jtag_rsp),
+      .jtag_i(jtag_req_i),
+      .jtag_o(jtag_rsp_o),
       .lc_hw_debug_en_i(lc_ctrl_lc_hw_debug_en),
       .pinmux_hw_debug_en_i(pinmux_aon_pinmux_hw_debug_en),
       .unavailable_i(1'b0),
@@ -2473,6 +2504,7 @@ module top_earlgrey #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[59:59]),
     .RndCnstSramKey(RndCnstSramCtrlMainSramKey),
     .RndCnstSramNonce(RndCnstSramCtrlMainSramNonce),
+    .MemInitFile(SramCtrlMainMemInitFile),
     .RndCnstLfsrSeed(RndCnstSramCtrlMainLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlMainLfsrPerm),
     .MemSizeRam(131072),
@@ -2603,32 +2635,33 @@ module top_earlgrey #(
   );
   // interrupt assignments
   assign intr_vector = {
-      intr_edn1_edn_fatal_err, // IDs [184 +: 1]
-      intr_edn1_edn_cmd_req_done, // IDs [183 +: 1]
-      intr_edn0_edn_fatal_err, // IDs [182 +: 1]
-      intr_edn0_edn_cmd_req_done, // IDs [181 +: 1]
-      intr_entropy_src_es_fatal_err, // IDs [180 +: 1]
-      intr_entropy_src_es_observe_fifo_ready, // IDs [179 +: 1]
-      intr_entropy_src_es_health_test_failed, // IDs [178 +: 1]
-      intr_entropy_src_es_entropy_valid, // IDs [177 +: 1]
-      intr_csrng_cs_fatal_err, // IDs [176 +: 1]
-      intr_csrng_cs_hw_inst_exc, // IDs [175 +: 1]
-      intr_csrng_cs_entropy_req, // IDs [174 +: 1]
-      intr_csrng_cs_cmd_req_done, // IDs [173 +: 1]
-      intr_keymgr_op_done, // IDs [172 +: 1]
-      intr_otbn_done, // IDs [171 +: 1]
-      intr_kmac_kmac_err, // IDs [170 +: 1]
-      intr_kmac_fifo_empty, // IDs [169 +: 1]
-      intr_kmac_kmac_done, // IDs [168 +: 1]
-      intr_hmac_hmac_err, // IDs [167 +: 1]
-      intr_hmac_fifo_empty, // IDs [166 +: 1]
-      intr_hmac_hmac_done, // IDs [165 +: 1]
-      intr_flash_ctrl_corr_err, // IDs [164 +: 1]
-      intr_flash_ctrl_op_done, // IDs [163 +: 1]
-      intr_flash_ctrl_rd_lvl, // IDs [162 +: 1]
-      intr_flash_ctrl_rd_full, // IDs [161 +: 1]
-      intr_flash_ctrl_prog_lvl, // IDs [160 +: 1]
-      intr_flash_ctrl_prog_empty, // IDs [159 +: 1]
+      intr_edn1_edn_fatal_err, // IDs [185 +: 1]
+      intr_edn1_edn_cmd_req_done, // IDs [184 +: 1]
+      intr_edn0_edn_fatal_err, // IDs [183 +: 1]
+      intr_edn0_edn_cmd_req_done, // IDs [182 +: 1]
+      intr_entropy_src_es_fatal_err, // IDs [181 +: 1]
+      intr_entropy_src_es_observe_fifo_ready, // IDs [180 +: 1]
+      intr_entropy_src_es_health_test_failed, // IDs [179 +: 1]
+      intr_entropy_src_es_entropy_valid, // IDs [178 +: 1]
+      intr_csrng_cs_fatal_err, // IDs [177 +: 1]
+      intr_csrng_cs_hw_inst_exc, // IDs [176 +: 1]
+      intr_csrng_cs_entropy_req, // IDs [175 +: 1]
+      intr_csrng_cs_cmd_req_done, // IDs [174 +: 1]
+      intr_keymgr_op_done, // IDs [173 +: 1]
+      intr_otbn_done, // IDs [172 +: 1]
+      intr_kmac_kmac_err, // IDs [171 +: 1]
+      intr_kmac_fifo_empty, // IDs [170 +: 1]
+      intr_kmac_kmac_done, // IDs [169 +: 1]
+      intr_hmac_hmac_err, // IDs [168 +: 1]
+      intr_hmac_fifo_empty, // IDs [167 +: 1]
+      intr_hmac_hmac_done, // IDs [166 +: 1]
+      intr_flash_ctrl_corr_err, // IDs [165 +: 1]
+      intr_flash_ctrl_op_done, // IDs [164 +: 1]
+      intr_flash_ctrl_rd_lvl, // IDs [163 +: 1]
+      intr_flash_ctrl_rd_full, // IDs [162 +: 1]
+      intr_flash_ctrl_prog_lvl, // IDs [161 +: 1]
+      intr_flash_ctrl_prog_empty, // IDs [160 +: 1]
+      intr_tlul2axi_mbox_irq, // IDs [159 +: 1]
       intr_sensor_ctrl_init_status_change, // IDs [158 +: 1]
       intr_sensor_ctrl_io_status_change, // IDs [157 +: 1]
       intr_aon_timer_aon_wdog_timer_bark, // IDs [156 +: 1]
@@ -2879,6 +2912,10 @@ module top_earlgrey #(
     // port: tl_sram_ctrl_main__ram
     .tl_sram_ctrl_main__ram_o(sram_ctrl_main_ram_tl_req),
     .tl_sram_ctrl_main__ram_i(sram_ctrl_main_ram_tl_rsp),
+
+    // port: tl_tlul2axi
+    .tl_tlul2axi_o(tlul2axi_tl_req),
+    .tl_tlul2axi_i(tlul2axi_tl_rsp),
 
 
     .scanmode_i

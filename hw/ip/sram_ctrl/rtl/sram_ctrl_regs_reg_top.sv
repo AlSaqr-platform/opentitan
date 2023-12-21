@@ -9,8 +9,8 @@
 module sram_ctrl_regs_reg_top (
   input clk_i,
   input rst_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output sram_ctrl_reg_pkg::sram_ctrl_regs_reg2hw_t reg2hw, // Write
   input  sram_ctrl_reg_pkg::sram_ctrl_regs_hw2reg_t hw2reg, // Read
@@ -42,8 +42,8 @@ module sram_ctrl_regs_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -55,9 +55,9 @@ module sram_ctrl_regs_reg_top (
 
   // also check for spurious write enables
   logic reg_we_err;
-  logic [5:0] reg_we_check;
+  logic [7:0] reg_we_check;
   prim_reg_we_check #(
-    .OneHotWidth(6)
+    .OneHotWidth(8)
   ) u_prim_reg_we_check (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
@@ -80,7 +80,7 @@ module sram_ctrl_regs_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -144,13 +144,19 @@ module sram_ctrl_regs_reg_top (
   logic ctrl_we;
   logic ctrl_renew_scr_key_wd;
   logic ctrl_init_wd;
+  logic eoc_we;
+  logic [31:0] eoc_qs;
+  logic [31:0] eoc_wd;
+  logic dummy_register_we;
+  logic [31:0] dummy_register_qs;
+  logic [31:0] dummy_register_wd;
 
   // Register instances
   // R[alert_test]: V(True)
   logic alert_test_qe;
   logic [0:0] alert_test_flds_we;
   assign alert_test_qe = &alert_test_flds_we;
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -168,9 +174,9 @@ module sram_ctrl_regs_reg_top (
 
   // R[status]: V(False)
   //   F[bus_integ_error]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_bus_integ_error (
     .clk_i   (clk_i),
@@ -194,9 +200,9 @@ module sram_ctrl_regs_reg_top (
   );
 
   //   F[init_error]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_init_error (
     .clk_i   (clk_i),
@@ -220,9 +226,9 @@ module sram_ctrl_regs_reg_top (
   );
 
   //   F[escalated]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_escalated (
     .clk_i   (clk_i),
@@ -246,9 +252,9 @@ module sram_ctrl_regs_reg_top (
   );
 
   //   F[scr_key_valid]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_scr_key_valid (
     .clk_i   (clk_i),
@@ -272,9 +278,9 @@ module sram_ctrl_regs_reg_top (
   );
 
   //   F[scr_key_seed_valid]: 4:4
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_scr_key_seed_valid (
     .clk_i   (clk_i),
@@ -298,9 +304,9 @@ module sram_ctrl_regs_reg_top (
   );
 
   //   F[init_done]: 5:5
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_status_init_done (
     .clk_i   (clk_i),
@@ -325,9 +331,9 @@ module sram_ctrl_regs_reg_top (
 
 
   // R[exec_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_exec_regwen (
     .clk_i   (clk_i),
@@ -355,9 +361,9 @@ module sram_ctrl_regs_reg_top (
   // Create REGWEN-gated WE signal
   logic exec_gated_we;
   assign exec_gated_we = exec_we & exec_regwen_qs;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_exec (
     .clk_i   (clk_i),
@@ -382,9 +388,9 @@ module sram_ctrl_regs_reg_top (
 
 
   // R[ctrl_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_ctrl_regwen (
     .clk_i   (clk_i),
@@ -424,9 +430,9 @@ module sram_ctrl_regs_reg_top (
   logic ctrl_gated_we;
   assign ctrl_gated_we = ctrl_we & ctrl_regwen_qs;
   //   F[renew_scr_key]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_ctrl_renew_scr_key (
     .clk_i   (clk_i),
@@ -451,9 +457,9 @@ module sram_ctrl_regs_reg_top (
   assign reg2hw.ctrl.renew_scr_key.qe = ctrl_qe;
 
   //   F[init]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessWO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessWO),
     .RESVAL  (1'h0)
   ) u_ctrl_init (
     .clk_i   (clk_i),
@@ -478,8 +484,62 @@ module sram_ctrl_regs_reg_top (
   assign reg2hw.ctrl.init.qe = ctrl_qe;
 
 
+  // R[eoc]: V(False)
+  prim_ot_subreg #(
+    .DW      (32),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (32'h0)
+  ) u_eoc (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
 
-  logic [5:0] addr_hit;
+    // from register interface
+    .we     (eoc_we),
+    .wd     (eoc_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (eoc_qs)
+  );
+
+
+  // R[dummy_register]: V(False)
+  prim_ot_subreg #(
+    .DW      (32),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (32'h0)
+  ) u_dummy_register (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (dummy_register_we),
+    .wd     (dummy_register_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.dummy_register.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (dummy_register_qs)
+  );
+
+
+
+  logic [7:0] addr_hit;
   always_comb begin
     addr_hit = '0;
     addr_hit[0] = (reg_addr == SRAM_CTRL_ALERT_TEST_OFFSET);
@@ -488,6 +548,8 @@ module sram_ctrl_regs_reg_top (
     addr_hit[3] = (reg_addr == SRAM_CTRL_EXEC_OFFSET);
     addr_hit[4] = (reg_addr == SRAM_CTRL_CTRL_REGWEN_OFFSET);
     addr_hit[5] = (reg_addr == SRAM_CTRL_CTRL_OFFSET);
+    addr_hit[6] = (reg_addr == SRAM_CTRL_EOC_OFFSET);
+    addr_hit[7] = (reg_addr == SRAM_CTRL_DUMMY_REGISTER_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -500,7 +562,9 @@ module sram_ctrl_regs_reg_top (
                (addr_hit[2] & (|(SRAM_CTRL_REGS_PERMIT[2] & ~reg_be))) |
                (addr_hit[3] & (|(SRAM_CTRL_REGS_PERMIT[3] & ~reg_be))) |
                (addr_hit[4] & (|(SRAM_CTRL_REGS_PERMIT[4] & ~reg_be))) |
-               (addr_hit[5] & (|(SRAM_CTRL_REGS_PERMIT[5] & ~reg_be)))));
+               (addr_hit[5] & (|(SRAM_CTRL_REGS_PERMIT[5] & ~reg_be))) |
+               (addr_hit[6] & (|(SRAM_CTRL_REGS_PERMIT[6] & ~reg_be))) |
+               (addr_hit[7] & (|(SRAM_CTRL_REGS_PERMIT[7] & ~reg_be)))));
   end
 
   // Generate write-enables
@@ -521,6 +585,12 @@ module sram_ctrl_regs_reg_top (
   assign ctrl_renew_scr_key_wd = reg_wdata[0];
 
   assign ctrl_init_wd = reg_wdata[1];
+  assign eoc_we = addr_hit[6] & reg_we & !reg_error;
+
+  assign eoc_wd = reg_wdata[31:0];
+  assign dummy_register_we = addr_hit[7] & reg_we & !reg_error;
+
+  assign dummy_register_wd = reg_wdata[31:0];
 
   // Assign write-enables to checker logic vector.
   always_comb begin
@@ -531,6 +601,8 @@ module sram_ctrl_regs_reg_top (
     reg_we_check[3] = exec_gated_we;
     reg_we_check[4] = ctrl_regwen_we;
     reg_we_check[5] = ctrl_gated_we;
+    reg_we_check[6] = eoc_we;
+    reg_we_check[7] = dummy_register_we;
   end
 
   // Read data return
@@ -567,6 +639,14 @@ module sram_ctrl_regs_reg_top (
         reg_rdata_next[1] = '0;
       end
 
+      addr_hit[6]: begin
+        reg_rdata_next[31:0] = eoc_qs;
+      end
+
+      addr_hit[7]: begin
+        reg_rdata_next[31:0] = dummy_register_qs;
+      end
+
       default: begin
         reg_rdata_next = '1;
       end
@@ -599,6 +679,6 @@ module sram_ctrl_regs_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

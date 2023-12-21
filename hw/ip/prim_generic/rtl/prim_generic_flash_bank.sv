@@ -5,41 +5,48 @@
 // Emulate a single generic flash bank
 //
 
-module prim_generic_flash_bank #(
+module prim_flash_bank #(
   parameter int InfosPerBank   = 1,   // info pages per bank
   parameter int InfoTypes      = 1,   // different info types
   parameter int InfoTypesWidth = 1,   // different info types
   parameter int PagesPerBank   = 256, // data pages per bank
   parameter int WordsPerPage   = 256, // words per page
   parameter int DataWidth      = 32,  // bits per word
-
   // Derived parameters
   localparam int PageW = $clog2(PagesPerBank),
   localparam int WordW = $clog2(WordsPerPage),
   localparam int AddrW = PageW + WordW
 ) (
-  input                              clk_i,
-  input                              rst_ni,
-  input                              rd_i,
-  input                              prog_i,
-  input                              prog_last_i,
+  input                        clk_i,
+  input                        rst_ni,
+  input                        rd_i,
+  input                        prog_i,
+  input                        prog_last_i,
   // the generic model does not make use of program types
-  input flash_ctrl_pkg::flash_prog_e prog_type_i,
-  input                              pg_erase_i,
-  input                              bk_erase_i,
-  input                              erase_suspend_req_i,
-  input                              he_i,
-  input [AddrW-1:0]                  addr_i,
-  input flash_ctrl_pkg::flash_part_e part_i,
-  input [InfoTypesWidth-1:0]         info_sel_i,
-  input [DataWidth-1:0]              prog_data_i,
-  output logic                       ack_o,
-  output logic                       done_o,
-  output logic [DataWidth-1:0]       rd_data_o,
-  input                              init_i,
-  output logic                       init_busy_o,
-  input                              flash_power_ready_h_i,
-  input                              flash_power_down_h_i
+  input                        flash_ctrl_pkg::flash_prog_e prog_type_i,
+  input                        pg_erase_i,
+  input                        bk_erase_i,
+  input                        erase_suspend_req_i,
+  input                        he_i,
+  input [AddrW-1:0]            addr_i,
+  input                        flash_ctrl_pkg::flash_part_e part_i,
+  input [InfoTypesWidth-1:0]   info_sel_i,
+  input [DataWidth-1:0]        prog_data_i,
+  output logic                 ack_o,
+  output logic                 done_o,
+  output logic [DataWidth-1:0] rd_data_o,
+  input                        init_i,
+  output logic                 init_busy_o,
+  // Debug mode Interface
+  input logic                  debug_flash_write_i,
+  input logic                  debug_flash_req_i,
+  input logic [15:0]           debug_flash_addr_i,
+  input logic [75:0]           debug_flash_wdata_i,
+  input logic [75:0]           debug_flash_wmask_i,
+  input logic                  datapath_i,
+  input logic                  info_init_i,
+  input                        flash_power_ready_h_i,
+  input                        flash_power_down_h_i
 );
 
   `ifdef SYNTHESIS
@@ -77,7 +84,11 @@ module prim_generic_flash_bank #(
   localparam int WordsPerBank  = PagesPerBank * WordsPerPage;
   localparam int WordsPerInfoBank = InfosPerBank * WordsPerPage;
   localparam int InfoAddrW = $clog2(WordsPerInfoBank);
-
+`ifdef FLASH_PRELOAD
+  parameter      MemInitFile = "../sw/tests/opentitan/hmac_smoketest/hmac_smoketest.vmem";        
+`else
+  parameter      MemInitFile = "";        
+`endif        
   typedef enum logic [2:0] {
     StReset     = 'h0,
     StInit      = 'h1,
@@ -152,7 +163,7 @@ module prim_generic_flash_bank #(
   assign wvalid = (rd_i | prog_i | pg_erase_i | bk_erase_i) & !init_busy_o;
   assign ack_o = ack & !init_busy_o;
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width   ($bits(cmd_payload_t)),
     .Pass    (0),
     .Depth   (2)
@@ -403,17 +414,43 @@ module prim_generic_flash_bank #(
                         (mem_part == flash_ctrl_pkg::FlashPartData |
                          mem_bk_erase);
 
+
+  logic             debug_flash_write;
+  logic             debug_flash_req;
+  logic [AddrW-1:0] debug_flash_addr;
+  logic [75:0]      debug_flash_wdata;
+  logic [75:0]      debug_flash_wmask;
+
+  logic             info_flash_write;
+  logic [AddrW-1:0] info_flash_addr;
+  logic [75:0]      info_flash_wdata;
+  logic [75:0]      info_flash_wmask;
+
+  assign debug_flash_write = datapath_i ?  debug_flash_write_i : mem_wr            ;
+  assign debug_flash_req   = datapath_i ?  debug_flash_req_i   : data_mem_req      ;
+  assign debug_flash_addr  = datapath_i ?  debug_flash_addr_i  : mem_addr          ;
+  assign debug_flash_wdata = datapath_i ?  debug_flash_wdata_i : mem_wdata         ;
+  assign debug_flash_wmask = datapath_i ?  debug_flash_wmask_i : {DataWidth{1'b1}} ;
+
+  assign info_flash_write = info_init_i ?  debug_flash_write_i : mem_wr                  ;
+  assign info_flash_addr  = info_init_i ?  debug_flash_addr_i  : mem_addr[0 +: InfoAddrW];
+  assign info_flash_wdata = info_init_i ?  debug_flash_wdata_i : mem_wdata               ;
+  assign info_flash_wmask = info_init_i ?  debug_flash_wmask_i : {DataWidth{1'b1}}       ;
+
+
   prim_ram_1p #(
     .Width(DataWidth),
     .Depth(WordsPerBank),
-    .DataBitsPerMask(DataWidth)
+    .DataBitsPerMask(DataWidth),
+    .MemInitFile(MemInitFile)
   ) u_mem (
     .clk_i,
-    .req_i    (data_mem_req),
-    .write_i  (mem_wr),
-    .addr_i   (mem_addr),
-    .wdata_i  (mem_wdata),
-    .wmask_i  ({DataWidth{1'b1}}),
+    .rst_ni,
+    .req_i    (debug_flash_req),//data_mem_req),
+    .write_i  (debug_flash_write),//mem_wr),
+    .addr_i   (debug_flash_addr),//mem_addr),
+    .wdata_i  (debug_flash_wdata),//mem_wdata),
+    .wmask_i  (debug_flash_wmask),//{DataWidth{1'b1}}),
     .rdata_o  (rd_data_main),
     .cfg_i    ('0)
   );
@@ -423,9 +460,11 @@ module prim_generic_flash_bank #(
     // when info partitions are selected for bank erase, all info types are erased.
     // if NOT bank erase, then only the selected info partition is erased
     logic info_mem_req;
+    logic info_flash_req;
     assign info_mem_req = mem_req &
                           (mem_part == flash_ctrl_pkg::FlashPartInfo) &
                           ((mem_info_sel == info_type) | mem_bk_erase);
+    assign info_flash_req   = info_init_i ?  debug_flash_req_i   : info_mem_req            ;
 
     prim_ram_1p #(
       .Width(DataWidth),
@@ -433,11 +472,12 @@ module prim_generic_flash_bank #(
       .DataBitsPerMask(DataWidth)
     ) u_info_mem (
       .clk_i,
-      .req_i    (info_mem_req),
-      .write_i  (mem_wr),
-      .addr_i   (mem_addr[0 +: InfoAddrW]),
-      .wdata_i  (mem_wdata),
-      .wmask_i  ({DataWidth{1'b1}}),
+      .rst_ni,
+      .req_i    (info_flash_req),//info_mem_req),
+      .write_i  (info_flash_write),//mem_wr),
+      .addr_i   (info_flash_addr),//mem_addr[0 +: InfoAddrW]),
+      .wdata_i  (info_flash_wdata),//mem_wdata),
+      .wmask_i  (info_flash_wmask),//{DataWidth{1'b1}}),
       .rdata_o  (rd_nom_data_info[info_type]),
       .cfg_i    ('0)
     );
@@ -452,4 +492,4 @@ module prim_generic_flash_bank #(
   logic unused_he;
   assign unused_he = he_i;
 
-endmodule // prim_generic_flash
+endmodule // prim_flash

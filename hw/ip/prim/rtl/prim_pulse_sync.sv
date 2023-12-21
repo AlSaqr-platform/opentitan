@@ -8,7 +8,9 @@
 // appropriately apart from each other depending on the clock frequency ratio
 // of the two clock domains.
 
-module prim_pulse_sync (
+`include "prim_assert.sv"
+
+module prim_ot_pulse_sync (
   // source clock domain
   input  logic clk_src_i,
   input  logic rst_src_ni,
@@ -65,7 +67,7 @@ module prim_pulse_sync (
   //////////////////////////////////////////////////////////
   logic dst_level;
 
-  prim_flop_2sync #(.Width(1)) prim_flop_2sync (
+  prim_ot_flop_2sync #(.Width(1)) prim_ot_flop_2sync (
     // source clock domain
     .d_i    (src_level),
     // destination clock domain

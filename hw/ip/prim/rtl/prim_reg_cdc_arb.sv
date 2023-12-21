@@ -65,7 +65,7 @@ module prim_reg_cdc_arb #(
   output logic src_update_o,
   // input request from prim_reg_cdc
   input dst_req_i,
-  // output request to prim_subreg
+  // output request to prim_ot_subreg
   output logic dst_req_o,
   input dst_update_i,
   // ds allows us to sample the destination domain register
@@ -179,7 +179,7 @@ module prim_reg_cdc_arb #(
       clk_dst_i, !rst_dst_ni)
 
 
-    // send out prim_subreg request only when proceeding
+    // send out prim_ot_subreg request only when proceeding
     // with software request
     assign dst_req_o = ~busy & dst_req;
 
@@ -228,7 +228,7 @@ module prim_reg_cdc_arb #(
 
     assign dst_update_req = dst_hold_req | dst_lat_d | dst_lat_q;
     logic src_req;
-    prim_sync_reqack u_dst_update_sync (
+    prim_ot_sync_reqack u_dst_update_sync (
       .clk_src_i(clk_dst_i),
       .rst_src_ni(rst_dst_ni),
       .clk_dst_i(clk_src_i),
@@ -283,7 +283,7 @@ module prim_reg_cdc_arb #(
     // since there are no hw transactions, src_update_o is always '0
     assign src_update_o = '0;
 
-    prim_pulse_sync u_dst_to_src_ack (
+    prim_ot_pulse_sync u_dst_to_src_ack (
       .clk_src_i(clk_dst_i),
       .rst_src_ni(rst_dst_ni),
       .clk_dst_i(clk_src_i),

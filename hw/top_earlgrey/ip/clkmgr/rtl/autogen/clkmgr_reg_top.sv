@@ -20,8 +20,8 @@ module clkmgr_reg_top (
   input rst_main_ni,
   input clk_usb_i,
   input rst_usb_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output clkmgr_reg_pkg::clkmgr_reg2hw_t reg2hw, // Write
   input  clkmgr_reg_pkg::clkmgr_hw2reg_t hw2reg, // Read
@@ -56,8 +56,8 @@ module clkmgr_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -94,7 +94,7 @@ module clkmgr_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -702,7 +702,7 @@ module clkmgr_reg_top (
   logic [1:0] alert_test_flds_we;
   assign alert_test_qe = &alert_test_flds_we;
   //   F[recov_fault]: 0:0
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test_recov_fault (
     .re     (1'b0),
@@ -718,7 +718,7 @@ module clkmgr_reg_top (
   assign reg2hw.alert_test.recov_fault.qe = alert_test_qe;
 
   //   F[fatal_fault]: 1:1
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test_fatal_fault (
     .re     (1'b0),
@@ -735,9 +735,9 @@ module clkmgr_reg_top (
 
 
   // R[extclk_ctrl_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_extclk_ctrl_regwen (
     .clk_i   (clk_i),
@@ -766,9 +766,9 @@ module clkmgr_reg_top (
   logic extclk_ctrl_gated_we;
   assign extclk_ctrl_gated_we = extclk_ctrl_we & extclk_ctrl_regwen_qs;
   //   F[sel]: 3:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_extclk_ctrl_sel (
     .clk_i   (clk_i),
@@ -792,9 +792,9 @@ module clkmgr_reg_top (
   );
 
   //   F[hi_speed_sel]: 7:4
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_extclk_ctrl_hi_speed_sel (
     .clk_i   (clk_i),
@@ -819,7 +819,7 @@ module clkmgr_reg_top (
 
 
   // R[extclk_status]: V(True)
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (4)
   ) u_extclk_status (
     .re     (extclk_status_re),
@@ -835,9 +835,9 @@ module clkmgr_reg_top (
 
 
   // R[jitter_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_jitter_regwen (
     .clk_i   (clk_i),
@@ -862,9 +862,9 @@ module clkmgr_reg_top (
 
 
   // R[jitter_enable]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_jitter_enable (
     .clk_i   (clk_i),
@@ -890,9 +890,9 @@ module clkmgr_reg_top (
 
   // R[clk_enables]: V(False)
   //   F[clk_io_div4_peri_en]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_io_div4_peri_en (
     .clk_i   (clk_i),
@@ -916,9 +916,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_io_div2_peri_en]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_io_div2_peri_en (
     .clk_i   (clk_i),
@@ -942,9 +942,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_io_peri_en]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_io_peri_en (
     .clk_i   (clk_i),
@@ -968,9 +968,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_usb_peri_en]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_enables_clk_usb_peri_en (
     .clk_i   (clk_i),
@@ -996,9 +996,9 @@ module clkmgr_reg_top (
 
   // R[clk_hints]: V(False)
   //   F[clk_main_aes_hint]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_aes_hint (
     .clk_i   (clk_i),
@@ -1022,9 +1022,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_hmac_hint]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_hmac_hint (
     .clk_i   (clk_i),
@@ -1048,9 +1048,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_kmac_hint]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_kmac_hint (
     .clk_i   (clk_i),
@@ -1074,9 +1074,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_otbn_hint]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h1)
   ) u_clk_hints_clk_main_otbn_hint (
     .clk_i   (clk_i),
@@ -1102,9 +1102,9 @@ module clkmgr_reg_top (
 
   // R[clk_hints_status]: V(False)
   //   F[clk_main_aes_val]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_aes_val (
     .clk_i   (clk_i),
@@ -1128,9 +1128,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_hmac_val]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_hmac_val (
     .clk_i   (clk_i),
@@ -1154,9 +1154,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_kmac_val]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_kmac_val (
     .clk_i   (clk_i),
@@ -1180,9 +1180,9 @@ module clkmgr_reg_top (
   );
 
   //   F[clk_main_otbn_val]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h1)
   ) u_clk_hints_status_clk_main_otbn_val (
     .clk_i   (clk_i),
@@ -1207,9 +1207,9 @@ module clkmgr_reg_top (
 
 
   // R[measure_ctrl_regwen]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW0C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW0C),
     .RESVAL  (1'h1)
   ) u_measure_ctrl_regwen (
     .clk_i   (clk_i),
@@ -1239,9 +1239,9 @@ module clkmgr_reg_top (
   // Create REGWEN-gated WE signal
   logic io_io_meas_ctrl_en_gated_we;
   assign io_io_meas_ctrl_en_gated_we = io_io_meas_ctrl_en_we & io_io_meas_ctrl_en_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_io_meas_ctrl_en (
     .clk_i   (clk_io_i),
@@ -1275,7 +1275,7 @@ module clkmgr_reg_top (
   logic async_io_meas_ctrl_shadowed_hi_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_meas_ctrl_shadowed_hi_err_storage_sync (
@@ -1286,7 +1286,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_meas_ctrl_shadowed_hi_err_update_sync (
+  prim_ot_pulse_sync u_io_meas_ctrl_shadowed_hi_err_update_sync (
     .clk_src_i(clk_io_i),
     .rst_src_ni(rst_io_ni),
     .src_pulse_i(async_io_meas_ctrl_shadowed_hi_err_update),
@@ -1294,9 +1294,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_meas_ctrl_shadowed_hi_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h1ea)
   ) u_io_meas_ctrl_shadowed_hi (
     .clk_i   (clk_io_i),
@@ -1333,7 +1333,7 @@ module clkmgr_reg_top (
   logic async_io_meas_ctrl_shadowed_lo_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_meas_ctrl_shadowed_lo_err_storage_sync (
@@ -1344,7 +1344,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_meas_ctrl_shadowed_lo_err_update_sync (
+  prim_ot_pulse_sync u_io_meas_ctrl_shadowed_lo_err_update_sync (
     .clk_src_i(clk_io_i),
     .rst_src_ni(rst_io_ni),
     .src_pulse_i(async_io_meas_ctrl_shadowed_lo_err_update),
@@ -1352,9 +1352,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_meas_ctrl_shadowed_lo_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h1d6)
   ) u_io_meas_ctrl_shadowed_lo (
     .clk_i   (clk_io_i),
@@ -1394,9 +1394,9 @@ module clkmgr_reg_top (
   logic io_div2_io_div2_meas_ctrl_en_gated_we;
   assign io_div2_io_div2_meas_ctrl_en_gated_we =
     io_div2_io_div2_meas_ctrl_en_we & io_div2_io_div2_meas_ctrl_en_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_io_div2_meas_ctrl_en (
     .clk_i   (clk_io_div2_i),
@@ -1430,7 +1430,7 @@ module clkmgr_reg_top (
   logic async_io_div2_meas_ctrl_shadowed_hi_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_div2_meas_ctrl_shadowed_hi_err_storage_sync (
@@ -1441,7 +1441,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_div2_meas_ctrl_shadowed_hi_err_update_sync (
+  prim_ot_pulse_sync u_io_div2_meas_ctrl_shadowed_hi_err_update_sync (
     .clk_src_i(clk_io_div2_i),
     .rst_src_ni(rst_io_div2_ni),
     .src_pulse_i(async_io_div2_meas_ctrl_shadowed_hi_err_update),
@@ -1449,9 +1449,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_div2_meas_ctrl_shadowed_hi_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (9),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (9'hfa)
   ) u_io_div2_meas_ctrl_shadowed_hi (
     .clk_i   (clk_io_div2_i),
@@ -1488,7 +1488,7 @@ module clkmgr_reg_top (
   logic async_io_div2_meas_ctrl_shadowed_lo_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_div2_meas_ctrl_shadowed_lo_err_storage_sync (
@@ -1499,7 +1499,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_div2_meas_ctrl_shadowed_lo_err_update_sync (
+  prim_ot_pulse_sync u_io_div2_meas_ctrl_shadowed_lo_err_update_sync (
     .clk_src_i(clk_io_div2_i),
     .rst_src_ni(rst_io_div2_ni),
     .src_pulse_i(async_io_div2_meas_ctrl_shadowed_lo_err_update),
@@ -1507,9 +1507,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_div2_meas_ctrl_shadowed_lo_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (9),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (9'he6)
   ) u_io_div2_meas_ctrl_shadowed_lo (
     .clk_i   (clk_io_div2_i),
@@ -1549,9 +1549,9 @@ module clkmgr_reg_top (
   logic io_div4_io_div4_meas_ctrl_en_gated_we;
   assign io_div4_io_div4_meas_ctrl_en_gated_we =
     io_div4_io_div4_meas_ctrl_en_we & io_div4_io_div4_meas_ctrl_en_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_io_div4_meas_ctrl_en (
     .clk_i   (clk_io_div4_i),
@@ -1585,7 +1585,7 @@ module clkmgr_reg_top (
   logic async_io_div4_meas_ctrl_shadowed_hi_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_div4_meas_ctrl_shadowed_hi_err_storage_sync (
@@ -1596,7 +1596,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_div4_meas_ctrl_shadowed_hi_err_update_sync (
+  prim_ot_pulse_sync u_io_div4_meas_ctrl_shadowed_hi_err_update_sync (
     .clk_src_i(clk_io_div4_i),
     .rst_src_ni(rst_io_div4_ni),
     .src_pulse_i(async_io_div4_meas_ctrl_shadowed_hi_err_update),
@@ -1604,9 +1604,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_div4_meas_ctrl_shadowed_hi_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (8),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (8'h82)
   ) u_io_div4_meas_ctrl_shadowed_hi (
     .clk_i   (clk_io_div4_i),
@@ -1643,7 +1643,7 @@ module clkmgr_reg_top (
   logic async_io_div4_meas_ctrl_shadowed_lo_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_io_div4_meas_ctrl_shadowed_lo_err_storage_sync (
@@ -1654,7 +1654,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_io_div4_meas_ctrl_shadowed_lo_err_update_sync (
+  prim_ot_pulse_sync u_io_div4_meas_ctrl_shadowed_lo_err_update_sync (
     .clk_src_i(clk_io_div4_i),
     .rst_src_ni(rst_io_div4_ni),
     .src_pulse_i(async_io_div4_meas_ctrl_shadowed_lo_err_update),
@@ -1662,9 +1662,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(io_div4_meas_ctrl_shadowed_lo_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (8),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (8'h6e)
   ) u_io_div4_meas_ctrl_shadowed_lo (
     .clk_i   (clk_io_div4_i),
@@ -1704,9 +1704,9 @@ module clkmgr_reg_top (
   logic main_main_meas_ctrl_en_gated_we;
   assign main_main_meas_ctrl_en_gated_we =
     main_main_meas_ctrl_en_we & main_main_meas_ctrl_en_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_main_meas_ctrl_en (
     .clk_i   (clk_main_i),
@@ -1740,7 +1740,7 @@ module clkmgr_reg_top (
   logic async_main_meas_ctrl_shadowed_hi_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_main_meas_ctrl_shadowed_hi_err_storage_sync (
@@ -1751,7 +1751,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_main_meas_ctrl_shadowed_hi_err_update_sync (
+  prim_ot_pulse_sync u_main_meas_ctrl_shadowed_hi_err_update_sync (
     .clk_src_i(clk_main_i),
     .rst_src_ni(rst_main_ni),
     .src_pulse_i(async_main_meas_ctrl_shadowed_hi_err_update),
@@ -1759,9 +1759,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(main_meas_ctrl_shadowed_hi_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h1fe)
   ) u_main_meas_ctrl_shadowed_hi (
     .clk_i   (clk_main_i),
@@ -1798,7 +1798,7 @@ module clkmgr_reg_top (
   logic async_main_meas_ctrl_shadowed_lo_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_main_meas_ctrl_shadowed_lo_err_storage_sync (
@@ -1809,7 +1809,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_main_meas_ctrl_shadowed_lo_err_update_sync (
+  prim_ot_pulse_sync u_main_meas_ctrl_shadowed_lo_err_update_sync (
     .clk_src_i(clk_main_i),
     .rst_src_ni(rst_main_ni),
     .src_pulse_i(async_main_meas_ctrl_shadowed_lo_err_update),
@@ -1817,9 +1817,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(main_meas_ctrl_shadowed_lo_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h1ea)
   ) u_main_meas_ctrl_shadowed_lo (
     .clk_i   (clk_main_i),
@@ -1858,9 +1858,9 @@ module clkmgr_reg_top (
   // Create REGWEN-gated WE signal
   logic usb_usb_meas_ctrl_en_gated_we;
   assign usb_usb_meas_ctrl_en_gated_we = usb_usb_meas_ctrl_en_we & usb_usb_meas_ctrl_en_regwen;
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (4),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (4'h9)
   ) u_usb_meas_ctrl_en (
     .clk_i   (clk_usb_i),
@@ -1894,7 +1894,7 @@ module clkmgr_reg_top (
   logic async_usb_meas_ctrl_shadowed_hi_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_usb_meas_ctrl_shadowed_hi_err_storage_sync (
@@ -1905,7 +1905,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_usb_meas_ctrl_shadowed_hi_err_update_sync (
+  prim_ot_pulse_sync u_usb_meas_ctrl_shadowed_hi_err_update_sync (
     .clk_src_i(clk_usb_i),
     .rst_src_ni(rst_usb_ni),
     .src_pulse_i(async_usb_meas_ctrl_shadowed_hi_err_update),
@@ -1913,9 +1913,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(usb_meas_ctrl_shadowed_hi_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (9),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (9'hfa)
   ) u_usb_meas_ctrl_shadowed_hi (
     .clk_i   (clk_usb_i),
@@ -1952,7 +1952,7 @@ module clkmgr_reg_top (
   logic async_usb_meas_ctrl_shadowed_lo_err_storage;
 
   // storage error is persistent and can be sampled at any time
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1),
     .ResetValue('0)
   ) u_usb_meas_ctrl_shadowed_lo_err_storage_sync (
@@ -1963,7 +1963,7 @@ module clkmgr_reg_top (
   );
 
   // update error is transient and must be immediately captured
-  prim_pulse_sync u_usb_meas_ctrl_shadowed_lo_err_update_sync (
+  prim_ot_pulse_sync u_usb_meas_ctrl_shadowed_lo_err_update_sync (
     .clk_src_i(clk_usb_i),
     .rst_src_ni(rst_usb_ni),
     .src_pulse_i(async_usb_meas_ctrl_shadowed_lo_err_update),
@@ -1971,9 +1971,9 @@ module clkmgr_reg_top (
     .rst_dst_ni(rst_ni),
     .dst_pulse_o(usb_meas_ctrl_shadowed_lo_update_err)
   );
-  prim_subreg_shadow #(
+  prim_ot_subreg_shadow #(
     .DW      (9),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (9'he6)
   ) u_usb_meas_ctrl_shadowed_lo (
     .clk_i   (clk_usb_i),
@@ -2008,9 +2008,9 @@ module clkmgr_reg_top (
 
   // R[recov_err_code]: V(False)
   //   F[shadow_update_err]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_shadow_update_err (
     .clk_i   (clk_i),
@@ -2034,9 +2034,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_measure_err]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_measure_err (
     .clk_i   (clk_i),
@@ -2060,9 +2060,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_div2_measure_err]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_div2_measure_err (
     .clk_i   (clk_i),
@@ -2086,9 +2086,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_div4_measure_err]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_div4_measure_err (
     .clk_i   (clk_i),
@@ -2112,9 +2112,9 @@ module clkmgr_reg_top (
   );
 
   //   F[main_measure_err]: 4:4
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_main_measure_err (
     .clk_i   (clk_i),
@@ -2138,9 +2138,9 @@ module clkmgr_reg_top (
   );
 
   //   F[usb_measure_err]: 5:5
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_usb_measure_err (
     .clk_i   (clk_i),
@@ -2164,9 +2164,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_timeout_err]: 6:6
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_timeout_err (
     .clk_i   (clk_i),
@@ -2190,9 +2190,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_div2_timeout_err]: 7:7
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_div2_timeout_err (
     .clk_i   (clk_i),
@@ -2216,9 +2216,9 @@ module clkmgr_reg_top (
   );
 
   //   F[io_div4_timeout_err]: 8:8
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_io_div4_timeout_err (
     .clk_i   (clk_i),
@@ -2242,9 +2242,9 @@ module clkmgr_reg_top (
   );
 
   //   F[main_timeout_err]: 9:9
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_main_timeout_err (
     .clk_i   (clk_i),
@@ -2268,9 +2268,9 @@ module clkmgr_reg_top (
   );
 
   //   F[usb_timeout_err]: 10:10
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_recov_err_code_usb_timeout_err (
     .clk_i   (clk_i),
@@ -2296,9 +2296,9 @@ module clkmgr_reg_top (
 
   // R[fatal_err_code]: V(False)
   //   F[reg_intg]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_fatal_err_code_reg_intg (
     .clk_i   (clk_i),
@@ -2322,9 +2322,9 @@ module clkmgr_reg_top (
   );
 
   //   F[idle_cnt]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_fatal_err_code_idle_cnt (
     .clk_i   (clk_i),
@@ -2348,9 +2348,9 @@ module clkmgr_reg_top (
   );
 
   //   F[shadow_storage_err]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_fatal_err_code_shadow_storage_err (
     .clk_i   (clk_i),
@@ -2776,6 +2776,6 @@ module clkmgr_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

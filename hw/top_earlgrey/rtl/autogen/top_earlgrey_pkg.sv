@@ -13,7 +13,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for uart0 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_UART0_BASE_ADDR = 32'h40000000;
+  parameter int unsigned TOP_EARLGREY_UART0_BASE_ADDR = 32'hC0000000;
 
   /**
    * Peripheral size in bytes for uart0 in top earlgrey.
@@ -23,7 +23,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for uart1 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_UART1_BASE_ADDR = 32'h40010000;
+  parameter int unsigned TOP_EARLGREY_UART1_BASE_ADDR = 32'hC0010000;
 
   /**
    * Peripheral size in bytes for uart1 in top earlgrey.
@@ -33,7 +33,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for uart2 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_UART2_BASE_ADDR = 32'h40020000;
+  parameter int unsigned TOP_EARLGREY_UART2_BASE_ADDR = 32'hC0020000;
 
   /**
    * Peripheral size in bytes for uart2 in top earlgrey.
@@ -43,7 +43,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for uart3 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_UART3_BASE_ADDR = 32'h40030000;
+  parameter int unsigned TOP_EARLGREY_UART3_BASE_ADDR = 32'hC0030000;
 
   /**
    * Peripheral size in bytes for uart3 in top earlgrey.
@@ -53,7 +53,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for gpio in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_GPIO_BASE_ADDR = 32'h40040000;
+  parameter int unsigned TOP_EARLGREY_GPIO_BASE_ADDR = 32'hC0040000;
 
   /**
    * Peripheral size in bytes for gpio in top earlgrey.
@@ -63,7 +63,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for spi_device in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SPI_DEVICE_BASE_ADDR = 32'h40050000;
+  parameter int unsigned TOP_EARLGREY_SPI_DEVICE_BASE_ADDR = 32'hC0050000;
 
   /**
    * Peripheral size in bytes for spi_device in top earlgrey.
@@ -73,7 +73,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for i2c0 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_I2C0_BASE_ADDR = 32'h40080000;
+  parameter int unsigned TOP_EARLGREY_I2C0_BASE_ADDR = 32'hC0080000;
 
   /**
    * Peripheral size in bytes for i2c0 in top earlgrey.
@@ -83,7 +83,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for i2c1 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_I2C1_BASE_ADDR = 32'h40090000;
+  parameter int unsigned TOP_EARLGREY_I2C1_BASE_ADDR = 32'hC0090000;
 
   /**
    * Peripheral size in bytes for i2c1 in top earlgrey.
@@ -93,7 +93,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for i2c2 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_I2C2_BASE_ADDR = 32'h400A0000;
+  parameter int unsigned TOP_EARLGREY_I2C2_BASE_ADDR = 32'hC00A0000;
 
   /**
    * Peripheral size in bytes for i2c2 in top earlgrey.
@@ -103,7 +103,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for pattgen in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_PATTGEN_BASE_ADDR = 32'h400E0000;
+  parameter int unsigned TOP_EARLGREY_PATTGEN_BASE_ADDR = 32'hC00E0000;
 
   /**
    * Peripheral size in bytes for pattgen in top earlgrey.
@@ -113,7 +113,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for rv_timer in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RV_TIMER_BASE_ADDR = 32'h40100000;
+  parameter int unsigned TOP_EARLGREY_RV_TIMER_BASE_ADDR = 32'hC0100000;
 
   /**
    * Peripheral size in bytes for rv_timer in top earlgrey.
@@ -123,7 +123,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for core device on otp_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_OTP_CTRL_CORE_BASE_ADDR = 32'h40130000;
+  parameter int unsigned TOP_EARLGREY_OTP_CTRL_CORE_BASE_ADDR = 32'hC0130000;
 
   /**
    * Peripheral size in bytes for core device on otp_ctrl in top earlgrey.
@@ -133,7 +133,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for prim device on otp_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_OTP_CTRL_PRIM_BASE_ADDR = 32'h40132000;
+  parameter int unsigned TOP_EARLGREY_OTP_CTRL_PRIM_BASE_ADDR = 32'hC0132000;
 
   /**
    * Peripheral size in bytes for prim device on otp_ctrl in top earlgrey.
@@ -143,7 +143,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for lc_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_LC_CTRL_BASE_ADDR = 32'h40140000;
+  parameter int unsigned TOP_EARLGREY_LC_CTRL_BASE_ADDR = 32'hC0140000;
 
   /**
    * Peripheral size in bytes for lc_ctrl in top earlgrey.
@@ -153,7 +153,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for alert_handler in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ALERT_HANDLER_BASE_ADDR = 32'h40150000;
+  parameter int unsigned TOP_EARLGREY_ALERT_HANDLER_BASE_ADDR = 32'hC0150000;
 
   /**
    * Peripheral size in bytes for alert_handler in top earlgrey.
@@ -163,7 +163,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for spi_host0 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SPI_HOST0_BASE_ADDR = 32'h40300000;
+  parameter int unsigned TOP_EARLGREY_SPI_HOST0_BASE_ADDR = 32'hC0300000;
 
   /**
    * Peripheral size in bytes for spi_host0 in top earlgrey.
@@ -173,7 +173,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for spi_host1 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SPI_HOST1_BASE_ADDR = 32'h40310000;
+  parameter int unsigned TOP_EARLGREY_SPI_HOST1_BASE_ADDR = 32'hC0310000;
 
   /**
    * Peripheral size in bytes for spi_host1 in top earlgrey.
@@ -183,7 +183,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for usbdev in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_USBDEV_BASE_ADDR = 32'h40320000;
+  parameter int unsigned TOP_EARLGREY_USBDEV_BASE_ADDR = 32'hC0320000;
 
   /**
    * Peripheral size in bytes for usbdev in top earlgrey.
@@ -193,7 +193,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for pwrmgr_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_PWRMGR_AON_BASE_ADDR = 32'h40400000;
+  parameter int unsigned TOP_EARLGREY_PWRMGR_AON_BASE_ADDR = 32'hC0400000;
 
   /**
    * Peripheral size in bytes for pwrmgr_aon in top earlgrey.
@@ -203,7 +203,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for rstmgr_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RSTMGR_AON_BASE_ADDR = 32'h40410000;
+  parameter int unsigned TOP_EARLGREY_RSTMGR_AON_BASE_ADDR = 32'hC0410000;
 
   /**
    * Peripheral size in bytes for rstmgr_aon in top earlgrey.
@@ -213,7 +213,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for clkmgr_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_CLKMGR_AON_BASE_ADDR = 32'h40420000;
+  parameter int unsigned TOP_EARLGREY_CLKMGR_AON_BASE_ADDR = 32'hC0420000;
 
   /**
    * Peripheral size in bytes for clkmgr_aon in top earlgrey.
@@ -223,7 +223,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for sysrst_ctrl_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SYSRST_CTRL_AON_BASE_ADDR = 32'h40430000;
+  parameter int unsigned TOP_EARLGREY_SYSRST_CTRL_AON_BASE_ADDR = 32'hC0430000;
 
   /**
    * Peripheral size in bytes for sysrst_ctrl_aon in top earlgrey.
@@ -233,7 +233,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for adc_ctrl_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ADC_CTRL_AON_BASE_ADDR = 32'h40440000;
+  parameter int unsigned TOP_EARLGREY_ADC_CTRL_AON_BASE_ADDR = 32'hC0440000;
 
   /**
    * Peripheral size in bytes for adc_ctrl_aon in top earlgrey.
@@ -243,7 +243,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for pwm_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_PWM_AON_BASE_ADDR = 32'h40450000;
+  parameter int unsigned TOP_EARLGREY_PWM_AON_BASE_ADDR = 32'hC0450000;
 
   /**
    * Peripheral size in bytes for pwm_aon in top earlgrey.
@@ -253,7 +253,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for pinmux_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_PINMUX_AON_BASE_ADDR = 32'h40460000;
+  parameter int unsigned TOP_EARLGREY_PINMUX_AON_BASE_ADDR = 32'hC0460000;
 
   /**
    * Peripheral size in bytes for pinmux_aon in top earlgrey.
@@ -263,7 +263,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for aon_timer_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_AON_TIMER_AON_BASE_ADDR = 32'h40470000;
+  parameter int unsigned TOP_EARLGREY_AON_TIMER_AON_BASE_ADDR = 32'hC0470000;
 
   /**
    * Peripheral size in bytes for aon_timer_aon in top earlgrey.
@@ -273,7 +273,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for ast in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_AST_BASE_ADDR = 32'h40480000;
+  parameter int unsigned TOP_EARLGREY_AST_BASE_ADDR = 32'hC0480000;
 
   /**
    * Peripheral size in bytes for ast in top earlgrey.
@@ -283,7 +283,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for sensor_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SENSOR_CTRL_BASE_ADDR = 32'h40490000;
+  parameter int unsigned TOP_EARLGREY_SENSOR_CTRL_BASE_ADDR = 32'hC0490000;
 
   /**
    * Peripheral size in bytes for sensor_ctrl in top earlgrey.
@@ -291,9 +291,19 @@ package top_earlgrey_pkg;
   parameter int unsigned TOP_EARLGREY_SENSOR_CTRL_SIZE_BYTES = 32'h40;
 
   /**
+   * Peripheral base address for tlul2axi in top earlgrey.
+   */
+  parameter int unsigned TOP_EARLGREY_TLUL2AXI_BASE_ADDR = 32'h10000;
+
+  /**
+   * Peripheral size in bytes for tlul2axi in top earlgrey.
+   */
+  parameter int unsigned TOP_EARLGREY_TLUL2AXI_SIZE_BYTES = 32'h10;
+
+  /**
    * Peripheral base address for regs device on sram_ctrl_ret_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_RET_AON_REGS_BASE_ADDR = 32'h40500000;
+  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_RET_AON_REGS_BASE_ADDR = 32'hC0500000;
 
   /**
    * Peripheral size in bytes for regs device on sram_ctrl_ret_aon in top earlgrey.
@@ -303,7 +313,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for ram device on sram_ctrl_ret_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_RET_AON_RAM_BASE_ADDR = 32'h40600000;
+  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_RET_AON_RAM_BASE_ADDR = 32'hC0600000;
 
   /**
    * Peripheral size in bytes for ram device on sram_ctrl_ret_aon in top earlgrey.
@@ -313,7 +323,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for core device on flash_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_CORE_BASE_ADDR = 32'h41000000;
+  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_CORE_BASE_ADDR = 32'hC1000000;
 
   /**
    * Peripheral size in bytes for core device on flash_ctrl in top earlgrey.
@@ -323,7 +333,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for prim device on flash_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_PRIM_BASE_ADDR = 32'h41008000;
+  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_PRIM_BASE_ADDR = 32'hC1008000;
 
   /**
    * Peripheral size in bytes for prim device on flash_ctrl in top earlgrey.
@@ -333,17 +343,17 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for mem device on flash_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_MEM_BASE_ADDR = 32'h20000000;
+  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_MEM_BASE_ADDR = 32'hF0000000;
 
   /**
    * Peripheral size in bytes for mem device on flash_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_MEM_SIZE_BYTES = 32'h100000;
+  parameter int unsigned TOP_EARLGREY_FLASH_CTRL_MEM_SIZE_BYTES = 32'h10000;
 
   /**
    * Peripheral base address for regs device on rv_dm in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RV_DM_REGS_BASE_ADDR = 32'h41200000;
+  parameter int unsigned TOP_EARLGREY_RV_DM_REGS_BASE_ADDR = 32'hC1200000;
 
   /**
    * Peripheral size in bytes for regs device on rv_dm in top earlgrey.
@@ -353,7 +363,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for mem device on rv_dm in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RV_DM_MEM_BASE_ADDR = 32'h10000;
+  parameter int unsigned TOP_EARLGREY_RV_DM_MEM_BASE_ADDR = 32'h0;
 
   /**
    * Peripheral size in bytes for mem device on rv_dm in top earlgrey.
@@ -363,7 +373,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for rv_plic in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RV_PLIC_BASE_ADDR = 32'h48000000;
+  parameter int unsigned TOP_EARLGREY_RV_PLIC_BASE_ADDR = 32'hC8000000;
 
   /**
    * Peripheral size in bytes for rv_plic in top earlgrey.
@@ -373,7 +383,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for aes in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_AES_BASE_ADDR = 32'h41100000;
+  parameter int unsigned TOP_EARLGREY_AES_BASE_ADDR = 32'hC1100000;
 
   /**
    * Peripheral size in bytes for aes in top earlgrey.
@@ -383,7 +393,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for hmac in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_HMAC_BASE_ADDR = 32'h41110000;
+  parameter int unsigned TOP_EARLGREY_HMAC_BASE_ADDR = 32'hC1110000;
 
   /**
    * Peripheral size in bytes for hmac in top earlgrey.
@@ -393,7 +403,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for kmac in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_KMAC_BASE_ADDR = 32'h41120000;
+  parameter int unsigned TOP_EARLGREY_KMAC_BASE_ADDR = 32'hC1120000;
 
   /**
    * Peripheral size in bytes for kmac in top earlgrey.
@@ -403,7 +413,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for otbn in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_OTBN_BASE_ADDR = 32'h41130000;
+  parameter int unsigned TOP_EARLGREY_OTBN_BASE_ADDR = 32'hC1130000;
 
   /**
    * Peripheral size in bytes for otbn in top earlgrey.
@@ -413,7 +423,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for keymgr in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_KEYMGR_BASE_ADDR = 32'h41140000;
+  parameter int unsigned TOP_EARLGREY_KEYMGR_BASE_ADDR = 32'hC1140000;
 
   /**
    * Peripheral size in bytes for keymgr in top earlgrey.
@@ -423,7 +433,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for csrng in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_CSRNG_BASE_ADDR = 32'h41150000;
+  parameter int unsigned TOP_EARLGREY_CSRNG_BASE_ADDR = 32'hC1150000;
 
   /**
    * Peripheral size in bytes for csrng in top earlgrey.
@@ -433,7 +443,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for entropy_src in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ENTROPY_SRC_BASE_ADDR = 32'h41160000;
+  parameter int unsigned TOP_EARLGREY_ENTROPY_SRC_BASE_ADDR = 32'hC1160000;
 
   /**
    * Peripheral size in bytes for entropy_src in top earlgrey.
@@ -443,7 +453,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for edn0 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_EDN0_BASE_ADDR = 32'h41170000;
+  parameter int unsigned TOP_EARLGREY_EDN0_BASE_ADDR = 32'hC1170000;
 
   /**
    * Peripheral size in bytes for edn0 in top earlgrey.
@@ -453,7 +463,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for edn1 in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_EDN1_BASE_ADDR = 32'h41180000;
+  parameter int unsigned TOP_EARLGREY_EDN1_BASE_ADDR = 32'hC1180000;
 
   /**
    * Peripheral size in bytes for edn1 in top earlgrey.
@@ -463,7 +473,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for regs device on sram_ctrl_main in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_MAIN_REGS_BASE_ADDR = 32'h411C0000;
+  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_MAIN_REGS_BASE_ADDR = 32'hC11C0000;
 
   /**
    * Peripheral size in bytes for regs device on sram_ctrl_main in top earlgrey.
@@ -473,7 +483,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for ram device on sram_ctrl_main in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_MAIN_RAM_BASE_ADDR = 32'h10000000;
+  parameter int unsigned TOP_EARLGREY_SRAM_CTRL_MAIN_RAM_BASE_ADDR = 32'hE0000000;
 
   /**
    * Peripheral size in bytes for ram device on sram_ctrl_main in top earlgrey.
@@ -483,7 +493,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for regs device on rom_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ROM_CTRL_REGS_BASE_ADDR = 32'h411E0000;
+  parameter int unsigned TOP_EARLGREY_ROM_CTRL_REGS_BASE_ADDR = 32'hC11E0000;
 
   /**
    * Peripheral size in bytes for regs device on rom_ctrl in top earlgrey.
@@ -493,7 +503,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for rom device on rom_ctrl in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ROM_CTRL_ROM_BASE_ADDR = 32'h8000;
+  parameter int unsigned TOP_EARLGREY_ROM_CTRL_ROM_BASE_ADDR = 32'hD0008000;
 
   /**
    * Peripheral size in bytes for rom device on rom_ctrl in top earlgrey.
@@ -503,7 +513,7 @@ package top_earlgrey_pkg;
   /**
    * Peripheral base address for cfg device on rv_core_ibex in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RV_CORE_IBEX_CFG_BASE_ADDR = 32'h411F0000;
+  parameter int unsigned TOP_EARLGREY_RV_CORE_IBEX_CFG_BASE_ADDR = 32'hC11F0000;
 
   /**
    * Peripheral size in bytes for cfg device on rv_core_ibex in top earlgrey.
@@ -513,7 +523,7 @@ package top_earlgrey_pkg;
   /**
    * Memory base address for ram_ret_aon in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RAM_RET_AON_BASE_ADDR = 32'h40600000;
+  parameter int unsigned TOP_EARLGREY_RAM_RET_AON_BASE_ADDR = 32'hc0600000;
 
   /**
    * Memory size for ram_ret_aon in top earlgrey.
@@ -523,17 +533,17 @@ package top_earlgrey_pkg;
   /**
    * Memory base address for eflash in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_EFLASH_BASE_ADDR = 32'h20000000;
+  parameter int unsigned TOP_EARLGREY_EFLASH_BASE_ADDR = 32'hf0000000;
 
   /**
    * Memory size for eflash in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_EFLASH_SIZE_BYTES = 32'h100000;
+  parameter int unsigned TOP_EARLGREY_EFLASH_SIZE_BYTES = 32'h10000;
 
   /**
    * Memory base address for ram_main in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_RAM_MAIN_BASE_ADDR = 32'h10000000;
+  parameter int unsigned TOP_EARLGREY_RAM_MAIN_BASE_ADDR = 32'he0000000;
 
   /**
    * Memory size for ram_main in top earlgrey.
@@ -543,7 +553,7 @@ package top_earlgrey_pkg;
   /**
    * Memory base address for rom in top earlgrey.
    */
-  parameter int unsigned TOP_EARLGREY_ROM_BASE_ADDR = 32'h8000;
+  parameter int unsigned TOP_EARLGREY_ROM_BASE_ADDR = 32'hd0008000;
 
   /**
    * Memory size for rom in top earlgrey.
@@ -966,6 +976,7 @@ package top_earlgrey_pkg;
     PeripheralSramCtrlMain,
     PeripheralSramCtrlRetAon,
     PeripheralSysrstCtrlAon,
+    PeripheralTlul2axi,
     PeripheralUart0,
     PeripheralUart1,
     PeripheralUart2,

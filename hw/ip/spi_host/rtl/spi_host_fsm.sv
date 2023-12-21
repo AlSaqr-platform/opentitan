@@ -5,8 +5,12 @@
 // Core Implemenation module for Serial Peripheral Interface (SPI) Host IP.
 //
 
-module spi_host_fsm
-  import spi_host_cmd_pkg::*;
+
+
+`include "prim_assert.sv"
+
+module spi_host_fsm_ot
+  import spi_host_cmd_ot_pkg::*;
 #(
   parameter  int NumCS = 1
 ) (
@@ -96,6 +100,8 @@ module spi_host_fsm
   logic wr_en_internal, rd_en_internal, sample_en_internal, shift_en_internal;
 
   logic stall;
+  logic sck_buf_q;
+
 
   assign stall = rx_stall_o | tx_stall_o;
 
@@ -534,15 +540,26 @@ module spi_host_fsm
   assign sck_d = cpol ? (state_d != InternalClkHigh) :
                         (state_d == InternalClkHigh);
 
+`ifndef TARGET_XILINX
+  assign sck_o = sck_buf_q;
+`else
   assign sck_o = sck_q;
+`endif
 
-  prim_flop_en u_sck_flop (
+  prim_ot_flop_en u_sck_flop (
     .clk_i,
     .rst_ni,
     .en_i(~stall),
     .d_i(sck_d),
     .q_o(sck_q)
   );
+
+`ifndef TARGET_XILINX
+  tc_clk_buffer spi_clk_buf (
+    .clk_i(sck_q),
+    .clk_o(sck_buf_q)
+  );
+`endif
 
   for (genvar ii = 0; ii < NumCS; ii = ii + 1) begin : gen_csb_gen
     always_ff @(posedge clk_i or negedge rst_ni) begin

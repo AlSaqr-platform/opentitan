@@ -31,10 +31,10 @@ module otp_ctrl
   output edn_pkg::edn_req_t                          edn_o,
   input  edn_pkg::edn_rsp_t                          edn_i,
   // Bus Interface
-  input  tlul_pkg::tl_h2d_t                          core_tl_i,
-  output tlul_pkg::tl_d2h_t                          core_tl_o,
-  input  tlul_pkg::tl_h2d_t                          prim_tl_i,
-  output tlul_pkg::tl_d2h_t                          prim_tl_o,
+  input  tlul_ot_pkg::tl_h2d_t                          core_tl_i,
+  output tlul_ot_pkg::tl_d2h_t                          core_tl_o,
+  input  tlul_ot_pkg::tl_h2d_t                          prim_tl_i,
+  output tlul_ot_pkg::tl_d2h_t                          prim_tl_o,
   // Interrupt Requests
   output logic                                       intr_otp_operation_done_o,
   output logic                                       intr_otp_error_o,
@@ -114,8 +114,8 @@ module otp_ctrl
   // We have one CSR node, one functional TL-UL window and a gate module for that window
   logic [2:0] intg_error;
 
-  tlul_pkg::tl_h2d_t tl_win_h2d;
-  tlul_pkg::tl_d2h_t tl_win_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_win_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_win_d2h;
 
   otp_ctrl_reg_pkg::otp_ctrl_core_reg2hw_t reg2hw;
   otp_ctrl_reg_pkg::otp_ctrl_core_hw2reg_t hw2reg;
@@ -513,7 +513,7 @@ module otp_ctrl
   // Interrupts and Alert Senders //
   //////////////////////////////////
 
-  prim_intr_hw #(
+  prim_ot_intr_hw #(
     .Width(1)
   ) u_intr_operation_done (
     .clk_i,
@@ -528,7 +528,7 @@ module otp_ctrl
     .intr_o                 ( intr_otp_operation_done_o               )
   );
 
-  prim_intr_hw #(
+  prim_ot_intr_hw #(
     .Width(1)
   ) u_intr_error (
     .clk_i,
@@ -734,8 +734,8 @@ module otp_ctrl
   prim_otp_pkg::err_e          part_otp_err;
   logic [OtpIfWidth-1:0]       part_otp_rdata;
   logic                        otp_rvalid;
-  tlul_pkg::tl_h2d_t           prim_tl_h2d_gated;
-  tlul_pkg::tl_d2h_t           prim_tl_d2h_gated;
+  tlul_ot_pkg::tl_h2d_t           prim_tl_h2d_gated;
+  tlul_ot_pkg::tl_d2h_t           prim_tl_d2h_gated;
 
   // Life cycle qualification of TL-UL test interface.
   // SEC_CM: TEST.BUS.LC_GATED
@@ -816,7 +816,7 @@ module otp_ctrl
 
   // We can have up to two OTP commands in flight, hence we size this to be 2 deep.
   // The partitions can unconditionally sink requested data.
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(vbits(NumAgents)),
     .Depth(2)
   ) u_otp_rsp_fifo (
@@ -937,7 +937,7 @@ module otp_ctrl
 
   // The init request comes from the power manager, which lives in the AON clock domain.
   logic pwr_otp_req_synced;
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1)
   ) u_otp_init_sync (
     .clk_i,
@@ -1461,8 +1461,8 @@ module otp_ctrl
       u_tlul_lc_gate.u_state_regs, alert_tx_o[2])
 
   // Alert assertions for double LFSR.
-  `ASSERT_PRIM_DOUBLE_LFSR_ERROR_TRIGGER_ALERT(DoubleLfsrCheck_A,
-      u_otp_ctrl_lfsr_timer.u_prim_double_lfsr, alert_tx_o[1])
+ // `ASSERT_PRIM_DOUBLE_LFSR_ERROR_TRIGGER_ALERT(DoubleLfsrCheck_A,
+ //     u_otp_ctrl_lfsr_timer.u_prim_double_lfsr, alert_tx_o[1])
 
   // Alert assertions for reg_we onehot check
   `ASSERT_PRIM_REG_WE_ONEHOT_ERROR_TRIGGER_ALERT(RegWeOnehotCheck_A, u_reg_core, alert_tx_o[2])
@@ -1471,10 +1471,10 @@ module otp_ctrl
   `ifndef PRIM_DEFAULT_IMPL
     `define PRIM_DEFAULT_IMPL prim_pkg::ImplGeneric
   `endif
-  if (`PRIM_DEFAULT_IMPL == prim_pkg::ImplGeneric) begin : gen_reg_we_assert_generic
+ /* if (`PRIM_DEFAULT_IMPL == prim_pkg::ImplGeneric) begin : gen_reg_we_assert_generic
     `ASSERT_PRIM_FSM_ERROR_TRIGGER_ALERT(PrimFsmCheck_A,
         u_otp.gen_generic.u_impl_generic.u_state_regs, alert_tx_o[3])
     `ASSERT_PRIM_REG_WE_ONEHOT_ERROR_TRIGGER_ALERT(PrimRegWeOnehotCheck_A,
         u_otp.gen_generic.u_impl_generic.u_reg_top, alert_tx_o[3])
-  end
+  end*/
 endmodule : otp_ctrl

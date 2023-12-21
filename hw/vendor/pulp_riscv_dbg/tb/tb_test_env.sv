@@ -37,7 +37,7 @@ module tb_test_env #(
     localparam CORE_MHARTID       = {21'b0, CLUSTER_ID, 1'b0, CORE_ID};
     localparam NrHarts                               = 1;
     localparam logic [NrHarts-1:0] SELECTABLE_HARTS  = 1 << CORE_MHARTID;
-    localparam HARTINFO           = {8'h0, 4'h2, 3'b0, 1'b1, dm::DataCount, dm::DataAddr};
+    localparam HARTINFO           = {8'h0, 4'h2, 3'b0, 1'b1, dm_ot::DataCount, dm_ot::DataAddr};
 
     // signals connecting core to memory
     logic                        instr_req;
@@ -66,9 +66,9 @@ module tb_test_env #(
 
     // signals for debug unit
     logic                        debug_req_ready;
-    dm::dmi_resp_t               debug_resp;
+    dm_ot::dmi_resp_t               debug_resp;
     logic                        jtag_req_valid;
-    dm::dmi_req_t                jtag_dmi_req;
+    dm_ot::dmi_req_t                jtag_dmi_req;
     logic                        jtag_resp_ready;
     logic                        jtag_resp_valid;
     logic [NrHarts-1:0]          dm_debug_req;
@@ -266,8 +266,6 @@ module tb_test_env #(
        .master_be_o       ( sb_be             ),
        .master_gnt_i      ( sb_gnt            ),
        .master_r_valid_i  ( sb_rvalid         ),
-       .master_r_err_i    ( 1'b0              ),
-       .master_r_other_err_i ( 1'b0           ),
        .master_r_rdata_i  ( sb_rdata          ),
 
        .dmi_rst_ni        ( rst_ni            ),

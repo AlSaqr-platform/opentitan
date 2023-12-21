@@ -4,14 +4,14 @@
 //
 // Testbench module for rv_plic. Intended to use with a formal tool.
 
-module rv_plic_tb import rv_plic_reg_pkg::*; #(
+module rv_plic_tb import rv_plic_ot_reg_pkg::*; #(
   // test all implementations
   localparam int unsigned NumInstances = 1
 ) (
   input                                          clk_i,
   input                                          rst_ni,
-  input  tlul_pkg::tl_h2d_t [NumInstances-1:0]   tl_i,
-  output tlul_pkg::tl_d2h_t [NumInstances-1:0]   tl_o,
+  input  tlul_ot_pkg::tl_h2d_t [NumInstances-1:0]   tl_i,
+  output tlul_ot_pkg::tl_d2h_t [NumInstances-1:0]   tl_o,
   input  [NumInstances-1:0][NumSrc-1:0]          intr_src_i,
   input  prim_alert_pkg::alert_rx_t [NumInstances-1:0][NumAlerts-1:0] alert_rx_i,
   output prim_alert_pkg::alert_tx_t [NumInstances-1:0][NumAlerts-1:0] alert_tx_o,

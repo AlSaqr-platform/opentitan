@@ -5,6 +5,10 @@
 // Description: CSRNG command staging module.
 //
 
+`include "dv_fcov_macros.svh"
+`include "prim_flop_macros.sv"
+`include "prim_assert.sv"
+
 module csrng_cmd_stage import csrng_pkg::*; #(
   parameter int CmdFifoWidth = 32,
   parameter int CmdFifoDepth = 16,
@@ -116,7 +120,7 @@ module csrng_cmd_stage import csrng_pkg::*; #(
   // Capture the transfer length of data behind the command.
   //---------------------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(CmdFifoWidth),
     .Pass(0),
     .Depth(CmdFifoDepth),
@@ -367,7 +371,7 @@ module csrng_cmd_stage import csrng_pkg::*; #(
   // Genbits FIFO.
   //---------------------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(GenBitsFifoWidth),
     .Pass(0),
     .Depth(GenBitsFifoDepth),

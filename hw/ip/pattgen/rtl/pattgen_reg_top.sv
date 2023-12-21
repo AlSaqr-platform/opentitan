@@ -9,8 +9,8 @@
 module pattgen_reg_top (
   input clk_i,
   input rst_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output pattgen_reg_pkg::pattgen_reg2hw_t reg2hw, // Write
   input  pattgen_reg_pkg::pattgen_hw2reg_t hw2reg, // Read
@@ -42,8 +42,8 @@ module pattgen_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -80,7 +80,7 @@ module pattgen_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -179,9 +179,9 @@ module pattgen_reg_top (
   // Register instances
   // R[intr_state]: V(False)
   //   F[done_ch0]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_done_ch0 (
     .clk_i   (clk_i),
@@ -205,9 +205,9 @@ module pattgen_reg_top (
   );
 
   //   F[done_ch1]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessW1C),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessW1C),
     .RESVAL  (1'h0)
   ) u_intr_state_done_ch1 (
     .clk_i   (clk_i),
@@ -233,9 +233,9 @@ module pattgen_reg_top (
 
   // R[intr_enable]: V(False)
   //   F[done_ch0]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_done_ch0 (
     .clk_i   (clk_i),
@@ -259,9 +259,9 @@ module pattgen_reg_top (
   );
 
   //   F[done_ch1]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_intr_enable_done_ch1 (
     .clk_i   (clk_i),
@@ -290,7 +290,7 @@ module pattgen_reg_top (
   logic [1:0] intr_test_flds_we;
   assign intr_test_qe = &intr_test_flds_we;
   //   F[done_ch0]: 0:0
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_intr_test_done_ch0 (
     .re     (1'b0),
@@ -306,7 +306,7 @@ module pattgen_reg_top (
   assign reg2hw.intr_test.done_ch0.qe = intr_test_qe;
 
   //   F[done_ch1]: 1:1
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_intr_test_done_ch1 (
     .re     (1'b0),
@@ -326,7 +326,7 @@ module pattgen_reg_top (
   logic alert_test_qe;
   logic [0:0] alert_test_flds_we;
   assign alert_test_qe = &alert_test_flds_we;
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -344,9 +344,9 @@ module pattgen_reg_top (
 
   // R[ctrl]: V(False)
   //   F[enable_ch0]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_enable_ch0 (
     .clk_i   (clk_i),
@@ -370,9 +370,9 @@ module pattgen_reg_top (
   );
 
   //   F[enable_ch1]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_enable_ch1 (
     .clk_i   (clk_i),
@@ -396,9 +396,9 @@ module pattgen_reg_top (
   );
 
   //   F[polarity_ch0]: 2:2
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_polarity_ch0 (
     .clk_i   (clk_i),
@@ -422,9 +422,9 @@ module pattgen_reg_top (
   );
 
   //   F[polarity_ch1]: 3:3
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (1'h0)
   ) u_ctrl_polarity_ch1 (
     .clk_i   (clk_i),
@@ -449,9 +449,9 @@ module pattgen_reg_top (
 
 
   // R[prediv_ch0]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prediv_ch0 (
     .clk_i   (clk_i),
@@ -476,9 +476,9 @@ module pattgen_reg_top (
 
 
   // R[prediv_ch1]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_prediv_ch1 (
     .clk_i   (clk_i),
@@ -504,9 +504,9 @@ module pattgen_reg_top (
 
   // Subregister 0 of Multireg data_ch0
   // R[data_ch0_0]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_data_ch0_0 (
     .clk_i   (clk_i),
@@ -532,9 +532,9 @@ module pattgen_reg_top (
 
   // Subregister 1 of Multireg data_ch0
   // R[data_ch0_1]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_data_ch0_1 (
     .clk_i   (clk_i),
@@ -560,9 +560,9 @@ module pattgen_reg_top (
 
   // Subregister 0 of Multireg data_ch1
   // R[data_ch1_0]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_data_ch1_0 (
     .clk_i   (clk_i),
@@ -588,9 +588,9 @@ module pattgen_reg_top (
 
   // Subregister 1 of Multireg data_ch1
   // R[data_ch1_1]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (32'h0)
   ) u_data_ch1_1 (
     .clk_i   (clk_i),
@@ -616,9 +616,9 @@ module pattgen_reg_top (
 
   // R[size]: V(False)
   //   F[len_ch0]: 5:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (6),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (6'h0)
   ) u_size_len_ch0 (
     .clk_i   (clk_i),
@@ -642,9 +642,9 @@ module pattgen_reg_top (
   );
 
   //   F[reps_ch0]: 15:6
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h0)
   ) u_size_reps_ch0 (
     .clk_i   (clk_i),
@@ -668,9 +668,9 @@ module pattgen_reg_top (
   );
 
   //   F[len_ch1]: 21:16
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (6),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (6'h0)
   ) u_size_len_ch1 (
     .clk_i   (clk_i),
@@ -694,9 +694,9 @@ module pattgen_reg_top (
   );
 
   //   F[reps_ch1]: 31:22
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (10),
-    .SwAccess(prim_subreg_pkg::SwAccessRW),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
     .RESVAL  (10'h0)
   ) u_size_reps_ch1 (
     .clk_i   (clk_i),
@@ -923,6 +923,6 @@ module pattgen_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

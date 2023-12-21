@@ -5,7 +5,7 @@
 // Clock inverter
 //   Varies on the process
 
-module prim_generic_clock_inv #(
+module prim_clock_inv #(
   parameter bit HasScanMode = 1'b1,
   parameter bit NoFpgaBufG  = 1'b0 // only used in FPGA case
 ) (
@@ -13,7 +13,12 @@ module prim_generic_clock_inv #(
   input        scanmode_i,
   output logic clk_no      // Inverted
 );
-
+`ifdef TARGET_ASIC
+  tc_clk_inverter clk_inv(
+   .clk_i,
+   .clk_o(clk_no)
+  );
+`else
   if (HasScanMode) begin : gen_scan
     prim_clock_mux2 #(
       .NoFpgaBufG(NoFpgaBufG)
@@ -28,5 +33,5 @@ module prim_generic_clock_inv #(
     assign unused_scanmode = scanmode_i;
     assign clk_no = ~clk_i;
   end
-
-endmodule : prim_generic_clock_inv
+`endif // !`ifndef TARGET_ASIC
+endmodule : prim_clock_inv

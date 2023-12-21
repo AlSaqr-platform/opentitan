@@ -9,8 +9,8 @@
 module rom_ctrl_regs_reg_top (
   input clk_i,
   input rst_ni,
-  input  tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input  tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
   // To HW
   output rom_ctrl_reg_pkg::rom_ctrl_regs_reg2hw_t reg2hw, // Write
   input  rom_ctrl_reg_pkg::rom_ctrl_regs_hw2reg_t hw2reg, // Read
@@ -42,8 +42,8 @@ module rom_ctrl_regs_reg_top (
   logic [DW-1:0] reg_rdata_next;
   logic reg_busy;
 
-  tlul_pkg::tl_h2d_t tl_reg_h2d;
-  tlul_pkg::tl_d2h_t tl_reg_d2h;
+  tlul_ot_pkg::tl_h2d_t tl_reg_h2d;
+  tlul_ot_pkg::tl_d2h_t tl_reg_d2h;
 
 
   // incoming payload check
@@ -80,7 +80,7 @@ module rom_ctrl_regs_reg_top (
   assign intg_err_o = err_q | intg_err | reg_we_err;
 
   // outgoing integrity generation
-  tlul_pkg::tl_d2h_t tl_o_pre;
+  tlul_ot_pkg::tl_d2h_t tl_o_pre;
   tlul_rsp_intg_gen #(
     .EnableRspIntgGen(1),
     .EnableDataIntgGen(1)
@@ -150,7 +150,7 @@ module rom_ctrl_regs_reg_top (
   logic alert_test_qe;
   logic [0:0] alert_test_flds_we;
   assign alert_test_qe = &alert_test_flds_we;
-  prim_subreg_ext #(
+  prim_ot_subreg_ext #(
     .DW    (1)
   ) u_alert_test (
     .re     (1'b0),
@@ -168,9 +168,9 @@ module rom_ctrl_regs_reg_top (
 
   // R[fatal_alert_cause]: V(False)
   //   F[checker_error]: 0:0
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_fatal_alert_cause_checker_error (
     .clk_i   (clk_i),
@@ -194,9 +194,9 @@ module rom_ctrl_regs_reg_top (
   );
 
   //   F[integrity_error]: 1:1
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (1),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (1'h0)
   ) u_fatal_alert_cause_integrity_error (
     .clk_i   (clk_i),
@@ -222,9 +222,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 0 of Multireg digest
   // R[digest_0]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_0 (
     .clk_i   (clk_i),
@@ -250,9 +250,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 1 of Multireg digest
   // R[digest_1]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_1 (
     .clk_i   (clk_i),
@@ -278,9 +278,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 2 of Multireg digest
   // R[digest_2]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_2 (
     .clk_i   (clk_i),
@@ -306,9 +306,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 3 of Multireg digest
   // R[digest_3]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_3 (
     .clk_i   (clk_i),
@@ -334,9 +334,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 4 of Multireg digest
   // R[digest_4]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_4 (
     .clk_i   (clk_i),
@@ -362,9 +362,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 5 of Multireg digest
   // R[digest_5]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_5 (
     .clk_i   (clk_i),
@@ -390,9 +390,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 6 of Multireg digest
   // R[digest_6]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_6 (
     .clk_i   (clk_i),
@@ -418,9 +418,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 7 of Multireg digest
   // R[digest_7]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_digest_7 (
     .clk_i   (clk_i),
@@ -446,9 +446,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 0 of Multireg exp_digest
   // R[exp_digest_0]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_0 (
     .clk_i   (clk_i),
@@ -474,9 +474,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 1 of Multireg exp_digest
   // R[exp_digest_1]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_1 (
     .clk_i   (clk_i),
@@ -502,9 +502,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 2 of Multireg exp_digest
   // R[exp_digest_2]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_2 (
     .clk_i   (clk_i),
@@ -530,9 +530,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 3 of Multireg exp_digest
   // R[exp_digest_3]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_3 (
     .clk_i   (clk_i),
@@ -558,9 +558,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 4 of Multireg exp_digest
   // R[exp_digest_4]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_4 (
     .clk_i   (clk_i),
@@ -586,9 +586,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 5 of Multireg exp_digest
   // R[exp_digest_5]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_5 (
     .clk_i   (clk_i),
@@ -614,9 +614,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 6 of Multireg exp_digest
   // R[exp_digest_6]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_6 (
     .clk_i   (clk_i),
@@ -642,9 +642,9 @@ module rom_ctrl_regs_reg_top (
 
   // Subregister 7 of Multireg exp_digest
   // R[exp_digest_7]: V(False)
-  prim_subreg #(
+  prim_ot_subreg #(
     .DW      (32),
-    .SwAccess(prim_subreg_pkg::SwAccessRO),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
     .RESVAL  (32'h0)
   ) u_exp_digest_7 (
     .clk_i   (clk_i),
@@ -854,6 +854,6 @@ module rom_ctrl_regs_reg_top (
 
   // this is formulated as an assumption such that the FPV testbenches do disprove this
   // property by mistake
-  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_pkg::CheckDis)
+  //`ASSUME(reqParity, tl_reg_h2d.a_valid |-> tl_reg_h2d.a_user.chk_en == tlul_ot_pkg::CheckDis)
 
 endmodule

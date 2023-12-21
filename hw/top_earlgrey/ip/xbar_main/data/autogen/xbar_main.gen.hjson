@@ -78,6 +78,7 @@
       spi_host0
       spi_host1
       usbdev
+      tlul2axi
       flash_ctrl.core
       flash_ctrl.prim
       flash_ctrl.mem
@@ -105,6 +106,7 @@
       spi_host0
       spi_host1
       usbdev
+      tlul2axi
       flash_ctrl.core
       flash_ctrl.prim
       flash_ctrl.mem
@@ -171,7 +173,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41200000
+          base_addr: 0xc1200000
           size_byte: 0x4
         }
       ]
@@ -190,7 +192,7 @@
       addr_range:
       [
         {
-          base_addr: 0x10000
+          base_addr: 0x0
           size_byte: 0x1000
         }
       ]
@@ -209,7 +211,7 @@
       addr_range:
       [
         {
-          base_addr: 0x8000
+          base_addr: 0xd0008000
           size_byte: 0x8000
         }
       ]
@@ -228,7 +230,7 @@
       addr_range:
       [
         {
-          base_addr: 0x411e0000
+          base_addr: 0xc11e0000
           size_byte: 0x80
         }
       ]
@@ -249,11 +251,11 @@
       addr_range:
       [
         {
-          base_addr: 0x40000000
+          base_addr: 0xc0000000
           size_byte: 0x200000
         }
         {
-          base_addr: 0x40400000
+          base_addr: 0xc0400000
           size_byte: 0x400000
         }
       ]
@@ -269,7 +271,7 @@
       addr_range:
       [
         {
-          base_addr: 0x40300000
+          base_addr: 0xc0300000
           size_byte: 0x40
         }
       ]
@@ -288,7 +290,7 @@
       addr_range:
       [
         {
-          base_addr: 0x40310000
+          base_addr: 0xc0310000
           size_byte: 0x40
         }
       ]
@@ -307,7 +309,7 @@
       addr_range:
       [
         {
-          base_addr: 0x40320000
+          base_addr: 0xc0320000
           size_byte: 0x1000
         }
       ]
@@ -326,7 +328,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41000000
+          base_addr: 0xc1000000
           size_byte: 0x200
         }
       ]
@@ -345,7 +347,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41008000
+          base_addr: 0xc1008000
           size_byte: 0x80
         }
       ]
@@ -364,8 +366,8 @@
       addr_range:
       [
         {
-          base_addr: 0x20000000
-          size_byte: 0x100000
+          base_addr: 0xf0000000
+          size_byte: 0x10000
         }
       ]
       xbar: false
@@ -383,7 +385,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41110000
+          base_addr: 0xc1110000
           size_byte: 0x1000
         }
       ]
@@ -402,7 +404,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41120000
+          base_addr: 0xc1120000
           size_byte: 0x1000
         }
       ]
@@ -421,7 +423,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41100000
+          base_addr: 0xc1100000
           size_byte: 0x100
         }
       ]
@@ -440,7 +442,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41160000
+          base_addr: 0xc1160000
           size_byte: 0x100
         }
       ]
@@ -459,7 +461,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41150000
+          base_addr: 0xc1150000
           size_byte: 0x80
         }
       ]
@@ -478,7 +480,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41170000
+          base_addr: 0xc1170000
           size_byte: 0x80
         }
       ]
@@ -497,7 +499,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41180000
+          base_addr: 0xc1180000
           size_byte: 0x80
         }
       ]
@@ -516,7 +518,7 @@
       addr_range:
       [
         {
-          base_addr: 0x48000000
+          base_addr: 0xc8000000
           size_byte: 0x8000000
         }
       ]
@@ -535,7 +537,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41130000
+          base_addr: 0xc1130000
           size_byte: 0x10000
         }
       ]
@@ -554,7 +556,7 @@
       addr_range:
       [
         {
-          base_addr: 0x41140000
+          base_addr: 0xc1140000
           size_byte: 0x100
         }
       ]
@@ -573,7 +575,7 @@
       addr_range:
       [
         {
-          base_addr: 0x411f0000
+          base_addr: 0xc11f0000
           size_byte: 0x100
         }
       ]
@@ -592,7 +594,7 @@
       addr_range:
       [
         {
-          base_addr: 0x411c0000
+          base_addr: 0xc11c0000
           size_byte: 0x20
         }
       ]
@@ -610,12 +612,30 @@
       addr_range:
       [
         {
-          base_addr: 0x10000000
+          base_addr: 0xe0000000
           size_byte: 0x20000
         }
       ]
       xbar: false
       stub: false
+      req_fifo_pass: true
+    }
+    {
+      name: tlul2axi
+      type: device
+      clock: clk_main_i
+      reset: rst_main_ni
+      inst_type: tlul2axi
+      addr_range:
+      [
+        {
+          base_addr: 0x10000
+          size_byte: 0x10
+        }
+      ]
+      xbar: false
+      stub: false
+      pipeline: "true"
       req_fifo_pass: true
     }
   ]

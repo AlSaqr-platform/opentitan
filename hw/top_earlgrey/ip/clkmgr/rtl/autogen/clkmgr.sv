@@ -52,8 +52,8 @@
   input rst_root_usb_ni,
 
   // Bus Interface
-  input tlul_pkg::tl_h2d_t tl_i,
-  output tlul_pkg::tl_d2h_t tl_o,
+  input tlul_ot_pkg::tl_h2d_t tl_i,
+  output tlul_ot_pkg::tl_d2h_t tl_o,
 
   // Alerts
   input  prim_alert_pkg::alert_rx_t [NumAlerts-1:0] alert_rx_i,
@@ -769,7 +769,7 @@
   logic clk_io_peri_sw_en;
   logic clk_usb_peri_sw_en;
 
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1)
   ) u_clk_io_div4_peri_sw_en_sync (
     .clk_i(clk_io_div4_i),
@@ -792,8 +792,7 @@
 
   logic clk_io_div4_peri_combined_en;
   assign clk_io_div4_peri_combined_en = clk_io_div4_peri_sw_en & clk_io_div4_en;
-  prim_clock_gating #(
-    .FpgaBufGlobal(1'b1) // This clock spans across multiple clock regions.
+  tc_clk_gating #(
   ) u_clk_io_div4_peri_cg (
     .clk_i(clk_io_div4_i),
     .en_i(clk_io_div4_peri_combined_en),
@@ -811,7 +810,7 @@
     .mubi_o(cg_en_o.io_div4_peri)
   );
 
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1)
   ) u_clk_io_div2_peri_sw_en_sync (
     .clk_i(clk_io_div2_i),
@@ -834,8 +833,7 @@
 
   logic clk_io_div2_peri_combined_en;
   assign clk_io_div2_peri_combined_en = clk_io_div2_peri_sw_en & clk_io_div2_en;
-  prim_clock_gating #(
-    .FpgaBufGlobal(1'b1) // This clock spans across multiple clock regions.
+  tc_clk_gating #(
   ) u_clk_io_div2_peri_cg (
     .clk_i(clk_io_div2_i),
     .en_i(clk_io_div2_peri_combined_en),
@@ -853,7 +851,7 @@
     .mubi_o(cg_en_o.io_div2_peri)
   );
 
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1)
   ) u_clk_io_peri_sw_en_sync (
     .clk_i(clk_io_i),
@@ -876,8 +874,7 @@
 
   logic clk_io_peri_combined_en;
   assign clk_io_peri_combined_en = clk_io_peri_sw_en & clk_io_en;
-  prim_clock_gating #(
-    .FpgaBufGlobal(1'b1) // This clock spans across multiple clock regions.
+  tc_clk_gating #(
   ) u_clk_io_peri_cg (
     .clk_i(clk_io_i),
     .en_i(clk_io_peri_combined_en),
@@ -895,7 +892,7 @@
     .mubi_o(cg_en_o.io_peri)
   );
 
-  prim_flop_2sync #(
+  prim_ot_flop_2sync #(
     .Width(1)
   ) u_clk_usb_peri_sw_en_sync (
     .clk_i(clk_usb_i),
@@ -918,8 +915,7 @@
 
   logic clk_usb_peri_combined_en;
   assign clk_usb_peri_combined_en = clk_usb_peri_sw_en & clk_usb_en;
-  prim_clock_gating #(
-    .FpgaBufGlobal(1'b1) // This clock spans across multiple clock regions.
+  tc_clk_gating #(
   ) u_clk_usb_peri_cg (
     .clk_i(clk_usb_i),
     .en_i(clk_usb_peri_combined_en),

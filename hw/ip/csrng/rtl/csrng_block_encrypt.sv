@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description: csrng block encrypt module
-//
+
+
+`include "prim_flop_macros.sv"
 
 module csrng_block_encrypt import csrng_pkg::*; #(
   parameter aes_pkg::sbox_impl_e SBoxImpl = aes_pkg::SBoxImplLut,
@@ -137,11 +139,11 @@ module csrng_block_encrypt import csrng_pkg::*; #(
   // cmd / id tracking fifo
   //--------------------------------------------
 
-  prim_fifo_sync #(
+  prim_ot_fifo_sync #(
     .Width(BlkEncFifoWidth),
     .Pass(0),
     .Depth(BlkEncFifoDepth)
-  ) u_prim_fifo_sync_blkenc (
+  ) u_prim_ot_fifo_sync_blkenc (
     .clk_i    (clk_i),
     .rst_ni   (rst_ni),
     .clr_i    (!block_encrypt_enable_i),

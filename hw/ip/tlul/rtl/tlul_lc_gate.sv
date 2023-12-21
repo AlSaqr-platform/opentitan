@@ -9,8 +9,12 @@
 // Note that the lc_en_i should be synchronized and buffered outside of this module using
 // an instance of prim_lc_sync.
 
+`include "prim_flop_macros.sv"
+`include "prim_assert.sv"
+
+
 module tlul_lc_gate
-  import tlul_pkg::*;
+  import tlul_ot_pkg::*;
   import lc_ctrl_pkg::*;
 #(
   // Number of LC gating muxes in each direction.

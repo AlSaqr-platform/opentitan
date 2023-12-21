@@ -48,6 +48,7 @@ opentitan_functest(
         "//sw/device/lib/dif:spi_device",
         "//sw/device/lib/dif:spi_host",
         "//sw/device/lib/dif:sysrst_ctrl",
+        "//sw/device/lib/dif:tlul2axi",
         "//sw/device/lib/dif:uart",
         "//sw/device/lib/dif:usbdev",
         "//sw/device/lib/runtime:irq",
