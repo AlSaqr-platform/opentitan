@@ -22,15 +22,12 @@ int main(int argc, char **argv) {
   int volatile  * ptr;
   int buff;
   for(int i = 0; i<1024; i++){
-    ptr = (int *) 0xfff00000 + i*4;
+    ptr = (int *) 0xfff04000 + i*4;
     *ptr = i;
   }
   for(int i = 0; i<1024; i++){
-    ptr = (int *) 0xfff00000 + i*4;
-    if(*ptr=!i){
-      ptr = (int *) 0xc11c0018;
-      *ptr = 0xffffffff;
-    }
+    ptr = (int *) 0xfff04000 + i*4;
+    printf("Payload %d: %x\r\n",i,*ptr);
   }
   return 0;
 }

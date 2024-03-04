@@ -7,7 +7,7 @@ start address 0xe0000080
 
 Program Header:
     LOAD off    0x00001000 vaddr 0xe0000000 paddr 0xe0000000 align 2**12
-         filesz 0x00000390 memsz 0x000003a8 flags rwx
+         filesz 0x000003be memsz 0x000003d8 flags rwx
     LOAD off    0x00000000 vaddr 0xe0008000 paddr 0xe0008000 align 2**12
          filesz 0x00000000 memsz 0x00002000 flags rw-
    STACK off    0x00000000 vaddr 0x00000000 paddr 0x00000000 align 2**4
@@ -16,29 +16,29 @@ Program Header:
 Sections:
 Idx Name              Size      VMA       LMA       File off  Algn  Flags
   0 .vectors          00000084  e0000000  e0000000  00001000  2**0  CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .text             0000030c  e0000084  e0000084  00001084  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata           00000000  e0000390  e0000390  00001390  2**0  ALLOC
-  3 .data             00000000  e0000390  e0000390  00001390  2**0  CONTENTS, ALLOC, LOAD, DATA
-  4 .bss              00000018  e0000390  e0000390  00001390  2**2  ALLOC
-  5 .logs.fields      00000000  e00003a8  e00003a8  00001390  2**0  CONTENTS
+  1 .text             0000033a  e0000084  e0000084  00001084  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .rodata           00000002  e00003be  e00003be  000013be  2**0  ALLOC
+  3 .data             00000000  e00003c0  e00003be  000013be  2**0  CONTENTS, ALLOC, LOAD, DATA
+  4 .bss              00000018  e00003c0  e00003c0  000013be  2**2  ALLOC
+  5 .logs.fields      00000000  e00003d8  e00003d8  000013be  2**0  CONTENTS
   6 .stack            00002000  e0008000  e0008000  00002000  2**0  ALLOC
-  7 .debug_loc        00000ce5  00000000  00000000  00001390  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
-  8 .debug_abbrev     000004e5  00000000  00000000  00002075  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
-  9 .debug_info       0000155d  00000000  00000000  0000255a  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
- 10 .debug_ranges     000001a8  00000000  00000000  00003ab7  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
- 11 .debug_str        00000493  00000000  00000000  00003c5f  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
- 12 .comment          00000074  00000000  00000000  000040f2  2**0  CONTENTS, READONLY
- 13 .riscv.attributes 00000026  00000000  00000000  00004166  2**0  CONTENTS, READONLY
- 14 .debug_frame      0000016c  00000000  00000000  0000418c  2**2  CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_line       00001127  00000000  00000000  000042f8  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_aranges    00000028  00000000  00000000  0000541f  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_loc        00000d24  00000000  00000000  000013be  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+  8 .debug_abbrev     000004d6  00000000  00000000  000020e2  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+  9 .debug_info       000016b9  00000000  00000000  000025b8  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 10 .debug_ranges     000001a8  00000000  00000000  00003c71  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 11 .debug_str        00000493  00000000  00000000  00003e19  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 12 .comment          00000074  00000000  00000000  000042ac  2**0  CONTENTS, READONLY
+ 13 .riscv.attributes 00000026  00000000  00000000  00004320  2**0  CONTENTS, READONLY
+ 14 .debug_frame      0000016c  00000000  00000000  00004348  2**2  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 15 .debug_line       000011da  00000000  00000000  000044b4  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 16 .debug_aranges    00000028  00000000  00000000  0000568e  2**0  CONTENTS, READONLY, DEBUGGING, OCTETS
 SYMBOL TABLE:
 e0000000 l    d  .vectors       00000000 .vectors
 e0000084 l    d  .text  00000000 .text
-e0000390 l    d  .rodata        00000000 .rodata
-e0000390 l    d  .data  00000000 .data
-e0000390 l    d  .bss   00000000 .bss
-e00003a8 l    d  .logs.fields   00000000 .logs.fields
+e00003be l    d  .rodata        00000000 .rodata
+e00003c0 l    d  .data  00000000 .data
+e00003c0 l    d  .bss   00000000 .bss
+e00003d8 l    d  .logs.fields   00000000 .logs.fields
 e0008000 l    d  .stack 00000000 .stack
 00000000 l    d  .debug_loc     00000000 .debug_loc
 00000000 l    d  .debug_abbrev  00000000 .debug_abbrev
@@ -74,161 +74,172 @@ e000002c l       .vectors       00000000
 e0000030 l       .vectors       00000000 
 e000007c l       .vectors       00000000 
 e0000080 l       .vectors       00000000 
-000013f1 l       .debug_info    00000000 
-000004c6 l       .debug_abbrev  00000000 
+0000154d l       .debug_info    00000000 
+000004b7 l       .debug_abbrev  00000000 
 e0000104 l       .text  00000000 
 e0000084 l       .vectors       00000000 
 00000180 l       .debug_ranges  00000000 
 00000000 l    df *ABS*  00000000 titanssl_sram_hmac.c
 e0000104 l       .text  00000000 
 e0000104 l       .text  00000000 
+e00003c0 l     O .bss   00000008 buffer_payload
 e0000104 l       .text  00000000 
-e0000390 l     O .bss   00000008 buffer_payload
-e0000112 l       .text  00000000 
+e0000110 l       .text  00000000 
 e0000116 l       .text  00000000 
 e0000118 l       .text  00000000 
 e0000118 l       .text  00000000 
-e000011c l       .text  00000000 
-e000011c l       .text  00000000 
+e000011e l       .text  00000000 
+e000011e l       .text  00000000 
 e0000120 l       .text  00000000 
 e0000120 l       .text  00000000 
-e0000122 l       .text  00000000 
 e0000122 l       .text  00000000 
 e0000124 l       .text  00000000 
-e0000126 l       .text  00000000 
-e0000126 l       .text  00000000 
-e000012a l       .text  00000000 
-e000012a l       .text  00000000 
-e000012e l       .text  00000000 
-e0000398 l     O .bss   00000008 buffer_digest
-e000012e l       .text  00000000 
-e000013a l       .text  00000000 
+e0000128 l       .text  00000000 
+e000012c l       .text  00000000 
+e00003c8 l     O .bss   00000008 buffer_digest
+e000012c l       .text  00000000 
+e0000138 l       .text  00000000 
+e000013e l       .text  00000000 
 e0000140 l       .text  00000000 
-e0000142 l       .text  00000000 
-e0000142 l       .text  00000000 
+e0000140 l       .text  00000000 
+e0000146 l       .text  00000000 
+e0000146 l       .text  00000000 
 e0000148 l       .text  00000000 
 e0000148 l       .text  00000000 
-e000014a l       .text  00000000 
 e000014a l       .text  00000000 
 e000014c l       .text  00000000 
-e000014e l       .text  00000000 
-e0000152 l       .text  00000000 
-e0000156 l       .text  00000000 
-e0000156 l       .text  00000000 
-e00003a0 l     O .bss   00000008 buffer_key
-e0000164 l       .text  00000000 
-e000016a l       .text  00000000 
-e000016c l       .text  00000000 
-e000016c l       .text  00000000 
+e0000150 l       .text  00000000 
+e0000154 l       .text  00000000 
+e00003d0 l     O .bss   00000008 buffer_key
+e0000154 l       .text  00000000 
+e0000160 l       .text  00000000 
+e0000166 l       .text  00000000 
+e0000168 l       .text  00000000 
+e0000168 l       .text  00000000 
+e000016e l       .text  00000000 
+e000016e l       .text  00000000 
+e0000170 l       .text  00000000 
 e0000170 l       .text  00000000 
 e0000172 l       .text  00000000 
-e0000176 l       .text  00000000 
-e000017a l       .text  00000000 
-e000017a l       .text  00000000 
+e0000174 l       .text  00000000 
+e0000178 l       .text  00000000 
 e000017c l       .text  00000000 
 e000017c l       .text  00000000 
-e000017c l       .text  00000000 
-e000017c l       .text  00000000 
-e000017c l       .text  00000000 
-e0000180 l       .text  00000000 
-e0000180 l       .text  00000000 
+e000017e l       .text  00000000 
+e000017e l       .text  00000000 
+e000017e l       .text  00000000 
+e000017e l       .text  00000000 
+e000017e l       .text  00000000 
 e0000182 l       .text  00000000 
 e0000182 l       .text  00000000 
 e0000184 l       .text  00000000 
 e0000184 l       .text  00000000 
+e0000186 l       .text  00000000 
+e0000186 l       .text  00000000 
 e0000188 l       .text  00000000 
 e0000188 l       .text  00000000 
 e000018a l       .text  00000000 
 e000018a l       .text  00000000 
 e000018c l       .text  00000000 
 e000018c l       .text  00000000 
+e000018e l       .text  00000000 
+e000018e l       .text  00000000 
 e0000190 l       .text  00000000 
 e0000190 l       .text  00000000 
 e0000192 l       .text  00000000 
 e0000192 l       .text  00000000 
 e0000194 l       .text  00000000 
 e0000194 l       .text  00000000 
+e0000196 l       .text  00000000 
+e0000196 l       .text  00000000 
 e0000198 l       .text  00000000 
 e0000198 l       .text  00000000 
+e000019a l       .text  00000000 
+e000019a l       .text  00000000 
 e000019c l       .text  00000000 
 e000019c l       .text  00000000 
+e000019e l       .text  00000000 
+e000019e l       .text  00000000 
+e00001a0 l       .text  00000000 
+e00001a0 l       .text  00000000 
+e00001a2 l       .text  00000000 
+e00001a2 l       .text  00000000 
+e00001a4 l       .text  00000000 
+e00001a4 l       .text  00000000 
+e00001a6 l       .text  00000000 
+e00001a6 l       .text  00000000 
 e00001aa l       .text  00000000 
 e00001aa l       .text  00000000 
-e00001ac l       .text  00000000 
-e00001ac l       .text  00000000 
 e00001ae l       .text  00000000 
 e00001ae l       .text  00000000 
 e00001b0 l       .text  00000000 
 e00001b0 l       .text  00000000 
-e00001b4 l       .text  00000000 
+e00001b2 l       .text  00000000 
+e00001b2 l       .text  00000000 
+e00001b6 l       .text  00000000 
+e00001b6 l       .text  00000000 
+e00001b8 l       .text  00000000 
 e00001b8 l       .text  00000000 
 e00001ba l       .text  00000000 
 e00001ba l       .text  00000000 
 e00001be l       .text  00000000 
 e00001be l       .text  00000000 
-e00001c0 l       .text  00000000 
-e00001c0 l       .text  00000000 
-e00001c4 l       .text  00000000 
-e00001c4 l       .text  00000000 
-e00001c6 l       .text  00000000 
-e00001c6 l       .text  00000000 
-e00001ca l       .text  00000000 
-e00001ca l       .text  00000000 
-e00001cc l       .text  00000000 
-e00001cc l       .text  00000000 
+e00001c2 l       .text  00000000 
+e00001c2 l       .text  00000000 
 e00001d0 l       .text  00000000 
 e00001d0 l       .text  00000000 
 e00001d2 l       .text  00000000 
 e00001d2 l       .text  00000000 
+e00001d4 l       .text  00000000 
+e00001d4 l       .text  00000000 
 e00001d6 l       .text  00000000 
 e00001d6 l       .text  00000000 
-e00001d8 l       .text  00000000 
-e00001d8 l       .text  00000000 
-e00001dc l       .text  00000000 
-e00001dc l       .text  00000000 
+e00001da l       .text  00000000 
 e00001de l       .text  00000000 
-e00001de l       .text  00000000 
-e00001e2 l       .text  00000000 
-e00001e2 l       .text  00000000 
+e00001e0 l       .text  00000000 
+e00001e0 l       .text  00000000 
 e00001e4 l       .text  00000000 
 e00001e4 l       .text  00000000 
-e00001e8 l       .text  00000000 
-e00001e8 l       .text  00000000 
+e00001e6 l       .text  00000000 
+e00001e6 l       .text  00000000 
 e00001ea l       .text  00000000 
 e00001ea l       .text  00000000 
-e00001ee l       .text  00000000 
-e00001ee l       .text  00000000 
+e00001ec l       .text  00000000 
+e00001ec l       .text  00000000 
 e00001f0 l       .text  00000000 
 e00001f0 l       .text  00000000 
-e00001f4 l       .text  00000000 
-e00001f4 l       .text  00000000 
+e00001f2 l       .text  00000000 
+e00001f2 l       .text  00000000 
 e00001f6 l       .text  00000000 
 e00001f6 l       .text  00000000 
-e00001fa l       .text  00000000 
-e00001fa l       .text  00000000 
+e00001f8 l       .text  00000000 
+e00001f8 l       .text  00000000 
 e00001fc l       .text  00000000 
 e00001fc l       .text  00000000 
-e0000200 l       .text  00000000 
-e0000200 l       .text  00000000 
+e00001fe l       .text  00000000 
+e00001fe l       .text  00000000 
 e0000202 l       .text  00000000 
 e0000202 l       .text  00000000 
-e0000206 l       .text  00000000 
-e0000206 l       .text  00000000 
+e0000204 l       .text  00000000 
+e0000204 l       .text  00000000 
 e0000208 l       .text  00000000 
 e0000208 l       .text  00000000 
-e000020c l       .text  00000000 
-e000020c l       .text  00000000 
+e000020a l       .text  00000000 
+e000020a l       .text  00000000 
 e000020e l       .text  00000000 
 e000020e l       .text  00000000 
-e0000212 l       .text  00000000 
-e0000212 l       .text  00000000 
+e0000210 l       .text  00000000 
+e0000210 l       .text  00000000 
 e0000214 l       .text  00000000 
 e0000214 l       .text  00000000 
-e0000218 l       .text  00000000 
-e0000218 l       .text  00000000 
+e0000216 l       .text  00000000 
+e0000216 l       .text  00000000 
+e000021a l       .text  00000000 
+e000021a l       .text  00000000 
 e000021c l       .text  00000000 
-e000021e l       .text  00000000 
-e000021e l       .text  00000000 
+e000021c l       .text  00000000 
+e0000220 l       .text  00000000 
+e0000220 l       .text  00000000 
 e0000222 l       .text  00000000 
 e0000222 l       .text  00000000 
 e0000226 l       .text  00000000 
@@ -238,63 +249,53 @@ e0000228 l       .text  00000000
 e000022c l       .text  00000000 
 e000022c l       .text  00000000 
 e000022e l       .text  00000000 
-e0000230 l       .text  00000000 
+e000022e l       .text  00000000 
 e0000232 l       .text  00000000 
 e0000232 l       .text  00000000 
-e0000236 l       .text  00000000 
-e0000236 l       .text  00000000 
+e0000234 l       .text  00000000 
+e0000234 l       .text  00000000 
 e0000238 l       .text  00000000 
 e0000238 l       .text  00000000 
-e000023c l       .text  00000000 
-e000023c l       .text  00000000 
-e0000240 l       .text  00000000 
-e0000240 l       .text  00000000 
+e000023a l       .text  00000000 
+e000023a l       .text  00000000 
+e000023e l       .text  00000000 
+e000023e l       .text  00000000 
 e0000242 l       .text  00000000 
 e0000244 l       .text  00000000 
-e0000246 l       .text  00000000 
-e0000246 l       .text  00000000 
-e000024a l       .text  00000000 
+e0000244 l       .text  00000000 
+e0000248 l       .text  00000000 
+e0000248 l       .text  00000000 
 e000024c l       .text  00000000 
+e000024c l       .text  00000000 
+e000024e l       .text  00000000 
 e000024e l       .text  00000000 
 e0000252 l       .text  00000000 
 e0000252 l       .text  00000000 
 e0000254 l       .text  00000000 
-e0000254 l       .text  00000000 
+e0000256 l       .text  00000000 
 e0000258 l       .text  00000000 
 e0000258 l       .text  00000000 
 e000025c l       .text  00000000 
 e000025c l       .text  00000000 
 e000025e l       .text  00000000 
 e000025e l       .text  00000000 
-e0000260 l       .text  00000000 
-e0000260 l       .text  00000000 
 e0000262 l       .text  00000000 
 e0000262 l       .text  00000000 
-e0000264 l       .text  00000000 
-e0000268 l       .text  00000000 
+e0000266 l       .text  00000000 
+e0000266 l       .text  00000000 
 e0000268 l       .text  00000000 
 e000026a l       .text  00000000 
-e000026a l       .text  00000000 
-e000026e l       .text  00000000 
-e000026e l       .text  00000000 
-e0000270 l       .text  00000000 
+e000026c l       .text  00000000 
+e000026c l       .text  00000000 
 e0000270 l       .text  00000000 
 e0000272 l       .text  00000000 
-e0000272 l       .text  00000000 
 e0000274 l       .text  00000000 
-e0000274 l       .text  00000000 
-e0000276 l       .text  00000000 
-e0000276 l       .text  00000000 
 e0000278 l       .text  00000000 
 e0000278 l       .text  00000000 
 e000027a l       .text  00000000 
 e000027a l       .text  00000000 
-e000027c l       .text  00000000 
-e000027c l       .text  00000000 
 e000027e l       .text  00000000 
 e000027e l       .text  00000000 
-e0000280 l       .text  00000000 
-e0000280 l       .text  00000000 
 e0000282 l       .text  00000000 
 e0000282 l       .text  00000000 
 e0000284 l       .text  00000000 
@@ -304,71 +305,106 @@ e0000286 l       .text  00000000
 e0000288 l       .text  00000000 
 e0000288 l       .text  00000000 
 e000028a l       .text  00000000 
-e000028a l       .text  00000000 
-e000028c l       .text  00000000 
-e000028c l       .text  00000000 
 e000028e l       .text  00000000 
 e000028e l       .text  00000000 
 e0000290 l       .text  00000000 
 e0000290 l       .text  00000000 
-e0000292 l       .text  00000000 
-e0000292 l       .text  00000000 
 e0000294 l       .text  00000000 
 e0000294 l       .text  00000000 
 e0000296 l       .text  00000000 
 e0000296 l       .text  00000000 
 e0000298 l       .text  00000000 
 e0000298 l       .text  00000000 
-e000029a l       .text  00000000 
-e000029a l       .text  00000000 
-e000029a l       .text  00000000 
 e000029a l       .text  00000000 
 e000029a l       .text  00000000 
 e000029c l       .text  00000000 
 e000029c l       .text  00000000 
 e000029e l       .text  00000000 
+e000029e l       .text  00000000 
 e00002a0 l       .text  00000000 
+e00002a0 l       .text  00000000 
+e00002a2 l       .text  00000000 
 e00002a2 l       .text  00000000 
 e00002a4 l       .text  00000000 
 e00002a4 l       .text  00000000 
+e00002a6 l       .text  00000000 
+e00002a6 l       .text  00000000 
+e00002a8 l       .text  00000000 
+e00002a8 l       .text  00000000 
+e00002aa l       .text  00000000 
+e00002aa l       .text  00000000 
+e00002ac l       .text  00000000 
+e00002ac l       .text  00000000 
+e00002ae l       .text  00000000 
+e00002ae l       .text  00000000 
 e00002b0 l       .text  00000000 
 e00002b0 l       .text  00000000 
+e00002b2 l       .text  00000000 
+e00002b2 l       .text  00000000 
 e00002b4 l       .text  00000000 
+e00002b4 l       .text  00000000 
+e00002b6 l       .text  00000000 
+e00002b6 l       .text  00000000 
+e00002b8 l       .text  00000000 
+e00002b8 l       .text  00000000 
+e00002ba l       .text  00000000 
+e00002ba l       .text  00000000 
+e00002bc l       .text  00000000 
+e00002bc l       .text  00000000 
 e00002be l       .text  00000000 
+e00002be l       .text  00000000 
+e00002c0 l       .text  00000000 
+e00002c0 l       .text  00000000 
+e00002c0 l       .text  00000000 
+e00002c0 l       .text  00000000 
+e00002c0 l       .text  00000000 
+e00002c2 l       .text  00000000 
+e00002c2 l       .text  00000000 
+e00002c4 l       .text  00000000 
+e00002c6 l       .text  00000000 
+e00002c8 l       .text  00000000 
 e00002ca l       .text  00000000 
-e00002cc l       .text  00000000 
-e00002cc l       .text  00000000 
-e00002ce l       .text  00000000 
-e00002ce l       .text  00000000 
-e00002e0 l       .text  00000000 
-e00002e0 l       .text  00000000 
-e00002e8 l       .text  00000000 
-e00002e8 l       .text  00000000 
+e00002ca l       .text  00000000 
+e00002d6 l       .text  00000000 
+e00002d6 l       .text  00000000 
+e00002da l       .text  00000000 
+e00002e4 l       .text  00000000 
+e00002f0 l       .text  00000000 
+e00002f2 l       .text  00000000 
+e00002f2 l       .text  00000000 
+e00002f4 l       .text  00000000 
+e00002f4 l       .text  00000000 
+e000030e l       .text  00000000 
+e000030e l       .text  00000000 
+e0000316 l       .text  00000000 
+e0000316 l       .text  00000000 
 00000000 l       .debug_loc     00000000 
-00000048 l       .debug_loc     00000000 
-0000006f l       .debug_loc     00000000 
-0000008a l       .debug_loc     00000000 
-000000a5 l       .debug_loc     00000000 
-000000c7 l       .debug_loc     00000000 
-000000f0 l       .debug_loc     00000000 
-00000119 l       .debug_loc     00000000 
-00000166 l       .debug_loc     00000000 
-0000018c l       .debug_loc     00000000 
-000001ae l       .debug_loc     00000000 
-000001c9 l       .debug_loc     00000000 
-000001ef l       .debug_loc     00000000 
-00000217 l       .debug_loc     00000000 
-00000236 l       .debug_loc     00000000 
-00000252 l       .debug_loc     00000000 
-0000026e l       .debug_loc     00000000 
-00000290 l       .debug_loc     00000000 
-000002bd l       .debug_loc     00000000 
-000002d8 l       .debug_loc     00000000 
-000002f3 l       .debug_loc     00000000 
-0000030e l       .debug_loc     00000000 
-00000330 l       .debug_loc     00000000 
-00000352 l       .debug_loc     00000000 
-0000036d l       .debug_loc     00000000 
+00000027 l       .debug_loc     00000000 
+0000004e l       .debug_loc     00000000 
+00000075 l       .debug_loc     00000000 
+00000090 l       .debug_loc     00000000 
+000000ab l       .debug_loc     00000000 
+000000c6 l       .debug_loc     00000000 
+00000138 l       .debug_loc     00000000 
+00000161 l       .debug_loc     00000000 
+00000183 l       .debug_loc     00000000 
+000001a5 l       .debug_loc     00000000 
+000001cb l       .debug_loc     00000000 
+000001ed l       .debug_loc     00000000 
+00000208 l       .debug_loc     00000000 
+0000022e l       .debug_loc     00000000 
+00000256 l       .debug_loc     00000000 
+00000275 l       .debug_loc     00000000 
+00000291 l       .debug_loc     00000000 
+000002ad l       .debug_loc     00000000 
+000002cf l       .debug_loc     00000000 
+000002fc l       .debug_loc     00000000 
+00000317 l       .debug_loc     00000000 
+00000332 l       .debug_loc     00000000 
+0000034d l       .debug_loc     00000000 
+0000036f l       .debug_loc     00000000 
+00000391 l       .debug_loc     00000000 
+000003ac l       .debug_loc     00000000 
 00000000 l       .debug_str     00000000 
 00000074 l       .debug_str     00000000 
 000000af l       .debug_str     00000000 
@@ -394,18 +430,18 @@ e00002e8 l       .text  00000000
 00000164 l       .debug_str     00000000 
 000000f1 l       .debug_str     00000000 
 0000016e l       .debug_str     00000000 
-00000185 l       .debug_str     00000000 
-00000188 l       .debug_str     00000000 
 00000230 l       .debug_str     00000000 
-000001a4 l       .debug_str     00000000 
-00000193 l       .debug_str     00000000 
-0000018e l       .debug_str     00000000 
-000001d0 l       .debug_str     00000000 
-000001b7 l       .debug_str     00000000 
-000001cc l       .debug_str     00000000 
-000001d6 l       .debug_str     00000000 
-000001ed l       .debug_str     00000000 
-000001f3 l       .debug_str     00000000 
+00000182 l       .debug_str     00000000 
+00000199 l       .debug_str     00000000 
+0000019c l       .debug_str     00000000 
+000001b8 l       .debug_str     00000000 
+000001a7 l       .debug_str     00000000 
+000001a2 l       .debug_str     00000000 
+000001e4 l       .debug_str     00000000 
+000001cb l       .debug_str     00000000 
+000001e0 l       .debug_str     00000000 
+000001ea l       .debug_str     00000000 
+00000201 l       .debug_str     00000000 
 00000207 l       .debug_str     00000000 
 00000227 l       .debug_str     00000000 
 00000236 l       .debug_str     00000000 
@@ -430,120 +466,120 @@ e00002e8 l       .text  00000000
 0000028f l       .debug_str     00000000 
 000000db l       .debug_str     00000000 
 00000000 l       .debug_frame   00000000 
-e000017c l       .text  00000000 
-e000029a l       .text  00000000 
-e00002e8 l       .text  00000000 
+e000017e l       .text  00000000 
+e00002c0 l       .text  00000000 
+e0000316 l       .text  00000000 
 00000000 l    df *ABS*  00000000 utils.c
-e00002e8 l       .text  00000000 
-e00002e8 l       .text  00000000 
-e00002e8 l       .text  00000000 
-e00002ec l       .text  00000000 
-e00002f0 l       .text  00000000 
-e00002f2 l       .text  00000000 
-e00002f6 l       .text  00000000 
-e00002f8 l       .text  00000000 
-e00002fc l       .text  00000000 
-e00002fc l       .text  00000000 
-e0000302 l       .text  00000000 
-e0000306 l       .text  00000000 
-e0000308 l       .text  00000000 
-e000030a l       .text  00000000 
-e000030e l       .text  00000000 
-e0000312 l       .text  00000000 
-e0000314 l       .text  00000000 
 e0000316 l       .text  00000000 
 e0000316 l       .text  00000000 
 e0000316 l       .text  00000000 
-e0000316 l       .text  00000000 
-e0000316 l       .text  00000000 
-e0000318 l       .text  00000000 
-e0000318 l       .text  00000000 
+e000031a l       .text  00000000 
+e000031e l       .text  00000000 
+e0000320 l       .text  00000000 
+e0000324 l       .text  00000000 
 e0000326 l       .text  00000000 
-e000032e l       .text  00000000 
+e000032a l       .text  00000000 
+e000032a l       .text  00000000 
 e0000330 l       .text  00000000 
 e0000334 l       .text  00000000 
+e0000336 l       .text  00000000 
 e0000338 l       .text  00000000 
+e000033c l       .text  00000000 
+e0000340 l       .text  00000000 
+e0000342 l       .text  00000000 
+e0000344 l       .text  00000000 
+e0000344 l       .text  00000000 
+e0000344 l       .text  00000000 
+e0000344 l       .text  00000000 
 e0000344 l       .text  00000000 
 e0000346 l       .text  00000000 
-e0000348 l       .text  00000000 
-e0000348 l       .text  00000000 
-e000034a l       .text  00000000 
-e000034a l       .text  00000000 
-e000034c l       .text  00000000 
-e000034c l       .text  00000000 
-e000034e l       .text  00000000 
-e000034e l       .text  00000000 
-e0000352 l       .text  00000000 
-e0000352 l       .text  00000000 
-e000035a l       .text  00000000 
-e000035c l       .text  00000000 
+e0000346 l       .text  00000000 
+e0000354 l       .text  00000000 
 e000035c l       .text  00000000 
 e000035e l       .text  00000000 
-e000035e l       .text  00000000 
+e0000362 l       .text  00000000 
+e0000366 l       .text  00000000 
+e0000372 l       .text  00000000 
 e0000374 l       .text  00000000 
+e0000376 l       .text  00000000 
+e0000376 l       .text  00000000 
 e0000378 l       .text  00000000 
+e0000378 l       .text  00000000 
+e000037a l       .text  00000000 
 e000037a l       .text  00000000 
 e000037c l       .text  00000000 
 e000037c l       .text  00000000 
-e000037e l       .text  00000000 
-e0000382 l       .text  00000000 
-e0000384 l       .text  00000000 
-e0000390 l       .text  00000000 
-e0000390 l       .text  00000000 
-00000388 l       .debug_loc     00000000 
-000003ae l       .debug_loc     00000000 
-000003d6 l       .debug_loc     00000000 
-000003fc l       .debug_loc     00000000 
-00000459 l       .debug_loc     00000000 
-00000481 l       .debug_loc     00000000 
-000004a7 l       .debug_loc     00000000 
-000004dc l       .debug_loc     00000000 
-0000051c l       .debug_loc     00000000 
-00000537 l       .debug_loc     00000000 
-00000558 l       .debug_loc     00000000 
-00000573 l       .debug_loc     00000000 
-0000058e l       .debug_loc     00000000 
-000005a9 l       .debug_loc     00000000 
-000005c4 l       .debug_loc     00000000 
-000005ec l       .debug_loc     00000000 
-0000061d l       .debug_loc     00000000 
-00000652 l       .debug_loc     00000000 
-0000067a l       .debug_loc     00000000 
-00000696 l       .debug_loc     00000000 
-000006b1 l       .debug_loc     00000000 
-000006cc l       .debug_loc     00000000 
-000006e7 l       .debug_loc     00000000 
-00000702 l       .debug_loc     00000000 
-0000071d l       .debug_loc     00000000 
-00000738 l       .debug_loc     00000000 
-00000753 l       .debug_loc     00000000 
-000007b0 l       .debug_loc     00000000 
-000007d6 l       .debug_loc     00000000 
-00000816 l       .debug_loc     00000000 
-0000083e l       .debug_loc     00000000 
-00000864 l       .debug_loc     00000000 
-000008a4 l       .debug_loc     00000000 
-000008d6 l       .debug_loc     00000000 
-00000902 l       .debug_loc     00000000 
-0000091d l       .debug_loc     00000000 
-00000938 l       .debug_loc     00000000 
-00000959 l       .debug_loc     00000000 
-00000974 l       .debug_loc     00000000 
-0000099a l       .debug_loc     00000000 
-000009d6 l       .debug_loc     00000000 
-000009fc l       .debug_loc     00000000 
-00000a43 l       .debug_loc     00000000 
-00000a8a l       .debug_loc     00000000 
-00000ac6 l       .debug_loc     00000000 
-00000aee l       .debug_loc     00000000 
-00000b4b l       .debug_loc     00000000 
-00000b75 l       .debug_loc     00000000 
-00000bb7 l       .debug_loc     00000000 
-00000c40 l       .debug_loc     00000000 
-00000c5b l       .debug_loc     00000000 
-00000c81 l       .debug_loc     00000000 
-00000ca7 l       .debug_loc     00000000 
-00000cc4 l       .debug_loc     00000000 
+e0000380 l       .text  00000000 
+e0000380 l       .text  00000000 
+e0000388 l       .text  00000000 
+e000038a l       .text  00000000 
+e000038a l       .text  00000000 
+e000038c l       .text  00000000 
+e000038c l       .text  00000000 
+e00003a2 l       .text  00000000 
+e00003a6 l       .text  00000000 
+e00003a8 l       .text  00000000 
+e00003aa l       .text  00000000 
+e00003aa l       .text  00000000 
+e00003ac l       .text  00000000 
+e00003b0 l       .text  00000000 
+e00003b2 l       .text  00000000 
+e00003be l       .text  00000000 
+e00003be l       .text  00000000 
+000003c7 l       .debug_loc     00000000 
+000003ed l       .debug_loc     00000000 
+00000415 l       .debug_loc     00000000 
+0000043b l       .debug_loc     00000000 
+00000498 l       .debug_loc     00000000 
+000004c0 l       .debug_loc     00000000 
+000004e6 l       .debug_loc     00000000 
+0000051b l       .debug_loc     00000000 
+0000055b l       .debug_loc     00000000 
+00000576 l       .debug_loc     00000000 
+00000597 l       .debug_loc     00000000 
+000005b2 l       .debug_loc     00000000 
+000005cd l       .debug_loc     00000000 
+000005e8 l       .debug_loc     00000000 
+00000603 l       .debug_loc     00000000 
+0000062b l       .debug_loc     00000000 
+0000065c l       .debug_loc     00000000 
+00000691 l       .debug_loc     00000000 
+000006b9 l       .debug_loc     00000000 
+000006d5 l       .debug_loc     00000000 
+000006f0 l       .debug_loc     00000000 
+0000070b l       .debug_loc     00000000 
+00000726 l       .debug_loc     00000000 
+00000741 l       .debug_loc     00000000 
+0000075c l       .debug_loc     00000000 
+00000777 l       .debug_loc     00000000 
+00000792 l       .debug_loc     00000000 
+000007ef l       .debug_loc     00000000 
+00000815 l       .debug_loc     00000000 
+00000855 l       .debug_loc     00000000 
+0000087d l       .debug_loc     00000000 
+000008a3 l       .debug_loc     00000000 
+000008e3 l       .debug_loc     00000000 
+00000915 l       .debug_loc     00000000 
+00000941 l       .debug_loc     00000000 
+0000095c l       .debug_loc     00000000 
+00000977 l       .debug_loc     00000000 
+00000998 l       .debug_loc     00000000 
+000009b3 l       .debug_loc     00000000 
+000009d9 l       .debug_loc     00000000 
+00000a15 l       .debug_loc     00000000 
+00000a3b l       .debug_loc     00000000 
+00000a82 l       .debug_loc     00000000 
+00000ac9 l       .debug_loc     00000000 
+00000b05 l       .debug_loc     00000000 
+00000b2d l       .debug_loc     00000000 
+00000b8a l       .debug_loc     00000000 
+00000bb4 l       .debug_loc     00000000 
+00000bf6 l       .debug_loc     00000000 
+00000c7f l       .debug_loc     00000000 
+00000c9a l       .debug_loc     00000000 
+00000cc0 l       .debug_loc     00000000 
+00000ce6 l       .debug_loc     00000000 
+00000d03 l       .debug_loc     00000000 
 00000000 l       .debug_str     00000000 
 000002ea l       .debug_str     00000000 
 000000af l       .debug_str     00000000 
@@ -590,7 +626,7 @@ e0000390 l       .text  00000000
 00000478 l       .debug_str     00000000 
 0000048d l       .debug_str     00000000 
 0000048f l       .debug_str     00000000 
-000001b5 l       .debug_str     00000000 
+000001c9 l       .debug_str     00000000 
 00000100 l       .debug_ranges  00000000 
 00000282 l       .debug_str     00000000 
 00000407 l       .debug_str     00000000 
@@ -621,19 +657,19 @@ e0000390 l       .text  00000000
 0000041a l       .debug_str     00000000 
 0000028f l       .debug_str     00000000 
 0000005c l       .debug_frame   00000000 
-e0000316 l       .text  00000000 
-e0000390 l       .text  00000000 
-e0000316 g     F .text  0000007a external_irq_handler
+e0000344 l       .text  00000000 
+e00003be l       .text  00000000 
+e0000344 g     F .text  0000007a external_irq_handler
 00008000 g       *ABS*  00000000 _stack_len
-e0000104 g     F .text  00000078 initialize_memory
-e0000390 g       .bss   00000000 _bss_start
+e0000104 g     F .text  0000007a initialize_memory
+e00003c0 g       .bss   00000000 _bss_start
 e000a000 g       .stack 00000000 stack
 e0000080 g       *ABS*  00000000 _entry_point
-e00003a8 g       .bss   00000000 _bss_end
-e000017c g     F .text  0000011e titanssl_benchmark_hmac
-e00002e8 g     F .text  0000002e uart_set_cfg
+e00003d8 g       .bss   00000000 _bss_end
+e000017e g     F .text  00000142 titanssl_benchmark_hmac
+e0000316 g     F .text  0000002e uart_set_cfg
 e00000cc g       .text  00000000 _start
-e000029a g     F .text  0000004e main
+e00002c0 g     F .text  00000056 main
 e0000084 g       .vectors       00000000 _vectors_end
 e0010000 g       .vectors       00000000 _stack_start
 00002000 g       *ABS*  00000000 _min_stack
@@ -658,7 +694,7 @@ e000001c:       0680006f                j       e0000084 <_vectors_end>
 e0000020:       0640006f                j       e0000084 <_vectors_end>
 e0000024:       0600006f                j       e0000084 <_vectors_end>
 e0000028:       05c0006f                j       e0000084 <_vectors_end>
-e000002c:       2ea0006f                j       e0000316 <external_irq_handler>
+e000002c:       3180006f                j       e0000344 <external_irq_handler>
 e0000030:       0540006f                j       e0000084 <_vectors_end>
 e0000034:       0500006f                j       e0000084 <_vectors_end>
 e0000038:       04c0006f                j       e0000084 <_vectors_end>
@@ -725,9 +761,9 @@ e00000c8:       f3c10113                addi    sp,sp,-196 # e0010000 <_stack_st
 
 e00000cc <_start>:
 e00000cc:       00000d17                auipc   s10,0x0
-e00000d0:       2c4d0d13                addi    s10,s10,708 # e0000390 <buffer_payload>
+e00000d0:       2f4d0d13                addi    s10,s10,756 # e00003c0 <buffer_payload>
 e00000d4:       00000d97                auipc   s11,0x0
-e00000d8:       2d4d8d93                addi    s11,s11,724 # e00003a8 <_bss_end>
+e00000d8:       304d8d93                addi    s11,s11,772 # e00003d8 <_bss_end>
 e00000dc:       01bd5763                bge     s10,s11,e00000ea <main_entry>
 
 e00000e0 <zero_loop>:
@@ -740,7 +776,7 @@ e00000ea <main_entry>:
 zero_loop_end():
 e00000ea:       4501                    li      a0,0
 e00000ec:       4581                    li      a1,0
-e00000ee:       1ac000ef                jal     ra,e000029a <main>
+e00000ee:       1d2000ef                jal     ra,e00002c0 <main>
 e00000f2:       c11c0537                lui     a0,0xc11c0
 e00000f6:       0561                    addi    a0,a0,24
 e00000f8:       4285                    li      t0,1
@@ -753,85 +789,86 @@ e0000102:       \-- bff5                        j       e00000fe <sleep_loop>
 
 e0000104 <initialize_memory>:
 initialize_memory():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:83
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:85
     p = (uint32_t*)0xc1170014;
     *p = 0x00009966;
 }
 
 void initialize_memory()
 {
-e0000104:           4501                        li      a0,0
-e0000106:           00000597            auipc   a1,0x0
-e000010a:           28a58593            addi    a1,a1,650 # e0000390 <buffer_payload>
-e000010e:           80720637            lui     a2,0x80720
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:84
-    buffer_payload.data = (uint8_t*)TITANSSL_ADDR_PAYLOAD;
-e0000112:           c190                        sw      a2,0(a1)
-e0000114:           6689                        lui     a3,0x2
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:85
-    buffer_payload.n = TITANSSL_SIZE_PAYLOAD;
-e0000116:           c1d4                        sw      a3,4(a1)
+e0000104:           00000517            auipc   a0,0x0
+e0000108:           2bc50513            addi    a0,a0,700 # e00003c0 <buffer_payload>
+e000010c:           e0002637            lui     a2,0xe0002
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:86
-    for (size_t i=0; i<TITANSSL_SIZE_PAYLOAD; i++) buffer_payload.data[i] = 0x0;
-e0000118:           00060023            sb      zero,0(a2) # 80720000 <fromhost+0xa070fff0>
-e000011c:           fff68613            addi    a2,a3,-1 # 1fff <_min_stack-0x1>
-e0000120:       /-> 4194                        lw      a3,0(a1)
-e0000122:       |   96aa                        add     a3,a3,a0
-e0000124:       |   0505                        addi    a0,a0,1
-e0000126:       |   000680a3            sb      zero,1(a3)
-e000012a:       \-- fec51be3            bne     a0,a2,e0000120 <initialize_memory+0x1c>
-e000012e:           00000517            auipc   a0,0x0
-e0000132:           26a50513            addi    a0,a0,618 # e0000398 <buffer_digest>
-e0000136:           80740637            lui     a2,0x80740
+    buffer_payload.data = (uint8_t*)TITANSSL_ADDR_PAYLOAD;
+e0000110:           c110                        sw      a2,0(a0)
+e0000112:           04000593            li      a1,64
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:87
+    buffer_payload.n = TITANSSL_SIZE_PAYLOAD;
+e0000116:           c14c                        sw      a1,4(a0)
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:88
+    for (size_t i=0; i<TITANSSL_SIZE_PAYLOAD; i++) buffer_payload.data[i] = 0x0;
+e0000118:           00060023            sb      zero,0(a2) # e0002000 <fromhost+0xffff1ff0>
+e000011c:           4605                        li      a2,1
+e000011e:       /-> 4114                        lw      a3,0(a0)
+e0000120:       |   96b2                        add     a3,a3,a2
+e0000122:       |   0605                        addi    a2,a2,1
+e0000124:       |   00068023            sb      zero,0(a3)
+e0000128:       \-- feb61be3            bne     a2,a1,e000011e <initialize_memory+0x1a>
+e000012c:           00000517            auipc   a0,0x0
+e0000130:           29c50513            addi    a0,a0,668 # e00003c8 <buffer_digest>
+e0000134:           e0004637            lui     a2,0xe0004
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:90
 
     buffer_digest.data = (uint8_t*)TITANSSL_ADDR_DIGEST;
-e000013a:           c110                        sw      a2,0(a0)
-e000013c:           02000593            li      a1,32
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:89
+e0000138:           c110                        sw      a2,0(a0)
+e000013a:           02000593            li      a1,32
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:91
     buffer_digest.n = TITANSSL_SIZE_DIGEST;
-e0000140:           c14c                        sw      a1,4(a0)
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:90
-    for (size_t i=0; i<TITANSSL_SIZE_DIGEST; i++) buffer_digest.data[i] = 0x0;
-e0000142:           00060023            sb      zero,0(a2) # 80740000 <fromhost+0xa072fff0>
-e0000146:           4605                        li      a2,1
-e0000148:       /-> 4114                        lw      a3,0(a0)
-e000014a:       |   96b2                        add     a3,a3,a2
-e000014c:       |   0605                        addi    a2,a2,1
-e000014e:       |   00068023            sb      zero,0(a3)
-e0000152:       \-- feb61be3            bne     a2,a1,e0000148 <initialize_memory+0x44>
-e0000156:           4501                        li      a0,0
-e0000158:           00000697            auipc   a3,0x0
-e000015c:           24868693            addi    a3,a3,584 # e00003a0 <buffer_key>
-e0000160:           e00065b7            lui     a1,0xe0006
+e000013e:           c14c                        sw      a1,4(a0)
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:92
+    for (size_t i=0; i<TITANSSL_SIZE_DIGEST; i++) buffer_digest.data[i] = 0x0;
+e0000140:           00060023            sb      zero,0(a2) # e0004000 <fromhost+0xffff3ff0>
+e0000144:           4605                        li      a2,1
+e0000146:       /-> 4114                        lw      a3,0(a0)
+e0000148:       |   96b2                        add     a3,a3,a2
+e000014a:       |   0605                        addi    a2,a2,1
+e000014c:       |   00068023            sb      zero,0(a3)
+e0000150:       \-- feb61be3            bne     a2,a1,e0000146 <initialize_memory+0x42>
+e0000154:           00000517            auipc   a0,0x0
+e0000158:           27c50513            addi    a0,a0,636 # e00003d0 <buffer_key>
+e000015c:           e0006637            lui     a2,0xe0006
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:94
 
     buffer_key.data = (uint8_t*)TITANSSL_ADDR_KEY;
-e0000164:           c28c                        sw      a1,0(a3)
-e0000166:           02000613            li      a2,32
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:93
-    buffer_key.n = TITANSSL_SIZE_KEY;
-e000016a:           c2d0                        sw      a2,4(a3)
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:94
-    for (size_t i=0; i<TITANSSL_SIZE_KEY; i++) buffer_key.data[i] = 0x0;
-e000016c:       /-> 00b506b3            add     a3,a0,a1
-e0000170:       |   0505                        addi    a0,a0,1
-e0000172:       |   00068023            sb      zero,0(a3)
-e0000176:       \-- fec51be3            bne     a0,a2,e000016c <initialize_memory+0x68>
+e0000160:           c110                        sw      a2,0(a0)
+e0000162:           02000593            li      a1,32
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:95
+    buffer_key.n = TITANSSL_SIZE_KEY;
+e0000166:           c14c                        sw      a1,4(a0)
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:96
+    for (size_t i=0; i<TITANSSL_SIZE_KEY; i++) buffer_key.data[i] = 0x0;
+e0000168:           00060023            sb      zero,0(a2) # e0006000 <fromhost+0xffff5ff0>
+e000016c:           4605                        li      a2,1
+e000016e:       /-> 4114                        lw      a3,0(a0)
+e0000170:       |   96b2                        add     a3,a3,a2
+e0000172:       |   0605                        addi    a2,a2,1
+e0000174:       |   00068023            sb      zero,0(a3)
+e0000178:       \-- feb61be3            bne     a2,a1,e000016e <initialize_memory+0x6a>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:97
 }
-e000017a:           8082                        ret
+e000017c:           8082                        ret
 
-e000017c <titanssl_benchmark_hmac>:
+e000017e <titanssl_benchmark_hmac>:
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:101
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:103
 
 void titanssl_benchmark_hmac(
         titanssl_buffer_t *const payload,
         titanssl_buffer_t *const digest,
         titanssl_buffer_t *const key)
-{
-e000017c:                       c1110637                lui     a2,0xc1110
+{//CONF
+e000017e:                       c11106b7                lui     a3,0xc1110
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
  * @param offset the offset to read at, in bytes.
@@ -840,19 +877,17 @@ mmio_region_read32():
 OT_WARN_UNUSED_RESULT
 inline uint32_t mmio_region_read32(mmio_region_t base, ptrdiff_t offset) {
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e0000180:                       4a14                    lw      a3,16(a2)
-bitfield_field32_write():
-/proc/self/cwd/./sw/device/lib/base/bitfield.h:75
- */
-OT_WARN_UNUSED_RESULT
-inline uint32_t bitfield_field32_write(uint32_t bitfield,
-                                       bitfield_field32_t field,
-                                       uint32_t value) {
-  bitfield &= ~(field.mask << field.index);
-e0000182:                       9ac1                    andi    a3,a3,-16
-/proc/self/cwd/./sw/device/lib/base/bitfield.h:76
-  bitfield |= (value & field.mask) << field.index;
-e0000184:                       0026e693                ori     a3,a3,2
+e0000182:                       4a98                    lw      a4,16(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:120
+    reg = bitfield_bit32_write(reg, HMAC_CFG_DIGEST_SWAP_BIT, false);//CONF
+    reg = bitfield_bit32_write(reg, HMAC_CFG_SHA_EN_BIT, true);//CONF
+    reg = bitfield_bit32_write(reg, HMAC_CFG_HMAC_EN_BIT, false);//CONF
+    mmio_region_write32(hmac, HMAC_CFG_REG_OFFSET, reg);//CONF
+#elif TITANSSL_CFG_OP_HMAC//CONF
+    mmio_region_write32(hmac, HMAC_KEY_0_REG_OFFSET, ((uint32_t*)key->data)[0]);//CONF
+e0000184:                       4210                    lw      a2,0(a2)
+e0000186:                       421c                    lw      a5,0(a2)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
  * @param offset the offset to write at, in bytes.
@@ -861,38 +896,102 @@ mmio_region_write32():
 inline void mmio_region_write32(mmio_region_t base, ptrdiff_t offset,
                                 uint32_t value) {
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e0000188:                       ca14                    sw      a3,16(a2)
+e0000188:                       d2dc                    sw      a5,36(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:121
+    mmio_region_write32(hmac, HMAC_KEY_1_REG_OFFSET, ((uint32_t*)key->data)[1]);//CONF
+e000018a:                       425c                    lw      a5,4(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e000018c:                       d69c                    sw      a5,40(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:122
+    mmio_region_write32(hmac, HMAC_KEY_2_REG_OFFSET, ((uint32_t*)key->data)[2]);//CONF
+e000018e:                       461c                    lw      a5,8(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e0000190:                       d6dc                    sw      a5,44(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:123
+    mmio_region_write32(hmac, HMAC_KEY_3_REG_OFFSET, ((uint32_t*)key->data)[3]);//CONF
+e0000192:                       465c                    lw      a5,12(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e0000194:                       da9c                    sw      a5,48(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:124
+    mmio_region_write32(hmac, HMAC_KEY_4_REG_OFFSET, ((uint32_t*)key->data)[4]);//CONF
+e0000196:                       4a1c                    lw      a5,16(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e0000198:                       dadc                    sw      a5,52(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:125
+    mmio_region_write32(hmac, HMAC_KEY_5_REG_OFFSET, ((uint32_t*)key->data)[5]);//CONF
+e000019a:                       4a5c                    lw      a5,20(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e000019c:                       de9c                    sw      a5,56(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:126
+    mmio_region_write32(hmac, HMAC_KEY_6_REG_OFFSET, ((uint32_t*)key->data)[6]);//CONF
+e000019e:                       4e1c                    lw      a5,24(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e00001a0:                       dedc                    sw      a5,60(a3)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:127
+    mmio_region_write32(hmac, HMAC_KEY_7_REG_OFFSET, ((uint32_t*)key->data)[7]);//CONF
+e00001a2:                       4e50                    lw      a2,28(a2)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e00001a4:                       c2b0                    sw      a2,64(a3)
+bitfield_field32_write():
+/proc/self/cwd/./sw/device/lib/base/bitfield.h:75
+ */
+OT_WARN_UNUSED_RESULT
+inline uint32_t bitfield_field32_write(uint32_t bitfield,
+                                       bitfield_field32_t field,
+                                       uint32_t value) {
+  bitfield &= ~(field.mask << field.index);
+e00001a6:                       ff077613                andi    a2,a4,-16
+/proc/self/cwd/./sw/device/lib/base/bitfield.h:76
+  bitfield |= (value & field.mask) << field.index;
+e00001aa:                       00366613                ori     a2,a2,3
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e00001ae:                       ca90                    sw      a2,16(a3)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e000018a:                       4a54                    lw      a3,20(a2)
+e00001b0:                       4ad0                    lw      a2,20(a3)
 bitfield_field32_write():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:76
-e000018c:                       0016e693                ori     a3,a3,1
+e00001b2:                       00166613                ori     a2,a2,1
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e0000190:                       ca54                    sw      a3,20(a2)
+e00001b6:                       cad0                    sw      a2,20(a3)
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:138
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:140
     // Start operations
-    mmio_region_nonatomic_set_bit32(hmac, HMAC_CMD_REG_OFFSET, HMAC_CMD_HASH_START_BIT);
+    mmio_region_nonatomic_set_bit32(hmac, HMAC_CMD_REG_OFFSET, HMAC_CMD_HASH_START_BIT);//CONF
 
     // Compute SHA256, assuming the payload address is 4-bytes aligned
-    dp = payload->data;
-    while (dp < payload->data + payload->n) 
-e0000192:                       4154                    lw      a3,4(a0)
-e0000194:       /-------------- 0ad05f63                blez    a3,e0000252 <titanssl_benchmark_hmac+0xd6>
-e0000198:       |               00052283                lw      t0,0(a0) # c1110000 <fromhost+0xe10ffff0>
-e000019c:       |               9696                    add     a3,a3,t0
-e000019e:       |               04100893                li      a7,65
-e00001a2:       |               c11113b7                lui     t2,0xc1111
-e00001a6:       |               4811                    li      a6,4
-e00001a8:       |               8796                    mv      a5,t0
+    dp = payload->data;//DIGEST
+    while (dp < payload->data + payload->n) //DIGEST
+e00001b8:                       4150                    lw      a2,4(a0)
+e00001ba:       /-------------- 0ac05f63                blez    a2,e0000278 <titanssl_benchmark_hmac+0xfa>
+e00001be:       |               00052283                lw      t0,0(a0) # c1110000 <fromhost+0xe10ffff0>
+e00001c2:       |               9616                    add     a2,a2,t0
+e00001c4:       |               04100893                li      a7,65
+e00001c8:       |               c11113b7                lui     t2,0xc1111
+e00001cc:       |               4811                    li      a6,4
+e00001ce:       |               8796                    mv      a5,t0
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e00001aa:       |  /----------> 4e18                    lw      a4,24(a2)
+e00001d0:       |  /----------> 4e98                    lw      a4,24(a3)
 bitfield_bit32_read():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:122
  */
@@ -901,394 +1000,396 @@ inline bool bitfield_bit32_read(uint32_t bitfield,
                                 bitfield_bit32_index_t bit_index) {
   return bitfield_field32_read(bitfield,
                                bitfield_bit32_to_field32(bit_index)) == 0x1u;
-e00001ac:       |  |            8b05                    andi    a4,a4,1
+e00001d2:       |  |            8b05                    andi    a4,a4,1
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:144
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:146
     {
-        uint32_t n_bytes;
-        uint32_t n_words;
+        uint32_t n_bytes;//DIGEST
+        uint32_t n_words;//DIGEST
 
         // Wait for the accelerator fifo to be empty
-        while(!mmio_region_get_bit32(hmac, HMAC_STATUS_REG_OFFSET, HMAC_STATUS_FIFO_EMPTY_BIT));
-e00001ae:       |  +----------- df75                    beqz    a4,e00001aa <titanssl_benchmark_hmac+0x2e>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:148
+        while(!mmio_region_get_bit32(hmac, HMAC_STATUS_REG_OFFSET, HMAC_STATUS_FIFO_EMPTY_BIT));//DIGEST
+e00001d4:       |  +----------- df75                    beqz    a4,e00001d0 <titanssl_benchmark_hmac+0x52>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:150
 
         // Process next 512 bits block
-        n_bytes = 16 * sizeof(uint32_t);
-        if (payload->data + payload->n - dp > n_bytes)
-e00001b0:       |  |            40f68333                sub     t1,a3,a5
-e00001b4:       |  |        /-- 07136563                bltu    t1,a7,e000021e <titanssl_benchmark_hmac+0xa2>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:151
+        n_bytes = 16 * sizeof(uint32_t);//DIGEST
+        if (payload->data + payload->n - dp > n_bytes)//DIGEST
+e00001d6:       |  |            40f60333                sub     t1,a2,a5
+e00001da:       |  |        /-- 07136563                bltu    t1,a7,e0000244 <titanssl_benchmark_hmac+0xc6>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:153
         {
             // Push data into the FIFO
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[0]);
-e00001b8:       |  |        |   4394                    lw      a3,0(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[0]);//DIGEST
+e00001de:       |  |        |   4390                    lw      a2,0(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e00001ba:       |  |        |   80d3a023                sw      a3,-2048(t2) # c1110800 <fromhost+0xe11007f0>
-titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:152
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[1]);
-e00001be:       |  |        |   43d4                    lw      a3,4(a5)
-mmio_region_write32():
-/proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001c0:       |  |        |   80d3a023                sw      a3,-2048(t2)
-titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:153
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[2]);
-e00001c4:       |  |        |   4794                    lw      a3,8(a5)
-mmio_region_write32():
-/proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001c6:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001e0:       |  |        |   80c3a023                sw      a2,-2048(t2) # c1110800 <fromhost+0xe11007f0>
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:154
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[3]);
-e00001ca:       |  |        |   47d4                    lw      a3,12(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[1]);//DIGEST
+e00001e4:       |  |        |   43d0                    lw      a2,4(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001cc:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001e6:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:155
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[4]);
-e00001d0:       |  |        |   4b94                    lw      a3,16(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[2]);//DIGEST
+e00001ea:       |  |        |   4790                    lw      a2,8(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001d2:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001ec:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:156
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[5]);
-e00001d6:       |  |        |   4bd4                    lw      a3,20(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[3]);//DIGEST
+e00001f0:       |  |        |   47d0                    lw      a2,12(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001d8:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001f2:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:157
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[6]);
-e00001dc:       |  |        |   4f94                    lw      a3,24(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[4]);//DIGEST
+e00001f6:       |  |        |   4b90                    lw      a2,16(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001de:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001f8:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:158
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[7]);
-e00001e2:       |  |        |   4fd4                    lw      a3,28(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[5]);//DIGEST
+e00001fc:       |  |        |   4bd0                    lw      a2,20(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001e4:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e00001fe:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:159
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[8]);
-e00001e8:       |  |        |   5394                    lw      a3,32(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[6]);//DIGEST
+e0000202:       |  |        |   4f90                    lw      a2,24(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001ea:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e0000204:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:160
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[9]);
-e00001ee:       |  |        |   53d4                    lw      a3,36(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[7]);//DIGEST
+e0000208:       |  |        |   4fd0                    lw      a2,28(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001f0:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e000020a:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:161
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[10]);
-e00001f4:       |  |        |   5794                    lw      a3,40(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[8]);//DIGEST
+e000020e:       |  |        |   5390                    lw      a2,32(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001f6:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e0000210:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:162
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[11]);
-e00001fa:       |  |        |   57d4                    lw      a3,44(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[9]);//DIGEST
+e0000214:       |  |        |   53d0                    lw      a2,36(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e00001fc:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e0000216:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:163
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[12]);
-e0000200:       |  |        |   5b94                    lw      a3,48(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[10]);//DIGEST
+e000021a:       |  |        |   5790                    lw      a2,40(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e0000202:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e000021c:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:164
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[13]);
-e0000206:       |  |        |   5bd4                    lw      a3,52(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[11]);//DIGEST
+e0000220:       |  |        |   57d0                    lw      a2,44(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e0000208:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e0000222:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:165
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[14]);
-e000020c:       |  |        |   5f94                    lw      a3,56(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[12]);//DIGEST
+e0000226:       |  |        |   5b90                    lw      a2,48(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e000020e:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e0000228:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:166
-            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[15]);
-e0000212:       |  |        |   5fd4                    lw      a3,60(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[13]);//DIGEST
+e000022c:       |  |        |   5bd0                    lw      a2,52(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e0000214:       |  |        |   80d3a023                sw      a3,-2048(t2)
+e000022e:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:167
-            dp += 16 * sizeof(uint32_t);
-e0000218:       |  |        |   04078793                addi    a5,a5,64
-e000021c:       |  |  /-----|-- a03d                    j       e000024a <titanssl_benchmark_hmac+0xce>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:176
-            n_bytes = payload->data + payload->n - dp;
-            n_words = n_bytes >> 2;
-            n_bytes = n_bytes & 0x3;
-
-            // Push data into the FIFO
-            for (size_t i=0; i<n_words; i++)
-e000021e:       |  |  |  /--\-X 01036a63                bltu    t1,a6,e0000232 <titanssl_benchmark_hmac+0xb6>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:172
-            n_words = n_bytes >> 2;
-e0000222:       |  |  |  |      00235693                srli    a3,t1,0x2
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:178
-            {
-                mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, *(uint32_t*)dp);
-e0000226:       |  |  |  |  /-> 4398                    lw      a4,0(a5)
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[14]);//DIGEST
+e0000232:       |  |        |   5f90                    lw      a2,56(a5)
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
-e0000228:       |  |  |  |  |   80e3a023                sw      a4,-2048(t2)
+e0000234:       |  |        |   80c3a023                sw      a2,-2048(t2)
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:176
-            for (size_t i=0; i<n_words; i++)
-e000022c:       |  |  |  |  |   16fd                    addi    a3,a3,-1
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:179
-                dp += sizeof(uint32_t);
-e000022e:       |  |  |  |  |   0791                    addi    a5,a5,4
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:176
-            for (size_t i=0; i<n_words; i++)
-e0000230:       |  |  |  |  \-- fafd                    bnez    a3,e0000226 <titanssl_benchmark_hmac+0xaa>
-e0000232:       |  |  |  \----> 00337693                andi    a3,t1,3
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:168
+            mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, ((uint32_t*)dp)[15]);//DIGEST
+e0000238:       |  |        |   5fd0                    lw      a2,60(a5)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e000023a:       |  |        |   80c3a023                sw      a2,-2048(t2)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:169
+            dp += 16 * sizeof(uint32_t);//DIGEST
+e000023e:       |  |        |   04078793                addi    a5,a5,64
+e0000242:       |  |  /-----|-- a03d                    j       e0000270 <titanssl_benchmark_hmac+0xf2>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:178
+            n_bytes = payload->data + payload->n - dp;//DIGEST
+            n_words = n_bytes >> 2;//DIGEST
+            n_bytes = n_bytes & 0x3;//DIGEST
+
+            // Push data into the FIFO
+            for (size_t i=0; i<n_words; i++)//DIGEST
+e0000244:       |  |  |  /--\-X 01036a63                bltu    t1,a6,e0000258 <titanssl_benchmark_hmac+0xda>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:174
+            n_words = n_bytes >> 2;//DIGEST
+e0000248:       |  |  |  |      00235613                srli    a2,t1,0x2
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:180
+            {//DIGEST
+                mmio_region_write32(hmac, HMAC_MSG_FIFO_REG_OFFSET, *(uint32_t*)dp);//DIGEST
+e000024c:       |  |  |  |  /-> 4398                    lw      a4,0(a5)
+mmio_region_write32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:145
+e000024e:       |  |  |  |  |   80e3a023                sw      a4,-2048(t2)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:178
+            for (size_t i=0; i<n_words; i++)//DIGEST
+e0000252:       |  |  |  |  |   167d                    addi    a2,a2,-1
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:181
-            }
-            for (size_t i=0; i<n_bytes; i++)
-e0000236:       |  |  +-------- ca91                    beqz    a3,e000024a <titanssl_benchmark_hmac+0xce>
+                dp += sizeof(uint32_t);//DIGEST
+e0000254:       |  |  |  |  |   0791                    addi    a5,a5,4
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:178
+            for (size_t i=0; i<n_words; i++)//DIGEST
+e0000256:       |  |  |  |  \-- fa7d                    bnez    a2,e000024c <titanssl_benchmark_hmac+0xce>
+e0000258:       |  |  |  \----> 00337613                andi    a2,t1,3
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:183
-            {
-                mmio_region_write8(hmac, HMAC_MSG_FIFO_REG_OFFSET, *dp);
-e0000238:       |  |  |     /-> 00078703                lb      a4,0(a5)
+            }//DIGEST
+            for (size_t i=0; i<n_bytes; i++)//DIGEST
+e000025c:       |  |  +-------- ca11                    beqz    a2,e0000270 <titanssl_benchmark_hmac+0xf2>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:185
+            {//DIGEST
+                mmio_region_write8(hmac, HMAC_MSG_FIFO_REG_OFFSET, *dp);//DIGEST
+e000025e:       |  |  |     /-> 00078703                lb      a4,0(a5)
 mmio_region_write8():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:112
   ((volatile uint8_t *)base.base)[offset / sizeof(uint8_t)] = value;
-e000023c:       |  |  |     |   80e38023                sb      a4,-2048(t2)
+e0000262:       |  |  |     |   80e38023                sb      a4,-2048(t2)
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:181
-            for (size_t i=0; i<n_bytes; i++)
-e0000240:       |  |  |     |   16fd                    addi    a3,a3,-1
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:184
-                dp += 1;
-e0000242:       |  |  |     |   0785                    addi    a5,a5,1
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:181
-            for (size_t i=0; i<n_bytes; i++)
-e0000244:       |  |  |     \-- faf5                    bnez    a3,e0000238 <titanssl_benchmark_hmac+0xbc>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:138
-    while (dp < payload->data + payload->n) 
-e0000246:       |  |  |         00052283                lw      t0,0(a0)
-e000024a:       |  |  \-------> 4154                    lw      a3,4(a0)
-e000024c:       |  |            9696                    add     a3,a3,t0
-e000024e:       |  \----------- f4d7eee3                bltu    a5,a3,e00001aa <titanssl_benchmark_hmac+0x2e>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:183
+            for (size_t i=0; i<n_bytes; i++)//DIGEST
+e0000266:       |  |  |     |   167d                    addi    a2,a2,-1
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:186
+                dp += 1;//DIGEST
+e0000268:       |  |  |     |   0785                    addi    a5,a5,1
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:183
+            for (size_t i=0; i<n_bytes; i++)//DIGEST
+e000026a:       |  |  |     \-- fa75                    bnez    a2,e000025e <titanssl_benchmark_hmac+0xe0>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:140
+    while (dp < payload->data + payload->n) //DIGEST
+e000026c:       |  |  |         00052283                lw      t0,0(a0)
+e0000270:       |  |  \-------> 4150                    lw      a2,4(a0)
+e0000272:       |  |            9616                    add     a2,a2,t0
+e0000274:       |  \----------- f4c7eee3                bltu    a5,a2,e00001d0 <titanssl_benchmark_hmac+0x52>
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e0000252:       \-------------> 4a48                    lw      a0,20(a2)
+e0000278:       \-------------> 4ac8                    lw      a0,20(a3)
 bitfield_field32_write():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:76
   bitfield |= (value & field.mask) << field.index;
-e0000254:                       00256513                ori     a0,a0,2
-e0000258:                       01460693                addi    a3,a2,20 # c1110014 <fromhost+0xe1100004>
+e000027a:                       00256513                ori     a0,a0,2
+e000027e:                       01468613                addi    a2,a3,20 # c1110014 <fromhost+0xe1100004>
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e000025c:                       c288                    sw      a0,0(a3)
+e0000282:                       c208                    sw      a0,0(a2)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e000025e:                   /-> 4208                    lw      a0,0(a2)
+e0000284:                   /-> 4288                    lw      a0,0(a3)
 bitfield_bit32_read():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:122
                                bitfield_bit32_to_field32(bit_index)) == 0x1u;
-e0000260:                   |   8905                    andi    a0,a0,1
+e0000286:                   |   8905                    andi    a0,a0,1
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:191
-        }
-    }
-    mmio_region_nonatomic_set_bit32(hmac, HMAC_CMD_REG_OFFSET, HMAC_CMD_HASH_PROCESS_BIT);
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:193
+        }//DIGEST
+    }//DIGEST
+    mmio_region_nonatomic_set_bit32(hmac, HMAC_CMD_REG_OFFSET, HMAC_CMD_HASH_PROCESS_BIT);//FINAL
 
     // Wait for SHA-256 completion
-    while (!mmio_region_get_bit32(hmac, HMAC_INTR_STATE_REG_OFFSET, HMAC_INTR_STATE_HMAC_DONE_BIT));
-e0000262:                   \-- dd75                    beqz    a0,e000025e <titanssl_benchmark_hmac+0xe2>
-e0000264:                       c1110537                lui     a0,0xc1110
+    while (!mmio_region_get_bit32(hmac, HMAC_INTR_STATE_REG_OFFSET, HMAC_INTR_STATE_HMAC_DONE_BIT));//FINAL
+e0000288:                   \-- dd75                    beqz    a0,e0000284 <titanssl_benchmark_hmac+0x106>
+e000028a:                       c1110537                lui     a0,0xc1110
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e0000268:                       4110                    lw      a2,0(a0)
+e000028e:                       4110                    lw      a2,0(a0)
 bitfield_field32_write():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:76
   bitfield |= (value & field.mask) << field.index;
-e000026a:                       00166613                ori     a2,a2,1
+e0000290:                       00166613                ori     a2,a2,1
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e000026e:                       c110                    sw      a2,0(a0)
+e0000294:                       c110                    sw      a2,0(a0)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
   return ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)];
-e0000270:                       4170                    lw      a2,68(a0)
-titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:195
-    mmio_region_nonatomic_set_bit32(hmac, HMAC_INTR_STATE_REG_OFFSET, HMAC_INTR_STATE_HMAC_DONE_BIT);
-
-    // Copy the digest
-    ((uint32_t*)(digest->data))[0] = mmio_region_read32(hmac, HMAC_DIGEST_0_REG_OFFSET);
-e0000272:                       418c                    lw      a1,0(a1)
-e0000274:                       c190                    sw      a2,0(a1)
-mmio_region_read32():
-/proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e0000276:                       4530                    lw      a2,72(a0)
-titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:196
-    ((uint32_t*)(digest->data))[1] = mmio_region_read32(hmac, HMAC_DIGEST_1_REG_OFFSET);
-e0000278:                       c1d0                    sw      a2,4(a1)
-mmio_region_read32():
-/proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e000027a:                       4570                    lw      a2,76(a0)
+e0000296:                       4170                    lw      a2,68(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:197
-    ((uint32_t*)(digest->data))[2] = mmio_region_read32(hmac, HMAC_DIGEST_2_REG_OFFSET);
-e000027c:                       c590                    sw      a2,8(a1)
+    mmio_region_nonatomic_set_bit32(hmac, HMAC_INTR_STATE_REG_OFFSET, HMAC_INTR_STATE_HMAC_DONE_BIT);//FINAL
+
+    // Copy the digest
+    ((uint32_t*)(digest->data))[0] = mmio_region_read32(hmac, HMAC_DIGEST_0_REG_OFFSET);//FINAL
+e0000298:                       418c                    lw      a1,0(a1)
+e000029a:                       c190                    sw      a2,0(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e000027e:                       4930                    lw      a2,80(a0)
+e000029c:                       4530                    lw      a2,72(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:198
-    ((uint32_t*)(digest->data))[3] = mmio_region_read32(hmac, HMAC_DIGEST_3_REG_OFFSET);
-e0000280:                       c5d0                    sw      a2,12(a1)
+    ((uint32_t*)(digest->data))[1] = mmio_region_read32(hmac, HMAC_DIGEST_1_REG_OFFSET);//FINAL
+e000029e:                       c1d0                    sw      a2,4(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e0000282:                       4970                    lw      a2,84(a0)
+e00002a0:                       4570                    lw      a2,76(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:199
-    ((uint32_t*)(digest->data))[4] = mmio_region_read32(hmac, HMAC_DIGEST_4_REG_OFFSET);
-e0000284:                       c990                    sw      a2,16(a1)
+    ((uint32_t*)(digest->data))[2] = mmio_region_read32(hmac, HMAC_DIGEST_2_REG_OFFSET);//FINAL
+e00002a2:                       c590                    sw      a2,8(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e0000286:                       4d30                    lw      a2,88(a0)
+e00002a4:                       4930                    lw      a2,80(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:200
-    ((uint32_t*)(digest->data))[5] = mmio_region_read32(hmac, HMAC_DIGEST_5_REG_OFFSET);
-e0000288:                       c9d0                    sw      a2,20(a1)
+    ((uint32_t*)(digest->data))[3] = mmio_region_read32(hmac, HMAC_DIGEST_3_REG_OFFSET);//FINAL
+e00002a6:                       c5d0                    sw      a2,12(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e000028a:                       4d70                    lw      a2,92(a0)
+e00002a8:                       4970                    lw      a2,84(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:201
-    ((uint32_t*)(digest->data))[6] = mmio_region_read32(hmac, HMAC_DIGEST_6_REG_OFFSET);
-e000028c:                       cd90                    sw      a2,24(a1)
+    ((uint32_t*)(digest->data))[4] = mmio_region_read32(hmac, HMAC_DIGEST_4_REG_OFFSET);//FINAL
+e00002aa:                       c990                    sw      a2,16(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e000028e:                       5130                    lw      a2,96(a0)
+e00002ac:                       4d30                    lw      a2,88(a0)
 titanssl_benchmark_hmac():
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:202
-    ((uint32_t*)(digest->data))[7] = mmio_region_read32(hmac, HMAC_DIGEST_7_REG_OFFSET);
-e0000290:                       cdd0                    sw      a2,28(a1)
+    ((uint32_t*)(digest->data))[5] = mmio_region_read32(hmac, HMAC_DIGEST_5_REG_OFFSET);//FINAL
+e00002ae:                       c9d0                    sw      a2,20(a1)
 mmio_region_read32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:96
-e0000292:                       490c                    lw      a1,16(a0)
+e00002b0:                       4d70                    lw      a2,92(a0)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:203
+    ((uint32_t*)(digest->data))[6] = mmio_region_read32(hmac, HMAC_DIGEST_6_REG_OFFSET);//FINAL
+e00002b2:                       cd90                    sw      a2,24(a1)
+mmio_region_read32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:96
+e00002b4:                       5130                    lw      a2,96(a0)
+titanssl_benchmark_hmac():
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:204
+    ((uint32_t*)(digest->data))[7] = mmio_region_read32(hmac, HMAC_DIGEST_7_REG_OFFSET);//FINAL
+e00002b6:                       cdd0                    sw      a2,28(a1)
+mmio_region_read32():
+/proc/self/cwd/./sw/device/lib/base/mmio.h:96
+e00002b8:                       490c                    lw      a1,16(a0)
 bitfield_field32_write():
 /proc/self/cwd/./sw/device/lib/base/bitfield.h:75
   bitfield &= ~(field.mask << field.index);
-e0000294:                       99f1                    andi    a1,a1,-4
+e00002ba:                       99f1                    andi    a1,a1,-4
 mmio_region_write32():
 /proc/self/cwd/./sw/device/lib/base/mmio.h:145
   ((volatile uint32_t *)base.base)[offset / sizeof(uint32_t)] = value;
-e0000296:                       c90c                    sw      a1,16(a0)
+e00002bc:                       c90c                    sw      a1,16(a0)
 titanssl_benchmark_hmac():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:209
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:211
     // Disable HMAC IP
-    reg = mmio_region_read32(hmac, HMAC_CFG_REG_OFFSET);
-    reg = bitfield_bit32_write(reg, HMAC_CFG_SHA_EN_BIT, false);
-    reg = bitfield_bit32_write(reg, HMAC_CFG_HMAC_EN_BIT, false);
-    mmio_region_write32(hmac, HMAC_CFG_REG_OFFSET, reg);
-}
-e0000298:                       8082                    ret
+    reg = mmio_region_read32(hmac, HMAC_CFG_REG_OFFSET);//FINAL
+    reg = bitfield_bit32_write(reg, HMAC_CFG_SHA_EN_BIT, false);//FINAL
+    reg = bitfield_bit32_write(reg, HMAC_CFG_HMAC_EN_BIT, false);//FINAL
+    mmio_region_write32(hmac, HMAC_CFG_REG_OFFSET, reg);//FINAL
+}//FINAL
+e00002be:                       8082                    ret
 
-e000029a <main>:
+e00002c0 <main>:
 main():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:214
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:216
 
 int main(
         int argc, 
         char **argv)
 {
-e000029a:       1141                    addi    sp,sp,-16
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:222
+e00002c0:       1141                    addi    sp,sp,-16
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:224
 #define test_freq 50000000
 #else
 #define baud_rate 115200
 #define test_freq 100000000
 #endif
         uart_set_cfg(
-e000029c:       c606                    sw      ra,12(sp)
-e000029e:       45ed                    li      a1,27
-e00002a0:       4501                    li      a0,0
-e00002a2:       2099                    jal     e00002e8 <uart_set_cfg>
-e00002a4:       00909537                lui     a0,0x909
-e00002a8:       09950513                addi    a0,a0,153 # 909099 <tohost+0x8e9091>
-e00002ac:       c11605b7                lui     a1,0xc1160
+e00002c2:       c606                    sw      ra,12(sp)
+e00002c4:       45ed                    li      a1,27
+e00002c6:       4501                    li      a0,0
+e00002c8:       20b9                    jal     e0000316 <uart_set_cfg>
+e00002ca:       00909537                lui     a0,0x909
+e00002ce:       09950513                addi    a0,a0,153 # 909099 <tohost+0x8e9091>
+e00002d2:       c11605b7                lui     a1,0xc1160
 initialize_edn():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:73
-    *p = 0x00909099;
-e00002b0:       d1c8                    sw      a0,36(a1)
-e00002b2:       4519                    li      a0,6
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:75
-    *p = 0x00000006;
-e00002b4:       d188                    sw      a0,32(a1)
-e00002b6:       c1150537                lui     a0,0xc1150
-e00002ba:       66600593                li      a1,1638
+    *p = 0x00909099;
+e00002d6:       d1c8                    sw      a0,36(a1)
+e00002d8:       4519                    li      a0,6
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:77
-    *p = 0x00000666;
-e00002be:       c94c                    sw      a1,20(a0)
-e00002c0:       6529                    lui     a0,0xa
-e00002c2:       96650513                addi    a0,a0,-1690 # 9966 <_stack_len+0x1966>
-e00002c6:       c11705b7                lui     a1,0xc1170
+    *p = 0x00000006;
+e00002da:       d188                    sw      a0,32(a1)
+e00002dc:       c1150537                lui     a0,0xc1150
+e00002e0:       66600593                li      a1,1638
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:79
+    *p = 0x00000666;
+e00002e4:       c94c                    sw      a1,20(a0)
+e00002e6:       6529                    lui     a0,0xa
+e00002e8:       96650513                addi    a0,a0,-1690 # 9966 <_stack_len+0x1966>
+e00002ec:       c11705b7                lui     a1,0xc1170
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:81
     *p = 0x00009966;
-e00002ca:       c9c8                    sw      a0,20(a1)
+e00002f0:       c9c8                    sw      a0,20(a1)
 main():
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:228
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:230
         0,
         (test_freq/baud_rate)>>4
     );
 
     initialize_edn();
     initialize_memory();
-e00002cc:       3d25                    jal     e0000104 <initialize_memory>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:229
+e00002f2:       3d09                    jal     e0000104 <initialize_memory>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:231
     titanssl_benchmark_hmac(
-e00002ce:       00000517                auipc   a0,0x0
-e00002d2:       0c250513                addi    a0,a0,194 # e0000390 <buffer_payload>
-e00002d6:       00000597                auipc   a1,0x0
-e00002da:       0c258593                addi    a1,a1,194 # e0000398 <buffer_digest>
-e00002de:       3d79                    jal     e000017c <titanssl_benchmark_hmac>
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:243
+e00002f4:       00000517                auipc   a0,0x0
+e00002f8:       0cc50513                addi    a0,a0,204 # e00003c0 <buffer_payload>
+e00002fc:       00000597                auipc   a1,0x0
+e0000300:       0cc58593                addi    a1,a1,204 # e00003c8 <buffer_digest>
+e0000304:       00000617                auipc   a2,0x0
+e0000308:       0cc60613                addi    a2,a2,204 # e00003d0 <buffer_key>
+e000030c:       3d8d                    jal     e000017e <titanssl_benchmark_hmac>
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac/titanssl_sram_hmac.c:245
                 printf("0x%02x\r\n", buffer_digest.data[i]);
         uart_wait_tx_done();
         }
 #endif
 
         return 0;
-e00002e0:       4501                    li      a0,0
-e00002e2:       40b2                    lw      ra,12(sp)
-e00002e4:       0141                    addi    sp,sp,16
-e00002e6:       8082                    ret
+e000030e:       4501                    li      a0,0
+e0000310:       40b2                    lw      ra,12(sp)
+e0000312:       0141                    addi    sp,sp,16
+e0000314:       8082                    ret
 
-e00002e8 <uart_set_cfg>:
+e0000316 <uart_set_cfg>:
 uart_set_cfg():
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:42
   putchar('\n');
@@ -1297,40 +1398,40 @@ uart_set_cfg():
 
 
 void uart_set_cfg(int parity, uint16_t clk_counter) {
-e00002e8:       40000537                lui     a0,0x40000
-e00002ec:       08300613                li      a2,131
+e0000316:       40000537                lui     a0,0x40000
+e000031a:       08300613                li      a2,131
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:44
   unsigned int i;
   *(volatile unsigned int*)(UART_REG_LCR) = 0x83; //sets 8N1 and set DLAB to 1
-e00002f0:       c550                    sw      a2,12(a0)
+e000031e:       c550                    sw      a2,12(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:45
   *(volatile unsigned int*)(UART_REG_DLM) = (clk_counter >> 8) & 0xFF;
-e00002f2:       0085d613                srli    a2,a1,0x8
-e00002f6:       c150                    sw      a2,4(a0)
+e0000320:       0085d613                srli    a2,a1,0x8
+e0000324:       c150                    sw      a2,4(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:46
   *(volatile unsigned int*)(UART_REG_DLL) =  clk_counter       & 0xFF;
-e00002f8:       0ff5f593                andi    a1,a1,255
-e00002fc:       c10c                    sw      a1,0(a0)
-e00002fe:       0a700593                li      a1,167
+e0000326:       0ff5f593                andi    a1,a1,255
+e000032a:       c10c                    sw      a1,0(a0)
+e000032c:       0a700593                li      a1,167
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:47
   *(volatile unsigned int*)(UART_REG_FCR) = 0xA7; //enables 16byte FIFO and clear FIFOs
-e0000302:       c50c                    sw      a1,8(a0)
-e0000304:       458d                    li      a1,3
+e0000330:       c50c                    sw      a1,8(a0)
+e0000332:       458d                    li      a1,3
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:48
   *(volatile unsigned int*)(UART_REG_LCR) = 0x03; //sets 8N1 and set DLAB to 0
-e0000306:       c54c                    sw      a1,12(a0)
+e0000334:       c54c                    sw      a1,12(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:50
 
   *(volatile unsigned int*)(UART_REG_IER) = ((*(volatile unsigned int*)(UART_REG_IER)) & 0xF0) | 0x02; // set IER (interrupt enable register) on UART
-e0000308:       414c                    lw      a1,4(a0)
-e000030a:       0f05f593                andi    a1,a1,240
-e000030e:       0025e593                ori     a1,a1,2
-e0000312:       c14c                    sw      a1,4(a0)
+e0000336:       414c                    lw      a1,4(a0)
+e0000338:       0f05f593                andi    a1,a1,240
+e000033c:       0025e593                ori     a1,a1,2
+e0000340:       c14c                    sw      a1,4(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:51
 }
-e0000314:       8082                    ret
+e0000342:       8082                    ret
 
-e0000316 <external_irq_handler>:
+e0000344 <external_irq_handler>:
 external_irq_handler():
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:338
   putchar('\n');
@@ -1339,16 +1440,16 @@ external_irq_handler():
 }
 
 void external_irq_handler(void)  {
-e0000316:           1101                        addi    sp,sp,-32
-e0000318:           ce2a                        sw      a0,28(sp)
-e000031a:           cc2e                        sw      a1,24(sp)
-e000031c:           ca32                        sw      a2,20(sp)
-e000031e:           c836                        sw      a3,16(sp)
-e0000320:           c63a                        sw      a4,12(sp)
-e0000322:           c43e                        sw      a5,8(sp)
-e0000324:           c242                        sw      a6,4(sp)
-e0000326:           c8200537            lui     a0,0xc8200
-e000032a:           09f00593            li      a1,159
+e0000344:           1101                        addi    sp,sp,-32
+e0000346:           ce2a                        sw      a0,28(sp)
+e0000348:           cc2e                        sw      a1,24(sp)
+e000034a:           ca32                        sw      a2,20(sp)
+e000034c:           c836                        sw      a3,16(sp)
+e000034e:           c63a                        sw      a4,12(sp)
+e0000350:           c43e                        sw      a5,8(sp)
+e0000352:           c242                        sw      a6,4(sp)
+e0000354:           c8200537            lui     a0,0xc8200
+e0000358:           09f00593            li      a1,159
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:355
   p_reg5 = (int *) 0x1040401C;
 
@@ -1356,69 +1457,69 @@ e000032a:           09f00593            li      a1,159
   
   plic_check = (int *) 0xC8200004;
   while(*plic_check != mbox_id);   //check wether the intr is the correct one
-e000032e:       /-> 4150                        lw      a2,4(a0)
-e0000330:       \-- feb61fe3            bne     a2,a1,e000032e <external_irq_handler+0x18>
-e0000334:           10404537            lui     a0,0x10404
+e000035c:       /-> 4150                        lw      a2,4(a0)
+e000035e:       \-- feb61fe3            bne     a2,a1,e000035c <external_irq_handler+0x18>
+e0000362:           10404537            lui     a0,0x10404
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:358
   
   p_reg = (int *) 0x10404020;
  *p_reg = 0x00000000;        //clearing the pending interrupt signal
-e0000338:           02052023            sw      zero,32(a0) # 10404020 <tohost+0x103e4018>
-e000033c:           c82005b7            lui     a1,0xc8200
-e0000340:           09f00613            li      a2,159
+e0000366:           02052023            sw      zero,32(a0) # 10404020 <tohost+0x103e4018>
+e000036a:           c82005b7            lui     a1,0xc8200
+e000036e:           09f00613            li      a2,159
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:360
  
  *plic_check = mbox_id;      //completing interrupt
-e0000344:           c1d0                        sw      a2,4(a1)
+e0000372:           c1d0                        sw      a2,4(a1)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:362
  
   a = *p_reg1;
-e0000346:           450c                        lw      a1,8(a0)
+e0000374:           450c                        lw      a1,8(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:363
   b = *p_reg2;
-e0000348:           4910                        lw      a2,16(a0)
+e0000376:           4910                        lw      a2,16(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:364
   c = *p_reg3;
-e000034a:           4954                        lw      a3,20(a0)
+e0000378:           4954                        lw      a3,20(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:365
   d = *p_reg4;
-e000034c:           4d18                        lw      a4,24(a0)
+e000037a:           4d18                        lw      a4,24(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:366
   e = *p_reg5;
-e000034e:           01c52803            lw      a6,28(a0)
-e0000352:           baadc7b7            lui     a5,0xbaadc
-e0000356:           0de78793            addi    a5,a5,222 # baadc0de <fromhost+0xdaacc0ce>
+e000037c:           01c52803            lw      a6,28(a0)
+e0000380:           baadc7b7            lui     a5,0xbaadc
+e0000384:           0de78793            addi    a5,a5,222 # baadc0de <fromhost+0xdaacc0ce>
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:369
   
   
   if( a == 0xBAADC0DE &&  b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
-e000035a:           8dbd                        xor     a1,a1,a5
-e000035c:           8e3d                        xor     a2,a2,a5
-e000035e:           8dd1                        or      a1,a1,a2
-e0000360:           00f6c633            xor     a2,a3,a5
-e0000364:           8dd1                        or      a1,a1,a2
-e0000366:           00f74633            xor     a2,a4,a5
-e000036a:           8dd1                        or      a1,a1,a2
-e000036c:           00f84633            xor     a2,a6,a5
-e0000370:           8dd1                        or      a1,a1,a2
-e0000372:       /-- e589                        bnez    a1,e000037c <external_irq_handler+0x66>
-e0000374:       |   02450513            addi    a0,a0,36
-e0000378:       |   4585                        li      a1,1
+e0000388:           8dbd                        xor     a1,a1,a5
+e000038a:           8e3d                        xor     a2,a2,a5
+e000038c:           8dd1                        or      a1,a1,a2
+e000038e:           00f6c633            xor     a2,a3,a5
+e0000392:           8dd1                        or      a1,a1,a2
+e0000394:           00f74633            xor     a2,a4,a5
+e0000398:           8dd1                        or      a1,a1,a2
+e000039a:           00f84633            xor     a2,a6,a5
+e000039e:           8dd1                        or      a1,a1,a2
+e00003a0:       /-- e589                        bnez    a1,e00003aa <external_irq_handler+0x66>
+e00003a2:       |   02450513            addi    a0,a0,36
+e00003a6:       |   4585                        li      a1,1
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:371
       p_reg = (int *) 0x10404024; // completion interrupt to ariane agent
      *p_reg = 0x00000001;
-e000037a:       |   c10c                        sw      a1,0(a0)
+e00003a8:       |   c10c                        sw      a1,0(a0)
 /proc/self/cwd/sw/tests/opentitan/common/utils.c:375
   }
   
   return;
 }
-e000037c:       \-> 4812                        lw      a6,4(sp)
-e000037e:           47a2                        lw      a5,8(sp)
-e0000380:           4732                        lw      a4,12(sp)
-e0000382:           46c2                        lw      a3,16(sp)
-e0000384:           4652                        lw      a2,20(sp)
-e0000386:           45e2                        lw      a1,24(sp)
-e0000388:           4572                        lw      a0,28(sp)
-e000038a:           6105                        addi    sp,sp,32
-e000038c:           30200073            mret
+e00003aa:       \-> 4812                        lw      a6,4(sp)
+e00003ac:           47a2                        lw      a5,8(sp)
+e00003ae:           4732                        lw      a4,12(sp)
+e00003b0:           46c2                        lw      a3,16(sp)
+e00003b2:           4652                        lw      a2,20(sp)
+e00003b4:           45e2                        lw      a1,24(sp)
+e00003b6:           4572                        lw      a0,28(sp)
+e00003b8:           6105                        addi    sp,sp,32
+e00003ba:           30200073            mret

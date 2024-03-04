@@ -19,6 +19,16 @@
 
 #define TARGET_SYNTHESIS
 
+#define IDMA_BASE 		 0xfef00000
+#define TCDM_BASE      0xfff01000
+#define L2_BASE        0x1C001000
+#define L3_BASE        0x80000000
+
+#define IDMA_SRC_ADDR_OFFSET         0x00
+#define IDMA_DST_ADDR_OFFSET         0x04
+#define IDMA_LENGTH_OFFSET           0x08
+#define IDMA_NEXT_ID_OFFSET          0x20
+#define IDMA_DONE_ID_OFFSET          0x24
 
 typedef struct
 {
@@ -26,7 +36,10 @@ typedef struct
     uint32_t n;
 } titanssl_buffer_t;
 
+int next_id, new_next_id;
 
+static titanssl_buffer_t buffer_plain_idma;
+static titanssl_buffer_t buffer_cipher_idma;
 static titanssl_buffer_t buffer_plain;
 static titanssl_buffer_t buffer_cipher;
 static titanssl_buffer_t buffer_modulus;
@@ -62,10 +75,12 @@ static const otbn_addr_t kOtbnVarRsaExp = OTBN_ADDR_T_INIT(rsa, exp);
  * ========================================================================= */
 
 #if TITANSSL_CFG_MEM_L3
-#define TITANSSL_ADDR_PLAIN   0x80710000
-#define TITANSSL_ADDR_CIPHER  0x80720000
-#define TITANSSL_ADDR_MODULUS 0xe0004000
-#define TITANSSL_ADDR_PRIVATE 0xe0005000
+#define TITANSSL_ADDR_PLAIN_IDMA  0xfff00000
+#define TITANSSL_ADDR_CIPHER_IDMA 0xfff04000
+#define TITANSSL_ADDR_PLAIN       0x80710000
+#define TITANSSL_ADDR_CIPHER      0x80720000
+#define TITANSSL_ADDR_MODULUS     0xe0004000
+#define TITANSSL_ADDR_PRIVATE     0xe0005000
 #elif TITANSSL_CFG_MEM_L1
 #define TITANSSL_ADDR_PLAIN   0xe0002000
 #define TITANSSL_ADDR_CIPHER  0xe0003000
@@ -160,8 +175,38 @@ static const uint8_t TITANSSL_TEST_OUTPUT[TITANSSL_SIZE_KEY] = {
  * Benchmark implementation
  * ========================================================================= */
 
+void wait_for_idma_eot(int next_id){
+    volatile uint32_t *ptr;
+    ptr = (uint32_t *) 0xfef00024 ;
+    while(*ptr!=next_id)
+      asm volatile("nop");
+}
+
+int issue_idma_transaction(uint32_t src_addr, uint32_t dst_addr, uint32_t num_bytes){
+    volatile uint32_t * ptr, buff;
+    ptr = (uint32_t *) (IDMA_BASE + IDMA_SRC_ADDR_OFFSET);
+    *ptr = src_addr;
+    ptr = (uint32_t *) (IDMA_BASE + IDMA_DST_ADDR_OFFSET);
+    *ptr = dst_addr;
+    ptr = (uint32_t *) (IDMA_BASE + IDMA_LENGTH_OFFSET);
+    *ptr = num_bytes;
+    ptr = (uint32_t *) (IDMA_BASE + IDMA_NEXT_ID_OFFSET);
+    buff = *ptr;
+    return *ptr;
+}
+
 void initialize_memory()
 {
+#if TITANSSL_CFG_MEM_L3
+    buffer_plain_idma.data = (uint8_t*)TITANSSL_ADDR_PLAIN_IDMA;
+    buffer_plain_idma.n = TITANSSL_SIZE_KEY;
+    for (size_t i=0; i<TITANSSL_SIZE_KEY; i++) buffer_plain_idma.data[i] = TITANSSL_TEST_PLAIN[i];
+
+    buffer_cipher_idma.data = (uint8_t*)TITANSSL_ADDR_CIPHER_IDMA;
+    buffer_cipher_idma.n = TITANSSL_SIZE_KEY;
+    for (size_t i=0; i<TITANSSL_SIZE_KEY; i++) buffer_cipher_idma.data[i] = 0x0;
+#endif
+
     buffer_plain.data = (uint8_t*)TITANSSL_ADDR_PLAIN;
     buffer_plain.n = TITANSSL_SIZE_KEY;
     for (size_t i=0; i<TITANSSL_SIZE_KEY; i++) buffer_plain.data[i] = TITANSSL_TEST_PLAIN[i];
@@ -214,20 +259,21 @@ void titanssl_benchmark_memcpy32_aligned_to_otbn(
 {
     size_t n_words;
     size_t n_bytes;
-
+    /*
     printf("=== titanssl_benchmark_memcpy32_aligned_to_otbn ===\r\n");
     printf("offset: %d\r\n", offset);
     printf("src: 0x%08x\r\n", src);
     printf("n: %d\r\n", n);
-
+    */
     n_words = n / sizeof(uint32_t);
-    printf("n_words: %d\r\n", n_words);
+    //printf("n_words: %d\r\n", n_words);
     for (size_t i=0; i<n_words; i++)
     {
-        printf("    i: %d\r\n", i);
+      /*printf("    i: %d\r\n", i);
         printf("    *src: 0x%08x\r\n", *(uint32_t*)src);
         printf("    src: 0x%08x\r\n", src);
         printf("    offset: 0x%08x\r\n", offset);
+      */
         mmio_region_write32(otbn, offset, *(uint32_t*)src);
         src += sizeof(uint32_t);
         offset += sizeof(uint32_t);
@@ -242,6 +288,8 @@ void titanssl_benchmark_memcpy32_aligned_to_otbn(
 }
 
 void titanssl_benchmark_rsa_enc(
+        titanssl_buffer_t *const plain_idma,
+        titanssl_buffer_t *const cipher_idma,
         titanssl_buffer_t *const plain,
         titanssl_buffer_t *const cipher,
         titanssl_buffer_t *const modulus)
@@ -249,6 +297,13 @@ void titanssl_benchmark_rsa_enc(
     mmio_region_t otbn;
     uint32_t reg;
 
+    // Move payload from L3 to TCDM with iDMA
+    
+#if TITANSSL_CFG_MEM_L3
+    uint32_t src_addr_int = (uint32_t)(uintptr_t)plain->data;//CONF
+    uint32_t dst_addr_int = (uint32_t)(uintptr_t)plain_idma->data;//CONF
+    next_id = issue_idma_transaction(src_addr_int, dst_addr_int, plain_idma->n);//CONF
+#endif
     // Get OTBN base address
     otbn = mmio_region_from_addr(TOP_EARLGREY_OTBN_BASE_ADDR);
 
@@ -277,6 +332,16 @@ void titanssl_benchmark_rsa_enc(
         modulus->data, 
         TITANSSL_SIZE_KEY
     );
+#if TITANSSL_CFG_MEM_L3
+    wait_for_idma_eot(next_id); //CONF
+    //mmio_region_memcpy_to_mmio32(otbn, OTBN_DMEM_REG_OFFSET+kOtbnVarRsaModulus, modulus->data, TITANSSL_SIZE_KEY);
+    titanssl_benchmark_memcpy32_aligned_to_otbn(
+        otbn,
+        OTBN_DMEM_REG_OFFSET+kOtbnVarRsaInOut, 
+        plain_idma->data, 
+        TITANSSL_SIZE_KEY
+    );
+#else
     //mmio_region_memcpy_to_mmio32(otbn, OTBN_DMEM_REG_OFFSET+kOtbnVarRsaModulus, modulus->data, TITANSSL_SIZE_KEY);
     titanssl_benchmark_memcpy32_aligned_to_otbn(
         otbn,
@@ -284,6 +349,7 @@ void titanssl_benchmark_rsa_enc(
         plain->data, 
         TITANSSL_SIZE_KEY
     );
+#endif
     //mmio_region_memcpy_to_mmio32(otbn, OTBN_DMEM_REG_OFFSET+kOtbnVarRsaInOut, plain->data, TITANSSL_SIZE_KEY);
 
     // Call OTBN to perform operation, and wait for it to complete
@@ -293,7 +359,19 @@ void titanssl_benchmark_rsa_enc(
         reg = mmio_region_read32(otbn, OTBN_STATUS_REG_OFFSET);
     } while(bitfield_field32_read(reg, OTBN_STATUS_STATUS_FIELD));
     if (mmio_region_read32(otbn, OTBN_ERR_BITS_REG_OFFSET)) asm volatile ("wfi");
-
+#if TITANSSL_CFG_MEM_L3
+    // Read back results.
+    titanssl_benchmark_memcpy32_aligned_from_otbn(
+        otbn,
+        OTBN_DMEM_REG_OFFSET+kOtbnVarRsaInOut, 
+        cipher_idma->data, 
+        TITANSSL_SIZE_KEY
+    );
+    uint32_t src_addr_int_digest = (uint32_t)(uintptr_t)cipher_idma->data;//CONF
+    uint32_t dst_addr_int_digest = (uint32_t)(uintptr_t)cipher->data;//CONF
+    next_id = issue_idma_transaction(src_addr_int_digest, dst_addr_int_digest, cipher->n);//CONF
+    wait_for_idma_eot(next_id);
+#else
     // Read back results.
     titanssl_benchmark_memcpy32_aligned_from_otbn(
         otbn,
@@ -301,10 +379,12 @@ void titanssl_benchmark_rsa_enc(
         cipher->data, 
         TITANSSL_SIZE_KEY
     );
-    //mmio_region_memcpy_from_mmio32(otbn, OTBN_DMEM_REG_OFFSET+kOtbnVarRsaInOut, cipher->data, TITANSSL_SIZE_KEY);
+#endif
 }
 
 void titanssl_benchmark_rsa_dec(
+        titanssl_buffer_t *const plain_idma,
+        titanssl_buffer_t *const cipher_idma,
         titanssl_buffer_t *const plain,
         titanssl_buffer_t *const cipher,
         titanssl_buffer_t *const modulus,
@@ -314,6 +394,11 @@ void titanssl_benchmark_rsa_dec(
     uint32_t n_limbs;
     uint32_t mode;
 
+#if TITANSSL_CFG_MEM_L3
+    uint32_t src_addr_int = (uint32_t)(uintptr_t)plain->data;//CONF
+    uint32_t dst_addr_int = (uint32_t)(uintptr_t)plain_idma->data;//CONF
+    next_id = issue_idma_transaction(src_addr_int, dst_addr_int, plain->n);//CONF
+#endif
     // Get OTBN base address
     otbn_ctx.app_is_loaded = false;
     otbn_ctx.dif.base_addr = mmio_region_from_addr(TOP_EARLGREY_OTBN_BASE_ADDR);
@@ -328,14 +413,25 @@ void titanssl_benchmark_rsa_dec(
     otbn_copy_data_to_otbn(&otbn_ctx, sizeof(uint32_t), &n_limbs, kOtbnVarRsaNLimbs);
     otbn_copy_data_to_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, modulus->data, kOtbnVarRsaModulus);
     otbn_copy_data_to_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, private->data, kOtbnVarRsaExp);
+#if TITANSSL_CFG_MEM_L3
+    wait_for_idma_eot(next_id);
+    otbn_copy_data_to_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, plain_idma->data, kOtbnVarRsaInOut);
+#else
     otbn_copy_data_to_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, plain->data, kOtbnVarRsaInOut);
-
+#endif
     // Call OTBN to perform operation
     otbn_execute(&otbn_ctx);
     otbn_busy_wait_for_done(&otbn_ctx);
-
+#if TITANSSL_CFG_MEM_L3
     // Read back results.
+    otbn_copy_data_from_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, kOtbnVarRsaInOut, cipher_idma->data);
+    uint32_t src_addr_int_digest = (uint32_t)(uintptr_t)cipher_idma->data;//CONF
+    uint32_t dst_addr_int_digest = (uint32_t)(uintptr_t)cipher->data;//CONF
+    next_id = issue_idma_transaction(src_addr_int_digest, dst_addr_int_digest, cipher->n);//CONF
+    wait_for_idma_eot(next_id);
+#else
     otbn_copy_data_from_otbn(&otbn_ctx, TITANSSL_SIZE_KEY, kOtbnVarRsaInOut, cipher->data);
+#endif
 }
 
 int main(
@@ -357,16 +453,18 @@ int main(
     entropy_testutils_auto_mode_init();
     initialize_memory();
     titanssl_benchmark_rsa_enc(
+        &buffer_plain_idma,
+        &buffer_cipher_idma,
         &buffer_plain,
         &buffer_cipher,
         &buffer_modulus
-    );
+    );/*
 #if TITANSSL_CFG_DEBUG
     printf("RSA Encryption\r\n");
     for (int i = 0; i < TITANSSL_SIZE_KEY; i++) {
         printf("%02x vs. %02x\r\n", buffer_cipher.data[i], TITANSSL_TEST_OUTPUT[i]);
     }
-#endif
+    #endif*/
 //    titanssl_benchmark_rsa_dec(
 //        &buffer_cipher,
 //        &buffer_plain,

@@ -40,8 +40,8 @@ static titanssl_buffer_t buffer_key;
 #ifndef TITANSSL_CFG_PAYLOAD
   #define TITANSSL_CFG_PAYLOAD   1024
 #endif
-#define TITANSSL_CFG_OP_SHA256 0
-#define TITANSSL_CFG_OP_HMAC   1
+#define TITANSSL_CFG_OP_SHA256 1
+#define TITANSSL_CFG_OP_HMAC   0
 
 /* ============================================================================
  * Benchmark automatic configuration

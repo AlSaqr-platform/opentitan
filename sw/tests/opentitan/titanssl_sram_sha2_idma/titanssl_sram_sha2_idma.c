@@ -49,14 +49,14 @@ static titanssl_buffer_t buffer_key;
 
 // Configure debug mode.
 #define TITANSSL_CFG_DEBUG     0
-#define TITANSSL_CFG_MEM_L3    0
-#define TITANSSL_CFG_MEM_L1    1
+#define TITANSSL_CFG_MEM_L3    1
+#define TITANSSL_CFG_MEM_L1    0
 #ifndef TITANSSL_CFG_PAYLOAD
   #define TITANSSL_CFG_PAYLOAD 1024
 #endif
 
-#define TITANSSL_CFG_OP_SHA256 0
-#define TITANSSL_CFG_OP_HMAC   1
+#define TITANSSL_CFG_OP_SHA256 1
+#define TITANSSL_CFG_OP_HMAC   0
 
 /* ============================================================================
  * Benchmark automatic configuration
@@ -94,6 +94,7 @@ void wait_for_idma_eot(int next_id){
 int issue_idma_transaction(uint32_t src_addr, uint32_t dst_addr, uint32_t num_bytes){
     volatile uint32_t * ptr32;
     uint8_t buff = 0;
+    mmio_region_t aes; //CONF
     ptr32 = (uint32_t *) (IDMA_BASE + IDMA_SRC_ADDR_OFFSET);
     *ptr32 = src_addr; // IDMA
     ptr32 = (uint32_t *) (IDMA_BASE + IDMA_DST_ADDR_OFFSET);
@@ -271,8 +272,8 @@ void titanssl_benchmark_hmac(
     ((uint32_t*)(digest->data))[7] = mmio_region_read32(hmac, HMAC_DIGEST_7_REG_OFFSET); //CONF
 
 #if TITANSSL_CFG_MEM_L3
-    uint32_t src_addr_int_digest = (uint32_t)(uintptr_t)digest_idma->data;//CONF
-    uint32_t dst_addr_int_digest = (uint32_t)(uintptr_t)digest->data;//CONF
+    uint32_t src_addr_int_digest = (uint32_t)(uintptr_t)digest_idma->data; //CONF
+    uint32_t dst_addr_int_digest = (uint32_t)(uintptr_t)digest->data; //CONF
     new_next_id = issue_idma_transaction(src_addr_int_digest, dst_addr_int_digest, digest->n);//CONF
 #endif
     // Disable HMAC IP
