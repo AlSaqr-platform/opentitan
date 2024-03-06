@@ -19,11 +19,7 @@ SRCS = $(COMMON_SRCS) $(PROGRAM_C) $(EXTRA_SRCS)
 C_SRCS = $(filter %.c, $(SRCS))
 ASM_SRCS = $(filter %.S, $(SRCS))
 
-ifdef x64
-CC = riscv64-unknown-elf-gcc
-else
 CC = riscv32-unknown-elf-gcc
-endif
 
 OBJCOPY ?= $(subst gcc,objcopy,$(wordlist 1,1,$(CC)))
 OBJDUMP ?= $(subst gcc,objdump,$(wordlist 1,1,$(CC)))
@@ -54,8 +50,8 @@ $(PROGRAM).elf: $(OBJS) $(LINKER_SCRIPT)
 # XXX: This could be replaced by objcopy once
 # https://sourceware.org/bugzilla/show_bug.cgi?id=19921
 # is widely available.
-# %.vmem: %.bin
-#	srec_cat $^ -binary -offset 0x0000 -byte-swap 4 -o $@ -vmem
+%.vmem: %.bin
+	srec_cat $^ -binary -offset 0x0000 -byte-swap 4 -o $@ -vmem
 
 %.bin: %.elf
 	$(OBJCOPY) -O binary $^ $@

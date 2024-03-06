@@ -21,9 +21,7 @@ void hmac_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch
     _hmac_key_init();
     utils_entropy_init();
     _hmac_run(titanssl_mbox, titanssl_scratch);
-    #if CVA6_DOWN
     _hmac_check(titanssl_scratch);
-    #endif
 }
 
 void _hmac_key_init() {
@@ -32,11 +30,13 @@ void _hmac_key_init() {
 }
 
 void _hmac_check(titanssl_batch_t* titanssl_scratch) {
+#if DEB
     for (int i=0; i<TITANSSL_OUTPUT_SIZE/4; i++) {
-        printf("HMAC: 0x%08x vs 0x%08x\r\n", ExpectedHmacDigest[i],
+        printf("[IBEX HMAC] 0x%08x vs 0x%08x\r\n", ExpectedHmacDigest[i],
             ((uint32_t*)(titanssl_scratch->page))[i]);
         uart_wait_tx_done();
     }
+#endif
 }
 
 void _hmac_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch) {    

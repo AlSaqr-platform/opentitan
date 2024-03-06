@@ -15,49 +15,62 @@
 static titanssl_mbox_t* const titanssl_mbox = (titanssl_mbox_t*) TITANSSL_MBOX_BASE;
 static titanssl_batch_t titanssl_scratch;
 
-void _external_irq_handler(void) { // __attribute__((interrupt)) { // __attribute__((weak)) {}
+void external_irq_handler(void) {
 
-/*
-  static titanssl_mbox_t* const titanssl_mbox = (titanssl_mbox_t*) TITANSSL_MBOX_BASE;
-  static titanssl_batch_t titanssl_scratch;
-  static titanssl_batch_t titanssl_out;
-  main();
-*/
+  if(DEB) printf("[IBEX handler]\r\n");
 
-  utils_irq_reset();
-    
-  if (titanssl_mbox->code == SHA256_ENCRYPT || titanssl_mbox->code == HMAC_ENCRYPT) {
-    hmac_run(titanssl_mbox, &titanssl_scratch);
-  } else if (titanssl_mbox->code == SHA3_ENCRYPT || titanssl_mbox->code == KMAC_ENCRYPT) { 
-    printf("code 2\r\n");
-  } else if (titanssl_mbox->code == AES_ENCRYPT) {
-    aes_run(titanssl_mbox, &titanssl_scratch);
-  } else if (titanssl_mbox->code == RSA_ENCRYPT) {
-    printf("code 4\r\n");
-  } else{
-    printf("invalid code\r\n");
+#if CVA6_STATUS == 1
+  utils_mbox_init(titanssl_mbox); // first reg mbox overwrite, loosing pointers references 
+#endif
+
+#if CVA6_STATUS != 0
+  utils_irq_check();
+  utils_irq_reset_door();
+#endif
+
+  if(titanssl_mbox->rtw == 1)
+    flag = 1;
+  else {
+    if (titanssl_mbox->code == SHA256_ENCRYPT || titanssl_mbox->code == HMAC_ENCRYPT) {
+      hmac_run(titanssl_mbox, &titanssl_scratch);
+    } else if (titanssl_mbox->code == SHA3_ENCRYPT || titanssl_mbox->code == KMAC_ENCRYPT) { 
+      if(DEB) printf("[IBEX handler] code 2\r\n");
+    } else if (titanssl_mbox->code == AES_ENCRYPT) {
+      aes_run(titanssl_mbox, &titanssl_scratch);
+    } else if (titanssl_mbox->code == RSA_ENCRYPT) {
+      if(DEB) printf("[IBEX handler] code 4\r\n");
+    } else{
+      if(DEB) printf("[IBEX handler] invalid code\r\n");
+    }
+    utils_irq_reset_comp(); // to move
+    utils_irq_trig_comp(); // to move 
   }
 
-  utils_irq_trigger();
-  printf("complete\r\n");
+  if(DEB) printf("[IBEX handler] ending\r\n");
 
   return;
 }
 
 int main(int argc, char **argv) {
 
+#if CVA6_STATUS == 0
   utils_printf_init();
-  printf("printf init\r\n");
-
-  #if CVA6_DOWN
+  if(DEB) printf("[IBEX main] printf init\r\n");
   utils_mbox_init(titanssl_mbox);
-  printf("mbox init\r\n");
-
+  if(DEB) printf("[IBEX main] mbox init\r\n");
   utils_scratch_init(&titanssl_scratch);
-  printf("scratch init\r\n");
-
-  _external_irq_handler(); // __attribute__((weak)) -> common/utils.c
-  #endif
-  
+  if(DEB) printf("[IBEX main] scratch init\r\n");
+  external_irq_handler();
+#elif CVA6_STATUS == 1
+  utils_mbox_init(titanssl_mbox);
+  utils_scratch_init(&titanssl_scratch);
+  utils_irq_enable();
+  while(1)
+    asm volatile ("wfi");
+#elif CVA6_STATUS == 2
+  utils_irq_enable();
+  while(1)
+    asm volatile ("wfi");
+#endif
   return true;
 }

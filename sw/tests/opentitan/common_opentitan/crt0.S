@@ -67,7 +67,6 @@ main_entry:
   addi x10, x0, 0
   addi x11, x0, 0
   jal x1, main
-
   /* write EOC */
   li a0, 0xc11c0018
   li t0, 0x1	

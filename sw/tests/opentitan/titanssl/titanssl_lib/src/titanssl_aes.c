@@ -25,9 +25,7 @@ void aes_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch)
     _aes_key_init();
     utils_entropy_init();
     _aes_run(titanssl_mbox, titanssl_scratch);
-    #if CVA6_DOWN
     _aes_check(titanssl_scratch);
-    #endif
     // free(titanssl_dst.page);
 }
 
@@ -39,19 +37,25 @@ void _aes_key_init() {
 }
 
 void _aes_wait_rtw(titanssl_mbox_t* titanssl_mbox) {
-    while(titanssl_mbox->rtw);
+    // while(!(titanssl_mbox->rtw));
+    while(!(flag));
+    flag=0;
 }
 
 void _aes_set_rtw(titanssl_mbox_t* titanssl_mbox) {
-    titanssl_mbox->rtw = 0x1;
+    // titanssl_mbox->rtw = 0x1;
+    utils_irq_reset_comp();
+    utils_irq_trig_comp();
 }
 
 void _aes_check(titanssl_batch_t* titanssl_scratch) {
+#if DEB
     for (int i=0; i<8; i++) {
-        printf("AES: 0x%08x vs 0x%08x\r\n", ExpectedAesDigest[i],
+        printf("[IBEX AES] 0x%08x vs 0x%08x\r\n", ExpectedAesDigest[i],
             ((uint32_t*)(titanssl_scratch->page))[i]);
         uart_wait_tx_done();
     }
+#endif
 }
 
 void _aes_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch) {
@@ -62,9 +66,16 @@ void _aes_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch
 
     // Get the AES IP base address
     aes = mmio_region_from_addr(TOP_EARLGREY_AES_BASE_ADDR);
-
     // Reset the IP
+    // printf("[IBEX MBOX] before \r\n");
+    /* uint32_t pppp = 0;
+    while(!pppp)
+    {
+        pppp = mmio_region_get_bit32(aes, AES_STATUS_REG_OFFSET, AES_STATUS_IDLE_BIT);
+        printf("stampa %08x \r\n", pppp);
+    } */
     while(!mmio_region_get_bit32(aes, AES_STATUS_REG_OFFSET, AES_STATUS_IDLE_BIT));
+    // printf("[IBEX MBOX] later \r\n");
     reg = bitfield_bit32_write(0, AES_CTRL_SHADOWED_MANUAL_OPERATION_BIT, true);
     mmio_region_write32(aes, AES_CTRL_SHADOWED_REG_OFFSET, reg);
     mmio_region_write32(aes, AES_CTRL_SHADOWED_REG_OFFSET, reg);
@@ -138,7 +149,7 @@ void _aes_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch
     uint32_t thp = (titanssl_mbox->in_size - TITANSSL_PAGE_SIZE +1) / TITANSSL_PAGE_SIZE;
     uint32_t ths = (titanssl_mbox->in_size - TITANSSL_SCRATCHPAD_SIZE +1) / TITANSSL_SCRATCHPAD_SIZE;
     dp_src += 16;
-    
+
     while (n_bytes < titanssl_mbox->in_size) { // (dp_src - plain->data < plain->n) {
         mmio_region_write32(aes, AES_DATA_IN_0_REG_OFFSET, ((uint32_t*)dp_src)[0]);
         mmio_region_write32(aes, AES_DATA_IN_1_REG_OFFSET, ((uint32_t*)dp_src)[1]);
@@ -153,13 +164,14 @@ void _aes_run(titanssl_mbox_t* titanssl_mbox, titanssl_batch_t* titanssl_scratch
 
         if (n_bytes % TITANSSL_SCRATCHPAD_SIZE == 0 && 
             n_bytes/TITANSSL_SCRATCHPAD_SIZE >= 1 && n_bytes/TITANSSL_SCRATCHPAD_SIZE < ths) {
-            // if (n_bytes/TITANSSL_SCRATCHPAD_SIZE != 1) _aes_wait_rtw(titanssl_mbox);
+#if CVA6_STATUS < 2
+            if (n_bytes/TITANSSL_SCRATCHPAD_SIZE != 1) _aes_wait_rtw(titanssl_mbox);
             memcpy(titanssl_scratch->page, titanssl_dst.page, TITANSSL_SCRATCHPAD_SIZE);
             _aes_set_rtw(titanssl_mbox);
+#endif
             dp_dst = titanssl_dst.page;
         }else
             dp_dst += 16;
-
         n_bytes += 16;
 
         if (n_bytes % TITANSSL_PAGE_SIZE == 0 && 

@@ -23,8 +23,34 @@ unsigned int get_mtval() {
   return result;
   }*/
 
+// ---------------------------------------------
+// #define FPGA_EMULATION
+void util_init_printf() {
+    int * tmp;
+  #ifdef FPGA_EMULATION
+  /*
+    tmp = (int *) 0x1a104004;
+    *tmp = 3;
+    tmp = (int *) 0x1a10400C;
+    *tmp = 3;
+  */
+    int baud_rate = 115200;
+    int test_freq = 100000000;
+  #else
+    tmp = (int *) 0x1a104074;
+    *tmp = 1;
+    tmp = (int *) 0x1a10407C;
+    *tmp = 1;
+    int baud_rate = 115200;
+    int test_freq = 40000000;
+  #endif
+  uart_set_cfg(0,(test_freq/baud_rate)>>4);
+  printf("IBEX HANDLER: ot handler\r\n");
+}
+// ---------------------------------------------
 
 void simple_exc_handler(void) {
+  util_init_printf(); // 
   printf("EXCEPTION!!!\r\n");
   /*
   rputs("============\n");
@@ -37,7 +63,6 @@ void simple_exc_handler(void) {
   putchar('\n');
   */
 }
-
 
 void uart_set_cfg(int parity, uint16_t clk_counter) {
   unsigned int i;
@@ -335,5 +360,45 @@ int puts(const char *s)
   return i;
 }
 
-void __attribute__((weak)) external_irq_handler(void)  {
+void external_irq_handler(void)  {
+
+  util_init_printf(); //
+
+  /*
+  int mbox_id = 159;
+  int a, b, c, e, d;
+  int volatile * p_reg, * p_reg1, * plic_check, * p_reg2, * p_reg3, * p_reg4, * p_reg5 ;
+
+  //init pointer to check memory
+  
+  p_reg1 = (int *) 0x10404008;
+  p_reg2 = (int *) 0x10404010;
+  p_reg3 = (int *) 0x10404014;
+  p_reg4 = (int *) 0x10404018;
+  p_reg5 = (int *) 0x1040401C;
+
+  // start of """Interrupt Service Routine"""
+  
+  plic_check = (int *) 0xC8200004;
+  while(*plic_check != mbox_id);   //check wether the intr is the correct one
+  
+  p_reg = (int *) 0x10404020;
+ *p_reg = 0x00000000;        //clearing the pending interrupt signal
+ 
+ *plic_check = mbox_id;      //completing interrupt
+ 
+  a = *p_reg1;
+  b = *p_reg2;
+  c = *p_reg3;
+  d = *p_reg4;
+  e = *p_reg5;
+  
+  
+  if( a == 0xBAADC0DE &&  b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE){
+      p_reg = (int *) 0x10404024; // completion interrupt to ariane agent
+     *p_reg = 0x00000001;
+  }
+  */
+
+  return;
 }

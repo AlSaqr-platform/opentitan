@@ -22,7 +22,7 @@ static const unsigned char AesIv[TITANSSL_IV_SIZE] = {
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-#if CVA6_DOWN
+#if CVA6_STATUS < 2
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedAesDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -46,4 +46,4 @@ static const unsigned char AesIv[TITANSSL_IV_SIZE] = {
     #else
         #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
     #endif // TITANSSL_INPUT_SIZE
-#endif // CVA6_DOWN
+#endif // CVA6_STATUS

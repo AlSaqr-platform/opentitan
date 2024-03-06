@@ -14,7 +14,7 @@ static const uint32_t HmacKey[8] = {
     0x03707344, 0x13198a2e, 0x85a308d3, 0x243f6a88,
 };
 
-#if CVA6_DOWN && TITANSSL_CODE == SHA256_ENCRYPT
+#if CVA6_STATUS < 2 && TITANSSL_CODE == SHA256_ENCRYPT
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedHmacDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -38,7 +38,7 @@ static const uint32_t HmacKey[8] = {
     #else
         #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
     #endif // TITANSSL_INPUT_SIZE
-#elif CVA6_DOWN && TITANSSL_CODE == HMAC_ENCRYPT 
+#elif CVA6_STATUS < 2 && TITANSSL_CODE == HMAC_ENCRYPT 
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedHmacDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -62,4 +62,4 @@ static const uint32_t HmacKey[8] = {
     #else
     #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
     #endif // TITANSSL_INPUT_SIZE
-#endif // CVA6_DOWN
+#endif // CVA6_STATUS
