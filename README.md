@@ -20,11 +20,25 @@ OpenTitan project. It is structured as monolithic repository, or "monorepo",
 where all components live in one repository. It exists to enable collaboration
 across partners participating in the OpenTitan project.
 
+## Dependencies
+To install the dependencies required by OpenTitan and to build the doc, run:
+```
+git clone https://www.github.com/alsaqr-platform/opentitan.git
+cd opentitan/
+sed '/^#/d' ./apt-requirements.txt | xargs sudo apt install -y
+pip3 install --user -r python-requirements.txt
+```
 ## Documentation
 
-The project contains comprehensive documentation of all IPs and tools. You can
-access it [online at docs.opentitan.org](https://docs.opentitan.org/).
+The detailed documentation can be built within this repository. The following commands configures and runs
+a local server, accessible by the browser. This server basically represent the official opentitan.org website
+including the customization we implemented, particularly, concerning the memory map.
 
+To build the doc and run the server:
+```
+make -C hw/ top
+python3 util/build_docs.py --preview
+```
 ## How to contribute
 
 Have a look at [CONTRIBUTING](https://github.com/lowRISC/opentitan/blob/master/CONTRIBUTING.md) and our [documentation on
