@@ -23,6 +23,8 @@ across partners participating in the OpenTitan project.
 ## Dependencies
 To install the dependencies required by OpenTitan and to build the doc, run:
 ```
+git clone https://www.github.com/alsaqr-platform/opentitan.git
+cd opentitan/
 sed '/^#/d' ./apt-requirements.txt | xargs sudo apt install -y
 pip3 install --user -r python-requirements.txt
 ```
@@ -34,8 +36,6 @@ including the customization we implemented, particularly, concerning the memory 
 
 To build the doc and run the server:
 ```
-git clone https://www.github.com/alsaqr-platform/opentitan.git
-cd opentitan/
 make -C hw/ top
 python3 util/build_docs.py --preview
 ```
