@@ -67,9 +67,29 @@ int main(int argc, char **argv) {
      printf("Test failed, the mbox has not been accessed correctly\r\n");
      uart_wait_tx_done();
   }
-  
+
   /////////////////////////// Wait for shared memory test to start ///////////////////////////////
 
+  // Init CVA6 Plic
+
+  // Set plic mbox irq prio
+  p_reg = (int *) 0x0C000028;
+  *p_reg = 0x1;
+
+  // Set plic mbox irq enable to core 0
+  p_reg = (int *) 0x0C002080;
+  *p_reg =  0x400;
+
+  // Write CVA6 boot PC to mbox
+  p_reg = (int *) 0x10404000;
+  *p_reg = 0x80000000;
+
+  printf("Booting CVA6\r\n");
+  uart_wait_tx_done();
+
+  // Send IRQ and boot
+  p_reg = (int *) 0x10404024;
+  *p_reg = 0x1;
 
   while(1)
     asm volatile ("wfi"); // Ready to receive a command from the Agent --> Jump to the External_Irq_Handler

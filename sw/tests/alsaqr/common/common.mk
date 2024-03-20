@@ -22,7 +22,7 @@ ASM_SRCS = $(filter %.S, $(SRCS))
 ifdef x64
 CC = riscv64-unknown-elf-gcc
 else
-CC = riscv32-unknown-elf-gcc
+CC = riscv64-unknown-elf-gcc
 endif
 
 OBJCOPY ?= $(subst gcc,objcopy,$(wordlist 1,1,$(CC)))
@@ -37,7 +37,7 @@ OBJS := ${C_SRCS:.c=.o} ${ASM_SRCS:.S=.o} ${CRT:.S=.o}
 DEPS = $(OBJS:%.o=%.d)
 
 ifdef PROGRAM
-OUTFILES := $(PROGRAM).elf $(PROGRAM).vmem $(PROGRAM).bin $(PROGRAM).dis
+OUTFILES := $(PROGRAM).elf $(PROGRAM).bin $(PROGRAM).dis
 else
 OUTFILES := $(OBJS)
 endif
