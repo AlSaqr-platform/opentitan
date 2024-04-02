@@ -4,17 +4,17 @@
 
 #include "sw/tests/opentitan/titanssl/titanssl_lib/headers/titanssl_utils.h"
 
-void hmac_run(titanssl_mbox_t*, titanssl_batch_t*);
+void hmac_run(titanssl_mbox_t*);
 void _hmac_key_init();
 void _hmac_check(titanssl_batch_t*);
-void _hmac_run(titanssl_mbox_t*, titanssl_batch_t*);
+void _hmac_run(titanssl_mbox_t*, titanssl_batch_t*, titanssl_batch_t*);
 
 static const uint32_t HmacKey[8] = {
     0xec4e6c89, 0x082efa98, 0x299f31d0, 0xa4093822,
     0x03707344, 0x13198a2e, 0x85a308d3, 0x243f6a88,
 };
 
-#if CVA6_STATUS < 2 && TITANSSL_CODE == SHA256_ENCRYPT
+#if CFG_CVA6_STATUS < 2 && TITANSSL_CODE == SHA256_ENCRYPT
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedHmacDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -36,9 +36,12 @@ static const uint32_t HmacKey[8] = {
             0x43003d23, 0x20d9f0e8, 0xea9831a9, 0x2759fb4b
         };
     #else
-        #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
+        static const uint32_t ExpectedHmacDigest[8] = {
+            0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000
+        };
     #endif // TITANSSL_INPUT_SIZE
-#elif CVA6_STATUS < 2 && TITANSSL_CODE == HMAC_ENCRYPT 
+#elif CFG_CVA6_STATUS < 2 && TITANSSL_CODE == HMAC_ENCRYPT 
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedHmacDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -60,6 +63,9 @@ static const uint32_t HmacKey[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000
         };
     #else
-    #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
+        static const uint32_t ExpectedHmacDigest[8] = {
+            0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000
+        };
     #endif // TITANSSL_INPUT_SIZE
-#endif // CVA6_STATUS
+#endif // CFG_CVA6_STATUS

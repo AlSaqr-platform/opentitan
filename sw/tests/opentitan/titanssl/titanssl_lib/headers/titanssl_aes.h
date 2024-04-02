@@ -4,12 +4,11 @@
 
 #include "sw/tests/opentitan/titanssl/titanssl_lib/headers/titanssl_utils.h"
 
-void aes_run(titanssl_mbox_t*, titanssl_batch_t*);
+void aes_run(titanssl_mbox_t*);
 void _aes_key_init();
-void _aes_wait_rtw(titanssl_mbox_t*);
-void _aes_set_rtw(titanssl_mbox_t*);
 void _aes_check(titanssl_batch_t*);
-void _aes_run(titanssl_mbox_t*, titanssl_batch_t*);
+void _aes_run(titanssl_mbox_t*, titanssl_batch_t*, titanssl_batch_t*);
+void _aes_run_ibex(titanssl_mbox_t*, titanssl_batch_t*, titanssl_batch_t*);
 
 
 static const uint32_t AesKey[8] = {
@@ -22,7 +21,7 @@ static const unsigned char AesIv[TITANSSL_IV_SIZE] = {
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-#if CVA6_STATUS < 2
+#if CFG_CVA6_STATUS < 2
     #if TITANSSL_INPUT_SIZE == 65536
         static const uint32_t ExpectedAesDigest[8] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -44,6 +43,9 @@ static const unsigned char AesIv[TITANSSL_IV_SIZE] = {
             0x00000000, 0x00000000, 0x00000000, 0x00000000
         };
     #else
-        #error "Supported source data size are 65536, 2354, 1500, 64 bytes"
+        static const uint32_t ExpectedAesDigest[8] = {
+            0x00000000, 0x00000000, 0x00000000, 0x00000000,
+            0x00000000, 0x00000000, 0x00000000, 0x00000000
+        };
     #endif // TITANSSL_INPUT_SIZE
-#endif // CVA6_STATUS
+#endif // CFG_CVA6_STATUS

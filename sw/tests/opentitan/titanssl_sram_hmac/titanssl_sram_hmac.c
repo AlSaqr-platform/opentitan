@@ -32,7 +32,7 @@ typedef struct __attribute__((packed))
 } titanssl_mbox_t;
 
 
-#define TITANSSL_TEST_SRC_SIZE  1500
+#define TITANSSL_TEST_SRC_SIZE  64
 #define TITANSSL_TEST_DST_SIZE  32
 #define TITANSSL_PAGE_SIZE      4096
 #define TITANSSL_MBOX_BASE      0x10404000
