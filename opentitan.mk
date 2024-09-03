@@ -17,7 +17,8 @@ DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
 SRAM ?= ""
 BOOTMODE ?= 0
-QUESTA = questa-2022.3-bt
+@QUESTA = questa-2022.3-bt
+QUESTA = vsim
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
 
 dpi-library    ?= work-dpi
@@ -48,20 +49,22 @@ XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingche
 
 define generate_vsim
 	echo 'set ROOT [file normalize [file dirname [info script]]/$3]' > $1
-	bender script $(VSIM) --vlog-arg="$(VLOG_ARGS)" $2 | grep -v "set ROOT" >> $1
+	./bender script $(VSIM) --vlog-arg="$(VLOG_ARGS)" $2 | grep -v "set ROOT" >> $1
 	echo >> $1
 endef
 
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 
 build: $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
-	$(QUESTA) vsim -c -do 'source $(compile_script); quit'
+	#$(QUESTA) vsim -c -do 'source $(compile_script); quit'
+	vsim -c -do 'source $(compile_script); quit'
 
 sim: build
-	$(QUESTA) vsim -do 'set SRAM $(SRAM); set BOOTMODE $(BOOTMODE); source $(run_script)'
+	#$(QUESTA) vsim -do 'set SRAM $(SRAM); set BOOTMODE $(BOOTMODE); source $(run_script)'
+	vsim -do 'set SRAM $(SRAM); set BOOTMODE $(BOOTMODE); source $(run_script)'
 
 update:
-	bender update
+	./bender update
 
 clean:
 	rm -rf scripts/compile*
