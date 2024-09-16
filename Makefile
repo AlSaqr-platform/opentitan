@@ -23,8 +23,7 @@ PAYLOAD     ?= 1024
 test_name   ?=
 test_path   := $(common_test_path)/$(test_name)
 destination := $(OT_ROOT)/$(test_path)/bazel-out/
-
-bazel        := ./bazelisk.sh --output_user_root=~/opentitan_count/opentitan/$(whoami)/.local/bazel build $(defines)
+bazel        := ./bazelisk.sh --output_user_root=~/temp/bazel build $(defines)
 bazel_tests  := $(common_test_path)/$(test_name)
 
 rom_path     := sw/device/silicon_creator/rom
