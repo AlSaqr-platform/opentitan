@@ -8,26 +8,27 @@
 
 module perfcounters_t
     import perfcounters_t_reg_pkg::*;
-#(
-  parameter logic [NumAlerts-1:0] AlertAsyncOn = {NumAlerts{1'b1}}
-) (
+//#(
+// parameter logic [NumAlerts-1:0] AlertAsyncOn = {NumAlerts{1'b1}}
+//) 
+(
   input           clk_i,
   input           rst_ni,
 
   // Bus Interface
   input  tlul_ot_pkg::tl_h2d_t tl_i,
-  output tlul_ot_pkg::tl_d2h_t tl_o,
+  output tlul_ot_pkg::tl_d2h_t tl_o//,
 
   // Alerts
-  input  prim_alert_pkg::alert_rx_t [NumAlerts-1:0] alert_rx_i,
-  output prim_alert_pkg::alert_tx_t [NumAlerts-1:0] alert_tx_o
+//  input  prim_alert_pkg::alert_rx_t [NumAlerts-1:0] alert_rx_i,
+//  output prim_alert_pkg::alert_tx_t [NumAlerts-1:0] alert_tx_o
 
   // Generic IO
 
   // Interrupts
 );
 
-  logic [NumAlerts-1:0] alert_test, alerts;
+//  logic [NumAlerts-1:0] alert_test, alerts;
   perfcounters_t_reg2hw_t reg2hw;
   perfcounters_t_hw2reg_t hw2reg;
 

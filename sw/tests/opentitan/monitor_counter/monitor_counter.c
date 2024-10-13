@@ -134,6 +134,9 @@ int main(int argc, char **argv) {
 
   // *** EVENT CLK COUNTERS ****
   //
+  printf("EVENT CLK COUNTERS- ENABLE  \r\n");
+  abs_mmio_write32(BASE_PERFCOUNTERS_T+0x2C, 0xF);
+
   printf("EVENT CLK COUNTER2- RESET  \r\n");
   abs_mmio_write32(BASE_PERFCOUNTERS_T+0x8, 0x20);
   printf("EVENT CLK COUNTERS  READ \r\n");
@@ -147,6 +150,11 @@ int main(int argc, char **argv) {
   rd_val = abs_mmio_read32(BASE_PERFCOUNTERS_T+0x28);
   printf("EVENT CLK_COUNTER0_REG  READ %x  \r\n",rd_val);
 
+  printf("EVENT CLK COUNTERS- DISABLE  \r\n");
+  abs_mmio_write32(BASE_PERFCOUNTERS_T+0x2C, 0x0);
+
+  printf("EVENT CLK COUNTERS- ENABLE  \r\n");
+  abs_mmio_write32(BASE_PERFCOUNTERS_T+0x2C, 0x3);
 
   printf("EVENT CLK COUNTER0- RESET  \r\n");
   abs_mmio_write32(BASE_PERFCOUNTERS_T+0x8, 0x02);
@@ -164,3 +172,4 @@ int main(int argc, char **argv) {
   printf("Succeed!\r\n");
   return 1;
 }
+

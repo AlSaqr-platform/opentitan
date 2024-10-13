@@ -6,20 +6,12 @@
 
 package perfcounters_t_reg_pkg;
 
-  // Param list
-  parameter int NumAlerts = 1;
-
   // Address widths within the block
   parameter int BlockAw = 6;
 
   ////////////////////////////
   // Typedefs for registers //
   ////////////////////////////
-
-  typedef struct packed {
-    logic        q;
-    logic        qe;
-  } perfcounters_t_reg2hw_alert_test_reg_t;
 
   typedef struct packed {
     struct packed {
@@ -141,6 +133,24 @@ package perfcounters_t_reg_pkg;
 
   typedef struct packed {
     struct packed {
+      logic        q;
+    } event_clk_counter0_enable;
+    struct packed {
+      logic        q;
+    } event_clk_counter1_enable;
+    struct packed {
+      logic        q;
+    } event_clk_counter2_enable;
+    struct packed {
+      logic        q;
+    } event_clk_counter3_enable;
+    struct packed {
+      logic [27:0] q;
+    } unused;
+  } perfcounters_t_reg2hw_event_clk_counters_en_reg_reg_t;
+
+  typedef struct packed {
+    struct packed {
       logic        d;
       logic        de;
     } event_0;
@@ -259,18 +269,18 @@ package perfcounters_t_reg_pkg;
 
   // Register -> HW type
   typedef struct packed {
-    perfcounters_t_reg2hw_alert_test_reg_t alert_test; // [361:360]
-    perfcounters_t_reg2hw_event_reg_reg_t event_reg; // [359:328]
-    perfcounters_t_reg2hw_events_counters_mux_reg_reg_t events_counters_mux_reg; // [327:296]
-    perfcounters_t_reg2hw_event_counters_rst_reg_reg_t event_counters_rst_reg; // [295:264]
-    perfcounters_t_reg2hw_event_counter3_reg_reg_t event_counter3_reg; // [263:231]
-    perfcounters_t_reg2hw_event_counter2_reg_reg_t event_counter2_reg; // [230:198]
-    perfcounters_t_reg2hw_event_counter1_reg_reg_t event_counter1_reg; // [197:165]
-    perfcounters_t_reg2hw_event_counter0_reg_reg_t event_counter0_reg; // [164:132]
-    perfcounters_t_reg2hw_event_clk_counter3_reg_reg_t event_clk_counter3_reg; // [131:99]
-    perfcounters_t_reg2hw_event_clk_counter2_reg_reg_t event_clk_counter2_reg; // [98:66]
-    perfcounters_t_reg2hw_event_clk_counter1_reg_reg_t event_clk_counter1_reg; // [65:33]
-    perfcounters_t_reg2hw_event_clk_counter0_reg_reg_t event_clk_counter0_reg; // [32:0]
+    perfcounters_t_reg2hw_event_reg_reg_t event_reg; // [391:360]
+    perfcounters_t_reg2hw_events_counters_mux_reg_reg_t events_counters_mux_reg; // [359:328]
+    perfcounters_t_reg2hw_event_counters_rst_reg_reg_t event_counters_rst_reg; // [327:296]
+    perfcounters_t_reg2hw_event_counter3_reg_reg_t event_counter3_reg; // [295:263]
+    perfcounters_t_reg2hw_event_counter2_reg_reg_t event_counter2_reg; // [262:230]
+    perfcounters_t_reg2hw_event_counter1_reg_reg_t event_counter1_reg; // [229:197]
+    perfcounters_t_reg2hw_event_counter0_reg_reg_t event_counter0_reg; // [196:164]
+    perfcounters_t_reg2hw_event_clk_counter3_reg_reg_t event_clk_counter3_reg; // [163:131]
+    perfcounters_t_reg2hw_event_clk_counter2_reg_reg_t event_clk_counter2_reg; // [130:98]
+    perfcounters_t_reg2hw_event_clk_counter1_reg_reg_t event_clk_counter1_reg; // [97:65]
+    perfcounters_t_reg2hw_event_clk_counter0_reg_reg_t event_clk_counter0_reg; // [64:32]
+    perfcounters_t_reg2hw_event_clk_counters_en_reg_reg_t event_clk_counters_en_reg; // [31:0]
   } perfcounters_t_reg2hw_t;
 
   // HW -> register type
@@ -288,7 +298,6 @@ package perfcounters_t_reg_pkg;
   } perfcounters_t_hw2reg_t;
 
   // Register offsets
-  parameter logic [BlockAw-1:0] PERFCOUNTERS_T_ALERT_TEST_OFFSET = 6'h 2C;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_REG_OFFSET = 6'h 0;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG_OFFSET = 6'h 4;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG_OFFSET = 6'h 8;
@@ -296,18 +305,14 @@ package perfcounters_t_reg_pkg;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_COUNTER2_REG_OFFSET = 6'h 10;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_COUNTER1_REG_OFFSET = 6'h 14;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_COUNTER0_REG_OFFSET = 6'h 18;
-  parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG_OFFSET = 6'h 1C;
+  parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG_OFFSET = 6'h 1c;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG_OFFSET = 6'h 20;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG_OFFSET = 6'h 24;
   parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG_OFFSET = 6'h 28;
-
-  // Reset values for hwext registers and their fields
-  parameter logic [0:0] PERFCOUNTERS_T_ALERT_TEST_RESVAL = 1'h 0;
-  parameter logic [0:0] PERFCOUNTERS_T_ALERT_TEST_FATAL_FAULT_RESVAL = 1'h 0;
+  parameter logic [BlockAw-1:0] PERFCOUNTERS_T_EVENT_CLK_COUNTERS_EN_REG_OFFSET = 6'h 2c;
 
   // Register index
   typedef enum int {
-    PERFCOUNTERS_T_ALERT_TEST,
     PERFCOUNTERS_T_EVENT_REG,
     PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG,
     PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG,
@@ -318,23 +323,24 @@ package perfcounters_t_reg_pkg;
     PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG,
     PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG,
     PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG,
-    PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG
+    PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG,
+    PERFCOUNTERS_T_EVENT_CLK_COUNTERS_EN_REG
   } perfcounters_t_id_e;
 
   // Register width information to check illegal writes
   parameter logic [3:0] PERFCOUNTERS_T_PERMIT [12] = '{
-    4'b 0001, // index[ 0] PERFCOUNTERS_T_ALERT_TEST
-    4'b 1111, // index[ 1] PERFCOUNTERS_T_EVENT_REG
-    4'b 1111, // index[ 2] PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG
-    4'b 1111, // index[ 3] PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG
-    4'b 1111, // index[ 4] PERFCOUNTERS_T_EVENT_COUNTER3_REG
-    4'b 1111, // index[ 5] PERFCOUNTERS_T_EVENT_COUNTER2_REG
-    4'b 1111, // index[ 6] PERFCOUNTERS_T_EVENT_COUNTER1_REG
-    4'b 1111, // index[ 7] PERFCOUNTERS_T_EVENT_COUNTER0_REG
-    4'b 1111, // index[ 8] PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG
-    4'b 1111, // index[ 9] PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG
-    4'b 1111, // index[10] PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG
-    4'b 1111  // index[11] PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG
+    4'b 1111, // index[ 0] PERFCOUNTERS_T_EVENT_REG
+    4'b 1111, // index[ 1] PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG
+    4'b 1111, // index[ 2] PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG
+    4'b 1111, // index[ 3] PERFCOUNTERS_T_EVENT_COUNTER3_REG
+    4'b 1111, // index[ 4] PERFCOUNTERS_T_EVENT_COUNTER2_REG
+    4'b 1111, // index[ 5] PERFCOUNTERS_T_EVENT_COUNTER1_REG
+    4'b 1111, // index[ 6] PERFCOUNTERS_T_EVENT_COUNTER0_REG
+    4'b 1111, // index[ 7] PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG
+    4'b 1111, // index[ 8] PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG
+    4'b 1111, // index[ 9] PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG
+    4'b 1111, // index[10] PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG
+    4'b 1111  // index[11] PERFCOUNTERS_T_EVENT_CLK_COUNTERS_EN_REG
   };
 
 endpackage

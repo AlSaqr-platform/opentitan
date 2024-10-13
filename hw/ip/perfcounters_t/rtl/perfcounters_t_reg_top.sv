@@ -124,8 +124,6 @@ module perfcounters_t_reg_top (
   // Define SW related signals
   // Format: <reg>_<field>_{wd|we|qs}
   //        or <reg>_{wd|we|qs} if field == 1 or 0
-  logic alert_test_we;
-  logic alert_test_wd;
   logic event_reg_we;
   logic event_reg_event_0_qs;
   logic event_reg_event_0_wd;
@@ -183,28 +181,19 @@ module perfcounters_t_reg_top (
   logic [31:0] event_clk_counter2_reg_qs;
   logic [31:0] event_clk_counter1_reg_qs;
   logic [31:0] event_clk_counter0_reg_qs;
+  logic event_clk_counters_en_reg_we;
+  logic event_clk_counters_en_reg_event_clk_counter0_enable_qs;
+  logic event_clk_counters_en_reg_event_clk_counter0_enable_wd;
+  logic event_clk_counters_en_reg_event_clk_counter1_enable_qs;
+  logic event_clk_counters_en_reg_event_clk_counter1_enable_wd;
+  logic event_clk_counters_en_reg_event_clk_counter2_enable_qs;
+  logic event_clk_counters_en_reg_event_clk_counter2_enable_wd;
+  logic event_clk_counters_en_reg_event_clk_counter3_enable_qs;
+  logic event_clk_counters_en_reg_event_clk_counter3_enable_wd;
+  logic [27:0] event_clk_counters_en_reg_unused_qs;
+  logic [27:0] event_clk_counters_en_reg_unused_wd;
 
   // Register instances
-  // R[alert_test]: V(True)
-  logic alert_test_qe;
-  logic [0:0] alert_test_flds_we;
-  assign alert_test_qe = &alert_test_flds_we;
-  prim_ot_subreg_ext #(
-    .DW    (1)
-  ) u_alert_test (
-    .re     (1'b0),
-    .we     (alert_test_we),
-    .wd     (alert_test_wd),
-    .d      ('0),
-    .qre    (),
-    .qe     (alert_test_flds_we[0]),
-    .q      (reg2hw.alert_test.q),
-    .ds     (),
-    .qs     ()
-  );
-  assign reg2hw.alert_test.qe = alert_test_qe;
-
-
   // R[event_reg]: V(False)
   //   F[event_0]: 0:0
   prim_ot_subreg #(
@@ -1121,22 +1110,154 @@ module perfcounters_t_reg_top (
   assign reg2hw.event_clk_counter0_reg.qe = event_clk_counter0_reg_qe;
 
 
+  // R[event_clk_counters_en_reg]: V(False)
+  //   F[event_clk_counter0_enable]: 0:0
+  prim_ot_subreg #(
+    .DW      (1),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (1'h0)
+  ) u_event_clk_counters_en_reg_event_clk_counter0_enable (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (event_clk_counters_en_reg_we),
+    .wd     (event_clk_counters_en_reg_event_clk_counter0_enable_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.event_clk_counters_en_reg.event_clk_counter0_enable.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (event_clk_counters_en_reg_event_clk_counter0_enable_qs)
+  );
+
+  //   F[event_clk_counter1_enable]: 1:1
+  prim_ot_subreg #(
+    .DW      (1),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (1'h0)
+  ) u_event_clk_counters_en_reg_event_clk_counter1_enable (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (event_clk_counters_en_reg_we),
+    .wd     (event_clk_counters_en_reg_event_clk_counter1_enable_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.event_clk_counters_en_reg.event_clk_counter1_enable.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (event_clk_counters_en_reg_event_clk_counter1_enable_qs)
+  );
+
+  //   F[event_clk_counter2_enable]: 2:2
+  prim_ot_subreg #(
+    .DW      (1),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (1'h0)
+  ) u_event_clk_counters_en_reg_event_clk_counter2_enable (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (event_clk_counters_en_reg_we),
+    .wd     (event_clk_counters_en_reg_event_clk_counter2_enable_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.event_clk_counters_en_reg.event_clk_counter2_enable.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (event_clk_counters_en_reg_event_clk_counter2_enable_qs)
+  );
+
+  //   F[event_clk_counter3_enable]: 3:3
+  prim_ot_subreg #(
+    .DW      (1),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (1'h0)
+  ) u_event_clk_counters_en_reg_event_clk_counter3_enable (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (event_clk_counters_en_reg_we),
+    .wd     (event_clk_counters_en_reg_event_clk_counter3_enable_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.event_clk_counters_en_reg.event_clk_counter3_enable.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (event_clk_counters_en_reg_event_clk_counter3_enable_qs)
+  );
+
+  //   F[unused]: 31:4
+  prim_ot_subreg #(
+    .DW      (28),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRW),
+    .RESVAL  (28'h0)
+  ) u_event_clk_counters_en_reg_unused (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (event_clk_counters_en_reg_we),
+    .wd     (event_clk_counters_en_reg_unused_wd),
+
+    // from internal hardware
+    .de     (1'b0),
+    .d      ('0),
+
+    // to internal hardware
+    .qe     (),
+    .q      (reg2hw.event_clk_counters_en_reg.unused.q),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (event_clk_counters_en_reg_unused_qs)
+  );
+
+
 
   logic [11:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[ 0] = (reg_addr == PERFCOUNTERS_T_ALERT_TEST_OFFSET);
-    addr_hit[ 1] = (reg_addr == PERFCOUNTERS_T_EVENT_REG_OFFSET);
-    addr_hit[ 2] = (reg_addr == PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG_OFFSET);
-    addr_hit[ 3] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG_OFFSET);
-    addr_hit[ 4] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER3_REG_OFFSET);
-    addr_hit[ 5] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER2_REG_OFFSET);
-    addr_hit[ 6] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER1_REG_OFFSET);
-    addr_hit[ 7] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER0_REG_OFFSET);
-    addr_hit[ 8] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG_OFFSET);
-    addr_hit[ 9] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG_OFFSET);
-    addr_hit[10] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG_OFFSET);
-    addr_hit[11] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG_OFFSET);
+    addr_hit[ 0] = (reg_addr == PERFCOUNTERS_T_EVENT_REG_OFFSET);
+    addr_hit[ 1] = (reg_addr == PERFCOUNTERS_T_EVENTS_COUNTERS_MUX_REG_OFFSET);
+    addr_hit[ 2] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTERS_RST_REG_OFFSET);
+    addr_hit[ 3] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER3_REG_OFFSET);
+    addr_hit[ 4] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER2_REG_OFFSET);
+    addr_hit[ 5] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER1_REG_OFFSET);
+    addr_hit[ 6] = (reg_addr == PERFCOUNTERS_T_EVENT_COUNTER0_REG_OFFSET);
+    addr_hit[ 7] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER3_REG_OFFSET);
+    addr_hit[ 8] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER2_REG_OFFSET);
+    addr_hit[ 9] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER1_REG_OFFSET);
+    addr_hit[10] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTER0_REG_OFFSET);
+    addr_hit[11] = (reg_addr == PERFCOUNTERS_T_EVENT_CLK_COUNTERS_EN_REG_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -1159,10 +1280,7 @@ module perfcounters_t_reg_top (
   end
 
   // Generate write-enables
-  assign alert_test_we = addr_hit[0] & reg_we & !reg_error;
-
-  assign alert_test_wd = reg_wdata[0];
-  assign event_reg_we = addr_hit[1] & reg_we & !reg_error;
+  assign event_reg_we = addr_hit[0] & reg_we & !reg_error;
 
   assign event_reg_event_0_wd = reg_wdata[0];
 
@@ -1181,7 +1299,7 @@ module perfcounters_t_reg_top (
   assign event_reg_event_7_wd = reg_wdata[7];
 
   assign event_reg_unused_wd = reg_wdata[31:8];
-  assign events_counters_mux_reg_we = addr_hit[2] & reg_we & !reg_error;
+  assign events_counters_mux_reg_we = addr_hit[1] & reg_we & !reg_error;
 
   assign events_counters_mux_reg_events_counter0_mux_wd = reg_wdata[2:0];
 
@@ -1192,7 +1310,7 @@ module perfcounters_t_reg_top (
   assign events_counters_mux_reg_events_counter3_mux_wd = reg_wdata[11:9];
 
   assign events_counters_mux_reg_unused_wd = reg_wdata[31:12];
-  assign event_counters_rst_reg_we = addr_hit[3] & reg_we & !reg_error;
+  assign event_counters_rst_reg_we = addr_hit[2] & reg_we & !reg_error;
 
   assign event_counters_rst_reg_event_counter0_rst_wd = reg_wdata[0];
 
@@ -1211,14 +1329,25 @@ module perfcounters_t_reg_top (
   assign event_counters_rst_reg_event_clk_counter3_rst_wd = reg_wdata[7];
 
   assign event_counters_rst_reg_unused_wd = reg_wdata[31:8];
+  assign event_clk_counters_en_reg_we = addr_hit[11] & reg_we & !reg_error;
+
+  assign event_clk_counters_en_reg_event_clk_counter0_enable_wd = reg_wdata[0];
+
+  assign event_clk_counters_en_reg_event_clk_counter1_enable_wd = reg_wdata[1];
+
+  assign event_clk_counters_en_reg_event_clk_counter2_enable_wd = reg_wdata[2];
+
+  assign event_clk_counters_en_reg_event_clk_counter3_enable_wd = reg_wdata[3];
+
+  assign event_clk_counters_en_reg_unused_wd = reg_wdata[31:4];
 
   // Assign write-enables to checker logic vector.
   always_comb begin
     reg_we_check = '0;
-    reg_we_check[0] = alert_test_we;
-    reg_we_check[1] = event_reg_we;
-    reg_we_check[2] = events_counters_mux_reg_we;
-    reg_we_check[3] = event_counters_rst_reg_we;
+    reg_we_check[0] = event_reg_we;
+    reg_we_check[1] = events_counters_mux_reg_we;
+    reg_we_check[2] = event_counters_rst_reg_we;
+    reg_we_check[3] = 1'b0;
     reg_we_check[4] = 1'b0;
     reg_we_check[5] = 1'b0;
     reg_we_check[6] = 1'b0;
@@ -1226,7 +1355,7 @@ module perfcounters_t_reg_top (
     reg_we_check[8] = 1'b0;
     reg_we_check[9] = 1'b0;
     reg_we_check[10] = 1'b0;
-    reg_we_check[11] = 1'b0;
+    reg_we_check[11] = event_clk_counters_en_reg_we;
   end
 
   // Read data return
@@ -1234,10 +1363,6 @@ module perfcounters_t_reg_top (
     reg_rdata_next = '0;
     unique case (1'b1)
       addr_hit[0]: begin
-        reg_rdata_next[0] = '0;
-      end
-
-      addr_hit[1]: begin
         reg_rdata_next[0] = event_reg_event_0_qs;
         reg_rdata_next[1] = event_reg_event_1_qs;
         reg_rdata_next[2] = event_reg_event_2_qs;
@@ -1249,7 +1374,7 @@ module perfcounters_t_reg_top (
         reg_rdata_next[31:8] = event_reg_unused_qs;
       end
 
-      addr_hit[2]: begin
+      addr_hit[1]: begin
         reg_rdata_next[2:0] = events_counters_mux_reg_events_counter0_mux_qs;
         reg_rdata_next[5:3] = events_counters_mux_reg_events_counter1_mux_qs;
         reg_rdata_next[8:6] = events_counters_mux_reg_events_counter2_mux_qs;
@@ -1257,7 +1382,7 @@ module perfcounters_t_reg_top (
         reg_rdata_next[31:12] = events_counters_mux_reg_unused_qs;
       end
 
-      addr_hit[3]: begin
+      addr_hit[2]: begin
         reg_rdata_next[0] = event_counters_rst_reg_event_counter0_rst_qs;
         reg_rdata_next[1] = event_counters_rst_reg_event_clk_counter0_rst_qs;
         reg_rdata_next[2] = event_counters_rst_reg_event_counter1_rst_qs;
@@ -1269,36 +1394,44 @@ module perfcounters_t_reg_top (
         reg_rdata_next[31:8] = event_counters_rst_reg_unused_qs;
       end
 
-      addr_hit[4]: begin
+      addr_hit[3]: begin
         reg_rdata_next[31:0] = event_counter3_reg_qs;
       end
 
-      addr_hit[5]: begin
+      addr_hit[4]: begin
         reg_rdata_next[31:0] = event_counter2_reg_qs;
       end
 
-      addr_hit[6]: begin
+      addr_hit[5]: begin
         reg_rdata_next[31:0] = event_counter1_reg_qs;
       end
 
-      addr_hit[7]: begin
+      addr_hit[6]: begin
         reg_rdata_next[31:0] = event_counter0_reg_qs;
       end
 
-      addr_hit[8]: begin
+      addr_hit[7]: begin
         reg_rdata_next[31:0] = event_clk_counter3_reg_qs;
       end
 
-      addr_hit[9]: begin
+      addr_hit[8]: begin
         reg_rdata_next[31:0] = event_clk_counter2_reg_qs;
       end
 
-      addr_hit[10]: begin
+      addr_hit[9]: begin
         reg_rdata_next[31:0] = event_clk_counter1_reg_qs;
       end
 
-      addr_hit[11]: begin
+      addr_hit[10]: begin
         reg_rdata_next[31:0] = event_clk_counter0_reg_qs;
+      end
+
+      addr_hit[11]: begin
+        reg_rdata_next[0] = event_clk_counters_en_reg_event_clk_counter0_enable_qs;
+        reg_rdata_next[1] = event_clk_counters_en_reg_event_clk_counter1_enable_qs;
+        reg_rdata_next[2] = event_clk_counters_en_reg_event_clk_counter2_enable_qs;
+        reg_rdata_next[3] = event_clk_counters_en_reg_event_clk_counter3_enable_qs;
+        reg_rdata_next[31:4] = event_clk_counters_en_reg_unused_qs;
       end
 
       default: begin
