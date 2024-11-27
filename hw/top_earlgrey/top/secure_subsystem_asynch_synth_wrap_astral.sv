@@ -131,8 +131,8 @@ module security_island
 // Defs and assignments //
 //////////////////////////
 
-   localparam int unsigned NumMstPorts = 2;
-   localparam int unsigned NumSlvPorts = 4;
+   localparam int unsigned NumMstPorts = 1;
+   localparam int unsigned NumSlvPorts = 2;
 
    axi_out_req_t  axi_out_mst_req,
                   axi_cls_mst_req;
@@ -343,7 +343,7 @@ module security_island
 // AXI interconnection
 // -----------------------------------------------------------------------------------
 
-  localparam int unsigned NumRules = 2;
+  localparam int unsigned NumRules = 1;
   typedef struct packed {
     int unsigned idx;
     logic [AxiOutAddrWidth-1:0] start_addr;
@@ -352,22 +352,13 @@ module security_island
   xbar_rule_t [NumRules-1:0] addr_map;
   logic [AxiOutAddrWidth-1:0] host_base_addr;
   logic [AxiOutAddrWidth-1:0] host_end_addr;
-  logic [AxiOutAddrWidth-1:0] cls_base_addr;
-  logic [AxiOutAddrWidth-1:0] cls_end_addr;
   assign host_base_addr = 32'h0001_0000;
   assign host_end_addr = 32'hA000_0000;
-  assign cls_base_addr = 32'hA100_0000;
-  assign cls_end_addr = 32'hB000_0000;
   assign addr_map = '{
     '{ // Host
       start_addr: host_base_addr,
       end_addr:   host_end_addr,
       idx:        0
-    },
-    '{ // Cluster
-      start_addr: cls_base_addr,
-      end_addr:   cls_end_addr,
-      idx:        1
     }
   };
 
@@ -388,16 +379,13 @@ module security_island
   };
 
   //assign axi_out_mst_req = axi_mst_req[0];
-  assign axi_out_mst_req = axi_mst_req[0];
-  assign axi_cls_mst_req = axi_mst_req[1];
+  assign axi_out_mst_req = axi_mst_req;
   //assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp};
-  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp};
+  assign axi_mst_rsp     = {  axi_out_mst_rsp};
 
-  assign axi_slv_req     = { axi_cls_slv_req, axi_cls_cfg_req, axi_idma_req, axi_tlul_req };
+  assign axi_slv_req     = { axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[0];
   assign axi_idma_rsp    = axi_slv_rsp[1];
-  assign axi_cls_cfg_rsp = axi_slv_rsp[2];
-  assign axi_cls_slv_rsp = axi_slv_rsp[3];
 
   axi_xbar #(
     .Cfg          ( XbarCfg           ),
@@ -495,7 +483,7 @@ module security_island
 ////////////////////
 // Axi serializer //
 ////////////////////
-
+/*
    axi_serializer_intf #(
      .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
      .AXI_DATA_WIDTH ( AxiDataWidth  ),
@@ -513,7 +501,7 @@ module security_island
 //////////////
 // Axi CDCs //
 //////////////
-
+/*
    axi_cdc_src_intf #(
      .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
      .AXI_DATA_WIDTH ( AxiDataWidth  ),
@@ -555,7 +543,7 @@ module security_island
      .src               ( async_cfg_axi_bus        ),
      .dst               ( cluster_cfg_axi_lite_bus )
    );
-
+*/
 ////////////////////
 // Axi assignments//
 ////////////////////
@@ -570,7 +558,7 @@ module security_island
 /////////////////
 // Pulp Cluster//
 /////////////////
-
+/*
    pulp_cluster
    #(
       .NB_CORES                     ( `NB_CORES                       ),
@@ -694,7 +682,7 @@ module security_island
       .async_data_slave_b_rptr_i       ( async_soc_to_cluster_axi_bus.b_rptr  ),
       .async_data_slave_b_data_o       ( async_soc_to_cluster_axi_bus.b_data  )
    );
-
+*/
 // -----------------------------------------------------------------------------------
 // Root of Trust
 // -----------------------------------------------------------------------------------
