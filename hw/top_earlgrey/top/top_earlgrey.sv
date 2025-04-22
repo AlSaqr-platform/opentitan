@@ -15,7 +15,7 @@
 
 module top_earlgrey #(
   parameter int unsigned AxiAddrWidth = 64,
-  parameter int unsigned AxiDataWidth = 64,
+  parameter int unsigned AxiDataWidth = 32,
   parameter int unsigned AxiIdWidth   = 8,
   parameter int unsigned AxiUserWidth = 1,
   // Manually defined parameters
@@ -2191,7 +2191,11 @@ module top_earlgrey #(
       .axi_req_t(axi_req_t),
       .axi_rsp_t(axi_rsp_t),
       .reg_req_t(reg_req_t),
-      .reg_rsp_t(reg_rsp_t)
+      .reg_rsp_t(reg_rsp_t),
+      .AxiAddrWidth(AxiAddrWidth),
+      .AxiDataWidth(AxiDataWidth),
+      .AxiIdWidth(AxiIdWidth),
+      .AxiUserWidth(AxiUserWidth)
   ) idma_wrap_i (
       .clk_i          ( clkmgr_aon_clocks.clk_main_infra ),
       .rst_ni         ( rstmgr_aon_resets.rst_lc_n[rstmgr_pkg::Domain0Sel] ),

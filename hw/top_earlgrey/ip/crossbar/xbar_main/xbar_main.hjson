@@ -139,8 +139,6 @@
       xbar: false
       stub: false
       inst_type: ""
-      req_fifo_pass: true
-      rsp_fifo_pass: true
     }
     {
       name: rv_core_ibex.cored
@@ -151,8 +149,6 @@
       xbar: false
       stub: false
       inst_type: ""
-      req_fifo_pass: true
-      rsp_fifo_pass: true
     }
     {
       name: rv_dm.sba
