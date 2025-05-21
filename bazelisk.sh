@@ -1,16 +1,13 @@
 #!/bin/bash
-# Copyright lowRISC contributors.
+# Copyright lowRISC contributors (OpenTitan project).
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 
 # This is a wrapper script for `bazelisk` that downloads and executes bazelisk.
 # Bazelisk is a wrapper for `bazel` that can download and execute the project's
 # required bazel version.
-#
-# CI jobs should use ci/bazelisk.sh instead, which performs CI-friendly additional
-# setup.
 
-set -euo pipefail
+set -eo pipefail
 
 # Change to this script's directory, as it is the location of the bazel workspace.
 cd "$(dirname "$0")"
@@ -18,12 +15,13 @@ cd "$(dirname "$0")"
 : "${CURL_FLAGS:=--silent}"
 : "${REPO_TOP:=$(git rev-parse --show-toplevel)}"
 : "${BINDIR:=.bin}"
-: "${BAZEL_BIN:=$(which bazel)}"
+: "${BAZEL_BIN:=$(which bazel 2>/dev/null)}"
 
-readonly release="v1.11.0"
+# Bazelisk (not Bazel) release. Keep this in sync with `util/container/Dockerfile`.
+readonly release="v1.24.1"
 declare -A hashes=(
-    # sha256sums for v1.11.0.  Update this if you update the release.
-    [linux-amd64]="231ec5ca8115e94c75a1f4fbada1a062b48822ca04f21f26e4cb1cd8973cd458"
+    # sha256sums for v1.24.1.  Update this if you update the release.
+    [linux-amd64]="0aee09c71828b0012750cb9b689ce3575da8e230f265bf8d6dcd454eee6ea842"
 )
 
 declare -A architectures=(
@@ -79,29 +77,46 @@ function outquery_starlark_expr() {
             echo "target.files.to_list()[0].path"
             ;;
         -all)
-            echo "\"\\n\".join([f.path for f in target.files.to_list()])"
+            echo "\"\\n\".join([f.path for f in depset(transitive=[target.files, target.default_runfiles.files]).to_list()])"
+            ;;
+        -providers)
+            echo "providers(target)"
             ;;
         -*)
-            echo "\"\\n\".join([f.path for f in target.files.to_list() if \"$q\"[1:] in f.path])"
+            echo "\"\\n\".join([f.path for f in depset(transitive=[target.files, target.default_runfiles.files]).to_list() if \"$q\"[1:] in f.path])"
             ;;
         .*)
-            echo "\"\\n\".join([f.path for f in target.files.to_list() if f.path.endswith(\"$q\")])"
+            echo "\"\\n\".join([f.path for f in depset(transitive=[target.files, target.default_runfiles.files]).to_list() if f.path.endswith(\"$q\")])"
             ;;
     esac
 }
 
+# Arguments:
+# $qexpr: starlark expression - see `outquery_starlark_expr`
+# $name: name of an array containing Bazel arguments that should come _before_
+#        the subcommand (e.g. `--bazelrc=...`).
 function do_outquery() {
     local qexpr="$1"
     shift
-    "$file" cquery "$@" \
+
+    "$file" "${pre_cmd_args[@]}" cquery "$@" \
         --output=starlark --starlark:expr="$qexpr" \
-        --ui_event_filters=-info --noshow_progress
+        --ui_event_filters=-info --noshow_progress \
+        | sort | uniq
 }
 
 function main() {
     local bindir="${REPO_TOP}/${BINDIR}"
     local file="${BAZEL_BIN:-${bindir}/bazelisk}"
     local lockfile="${bindir}/bazelisk.lock"
+
+    # If the user has Bazel in their PATH, check its version.
+    # Fallback to bazelisk if it doesn't match.
+    if [ -x "$BAZEL_BIN" ]; then
+        if [ "$("$BAZEL_BIN" --version)" != "bazel $(cat .bazelversion)" ]; then
+            file="${bindir}/bazelisk"
+        fi
+    fi
 
     # Are we using bazel from the user's PATH or using bazelisk?
     if expr match "${file}" ".*bazelisk$" >/dev/null; then
@@ -118,7 +133,15 @@ function main() {
         fi
     fi
 
-    case "$1" in
+    # Shift all flags (starting with `-`) that come before the subcommand
+    # into an array.
+    pre_cmd_args=()
+    while [[ "${1-}" == -* ]]; do
+        pre_cmd_args+=("$1")
+        shift
+    done
+
+    case "${1-}" in
         outquery*)
             # The custom 'outquery' command can be used to query bazel for the
             # outputs associated with labels.
@@ -147,13 +170,13 @@ function main() {
             local qexpr outfile
             qexpr="$(outquery_starlark_expr outquery)"
             outfile=$(do_outquery "$qexpr" "$@")
-            "$file" build "$@"
+            "$file" "${pre_cmd_args[@]}" build "$@"
             # shellcheck disable=SC2059
             # We are intentionally using $command_template as a format string.
             eval "$(printf "$command_template" "$outfile")"
             ;;
         *)
-            exec "$file" "$@"
+            exec "$file" "${pre_cmd_args[@]}" "$@"
             ;;
     esac
 }
