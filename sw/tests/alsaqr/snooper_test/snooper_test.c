@@ -71,29 +71,43 @@ int main(int argc, char **argv) {
   t = dif_rv_plic_irq_set_enabled(&plic0, SNOOP_ID, 0, kDifToggleEnabled);
 
   // Configuring Snooper
+
+  // Configure LSBs and MSBs of START_ADDRESS for RANGE_0, first and only logging region
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_RANGE_0_BASE_H_REG_OFFSET, 0x00000000);
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_RANGE_0_BASE_L_REG_OFFSET, 0x80000000);
+
+  // Configure LSBs and MSBs of END_ADDRESS for RANGE_0, first and only logging region
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_RANGE_0_LAST_H_REG_OFFSET, 0x00000000);
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_RANGE_0_LAST_L_REG_OFFSET, 0x90000000);
+
+  // Configure  LSBs and MSBs of the irq TRIGGER_PC0, setting it to last PC before returning form main of snooper_test on CVA6.
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_TRIG_PC0_H_REG_OFFSET, 0x00000000);
   abs_mmio_write32(SNOOP_BASE + CFG_REGS_TRIG_PC0_L_REG_OFFSET, 0x80000f80);
 
+  // Set to 1 the bit of CTRL register enabling TRIGGER_PC0
   set_register_bit(SNOOP_BASE, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRIG_PC_0_BIT);
+
+  // Configure Snooper to log only instrucitions executed in M mode
   set_register_bit(SNOOP_BASE, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_M_MODE_BIT);
 
   #ifdef CORE_1
   set_register_bit(SNOOP_BASE, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_CORE_SELECT_BIT);
   #endif
 
+
+  // Configure Snooper Logging mode: Instr or Addr (default)
   #ifdef INSTR
   set_register_bit(SNOOP_BASE, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRACE_MODE_OFFSET);
   #endif
 
-  // trigger snooper to log traces
+  // Enable RANGE_0 from CTRL register, this will enable the snooper to log the RANGE_0
   set_register_bit(SNOOP_BASE, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_PC_RANGE_0_BIT);
 
-  // Wait for Trigger Irq
+  // Snooper is now logging, waiting for trigger IRQ
+
   asm volatile ("wfi");
+
+  // Read First and Last valid addresses, containing the data.
 
   base = abs_mmio_read32(SNOOP_BASE + CFG_REGS_BASE_REG_OFFSET);
   last = abs_mmio_read32(SNOOP_BASE + CFG_REGS_LAST_REG_OFFSET);
