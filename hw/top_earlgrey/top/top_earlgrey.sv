@@ -399,6 +399,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   // crypto tcdm master signals
   logic [N_LOG_MST-1:0]         tcdm_mst_req;
   logic [N_LOG_MST-1:0] [14:0]  tcdm_mst_add;
+  logic [14:0]                  tcdm_ibex_addr;
   logic [N_LOG_MST-1:0]         tcdm_mst_wen;
   logic [N_LOG_MST-1:0] [31:0]  tcdm_mst_wdata;
   logic [N_LOG_MST-1:0]         tcdm_mst_gnt;
@@ -2121,6 +2122,9 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   );
 
 `ifdef USE_IDMA
+
+  assign tcdm_mst_add[0] = {tcdm_ibex_addr, 2'b00};
+
   tlul_adapter_sram #(
     .SramAw(15),
     .SramDw(32),
@@ -2141,7 +2145,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
     .req_type_o   (                          ),
     .gnt_i        ( tcdm_mst_gnt[0]          ),
     .we_o         ( tcdm_mst_wen[0]          ),
-    .addr_o       ( tcdm_mst_add[0]          ),
+    .addr_o       ( tcdm_ibex_addr           ),
     .wdata_o      ( tcdm_mst_wdata[0]        ),
     .wmask_o      ( tcdm_mst_wmask           ),
     .intg_error_o (                          ),
