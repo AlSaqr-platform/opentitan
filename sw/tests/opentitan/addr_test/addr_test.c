@@ -5,10 +5,9 @@
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
 #define L2_BASE        0x1C001000
-#define L3_BASE        0x94000000
+#define L3_BASE        0x80000000
 
-#define SIZE           128 // 0x1000 //4KiB
-#define OFFSET         32
+#define SIZE           0x1000 //4KiB
 
 #define IDMA_SRC_ADDR_OFFSET         0x000000d8
 #define IDMA_DST_ADDR_OFFSET         0x000000d0
@@ -61,7 +60,7 @@ int main(int argc, char **argv) {
   printf_init();
 
   printf("--------------------- FROM HRAM TO TCDM ---------------------\r\n");
-  b = b || addr_test(0x9fffff00, SIZE);
+  b = b || addr_test(L3_BASE, SIZE);
 
   return b;
 }
