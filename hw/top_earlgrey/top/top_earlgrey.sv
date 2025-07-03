@@ -407,7 +407,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   logic [N_LOG_MST-1:0]         tcdm_mst_r_valid;
   logic [N_LOG_MST-1:0] [31:0]  tcdm_mst_r_rdata;
   logic [N_LOG_MST-1:0] [3:0]   tcdm_mst_be;
-  logic [31:0]                  tcdm_mst_wmask;
+
   // crypto tcdm slave signals
   logic [N_LOG_SLV-1:0]         tcdm_slv_req;
   logic [N_LOG_SLV-1:0] [9:0]   tcdm_slv_add;
@@ -417,11 +417,6 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   logic [N_LOG_SLV-1:0]         tcdm_slv_gnt;
   logic [N_LOG_SLV-1:0] [31:0]  tcdm_slv_r_rdata;
   logic [N_LOG_SLV-1:0]         tcdm_slv_r_valid;
-
-  assign tcdm_mst_be[0][0] = tcdm_mst_wmask[0];
-  assign tcdm_mst_be[0][1] = tcdm_mst_wmask[8];
-  assign tcdm_mst_be[0][2] = tcdm_mst_wmask[16];
-  assign tcdm_mst_be[0][3] = tcdm_mst_wmask[24];
 
   // rv_dm
   // rv_plic
@@ -2124,32 +2119,20 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
 
 `ifdef USE_IDMA
 
-  assign tcdm_mst_add[0] = {tcdm_ibex_addr, 2'b00};
-
-  tlul_adapter_sram #(
+  tlul2mem #(
     .SramAw(15),
-    .SramDw(32),
-    .Outstanding(1),
-    .ByteAccess(1),
-    .ErrOnWrite(0),
-    .ErrOnRead(0),
-    .CmdIntgCheck(1),
-    .EnableRspIntgGen(1),
-    .EnableDataIntgGen(1)
+    .SramDw(32)
   ) u_adapter_crypto_sram (
     .clk_i        ( clkmgr_aon_clocks.clk_main_infra ),
     .rst_ni       ( rstmgr_aon_resets.rst_lc_n[rstmgr_pkg::Domain0Sel] ),
     .tl_i         ( crypto_sram_tl_req       ),
     .tl_o         ( crypto_sram_tl_rsp       ),
-    .en_ifetch_i  ( prim_mubi_pkg::MuBi4False),
     .req_o        ( tcdm_mst_req[0]          ),
-    .req_type_o   (                          ),
     .gnt_i        ( tcdm_mst_gnt[0]          ),
     .we_o         ( tcdm_mst_wen[0]          ),
-    .addr_o       ( tcdm_ibex_addr           ),
+    .addr_o       ( tcdm_mst_add[0]          ),
     .wdata_o      ( tcdm_mst_wdata[0]        ),
-    .wmask_o      ( tcdm_mst_wmask           ),
-    .intg_error_o (                          ),
+    .wmask_o      ( tcdm_mst_be[0]           ),
     .rdata_i      ( tcdm_mst_r_rdata[0]      ),
     .rvalid_i     ( tcdm_mst_r_valid[0]      ),
     .rerror_i     ( '0                       )
