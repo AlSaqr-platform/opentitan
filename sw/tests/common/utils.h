@@ -56,6 +56,25 @@
 #define SERIAL_RX_BUFFER_SIZE UART_FIFO_DEPTH
 #define SERIAL_TX_BUFFER_SIZE UART_FIFO_DEPTH
 
+#define MAX(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a > _b ? _a : _b;                                                         \
+  })
+
+#define MIN(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a < _b ? _a : _b;                                                         \
+  })
+
+#define CLAMP(x, low, high)                                                    \
+  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+
+#define inf 1.0f / 0.0f
+
 void uart_set_cfg(int parity, uint16_t clk_counter);
 
 void uart_send(const char* str, unsigned int len);
