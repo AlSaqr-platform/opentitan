@@ -52,6 +52,25 @@
 #define THRE 1<<5 	//THRE bit in LSR reg
 #define DR 1	 	//DR bit in LSR reg
 
+#define MAX(a, b)                                                       \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a > _b ? _a : _b;                                                         \
+  })
+
+#define MIN(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a < _b ? _a : _b;                                                         \
+  })
+
+#define CLAMP(x, low, high)                                                    \
+  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+
+#define inf 1.0f / 0.0f
+
 #define UART_FIFO_DEPTH 64
 #define SERIAL_RX_BUFFER_SIZE UART_FIFO_DEPTH
 #define SERIAL_TX_BUFFER_SIZE UART_FIFO_DEPTH
