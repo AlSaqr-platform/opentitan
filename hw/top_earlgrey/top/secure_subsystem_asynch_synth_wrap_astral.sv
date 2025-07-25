@@ -356,9 +356,9 @@ module security_island
   logic [AxiOutAddrWidth-1:0] cls_base_addr;
   logic [AxiOutAddrWidth-1:0] cls_end_addr;
   assign host_base_addr = 32'h0001_0000;
-  assign host_end_addr = 32'hA000_0000;
-  assign cls_base_addr = 32'hA100_0000;
-  assign cls_end_addr = 32'hB000_0000;
+  assign host_end_addr = 32'hB000_0000;
+  assign cls_base_addr = 32'hB000_0000;
+  assign cls_end_addr = 32'hC000_0000;
   assign addr_map = '{
     '{ // Host
       start_addr: host_base_addr,
@@ -506,7 +506,7 @@ module security_island
      .MAX_WRITE_TXNS ( NumSlvPorts   )
       ) axi_serializer (
         .clk_i  ( clk_i                             ),
-        .rst_ni ( s_soc_rst_n                       ),
+        .rst_ni ( pwr_on_rst_ni                     ),
         .slv    ( soc_to_cluster_axi_bus            ),
         .mst    ( serialized_soc_to_cluster_axi_bus )
       );
@@ -590,7 +590,7 @@ module security_island
       .DIRECT_MAPPED_FEATURE        ( "DISABLED"                      ),
       .L2_SIZE                      ( 512*1024                        ),
       .ROM_BOOT_ADDR                ( 32'h1A000000                    ),
-      .BOOT_ADDR                    ( 32'h1C002080                    ),
+      .BOOT_ADDR                    ( 32'hA0000080                    ),
       .INSTR_RDATA_WIDTH            ( 32                              ),
       .CLUST_FPU                    ( 1                               ),
       .CLUST_FP_DIVSQRT             ( 1                               ),
