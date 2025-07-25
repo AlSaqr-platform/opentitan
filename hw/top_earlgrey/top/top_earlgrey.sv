@@ -2820,7 +2820,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
     .MemInitFile(SramCtrlMainMemInitFile),
     .RndCnstLfsrSeed(RndCnstSramCtrlMainLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlMainLfsrPerm),
-    .MemSizeRam(32768),
+    .MemSizeRam(32768*16),
     .InstrExec(SramCtrlMainInstrExec)
   ) u_sram_ctrl_main (
       // [59]: fatal_error
