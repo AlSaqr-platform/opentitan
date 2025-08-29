@@ -590,7 +590,7 @@ module security_island
       .DIRECT_MAPPED_FEATURE        ( "DISABLED"                      ),
       .L2_SIZE                      ( 512*1024                        ),
       .ROM_BOOT_ADDR                ( 32'h1A000000                    ),
-      .BOOT_ADDR                    ( 32'hA0000080                    ),
+      .BOOT_ADDR                    ( 32'h1C002080                    ),
       .INSTR_RDATA_WIDTH            ( 32                              ),
       .CLUST_FPU                    ( 1                               ),
       .CLUST_FP_DIVSQRT             ( 1                               ),
