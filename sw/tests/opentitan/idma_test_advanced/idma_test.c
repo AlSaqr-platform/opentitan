@@ -36,7 +36,7 @@ void printf_mem(uint32_t b1, uint32_t b2, uint32_t size) {
   uint32_t* ptr2 = (uint32_t*) b2;
   for (uint32_t i = 0; i < size/4; ++i) {
     printf("%d - 0x%x: %d\t 0x%x: %d\r\n", i, &(ptr1[i]), ptr1[i], &(ptr2[i]), ptr2[i]);
-   }
+  }
 }
 
 void wait_for_idma_eot(int next_id){

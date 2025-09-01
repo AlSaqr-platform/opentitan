@@ -4,7 +4,6 @@
 #include <time.h>
 #include "utils.h"
 #include "cluster_code.h"
-
 #define SIZE 1024
 
 #define L3_BASE 0x80000000

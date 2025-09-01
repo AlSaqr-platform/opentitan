@@ -18,7 +18,7 @@ int main() {
   int baud_rate = 115200;
   int test_freq = 100000000;
   #endif
-  uart_set_cfg(0,(test_freq/baud_rate)>>4);
+  uart_set_cfg_cl(0,(test_freq/baud_rate)>>4);
 
   volatile int * fetch_en, * edn_enable, * plic_prio, * plic_en;
   volatile int * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5 ;
@@ -48,11 +48,10 @@ int main() {
   /////////////////////////
   // Cluster offloading  //
   /////////////////////////
-
   err = load_cluster_code();
   *fetch_en = 0x1;
 
-  if(err==0) printf("Cluster preloaded, now wfi!\r\n");
+  if(err==0) printf_cl("Cluster preloaded, now wfi!\r\n");
 
   asm volatile ("wfi");
 
@@ -69,9 +68,9 @@ int main() {
   e = *p_reg5;
 
   if( a == 0xBAADC0DE &&  b == 0xBAADC0DE && c == 0xBAADC0DE && d == 0xBAADC0DE && e == 0xBAADC0DE)
-    printf("Msg ok, test succeeded!\r\n");
+    printf_cl("Msg ok, test succeeded!\r\n");
   else{
-    printf("Msg wrong, test failed!\r\n");
+    printf_cl("Msg wrong, test failed!\r\n");
     err++;
   }
 

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "pulp.h"
 
-#define SHARED_ADDR 0x10000000
+#define SHARED_ADDR 0xB0000000
 #define SIZE 1024
 
 #define L3_BASE 0x80000000
