@@ -1976,16 +1976,16 @@ e0000330:       1141                    addi    sp,sp,-16
 utils_printf_init():
 e0000332:       c606                    sw      ra,12(sp)
 e0000334:       1a104537                lui     a0,0x1a104
-e0000338:       4585                    li      a1,1
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac_w_check/titanssl_sram_hmac_w_check.c:122
-    *tmp = 1;
-e000033a:       d96c                    sw      a1,116(a0)
-/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac_w_check/titanssl_sram_hmac_w_check.c:124
-    *tmp = 1;
-e000033c:       dd6c                    sw      a1,124(a0)
+e0000338:       458d                    li      a1,3
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac_w_check/titanssl_sram_hmac_w_check.c:115
+    *tmp = 3;
+e000033a:       c14c                    sw      a1,4(a0)
+/proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac_w_check/titanssl_sram_hmac_w_check.c:117
+    *tmp = 3;
+e000033c:       c54c                    sw      a1,12(a0)
 /proc/self/cwd/sw/tests/opentitan/titanssl_sram_hmac_w_check/titanssl_sram_hmac_w_check.c:128
   uart_set_cfg(0,(test_freq/baud_rate)>>4);
-e000033e:       04100593                li      a1,65
+e000033e:       03600593                li      a1,54
 e0000342:       4501                    li      a0,0
 e0000344:       224d                    jal     e00004e6 <uart_set_cfg>
 main():

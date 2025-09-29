@@ -105,7 +105,7 @@ static const dif_hmac_transaction_t kHmacTransactionConfig = {
 static titanssl_mbox_t* const titanssl_mbox = (titanssl_mbox_t*)TITANSSL_MBOX_BASE;
 static dif_hmac_digest_t *titanssl_digest = 0x0;
 
-#define CFG_FPGA_EMULATION          1              // running on 1) fpga; 0) QuestaSim
+#define CFG_FPGA_EMULATION          0              // running on 1) fpga; 0) QuestaSim
 
 void utils_printf_init() {
 
