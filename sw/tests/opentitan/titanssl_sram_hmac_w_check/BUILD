@@ -25,26 +25,23 @@ package(default_visibility = ["//visibility:public"])
 
 
 opentitan_ram_binary(
-    name = "titanssl_sram_rsa",
+    name = "titanssl_sram_hmac_w_check",
     srcs = [
-    	"titanssl_sram_rsa.c",
+    	"titanssl_sram_hmac_w_check.c",
     ],
     hdrs = [
-        "titanssl_sram_rsa.h",
+        "titanssl_sram_hmac_w_check.h",
     ],
-    archive_symbol_prefix = "titanssl_sram_rsa",
+    archive_symbol_prefix = "titanssl_sram_hmac_w_check",
     testonly = True,
     deps = [
         "//sw/tests/common:common",
         "//sw/tests/common:linker",
         "//sw/tests/common:crt",
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
-        "//sw/device/lib/dif:otbn",
-        "//sw/device/lib/runtime:ibex",
-        "//sw/device/lib/runtime:otbn",
-        "//sw/device/lib/testing:entropy_testutils",
-        "//sw/otbn/crypto:rsa",
-        "//sw/device/lib/testing/test_framework:ottf_main",
-        "//sw/device/silicon_creator/rom:alsaqr_print",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:mmio",
+        "//sw/device/lib/dif:hmac",
+        "//sw/device/silicon_creator/rom:alsaqr_print"
     ],
 )

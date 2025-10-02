@@ -1,4 +1,4 @@
-# Copyright (c) 2022 ETH Zurich and University of Bologna
+4# Copyright (c) 2022 ETH Zurich and University of Bologna
 # Copyright and related rights are licensed under the Solderpad Hardware
 # License, Version 0.51 (the "License"); you may not use this file except in
 # compliance with the License.  You may obtain a copy of the License at
@@ -25,26 +25,27 @@ package(default_visibility = ["//visibility:public"])
 
 
 opentitan_ram_binary(
-    name = "titanssl_sram_rsa",
+    name = "sram_kmac_smoketest",
     srcs = [
-    	"titanssl_sram_rsa.c",
+    	"sram_kmac_smoketest.c",
     ],
     hdrs = [
-        "titanssl_sram_rsa.h",
+        "sram_kmac_smoketest.h",
     ],
-    archive_symbol_prefix = "titanssl_sram_rsa",
+    archive_symbol_prefix = "sram_kmac_smoketest",
     testonly = True,
     deps = [
+        "//hw/ip/aes:model",
         "//sw/tests/common:common",
         "//sw/tests/common:linker",
         "//sw/tests/common:crt",
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
-        "//sw/device/lib/dif:otbn",
-        "//sw/device/lib/runtime:ibex",
-        "//sw/device/lib/runtime:otbn",
-        "//sw/device/lib/testing:entropy_testutils",
-        "//sw/otbn/crypto:rsa",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:mmio",
+        "//sw/device/lib/dif:kmac",
         "//sw/device/lib/testing/test_framework:ottf_main",
-        "//sw/device/silicon_creator/rom:alsaqr_print",
+        "//sw/device/lib/testing:aes_testutils",
+	"//sw/device/silicon_creator/rom:alsaqr_print"
+
     ],
 )

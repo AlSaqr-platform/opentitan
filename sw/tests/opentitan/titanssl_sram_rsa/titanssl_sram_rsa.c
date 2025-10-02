@@ -19,6 +19,7 @@
 
 #define TARGET_SYNTHESIS
 
+#define CFG_FPGA_EMULATION          0              // running on 1) fpga; 0) QuestaSim
 
 typedef struct
 {
@@ -160,6 +161,27 @@ static const uint8_t TITANSSL_TEST_OUTPUT[TITANSSL_SIZE_KEY] = {
  * Benchmark implementation
  * ========================================================================= */
 
+void utils_printf_init() {
+
+  int * tmp;
+  #if CFG_FPGA_EMULATION == 0
+    tmp = (int *) 0x1a104004;
+    *tmp = 3;
+    tmp = (int *) 0x1a10400C;
+    *tmp = 3;
+    int baud_rate = 115200;
+    int test_freq = 100000000;
+  #else
+    tmp = (int *) 0x1a10407C;
+    *tmp = 1;
+    tmp = (int *) 0x1a104084;
+    *tmp = 1;
+    int baud_rate = 38400;
+    int test_freq = 40000000;
+  #endif
+  uart_set_cfg(0,(test_freq/baud_rate)>>4);
+
+}
 void initialize_memory()
 {
     buffer_plain.data = (uint8_t*)TITANSSL_ADDR_PLAIN;
@@ -221,13 +243,8 @@ void titanssl_benchmark_memcpy32_aligned_to_otbn(
     printf("n: %d\r\n", n);
 
     n_words = n / sizeof(uint32_t);
-    printf("n_words: %d\r\n", n_words);
     for (size_t i=0; i<n_words; i++)
     {
-        printf("    i: %d\r\n", i);
-        printf("    *src: 0x%08x\r\n", *(uint32_t*)src);
-        printf("    src: 0x%08x\r\n", src);
-        printf("    offset: 0x%08x\r\n", offset);
         mmio_region_write32(otbn, offset, *(uint32_t*)src);
         src += sizeof(uint32_t);
         offset += sizeof(uint32_t);
@@ -342,18 +359,7 @@ int main(
         int argc, 
         char **argv)
 {
-#ifdef TARGET_SYNTHESIS
-#define baud_rate 115200
-#define test_freq 50000000
-#else
-#define baud_rate 115200
-#define test_freq 100000000
-#endif
-    uart_set_cfg(
-        0,
-        (test_freq/baud_rate)>>4
-    );
-
+    utils_printf_init();
     entropy_testutils_auto_mode_init();
     initialize_memory();
     titanssl_benchmark_rsa_enc(
@@ -361,24 +367,16 @@ int main(
         &buffer_cipher,
         &buffer_modulus
     );
+
+    CHECK_ARRAYS_EQ(buffer_cipher.data, TITANSSL_TEST_OUTPUT, sizeof(buffer_cipher.data));
+
 #if TITANSSL_CFG_DEBUG
     printf("RSA Encryption\r\n");
     for (int i = 0; i < TITANSSL_SIZE_KEY; i++) {
         printf("%02x vs. %02x\r\n", buffer_cipher.data[i], TITANSSL_TEST_OUTPUT[i]);
     }
 #endif
-//    titanssl_benchmark_rsa_dec(
-//        &buffer_cipher,
-//        &buffer_plain,
-//        &buffer_modulus,
-//        &buffer_private
-//    );
-//#if TITANSSL_CFG_DEBUG
-//    printf("RSA Decryption\r\n");
-//    for (int i = 0; i < TITANSSL_SIZE_KEY; i++) {
-//        printf("%02x vs. %02x\r\n", buffer_plain.data[i], TITANSSL_TEST_PLAIN[i]);
-//    }
-//#endif
+    printf("Success!\r\n");
 
     return 0;
 }

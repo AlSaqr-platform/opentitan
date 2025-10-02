@@ -44,7 +44,6 @@ opentitan_ram_binary(
         "//sw/device/lib/base:mmio",
         "//sw/device/lib/dif:aes",
         "//sw/device/lib/testing:aes_testutils",
-        "//sw/device/silicon_creator/lib:rom_print",
 	"//sw/device/silicon_creator/rom:alsaqr_print"
 
     ],
