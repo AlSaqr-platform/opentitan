@@ -36,7 +36,7 @@ for guidelines on how to contribute code to this repository.
 Unless otherwise noted, everything in this repository is covered by the Apache
 License, Version 2.0 (see [LICENSE](https://github.com/lowRISC/opentitan/blob/master/LICENSE) for full text).
 
-### Repository how-to
+## Repository how-to
 
 The repository contains a systemverilog top module which wraps the top_earlgrey architecture (revisioned with out extensions). They are found under [hw/top_earlgrey/top](https://github.com/AlSaqr-platform/opentitan/tree/alsaqr-2/hw/top_earlgrey/top).
 The top module is [secure_subsystem_asynch_synth_wrap_astral.sv](https://github.com/AlSaqr-platform/opentitan/blob/alsaqr-2/hw/top_earlgrey/top/secure_subsystem_asynch_synth_wrap_astral.sv), while under [hw/tb/](https://github.com/AlSaqr-platform/opentitan/tree/alsaqr-2/hw/tb/testbench_asynch_astral.sv) a testbench can be found for stand-alone simulations.
@@ -50,16 +50,16 @@ The architecture we modified differs with respect to the original one in terms o
 * Defined scripts and Makefiles to allow for stand alone simulation.
 * Defined scripts to manipulate the output VMEMs from bazel (for flash VIP, bootrom generation, otp generation).
 
-## Repo Init
+### Repo Init
 Run the following command to inizialize the repo:
 ```
 make init
 ```
-## Software requirements
+### Software requirements
 To be able to run bazel, you must install the python requirements under python_requirements.txt and apt requirements as well.
 To compile with makefile, you just need the RISV toolchain.
 
-## Software build
+### Software build
 Two different methods are supported, depending on whether APIs from OpenTitan are needed:
 * 1) Makefile (no APIs)
 * 2) Bazel
@@ -111,13 +111,13 @@ make clean all
 
 ```
 
-## Scripts
+### Scripts
 Under scripts/, there are scripts for:
 * Generating the OTP ROM starting from an image.
 * Generating the bootrom starting from bazel outputs (both .sv and .coe).
 * Recasting the VMEMs for different formats/targets.
 
-## Run simulations
+### Run simulations
 
 To run simulation, you can run the following command providing the biniary to SRAM variable:
 
