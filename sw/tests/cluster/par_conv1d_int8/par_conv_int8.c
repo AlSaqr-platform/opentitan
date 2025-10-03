@@ -14,8 +14,13 @@ int main() {
   //////////////////////////////
 
   #ifdef TARGET_SYNTHESIS
+  int * tmp;
   int baud_rate = 9600;
   int test_freq = 25000000;
+  tmp = (int *) 0x1a10407C;
+  *tmp = 1;
+  tmp = (int *) 0x1a104084;
+  *tmp = 1;
   #else
   int baud_rate = 115200;
   int test_freq = 100000000;
@@ -54,7 +59,7 @@ int main() {
   /////////////////////////
 
   err = load_cluster_code();
-  if(err==0) printf_cl("Cluster preloaded, now wfi!\r\n");
+  if(err==0) printf_cl("Cluster preloaded with Conv int8, now wfi!\r\n");
 
   *fetch_en = 0x1;
 
