@@ -14,8 +14,13 @@ int main() {
   //////////////////////////////
 
   #ifdef TARGET_SYNTHESIS
+  int * tmp;
   int baud_rate = 9600;
   int test_freq = 25000000;
+  tmp = (int *) 0x1a10407C;
+  *tmp = 1;
+  tmp = (int *) 0x1a104084;
+  *tmp = 1;
   #else
   int baud_rate = 115200;
   int test_freq = 100000000;
@@ -52,7 +57,6 @@ int main() {
   /////////////////////////
   // Cluster offloading  //
   /////////////////////////
-
 
   err = load_cluster_code();
   if(err==0) printf_cl("Cluster preloaded, now wfi!\r\n");
