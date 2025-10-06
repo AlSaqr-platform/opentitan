@@ -5,3 +5,7 @@
 [submodule "sw/tests/pulp-nn-mixed"]
 	path = sw/tests/pulp-nn-mixed
 	url = git@github.com:pulp-platform/pulp-nn-mixed.git
+[submodule "sw/tests/pulp-runtime"]
+	path = sw/tests/pulp-runtime
+	url = git@github.com:alsaqr-platform/pulp-runtime.git
+	branch = mc/titancfi
