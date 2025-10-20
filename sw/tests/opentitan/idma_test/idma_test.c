@@ -1,15 +1,13 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <time.h>
-#include "utils.h"
+#include "sw/device/silicon_creator/rom/uart.h"
+#include "sw/device/silicon_creator/rom/string_lib.h"
+#include "sw/tests/common/utils.h"
 
-#define IDMA_BASE 		 0xfef00000
+#define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
 #define L2_BASE        0x1C001000
-#define L3_BASE        0x80000000
 
-#define SIZE           0x1000 //4KiB
+#define SIZE           128
+#define OFFSET         32
 
 #define IDMA_SRC_ADDR_OFFSET         0x000000d8
 #define IDMA_DST_ADDR_OFFSET         0x000000d0
@@ -20,6 +18,7 @@
 #define IDMA_REPS_3                  0x00000110
 #define IDMA_CONF                    0x00000000
 #define EOC                          0xc11c0018
+
 
 void wait_for_idma_eot(int next_id){
     volatile uint32_t *ptr;
@@ -44,36 +43,40 @@ int issue_idma_transaction(uint32_t src_addr, uint32_t dst_addr, uint32_t num_by
     return *ptr;
 }
 
-int main() {
+void mem_init(uint32_t base, uint32_t size, bool mod) {
+    int* ptr = (int*) base;
+    size_t num_words = size / sizeof(int);
+    for (size_t i = 0; i < num_words; ++i) {
+        ptr[i] = mod ? i : 0;
+    }
+}
 
-  int volatile  * ptr;
-  int b;
-  int err = 0;
-
-  int next_id;
-
-  for(int i = 0; i<1024; i++){
-    ptr = (int *) TCDM_BASE + i*4;
-    *ptr = i;
-  }
-
-  next_id = issue_idma_transaction(TCDM_BASE,L2_BASE,SIZE);
-
-  wait_for_idma_eot(next_id);
-
-  for(int i = 0; i<SIZE/4; i++){
-    ptr = (int *) L2_BASE + i;
-    b = *ptr;
-    if(b!=i)
+bool compare_mem(uint32_t b1, uint32_t b2, uint32_t size) {
+  uint32_t* ptr1 = (uint32_t*) b1;
+  uint32_t* ptr2 = (uint32_t*) b2;
+  int err=0;
+  for (uint32_t i = 0; i < size/4; ++i) {
+    if(ptr1[i] != ptr2[i]){
       err++;
+    }
   }
+  return err;
+}
 
-  if(err!=0){
-    ptr = (int *) EOC;
-    *ptr = 0xFFFFFFFF;
-    return -1;
-  }
-  else
-    return 0;
+bool dma_test(uint32_t b1, uint32_t b2, uint32_t size) {
+  int next_id;
+  mem_init(b1, size, 1);
+  mem_init(b2, size, 0);
+  next_id = issue_idma_transaction(b1, b2, size);
+  wait_for_idma_eot(next_id);
+  return compare_mem(b1, b2, size);
+}
 
+int main(int argc, char **argv) {
+  bool b=0;
+
+  b = b || dma_test(L2_BASE, TCDM_BASE, SIZE);
+
+
+  return b;
 }
