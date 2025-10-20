@@ -132,7 +132,7 @@ make clean all
 ```
 And under test-name/stimuli run again:
 ```
-cd sw/tests/cluster/addressability
+cd sw/tests/cluster/addressability/stimuli
 make clean all
 
 ```
