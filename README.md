@@ -70,7 +70,7 @@ All the tests used in this repo are found under sw/tests/<target>. The targets a
 * flash_preload_ are tests which are compiled with Makefile, but imports bazel-generated (after pre-processing) images as C headers (they include crypto signature for being secure booted).
 * the others can be compiled with Makefile under each test dir (are compiled for SRAM).
 
-The tests which are supposed to be ran in FLASH, must be generated with bazel and must be converted in C header to be preloaded, in case we run the secure boot via JTAG, by the Ibex core using the alternative datapath for preload (which is driven via SW).
+The tests which are supposed to be run in FLASH, must be generated with bazel and must be converted in C header to be preloaded, in case we run the secure boot via JTAG, by the Ibex core using the alternative datapath for preload (which is driven via SW).
 For each test generated for flash, it is needed a flash_prelaod_ binary which essentialy moves the C header into the emulated flash exploiting the alternative datapath. In case the secure boot is emulated with an external flash VIP, pythons scripts convert the VMEM from bazel
 into a suitable format for the specific VIP we use.
 
@@ -112,6 +112,32 @@ make clean all
 
 ```
 
+### Cluster
+It is possible to offload to cluster the execution of some task. OpenTitan can set/unset the fetch enable of the cluster, and is capable of polling a EOC register connected to the corresponding signal of the cluster. The testbench is configured to automatially preload via JTAG the cluster binary (including eventual sections within the L1 as OpenTitan has access to the L1 and cluster control unit) when specified by "cl-bin" argument. The fetch enable and EOC registers are mapped as follows:
+|   | Address  | ResVal  |
+|---|---|---|
+| Fetch enable  | 0xff000020  |  0x0 |
+| EOC  |  0xff000024 |  0x0 |
+
+Cluster binary, through the pulp-runtime, automatically returns 0x1 to the EOC after main() execution.
+An example is provided with the Addressability Test, where the cluster writes some data into the tb sram, and while Ibex polls the EOC register waiting the cluster to complete the execution.
+
+The tests which uses the cluster are found under "OpenTitan/sw/tests/cluster". Undear each test-name dir, a test-name.c (Ibex binary) and a stimuli/ directory (for cluster binary) are found. The two binary are compiled separately. For Ibex binary, RISC-V Toolchain is required, while for cluster binary PULP RISC-V Toolchain is required.
+
+Under each test-name dir (for instance addressability test), to compile Ibex image run:
+```
+cd sw/tests/cluster/addressability
+make clean all
+
+```
+And under test-name/stimuli run again:
+```
+cd sw/tests/cluster/addressability
+make clean all
+
+```
+The outputs are found under test-name/test-name.elf for Ibex and test-name/stimuli/build/stimuli/stimuli for cluster.
+
 ### Scripts
 Under scripts/, there are scripts for:
 * Generating the OTP ROM starting from an image.
@@ -120,7 +146,7 @@ Under scripts/, there are scripts for:
 
 ### Run simulations
 
-To run simulation, you can run the following command providing the biniary to SRAM variable:
+To run simulation, you can run the following command providing the biniary to SRAM variable (use nogui=1 to run in batch mode):
 
 ```
 make clean sim SRAM=path-to-binary
@@ -136,6 +162,12 @@ make secure_boot_spi
 ```
 The SPI secure boot will preload external flash with [this default test](https://github.com/AlSaqr-platform/opentitan/blob/alsaqr-2/hw/tb/testbench_asynch_astral.sv#L187).
 
+Concerning simulations involving the cluster, its code must be preloaded at t=0 via JTAG together with Ibex image, providing the path to the binary with "cl-bin". To run a simulation preloading also the cluster code, for instance the Addressability Test:
+
+```
+make clean sim SRAM=sw/tests/cluster/addressability/addressability.elf cl-bin=sw/tests/cluster/addressability/stimuli/build/stimuli/stimuli
+
+```
 
 ## Publications
 If you use this version of OpenTitan in your work or research, you can cite us:
