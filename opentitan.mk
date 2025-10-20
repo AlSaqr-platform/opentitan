@@ -20,6 +20,9 @@ BOOTMODE ?= 0
 QUESTA = questa-2022.3-bt
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
 
+cl-bin         ?= none
+OT_CLUSTER     = $(cl-bin)
+
 dpi-library    ?= work-dpi
 
 # Ensure half-built targets are purged
@@ -43,6 +46,10 @@ else
 compile_script := scripts/compile_opentitan.tcl
 endif
 
+ifdef nogui
+	GUI := -c
+endif
+
 VLOG_ARGS += -incr -64 -nologo -quiet -suppress vlog-2583 -suppress vlog-13314  +acc +nospecify +notimingchecks  -timescale \"1 ns / 1 ps\" 
 XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingchecks
 
@@ -58,7 +65,7 @@ build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl scripts/compil
 	$(QUESTA) vsim -c -do 'source $(compile_script); quit'
 
 sim: build
-	$(QUESTA) vsim -do 'set SRAM $(SRAM); set BOOTMODE $(BOOTMODE); source $(run_script)'
+	$(QUESTA) vsim $(GUI) -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
 
 update:
 	$(BENDER) update
@@ -91,6 +98,11 @@ bender:
 	rm bender-0.22.0-x86_64-linux-gnu-centos7.8.2003.tar.gz
 	$(BENDER) --version | grep -q "bender 0.22.0"
 
+
+$(OT_ROOT)/hw/tb/vips/s25fs256s.v:
+	wget --no-check-certificate https://freemodelfoundry.com/fmf_vlog_models/flash/s25fs256s.v -O $@
+	touch $@
+
 $(OT_ROOT)/hw/tb/vips:
 	rm -rf $@
 	mkdir $@
@@ -103,7 +115,7 @@ $(OT_ROOT)/hw/tb/vips:
 	cp model_tmp/exe_folder/S25fs256s/model/s25fs256s.v model_tmp/exe_folder/S25fs256s/model/s25fs256s_verilog.sdf $@
 	rm -rf model_tmp
 
-init: bender update scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
+init: bender update scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips/s25fs256s.v
 
 # DPI
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))

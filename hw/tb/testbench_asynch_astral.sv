@@ -41,7 +41,7 @@ module testbench_asynch_astral ();
    localparam int unsigned AxiAddrWidth          = SynthAxiAddrWidth;
    localparam int unsigned AxiDataWidth          = SynthAxiDataWidth;
    localparam int unsigned AxiUserWidth          = SynthAxiUserWidth;
-   localparam int unsigned AxiOutIdWidth         = SynthAxiOutIdWidth;
+   localparam int unsigned AxiOutIdWidth         = SynthAxiOutIdWidthRemap;
 
    localparam int unsigned AxiOtAddrWidth        = SynthOtAxiAddrWidth;
    localparam int unsigned AxiOtDataWidth        = SynthOtAxiDataWidth;
@@ -54,13 +54,13 @@ module testbench_asynch_astral ();
    localparam int unsigned AsyncAxiOutArWidth    = SynthAsyncAxiOutArWidth;
    localparam int unsigned AsyncAxiOutRWidth     = SynthAsyncAxiOutRWidth;
 
-   localparam type         axi_out_aw_chan_t     = synth_axi_out_aw_chan_t;
-   localparam type         axi_out_w_chan_t      = synth_axi_out_w_chan_t;
-   localparam type         axi_out_b_chan_t      = synth_axi_out_b_chan_t;
-   localparam type         axi_out_ar_chan_t     = synth_axi_out_ar_chan_t;
-   localparam type         axi_out_r_chan_t      = synth_axi_out_r_chan_t;
-   localparam type         axi_out_req_t         = synth_axi_out_req_t;
-   localparam type         axi_out_resp_t        = synth_axi_out_resp_t;
+   localparam type         axi_out_aw_chan_t     = synth_axi_remap_out_aw_chan_t;
+   localparam type         axi_out_w_chan_t      = synth_axi_remap_out_w_chan_t;
+   localparam type         axi_out_b_chan_t      = synth_axi_remap_out_b_chan_t;
+   localparam type         axi_out_ar_chan_t     = synth_axi_remap_out_ar_chan_t;
+   localparam type         axi_out_r_chan_t      = synth_axi_remap_out_r_chan_t;
+   localparam type         axi_out_req_t         = synth_axi_remap_out_req_t;
+   localparam type         axi_out_resp_t        = synth_axi_remap_out_resp_t;
 
    localparam type         axi_ot_out_aw_chan_t  = synth_ot_axi_out_aw_chan_t;
    localparam type         axi_ot_out_w_chan_t   = synth_ot_axi_out_w_chan_t;
@@ -73,18 +73,22 @@ module testbench_asynch_astral ();
    localparam int  unsigned LogDepth             = SynthLogDepth;
    localparam int  unsigned CdcSyncStages        = SynthCdcSyncStages;
 
-   localparam int  Depth = 32*1024;
+   localparam int  Depth = 512*1024;
    localparam int  Aw    = $clog2(Depth);
 
    localparam int unsigned RTC_CLOCK_PERIOD = 10ns;
+   localparam int unsigned RTC_CLOCK_CL_PERIOD = 10ns;
 
    int          secd_sections [bit [31:0]];
    logic [31:0] secd_memory[bit [31:0]];
    logic [1:0]  boot_mode;
 
    string       sram;
+   string       ot_cluster;
 
    logic [1:0]  bootmode;
+
+   logic        clk_cluster = 1'b0;
 
    logic clk_sys = 1'b0;
    logic rst_sys_n;
@@ -124,18 +128,18 @@ module testbench_asynch_astral ();
    logic [3:0]                mem_mst_be;
    logic                      mem_rvalid_d, rvalid_d, rvalid_q;
 
-   typedef logic [63:0]               axi32_addr_t;
-   typedef logic [31:0]               axi32_data_t;
-   typedef logic [3:0]                axi32_strb_t;
-   typedef logic                      axi32_user_t;
-   typedef logic [AxiOutIdWidth-1:0]  axi32_out_id_t;
+   typedef logic [63:0]  axi32_addr_t;
+   typedef logic [63:0]  axi32_data_t;
+   typedef logic [8:0]   axi32_strb_t;
+   typedef logic         axi32_user_t;
+   typedef logic [3:0]   axi32_out_id_t;
 
    `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, axi32_out_id_t, axi32_data_t, axi32_strb_t, axi32_user_t)
 
    axi_out32_req_t   tlul2axi32_req;
    axi_out32_resp_t  tlul2axi32_rsp;
 
-   uart_bus #(.BAUD_RATE(1250000), .PARITY_EN(0)) i_uart0_bus (.rx(ibex_uart_tx), .tx(ibex_uart_rx), .rx_en(1'b1)); //1470588
+   uart_bus #(.BAUD_RATE(1250000), .PARITY_EN(0)) i_uart0_bus (.rx(ibex_uart_tx), .tx(ibex_uart_rx), .rx_en(1'b1)); //1470588 magic numbers
 
 // -----------------------------------------------------------------------------------
 // JTAG Driver
@@ -309,6 +313,7 @@ module testbench_asynch_astral ();
 
    security_island #(.HartIdOffs(0)) dut (
        .clk_i            ( clk_sys       ),
+       .clk_cluster_i    ( clk_cluster   ),
        .clk_ref_i        ( clk_sys       ),
        .rst_ni           ( rst_sys_n     ),
        .pwr_on_rst_ni    ( rst_sys_n     ),
@@ -387,6 +392,14 @@ module testbench_asynch_astral ();
       #(RTC_CLOCK_PERIOD/2) clk_sys = ~clk_sys;
   end
 
+  initial begin : cluster_clock
+     clk_cluster = 1'b0;
+     repeat(2)
+     #(RTC_CLOCK_CL_PERIOD/2) clk_cluster = 1'b0;
+     forever
+     #(RTC_CLOCK_CL_PERIOD/2) clk_cluster = ~clk_cluster;
+  end
+
   initial  begin : bootmodes
 
     if(!$value$plusargs("BOOTMODE=%d", boot_mode)) begin
@@ -396,6 +409,10 @@ module testbench_asynch_astral ();
     if(!$value$plusargs("SRAM=%s", sram)) begin
        sram="";
        $display("Loading to SRAM: %s", sram);
+    end
+    if(!$value$plusargs("OT_CLUSTER=%s", ot_cluster)) begin
+       ot_cluster="";
+       $display("Loading cluster binary: %s", ot_cluster);
     end
 
     case(boot_mode)
@@ -407,6 +424,9 @@ module testbench_asynch_astral ();
                  @(posedge clk_sys);
                debug_secd_module_init();
                load_secd_binary(sram);
+                if(ot_cluster != "none") begin
+                   load_secd_binary(ot_cluster);
+                end
                jtag_secd_data_preload();
                jtag_secd_wakeup(32'h e0000080); //preload the flashif
           `ifdef JTAG_SEC_BOOT
