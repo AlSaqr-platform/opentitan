@@ -5,10 +5,7 @@
 #define SHARED_ADDR 0xB0000000
 #define SIZE 1024
 
-#define L3_BASE 0x80000000
 #define L2_BASE 0x1C001000
-
-#define SNOOP_BASE 0x71000000
 
 int main() {
 
@@ -31,22 +28,9 @@ int main() {
 
   if(core_id() == 0){
     error = 0;
-    // Write L2, L3, Snooper
     for(int i=0;i<SIZE;i++)
-      pulp_write32(L2_BASE + i*0x4, i*0x4);
+      pulp_write32(L2_BASE + 0x8000 + i*0x4, i*0x4);
 
-    for(int i=0;i<SIZE;i++)
-      pulp_write32(L3_BASE + i*0x4, i*0x4);
-
-    for(int i=0;i<SIZE;i++)
-      pulp_write32(SNOOP_BASE + i*0x4, i*0x4);
-
-    // Return interrupt to Ibex
-    pulp_write32(0x10404020, 0x1);
-  }
-
-  while (1) {
-          __asm__ volatile("wfi;");
   }
 
   return 0;
