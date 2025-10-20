@@ -29,7 +29,8 @@ module boot_manager import tlul_ot_pkg::*; (
    // Debug Mode Signal
    input  logic [1:0]  bootmode_i,
    output logic        datapath_o,
-   output logic        cluster_fetch_en_o
+   output logic        cluster_fetch_en_o,
+   input  logic        cluster_eoc_i
 );
    import boot_manager_regs_reg_pkg::*;
    boot_manager_regs_reg_pkg::boot_manager_regs_reg2hw_t reg2hw;
@@ -87,6 +88,8 @@ module boot_manager import tlul_ot_pkg::*; (
    assign hw2reg.pad_bootmode.pad_bootmode.de = 1'b1;
    assign hw2reg.pad_bootmode.pad_bootmode.d  = bootmode_i[0];
    assign bootmode_tieoff                     = bootmode_i[1];
+   assign hw2reg.cluster_eoc.eoc.de = 1'b1;
+   assign hw2reg.cluster_eoc.eoc.d = cluster_eoc_i;
 
    assign payload_1     = reg2hw.payload_1.q;
    assign payload_2     = reg2hw.payload_2.q;
@@ -105,6 +108,7 @@ module boot_manager import tlul_ot_pkg::*; (
    assign hw2reg.start.start.d  = 1'b0;
    assign hw2reg.start.field1 = '0;
    assign hw2reg.pad_bootmode.field1 = '0;
+   assign hw2reg.cluster_eoc.field1 = '0;
 
    always_ff @(posedge clk_i or negedge rst_ni) begin
       if (~rst_ni)

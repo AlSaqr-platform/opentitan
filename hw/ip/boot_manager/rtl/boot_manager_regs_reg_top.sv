@@ -55,9 +55,9 @@ module boot_manager_regs_reg_top (
 
   // also check for spurious write enables
   logic reg_we_err;
-  logic [8:0] reg_we_check;
+  logic [9:0] reg_we_check;
   prim_reg_we_check #(
-    .OneHotWidth(9)
+    .OneHotWidth(10)
   ) u_prim_reg_we_check (
     .clk_i(clk_i),
     .rst_ni(rst_ni),
@@ -158,6 +158,8 @@ module boot_manager_regs_reg_top (
   logic cluster_fetch_enable_wd;
   logic [30:0] cluster_field1_qs;
   logic [30:0] cluster_field1_wd;
+  logic cluster_eoc_eoc_qs;
+  logic [30:0] cluster_eoc_field1_qs;
 
   // Register instances
   // R[payload_1]: V(False)
@@ -538,8 +540,62 @@ module boot_manager_regs_reg_top (
   );
 
 
+  // R[cluster_eoc]: V(False)
+  //   F[eoc]: 0:0
+  prim_ot_subreg #(
+    .DW      (1),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
+    .RESVAL  (1'h0)
+  ) u_cluster_eoc_eoc (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
 
-  logic [8:0] addr_hit;
+    // from register interface
+    .we     (1'b0),
+    .wd     ('0),
+
+    // from internal hardware
+    .de     (hw2reg.cluster_eoc.eoc.de),
+    .d      (hw2reg.cluster_eoc.eoc.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (cluster_eoc_eoc_qs)
+  );
+
+  //   F[field1]: 31:1
+  prim_ot_subreg #(
+    .DW      (31),
+    .SwAccess(prim_ot_subreg_pkg::SwAccessRO),
+    .RESVAL  (31'h0)
+  ) u_cluster_eoc_field1 (
+    .clk_i   (clk_i),
+    .rst_ni  (rst_ni),
+
+    // from register interface
+    .we     (1'b0),
+    .wd     ('0),
+
+    // from internal hardware
+    .de     (hw2reg.cluster_eoc.field1.de),
+    .d      (hw2reg.cluster_eoc.field1.d),
+
+    // to internal hardware
+    .qe     (),
+    .q      (),
+    .ds     (),
+
+    // to register interface (read)
+    .qs     (cluster_eoc_field1_qs)
+  );
+
+
+
+  logic [9:0] addr_hit;
   always_comb begin
     addr_hit = '0;
     addr_hit[0] = (reg_addr == BOOT_MANAGER_REGS_PAYLOAD_1_OFFSET);
@@ -551,6 +607,7 @@ module boot_manager_regs_reg_top (
     addr_hit[6] = (reg_addr == BOOT_MANAGER_REGS_SW_BOOTMODE_OFFSET);
     addr_hit[7] = (reg_addr == BOOT_MANAGER_REGS_DATAPATH_OFFSET);
     addr_hit[8] = (reg_addr == BOOT_MANAGER_REGS_CLUSTER_OFFSET);
+    addr_hit[9] = (reg_addr == BOOT_MANAGER_REGS_CLUSTER_EOC_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -566,7 +623,8 @@ module boot_manager_regs_reg_top (
                (addr_hit[5] & (|(BOOT_MANAGER_REGS_PERMIT[5] & ~reg_be))) |
                (addr_hit[6] & (|(BOOT_MANAGER_REGS_PERMIT[6] & ~reg_be))) |
                (addr_hit[7] & (|(BOOT_MANAGER_REGS_PERMIT[7] & ~reg_be))) |
-               (addr_hit[8] & (|(BOOT_MANAGER_REGS_PERMIT[8] & ~reg_be)))));
+               (addr_hit[8] & (|(BOOT_MANAGER_REGS_PERMIT[8] & ~reg_be))) |
+               (addr_hit[9] & (|(BOOT_MANAGER_REGS_PERMIT[9] & ~reg_be)))));
   end
 
   // Generate write-enables
@@ -615,6 +673,7 @@ module boot_manager_regs_reg_top (
     reg_we_check[6] = sw_bootmode_we;
     reg_we_check[7] = datapath_we;
     reg_we_check[8] = cluster_we;
+    reg_we_check[9] = 1'b0;
   end
 
   // Read data return
@@ -660,6 +719,11 @@ module boot_manager_regs_reg_top (
       addr_hit[8]: begin
         reg_rdata_next[0] = cluster_fetch_enable_qs;
         reg_rdata_next[31:1] = cluster_field1_qs;
+      end
+
+      addr_hit[9]: begin
+        reg_rdata_next[0] = cluster_eoc_eoc_qs;
+        reg_rdata_next[31:1] = cluster_eoc_field1_qs;
       end
 
       default: begin

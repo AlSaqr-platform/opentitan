@@ -107,5 +107,18 @@
         }
       ],
     },
+    { name: "Cluster_eoc",
+      desc: "end of computation",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      fields: [
+        { bits: "31:1" },
+        { bits: "0",
+          name: "eoc",
+          resval: "0",
+          desc: "report cluster end of computation",
+        }
+      ],
+    },
   ],
 }

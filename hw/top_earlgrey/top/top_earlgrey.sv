@@ -223,6 +223,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   input logic [1:0] bootmode_i,
   input logic fetch_en_i,
   output logic cluster_fetch_en_o,
+  input  logic cluster_eoc_i,
 
   // All clocks forwarded to ast
   output clkmgr_pkg::clkmgr_out_t clks_ast_o,
@@ -2367,7 +2368,8 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
     .flash_wmask_o(debug_flash_wmask),
     .bootmode_i,
     .datapath_o,
-    .cluster_fetch_en_o
+    .cluster_fetch_en_o,
+    .cluster_eoc_i
   );
   flash_ctrl #(
     .AlertAsyncOn(alert_handler_reg_pkg::AsyncOn[39:35]),

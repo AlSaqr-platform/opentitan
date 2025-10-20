@@ -190,6 +190,8 @@ module security_island
 
    logic unused = clk_ref_i & test_enable_i;
 
+   logic s_cluster_eoc;
+
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
    assign flash_testvolt_tieoff = '0;
@@ -590,7 +592,7 @@ module security_island
       .DIRECT_MAPPED_FEATURE        ( "DISABLED"                      ),
       .L2_SIZE                      ( 512*1024                        ),
       .ROM_BOOT_ADDR                ( 32'h1A000000                    ),
-      .BOOT_ADDR                    ( 32'h1C002080                    ),
+      .BOOT_ADDR                    ( 32'h1C000080                    ),
       .INSTR_RDATA_WIDTH            ( 32                              ),
       .CLUST_FPU                    ( 1                               ),
       .CLUST_FP_DIVSQRT             ( 1                               ),
@@ -799,7 +801,8 @@ module security_island
       .jtag_rsp_o                   ( jtag_o                ),
       .fetch_en_i                   ( fetch_en_sync         ),
       .bootmode_i                   ( bootmode_i            ),
-      .cluster_fetch_en_o           ( cluster_fetch_enable  )
+      .cluster_fetch_en_o           ( cluster_fetch_enable  ),
+      .cluster_eoc_i                ( s_cluster_eoc         )
    );
 
 endmodule

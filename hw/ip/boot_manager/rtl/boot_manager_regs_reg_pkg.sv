@@ -78,6 +78,17 @@ package boot_manager_regs_reg_pkg;
     } field1;
   } boot_manager_regs_hw2reg_pad_bootmode_reg_t;
 
+  typedef struct packed {
+    struct packed {
+      logic        d;
+      logic        de;
+    } eoc;
+    struct packed {
+      logic [30:0] d;
+      logic        de;
+    } field1;
+  } boot_manager_regs_hw2reg_cluster_eoc_reg_t;
+
   // Register -> HW type
   typedef struct packed {
     boot_manager_regs_reg2hw_payload_1_reg_t payload_1; // [223:192]
@@ -91,8 +102,9 @@ package boot_manager_regs_reg_pkg;
 
   // HW -> register type
   typedef struct packed {
-    boot_manager_regs_hw2reg_start_reg_t start; // [67:34]
-    boot_manager_regs_hw2reg_pad_bootmode_reg_t pad_bootmode; // [33:0]
+    boot_manager_regs_hw2reg_start_reg_t start; // [101:68]
+    boot_manager_regs_hw2reg_pad_bootmode_reg_t pad_bootmode; // [67:34]
+    boot_manager_regs_hw2reg_cluster_eoc_reg_t cluster_eoc; // [33:0]
   } boot_manager_regs_hw2reg_t;
 
   // Register offsets
@@ -105,6 +117,7 @@ package boot_manager_regs_reg_pkg;
   parameter logic [BlockAw-1:0] BOOT_MANAGER_REGS_SW_BOOTMODE_OFFSET = 6'h 18;
   parameter logic [BlockAw-1:0] BOOT_MANAGER_REGS_DATAPATH_OFFSET = 6'h 1c;
   parameter logic [BlockAw-1:0] BOOT_MANAGER_REGS_CLUSTER_OFFSET = 6'h 20;
+  parameter logic [BlockAw-1:0] BOOT_MANAGER_REGS_CLUSTER_EOC_OFFSET = 6'h 24;
 
   // Register index
   typedef enum int {
@@ -116,11 +129,12 @@ package boot_manager_regs_reg_pkg;
     BOOT_MANAGER_REGS_PAD_BOOTMODE,
     BOOT_MANAGER_REGS_SW_BOOTMODE,
     BOOT_MANAGER_REGS_DATAPATH,
-    BOOT_MANAGER_REGS_CLUSTER
+    BOOT_MANAGER_REGS_CLUSTER,
+    BOOT_MANAGER_REGS_CLUSTER_EOC
   } boot_manager_regs_id_e;
 
   // Register width information to check illegal writes
-  parameter logic [3:0] BOOT_MANAGER_REGS_PERMIT [9] = '{
+  parameter logic [3:0] BOOT_MANAGER_REGS_PERMIT [10] = '{
     4'b 1111, // index[0] BOOT_MANAGER_REGS_PAYLOAD_1
     4'b 1111, // index[1] BOOT_MANAGER_REGS_PAYLOAD_2
     4'b 1111, // index[2] BOOT_MANAGER_REGS_PAYLOAD_3
@@ -129,7 +143,8 @@ package boot_manager_regs_reg_pkg;
     4'b 1111, // index[5] BOOT_MANAGER_REGS_PAD_BOOTMODE
     4'b 1111, // index[6] BOOT_MANAGER_REGS_SW_BOOTMODE
     4'b 1111, // index[7] BOOT_MANAGER_REGS_DATAPATH
-    4'b 1111  // index[8] BOOT_MANAGER_REGS_CLUSTER
+    4'b 1111, // index[8] BOOT_MANAGER_REGS_CLUSTER
+    4'b 1111  // index[9] BOOT_MANAGER_REGS_CLUSTER_EOC
   };
 
 endpackage
