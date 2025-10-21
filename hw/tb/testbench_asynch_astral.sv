@@ -274,12 +274,12 @@ module testbench_asynch_astral ();
       .mst_resp_i ( tlul2axi32_rsp   )
    );
 
-   axi2mem #(
+   axi2mem_tb #(
       .AXI_ID_WIDTH   ( AxiOutIdWidth ),
       .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
       .AXI_DATA_WIDTH ( 32            ),
       .AXI_USER_WIDTH ( AxiUserWidth  )
-   ) axi2mem (
+   ) axi2mem_tb (
       .clk_i   ( clk_sys         ),
       .rst_ni  ( rst_sys_n       ),
       .slave   ( axi_slv         ),
