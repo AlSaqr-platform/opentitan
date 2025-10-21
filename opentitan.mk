@@ -20,6 +20,7 @@ BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
 QUESTASIM_HOME ?= /tools/siemens/questa_2022.3/questasim
+BENDER_GIT_DIR ?= .bender/git/checkouts
 
 cl-bin         ?= none
 OT_CLUSTER     = $(cl-bin)
@@ -62,15 +63,14 @@ endef
 
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 
+generate_idma_rtl:
+	$(MAKE) -C $(shell find $(BENDER_GIT_DIR) -type d -name 'idma*' | head -n 1) idma_hw_all
+
 build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
 	$(QUESTA) vsim -64 -c -do 'source $(compile_script); quit'
 
-sim: build
-<<<<<<< HEAD
-	$(QUESTA) vsim $(GUI) -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
-=======
-	$(QUESTA) vsim -64 -do 'set SRAM $(SRAM); set BOOTMODE $(BOOTMODE); source $(run_script)'
->>>>>>> e34badec46 (Fix simulation flow)
+sim: generate_idma_rtl build
+	$(QUESTA) vsim -64 -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
 
 update:
 	$(BENDER) update
@@ -86,7 +86,7 @@ clean:
 	rm -rf uart
 
 scripts/compile_opentitan.tcl: Bender.yml
-	$(BENDER) script $(VSIM) --vlog-arg="$(VLOG_ARGS)" -t use_idma -t rtl -t test -t snitch_cluster > $@
+	$(BENDER) script $(VSIM) --vlog-arg="$(VLOG_ARGS)" -t use_idma -t rtl -t test -t snitch_cluster -D FEATURE_ICACHE_STAT > $@
 # 	$(call generate_vsim, $@, -t use_idma -t rtl -t test -t snitch_cluster ,..)
 
 scripts/compile_opentitan_vip.tcl: Bender.yml
