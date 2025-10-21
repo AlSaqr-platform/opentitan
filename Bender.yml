@@ -6,10 +6,9 @@ dependencies:
 
   axi:                  { git: "https://github.com/pulp-platform/axi.git", version: =0.39.1  }
   cluster_interconnect: { git: "https://github.com/pulp-platform/cluster_interconnect.git", rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27" } # v1.2.1
-#   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
+  idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",  rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467"  } # v0.4.5
-#   pulp_cluster:         { git: "git@github.com:AlSaqr-platform/pulp_cluster.git", rev: "8157791fd87793a12a61826cfea2db554add9589" } # branch: alsaqr-2.0
-  pulp_cluster:         { git: "git@github.com:FondazioneChipsIT/pulp_cluster.git", rev: "a11a0406d6fa4a5a3606727ab5a0943c75e4437b" } # branch: realign_cluster
+  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "610eebff8fbe676e9875e13759422cc334cdd83c" } # branch: gl/ot_integration
 
 export_include_dirs:
       - hw/ip/prim/rtl
@@ -842,7 +841,7 @@ sources:
            - hw/include/cluster_bus_defines.sv
            - hw/tb/util/uart.sv
            - hw/tb/util/jtag_intf.sv
-           - hw/tb/util/axi2mem.sv
+           - hw/tb/util/axi2mem_tb.sv
            - hw/vendor/pulp_riscv_dbg/src/jtag_test.sv
            - hw/vendor/common_pads/src/pad_alsaqr.sv
            - hw/tb/vip_security_island_soc.sv
