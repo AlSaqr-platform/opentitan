@@ -17,6 +17,7 @@
 
 module security_island
    import axi_pkg::*;
+   import pulp_cluster_package::*;
    import jtag_ot_pkg::*;
    import tlul2axi_pkg::*;
    import dm_ot::*;
@@ -123,9 +124,7 @@ module security_island
    output logic                          spi_host_CSB_en_o,
    output logic [3:0]                    spi_host_SD_o,
    input logic [3:0]                     spi_host_SD_i,
-   output logic [3:0]                    spi_host_SD_en_o,
-   // Logic locking key for PULP Cluster
-   input logic [127:0]                   cluster_lock_xor_key_i
+   output logic [3:0]                    spi_host_SD_en_o
 );
 
 //////////////////////////
@@ -453,14 +452,6 @@ module security_island
      .AXI_ID_WIDTH   ( AxiIdWidth    ),
      .AXI_USER_WIDTH ( AxiUserWidth  ),
      .LOG_DEPTH      ( LogDepth      )
-   ) async_cfg_axi_bus();
-
-   AXI_BUS_ASYNC_GRAY #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-     .AXI_DATA_WIDTH ( AxiDataWidth  ),
-     .AXI_ID_WIDTH   ( AxiIdWidth    ),
-     .AXI_USER_WIDTH ( AxiUserWidth  ),
-     .LOG_DEPTH      ( LogDepth      )
    ) async_cluster_to_soc_axi_bus();
 
 ////////////////////
@@ -487,13 +478,6 @@ module security_island
      .AXI_ID_WIDTH   ( AxiIdWidth   ),
      .AXI_USER_WIDTH ( AxiUserWidth )
    ) cluster_to_tlb_axi_bus();
-
-   AXI_BUS #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
-     .AXI_DATA_WIDTH ( AxiDataWidth ),
-     .AXI_ID_WIDTH   ( AxiIdWidth   ),
-     .AXI_USER_WIDTH ( AxiUserWidth )
-   ) cluster_cfg_axi_lite_bus();
 
 ////////////////////
 // Axi serializer //
@@ -545,20 +529,6 @@ module security_island
        .dst        ( cluster_to_tlb_axi_bus       )
    );
 
-   axi_cdc_dst_intf #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
-     .AXI_DATA_WIDTH ( AxiDataWidth ),
-     .AXI_ID_WIDTH   ( AxiIdWidth   ),
-     .AXI_USER_WIDTH ( AxiUserWidth ),
-     .LOG_DEPTH      ( LogDepth     ),
-     .SYNC_STAGES    ( SyncStages   )
-   ) cfg_dst_cdc_fifo_i (
-     .dst_clk_i         ( clk_i                    ),
-     .dst_rst_ni        ( pwr_on_rst_ni            ),
-     .src               ( async_cfg_axi_bus        ),
-     .dst               ( cluster_cfg_axi_lite_bus )
-   );
-
 ////////////////////
 // Axi assignments//
 ////////////////////
@@ -567,52 +537,89 @@ module security_island
   `AXI_ASSIGN_TO_RESP(axi_cls_mst_rsp, soc_to_cluster_axi_bus)
   `AXI_ASSIGN_TO_REQ(axi_cls_slv_req, cluster_to_tlb_axi_bus)
   `AXI_ASSIGN_FROM_RESP(cluster_to_tlb_axi_bus, axi_cls_slv_rsp)
-  `AXI_ASSIGN_TO_REQ(axi_cls_cfg_req, cluster_cfg_axi_lite_bus)
-  `AXI_ASSIGN_FROM_RESP(cluster_cfg_axi_lite_bus, axi_cls_cfg_rsp)
 
 /////////////////
 // Pulp Cluster//
 /////////////////
 
+  // FIXME: copy-paste from pulp_cluster_tb //
+  localparam AxiAw  = 32;
+  localparam bit[AxiAw-1:0] ClustBase       = 'h10000000;
+  localparam bit[AxiAw-1:0] ClustPeriphOffs = 'h00200000;
+  localparam bit[AxiAw-1:0] ClustExtOffs    = 'h00400000;
+  localparam bit[      5:0] ClustIdx        = 'h0;
+  localparam bit[AxiAw-1:0] ClustBaseAddr   = ClustBase - (ClustIdx << 22);
+
+  localparam pulp_cluster_cfg_t OTClusterCfg = '{
+    CoreType: pulp_cluster_package::RI5CY,
+    NumCores: 8,
+    DmaNumPlugs: 4,
+    DmaNumOutstandingBursts: 8,
+    DmaBurstLength: 256,
+    NumMstPeriphs: `NB_MPERIPHS,
+    NumSlvPeriphs: `NB_SPERIPHS,
+    ClusterAlias: 1,
+    ClusterAliasBase: 'h0,
+    NumSyncStages: CdcSyncStages,
+    UseHci: 1,
+    TcdmSize: 256*1024,
+    TcdmNumBank: 16,
+    HwpePresent: 0,
+    HwpeCfg: '{NumHwpes: 3, HwpeList: {pulp_cluster_package::SOFTEX,
+                                       pulp_cluster_package::NEUREKA,
+                                       pulp_cluster_package::REDMULE}},
+    HwpeNumPorts: 0,
+    HMRPresent: 0,
+    HMRDmrEnabled: 0,
+    HMRTmrEnabled: 0,
+    HMRDmrFIxed: 0,
+    HMRTmrFIxed: 0,
+    HMRInterleaveGrps: 1,
+    HMREnableRapidRecovery: 1,
+    HMRSeparateDataVoters: 1,
+    HMRSeparateAxiBus: 0,
+    HMRNumBusVoters: 1,
+    EnableECC: 0,
+    ECCInterco: 0,
+    iCacheNumBanks: 2,
+    iCacheNumLines: 1,
+    iCacheNumWays: 4,
+    iCacheSharedSize: 4*1024,
+    iCachePrivateSize: 512,
+    iCachePrivateDataWidth: 32,
+    EnableReducedTag: 1,
+    L2Size: 512*1024,
+    DmBaseAddr: 'h60203000, // FIXME: CHECK!
+    BootRomBaseAddr: 32'h1A000000,
+    BootAddr: 32'h1C000080,
+    EnablePrivateFpu: 1,
+    EnablePrivateFpDivSqrt: 1,
+    NumAxiIn: pulp_cluster_package::NumAxiSubordinatePorts,
+    NumAxiOut: pulp_cluster_package::NumAxiManagerPorts,
+    AxiIdInWidth: AxiClsIdWidth,
+    AxiIdOutWidth:AxiIdWidth,
+    AxiAddrWidth: AxiAddrWidth,
+    AxiDataInWidth: AxiOutDataWidth,
+    AxiDataOutWidth: AxiDataWidth,
+    AxiUserWidth: AxiUserWidth,
+    AxiMaxInTrans: 64,
+    AxiMaxOutTrans: 64,
+    AxiCdcLogDepth: LogDepth,
+    AxiCdcSyncStages: CdcSyncStages,
+    SyncStages: CdcSyncStages,
+    ClusterBaseAddr: ClustBaseAddr,
+    ClusterPeriphOffs: ClustPeriphOffs,
+    ClusterExternalOffs: ClustExtOffs,
+    EnableRemapAddress: 0,
+    SnitchICache: 0,
+    default: '0
+  };
+
+
    pulp_cluster
-   #(
-      .NB_CORES                     ( 8                               ),
-      .NB_HWPE_PORTS                ( 9                               ),
-      .NB_DMAS                      ( 4                               ),
-      .HWPE_PRESENT                 ( 0                               ),
-      .TCDM_SIZE                    ( 256*1024                        ),
-      .NB_TCDM_BANKS                ( 16                              ),
-      .SET_ASSOCIATIVE              ( 4                               ),
-      .CACHE_LINE                   ( 1                               ),
-      .CACHE_SIZE                   ( 4096                            ),
-      .ICACHE_DATA_WIDTH            ( 128                             ),
-      .L0_BUFFER_FEATURE            ( "DISABLED"                      ),
-      .MULTICAST_FEATURE            ( "DISABLED"                      ),
-      .SHARED_ICACHE                ( "ENABLED"                       ),
-      .DIRECT_MAPPED_FEATURE        ( "DISABLED"                      ),
-      .L2_SIZE                      ( 512*1024                        ),
-      .ROM_BOOT_ADDR                ( 32'h1A000000                    ),
-      .BOOT_ADDR                    ( 32'h1C000080                    ),
-      .INSTR_RDATA_WIDTH            ( 32                              ),
-      .CLUST_FPU                    ( 1                               ),
-      .CLUST_FP_DIVSQRT             ( 1                               ),
-      .CLUST_SHARED_FP              ( 0                               ),
-      .CLUST_SHARED_FP_DIVSQRT      ( 0                               ),
-      .AXI_ADDR_WIDTH               ( AxiAddrWidth                    ),
-      .AXI_DATA_IN_WIDTH            ( AxiOutDataWidth                 ),
-      .AXI_DATA_OUT_WIDTH           ( AxiDataWidth                    ),
-      .AXI_USER_WIDTH               ( AxiUserWidth                    ),
-      .AXI_ID_IN_WIDTH              ( AxiClsIdWidth                   ),
-      .AXI_ID_OUT_WIDTH             ( AxiIdWidth                      ),
-      .SYNC_STAGES                  ( SyncStages                      ),
-      .LOG_DEPTH                    ( LogDepth                        ),
-      .DATA_WIDTH                   ( 32                              ),
-      .ADDR_WIDTH                   ( 32                              ),
-      .LOG_CLUSTER                  ( 3                               ),
-      .PE_ROUTING_LSB               ( 10                              ),
-      .EVNT_WIDTH                   ( 8                               )
-   )
-   cluster_i
+  #(
+    .Cfg ( OTClusterCfg )
+   ) cluster_i
    (
       .clk_i                           ( clk_cluster_i                        ),
       .rst_ni                          ( rst_ni                               ),
@@ -630,8 +637,6 @@ module security_island
 
       .dbg_irq_valid_i                 ( '0                                   ),
 
-      .host_mailbox_irq_i              ( '0                                   ),
-
       .pf_evt_ack_i                    ( 1'b1                                 ),
       .pf_evt_valid_o                  (                                      ),
 
@@ -646,8 +651,6 @@ module security_island
       .eoc_o                           ( s_cluster_eoc                        ),
       .busy_o                          (                                      ),
       .cluster_id_i                    ( 6'b000000                            ),
-
-      .cluster_lock_xor_key_i          ( cluster_lock_xor_key_i               ),
 
       .async_data_master_aw_wptr_o     ( async_cluster_to_soc_axi_bus.aw_wptr ),
       .async_data_master_aw_rptr_i     ( async_cluster_to_soc_axi_bus.aw_rptr ),
@@ -664,22 +667,6 @@ module security_island
       .async_data_master_b_wptr_i      ( async_cluster_to_soc_axi_bus.b_wptr  ),
       .async_data_master_b_rptr_o      ( async_cluster_to_soc_axi_bus.b_rptr  ),
       .async_data_master_b_data_i      ( async_cluster_to_soc_axi_bus.b_data  ),
-
-      .async_cfg_master_aw_wptr_o      ( async_cfg_axi_bus.aw_wptr            ),
-      .async_cfg_master_aw_rptr_i      ( async_cfg_axi_bus.aw_rptr            ),
-      .async_cfg_master_aw_data_o      ( async_cfg_axi_bus.aw_data            ),
-      .async_cfg_master_ar_wptr_o      ( async_cfg_axi_bus.ar_wptr            ),
-      .async_cfg_master_ar_rptr_i      ( async_cfg_axi_bus.ar_rptr            ),
-      .async_cfg_master_ar_data_o      ( async_cfg_axi_bus.ar_data            ),
-      .async_cfg_master_w_data_o       ( async_cfg_axi_bus.w_data             ),
-      .async_cfg_master_w_wptr_o       ( async_cfg_axi_bus.w_wptr             ),
-      .async_cfg_master_w_rptr_i       ( async_cfg_axi_bus.w_rptr             ),
-      .async_cfg_master_r_wptr_i       ( async_cfg_axi_bus.r_wptr             ),
-      .async_cfg_master_r_rptr_o       ( async_cfg_axi_bus.r_rptr             ),
-      .async_cfg_master_r_data_i       ( async_cfg_axi_bus.r_data             ),
-      .async_cfg_master_b_wptr_i       ( async_cfg_axi_bus.b_wptr             ),
-      .async_cfg_master_b_rptr_o       ( async_cfg_axi_bus.b_rptr             ),
-      .async_cfg_master_b_data_i       ( async_cfg_axi_bus.b_data             ),
 
       .async_data_slave_aw_wptr_i      ( async_soc_to_cluster_axi_bus.aw_wptr ),
       .async_data_slave_aw_rptr_o      ( async_soc_to_cluster_axi_bus.aw_rptr ),
