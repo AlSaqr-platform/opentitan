@@ -132,7 +132,7 @@ module security_island
 //////////////////////////
 
    localparam int unsigned NumMstPorts = 2;
-   localparam int unsigned NumSlvPorts = 4;
+   localparam int unsigned NumSlvPorts = 4; // FIXME: the number of used ports is 2 but it gives a fatal assert on AXI ID
 
    axi_out_req_t  axi_out_mst_req,
                   axi_cls_mst_req;
@@ -141,14 +141,10 @@ module security_island
                   axi_cls_mst_rsp;
 
    axi_req_t      axi_tlul_req,
-                  axi_idma_req,
-                  axi_cls_cfg_req,
-                  axi_cls_slv_req;
+                  axi_idma_req;
 
    axi_resp_t     axi_tlul_rsp,
-                  axi_idma_rsp,
-                  axi_cls_cfg_rsp,
-                  axi_cls_slv_rsp;
+                  axi_idma_rsp;
 
    axi_out_req_t  [NumMstPorts-1:0] axi_mst_req;
    axi_out_resp_t [NumMstPorts-1:0] axi_mst_rsp;
@@ -389,17 +385,13 @@ module security_island
     NoAddrRules:                      NumRules
   };
 
-  //assign axi_out_mst_req = axi_mst_req[0];
   assign axi_out_mst_req = axi_mst_req[0];
   assign axi_cls_mst_req = axi_mst_req[1];
-  //assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp};
   assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp};
 
-  assign axi_slv_req     = { axi_cls_slv_req, axi_cls_cfg_req, axi_idma_req, axi_tlul_req };
+  assign axi_slv_req     = { axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[0];
   assign axi_idma_rsp    = axi_slv_rsp[1];
-  assign axi_cls_cfg_rsp = axi_slv_rsp[2];
-  assign axi_cls_slv_rsp = axi_slv_rsp[3];
 
   axi_xbar #(
     .Cfg          ( XbarCfg           ),
@@ -472,13 +464,6 @@ module security_island
      .AXI_USER_WIDTH ( AxiUserWidth  )
    ) serialized_soc_to_cluster_axi_bus();
 
-   AXI_BUS #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
-     .AXI_DATA_WIDTH ( AxiDataWidth ),
-     .AXI_ID_WIDTH   ( AxiIdWidth   ),
-     .AXI_USER_WIDTH ( AxiUserWidth )
-   ) cluster_to_tlb_axi_bus();
-
 ////////////////////
 // Axi serializer //
 ////////////////////
@@ -515,28 +500,12 @@ module security_island
        .dst        ( async_soc_to_cluster_axi_bus      )
    );
 
-   axi_cdc_dst_intf #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
-     .AXI_DATA_WIDTH ( AxiDataWidth ),
-     .AXI_ID_WIDTH   ( AxiIdWidth   ),
-     .AXI_USER_WIDTH ( AxiUserWidth ),
-     .LOG_DEPTH      ( LogDepth     ),
-     .SYNC_STAGES    ( SyncStages   )
-   ) cluster_to_soc_dst_cdc_fifo_i (
-       .dst_clk_i  ( clk_i                        ),
-       .dst_rst_ni ( pwr_on_rst_ni                ),
-       .src        ( async_cluster_to_soc_axi_bus ),
-       .dst        ( cluster_to_tlb_axi_bus       )
-   );
-
 ////////////////////
 // Axi assignments//
 ////////////////////
 
   `AXI_ASSIGN_FROM_REQ(soc_to_cluster_axi_bus, axi_cls_mst_req)
   `AXI_ASSIGN_TO_RESP(axi_cls_mst_rsp, soc_to_cluster_axi_bus)
-  `AXI_ASSIGN_TO_REQ(axi_cls_slv_req, cluster_to_tlb_axi_bus)
-  `AXI_ASSIGN_FROM_RESP(cluster_to_tlb_axi_bus, axi_cls_slv_rsp)
 
 /////////////////
 // Pulp Cluster//
