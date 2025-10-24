@@ -312,15 +312,18 @@ module testbench_asynch_astral ();
 // -----------------------------------------------------------------------------------
 
    security_island #(.HartIdOffs(0)) dut (
-       .clk_i            ( clk_sys       ),
-       .clk_cluster_i    ( clk_cluster   ),
-       .clk_ref_i        ( clk_sys       ),
-       .rst_ni           ( rst_sys_n     ),
-       .pwr_on_rst_ni    ( rst_sys_n     ),
-       .fetch_en_i       ( '0            ),
-       .bootmode_i       ( bootmode      ),
-       .test_enable_i    ( '0            ),
-       .irq_ibex_i       ( '0            ),
+       .clk_i               ( clk_sys     ),
+       .clk_cluster_i       ( clk_cluster ),
+       .clk_ref_i           ( clk_sys     ),
+       .rst_ni              ( rst_sys_n   ),
+       .pwr_on_rst_ni       ( rst_sys_n   ),
+       .fetch_en_i          ( '0          ),
+       .bootmode_i          ( bootmode    ),
+       .test_enable_i       ( '0          ),
+       .irq_ibex_i          ( '0          ),
+       .cfi_req_irq_i       ( '0          ),
+       .cfi_watermark_irq_i ( '0          ),
+
        // JTAG port
        .jtag_tck_i       ( jtag_i.tck    ),
        .jtag_tms_i       ( jtag_i.tms    ),
