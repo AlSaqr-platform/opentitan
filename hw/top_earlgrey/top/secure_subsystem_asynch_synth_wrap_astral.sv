@@ -513,7 +513,7 @@ module security_island
 
   // FIXME: copy-paste from pulp_cluster_tb //
   localparam AxiAw  = 32;
-  localparam bit[AxiAw-1:0] ClustBase       = 'h10000000;
+  localparam bit[AxiAw-1:0] ClustBase       = 'hB0000000;
   localparam bit[AxiAw-1:0] ClustPeriphOffs = 'h00200000;
   localparam bit[AxiAw-1:0] ClustExtOffs    = 'h00400000;
   localparam bit[      5:0] ClustIdx        = 'h0;
@@ -593,10 +593,20 @@ module security_island
       .clk_i                           ( clk_cluster_i                        ),
       .rst_ni                          ( rst_ni                               ),
       .ref_clk_i                       ( clk_ref_i                            ),
-
+      .pwr_on_rst_ni                   ( pwr_on_rst_ni                        ),
       .pmu_mem_pwdn_i                  ( 1'b0                                 ),
 
-      .base_addr_i                     ( '0                                   ),
+      .base_addr_i                     ( ClustBase[31:28]                     ),
+      .test_mode_i                     ( 1'b0                                 ),
+      .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
+
+      .cluster_id_i                    ( 6'b000000                            ),
+      .fetch_en_i                      ( cluster_fetch_enable                 ),
+      .eoc_o                           ( s_cluster_eoc                        ),
+      .busy_o                          (                                      ),
+
+      .axi_isolate_i                   ( '0                                   ),
+      .axi_isolated_o                  (                                      ),
 
       .dma_pe_evt_ack_i                ( 1'b1                                 ),
       .dma_pe_evt_valid_o              (                                      ),
@@ -605,6 +615,7 @@ module security_island
       .dma_pe_irq_valid_o              (                                      ),
 
       .dbg_irq_valid_i                 ( '0                                   ),
+      .mbox_irq_i                      ( '0                                   ),
 
       .pf_evt_ack_i                    ( 1'b1                                 ),
       .pf_evt_valid_o                  (                                      ),
@@ -612,14 +623,6 @@ module security_island
       .async_cluster_events_wptr_i     ( '0                                   ),
       .async_cluster_events_rptr_o     (                                      ),
       .async_cluster_events_data_i     ( '0                                   ),
-
-      .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
-
-      .test_mode_i                     ( 1'b0                                 ),
-      .fetch_en_i                      ( cluster_fetch_enable                 ),
-      .eoc_o                           ( s_cluster_eoc                        ),
-      .busy_o                          (                                      ),
-      .cluster_id_i                    ( 6'b000000                            ),
 
       .async_data_master_aw_wptr_o     ( async_cluster_to_soc_axi_bus.aw_wptr ),
       .async_data_master_aw_rptr_i     ( async_cluster_to_soc_axi_bus.aw_rptr ),
