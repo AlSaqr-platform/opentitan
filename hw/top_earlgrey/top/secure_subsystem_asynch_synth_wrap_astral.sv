@@ -132,7 +132,7 @@ module security_island
 //////////////////////////
 
    localparam int unsigned NumMstPorts = 2;
-   localparam int unsigned NumSlvPorts = 4; // FIXME: the number of used ports is 2 but it gives a fatal assert on AXI ID
+   localparam int unsigned NumSlvPorts = 2;
 
    axi_out_req_t  axi_out_mst_req,
                   axi_cls_mst_req;
@@ -230,7 +230,7 @@ module security_island
    assign gpio_0_oe_o = mio_oe_o[0];
    assign gpio_1_oe_o = mio_oe_o[1];
 
-   //Unwrapping JTAG strucutres
+   //Unwrapping JTAG structures
 
    assign jtag_i.tck     = jtag_tck_i;
    assign jtag_i.tms     = jtag_tms_i;
@@ -303,7 +303,7 @@ module security_island
    );
 
    axi_id_serialize #(
-    .AxiSlvPortIdWidth      ( 8                          ),
+    .AxiSlvPortIdWidth      ( AxiOutIdWidth              ),
     .AxiMstPortMaxUniqIds   ( 16                         ),
     .AxiMstPortMaxTxnsPerId ( 16                         ),
     .AxiMstPortIdWidth      ( 4                          ),
