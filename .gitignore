@@ -93,3 +93,7 @@ hw/tb/vips
 Bender.lock
 *.vstf
 work-dpi
+working_dir/
+*.dis
+*.elf
+bender
