@@ -85,8 +85,15 @@ clean:
 	rm -rf vsim.wlf
 	rm -rf uart
 
+common_defs  += -D FEATURE_ICACHE_STAT
+common_targs += -t cv32e40p_use_ff_regfile
+common_defs  += -D PRIVATE_ICACHE
+common_defs  += -D HIERARCHY_ICACHE_32BIT
+common_defs  += -D ICACHE_USE_FF
+common_defs  += -D CLUSTER_ALIAS
+
 scripts/compile_opentitan.tcl: Bender.yml
-	$(BENDER) script $(VSIM) --vlog-arg="$(VLOG_ARGS)" -t use_idma -t rtl -t test -t snitch_cluster -D FEATURE_ICACHE_STAT > $@
+	$(BENDER) script $(VSIM) --vlog-arg="$(VLOG_ARGS)" -t use_idma -t rtl -t test -t snitch_cluster $(common_defs) $(common_targs) > $@
 # 	$(call generate_vsim, $@, -t use_idma -t rtl -t test -t snitch_cluster ,..)
 
 scripts/compile_opentitan_vip.tcl: Bender.yml
