@@ -1,5 +1,4 @@
 overrides:
-  pulp_cluster: { path: "working_dir/pulp_cluster" } # Temporary override by Bender using `bender clone` command
   axi:                  { git: "https://github.com/pulp-platform/axi.git", version: 0.39.1 }
   hci:                  { git: "https://github.com/FondazioneChipsIT/hci.git", rev: 572698a0bb9824d0a503571eff7d66606b7549f6 } # gl/ot_integration
   hwpe-stream:          { git: "https://github.com/pulp-platform/hwpe-stream.git", rev: ddc154424187dff42a8fcec946c768ceb13f13de }

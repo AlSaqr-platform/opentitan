@@ -8,7 +8,7 @@ dependencies:
   cluster_interconnect: { git: "https://github.com/pulp-platform/cluster_interconnect.git", rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27" } # v1.2.1
   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",  rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467"  } # v0.4.5
-  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "610eebff8fbe676e9875e13759422cc334cdd83c" } # branch: gl/ot_integration
+  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "b0cf8ace5a431e36fae35397fc2159116015f85f" } # branch: gl/ot_integration
 
 export_include_dirs:
       - hw/ip/prim/rtl
