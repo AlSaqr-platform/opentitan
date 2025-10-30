@@ -129,15 +129,15 @@ module testbench_asynch_astral ();
    logic                      mem_rvalid_d, rvalid_d, rvalid_q;
 
    typedef logic [63:0]  axi32_addr_t;
-   typedef logic [63:0]  axi32_data_t;
-   typedef logic [8:0]   axi32_strb_t;
+   typedef logic [31:0]  axi32_data_t;
+   typedef logic [3:0]   axi32_strb_t;
    typedef logic         axi32_user_t;
    typedef logic [3:0]   axi32_out_id_t;
 
    `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, axi32_out_id_t, axi32_data_t, axi32_strb_t, axi32_user_t)
 
    axi_out32_req_t   tlul2axi32_req;
-   axi_out32_resp_t  tlul2axi32_rsp;
+   axi_out32_resp_t  tlul2axi32_resp;
 
    uart_bus #(.BAUD_RATE(1250000), .PARITY_EN(0)) i_uart0_bus (.rx(ibex_uart_tx), .tx(ibex_uart_rx), .rx_en(1'b1)); //1470588 magic numbers
 
@@ -146,9 +146,9 @@ module testbench_asynch_astral ();
 // -----------------------------------------------------------------------------------
 
    typedef jtag_ot_test::riscv_dbg #(
-      .IrLength       (5                 ),
-      .TA             (TA                ),
-      .TT             (TT                )
+      .IrLength (5 ),
+      .TA       (TA),
+      .TT       (TT)
    ) riscv_dbg_t;
 
    JTAG_DV jtag_mst (clk_sys);
@@ -158,6 +158,7 @@ module testbench_asynch_astral ();
 
    axi_out_req_t   tlul2axi_req;
    axi_out_resp_t  tlul2axi_rsp;
+
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
 
@@ -204,176 +205,277 @@ module testbench_asynch_astral ();
 // Simulation Memory
 // -----------------------------------------------------------------------------------
 
-   axi_cdc_dst #(
-     .LogDepth   ( LogDepth         ),
-     .SyncStages ( CdcSyncStages    ),
-     .aw_chan_t  ( axi_out_aw_chan_t ),
-     .w_chan_t   ( axi_out_w_chan_t  ),
-     .b_chan_t   ( axi_out_b_chan_t  ),
-     .ar_chan_t  ( axi_out_ar_chan_t ),
-     .r_chan_t   ( axi_out_r_chan_t  ),
-     .axi_req_t  ( axi_out_req_t     ),
-     .axi_resp_t ( axi_out_resp_t    )
-   ) i_cdc_in_tlul2axi (
-     .async_data_slave_aw_data_i( async_axi_out_aw_data_o ),
-     .async_data_slave_aw_wptr_i( async_axi_out_aw_wptr_o ),
-     .async_data_slave_aw_rptr_o( async_axi_out_aw_rptr_i ),
-     .async_data_slave_w_data_i ( async_axi_out_w_data_o  ),
-     .async_data_slave_w_wptr_i ( async_axi_out_w_wptr_o  ),
-     .async_data_slave_w_rptr_o ( async_axi_out_w_rptr_i  ),
-     .async_data_slave_b_data_o ( async_axi_out_b_data_i  ),
-     .async_data_slave_b_wptr_o ( async_axi_out_b_wptr_i  ),
-     .async_data_slave_b_rptr_i ( async_axi_out_b_rptr_o  ),
-     .async_data_slave_ar_data_i( async_axi_out_ar_data_o ),
-     .async_data_slave_ar_wptr_i( async_axi_out_ar_wptr_o ),
-     .async_data_slave_ar_rptr_o( async_axi_out_ar_rptr_i ),
-     .async_data_slave_r_data_o ( async_axi_out_r_data_i  ),
-     .async_data_slave_r_wptr_o ( async_axi_out_r_wptr_i  ),
-     .async_data_slave_r_rptr_i ( async_axi_out_r_rptr_o  ),
-     .dst_clk_i                 ( clk_sys      ),
-     .dst_rst_ni                ( rst_sys_n    ),
-     .dst_req_o                 ( tlul2axi_req ),
-     .dst_resp_i                ( tlul2axi_rsp )
-   );
+  axi_cdc_dst #(
+    .LogDepth   ( LogDepth          ),
+    .SyncStages ( CdcSyncStages     ),
+    .aw_chan_t  ( axi_out_aw_chan_t ),
+    .w_chan_t   ( axi_out_w_chan_t  ),
+    .b_chan_t   ( axi_out_b_chan_t  ),
+    .ar_chan_t  ( axi_out_ar_chan_t ),
+    .r_chan_t   ( axi_out_r_chan_t  ),
+    .axi_req_t  ( axi_out_req_t     ),
+    .axi_resp_t ( axi_out_resp_t    )
+  ) i_cdc_in_tlul2axi (
+    .async_data_slave_aw_data_i( async_axi_out_aw_data_o ),
+    .async_data_slave_aw_wptr_i( async_axi_out_aw_wptr_o ),
+    .async_data_slave_aw_rptr_o( async_axi_out_aw_rptr_i ),
+    .async_data_slave_w_data_i ( async_axi_out_w_data_o  ),
+    .async_data_slave_w_wptr_i ( async_axi_out_w_wptr_o  ),
+    .async_data_slave_w_rptr_o ( async_axi_out_w_rptr_i  ),
+    .async_data_slave_b_data_o ( async_axi_out_b_data_i  ),
+    .async_data_slave_b_wptr_o ( async_axi_out_b_wptr_i  ),
+    .async_data_slave_b_rptr_i ( async_axi_out_b_rptr_o  ),
+    .async_data_slave_ar_data_i( async_axi_out_ar_data_o ),
+    .async_data_slave_ar_wptr_i( async_axi_out_ar_wptr_o ),
+    .async_data_slave_ar_rptr_o( async_axi_out_ar_rptr_i ),
+    .async_data_slave_r_data_o ( async_axi_out_r_data_i  ),
+    .async_data_slave_r_wptr_o ( async_axi_out_r_wptr_i  ),
+    .async_data_slave_r_rptr_i ( async_axi_out_r_rptr_o  ),
+    .dst_clk_i                 ( clk_sys      ),
+    .dst_rst_ni                ( rst_sys_n    ),
+    .dst_req_o                 ( tlul2axi_req ),
+    .dst_resp_i                ( tlul2axi_rsp )
+  );
 
-   AXI_BUS #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-     .AXI_DATA_WIDTH ( 32            ),
-     .AXI_ID_WIDTH   ( AxiOutIdWidth ),
-     .AXI_USER_WIDTH ( AxiUserWidth  )
-   ) axi_slv();
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
+    .AXI_DATA_WIDTH ( 32            ),
+    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
+    .AXI_USER_WIDTH ( AxiUserWidth  )
+  ) axi2mem_bus();
 
-  `AXI_ASSIGN_FROM_REQ(axi_slv,tlul2axi32_req)
-  `AXI_ASSIGN_TO_RESP(tlul2axi32_rsp, axi_slv)
+  axi_out32_req_t   axi_mbox_req, axi_mem_req;
+  axi_out32_resp_t  axi_mbox_rsp, axi_mem_rsp;
 
-   axi_dw_converter #(
-      .AxiMaxReads         ( 8                  ),
-      .AxiSlvPortDataWidth ( 64                 ),
-      .AxiMstPortDataWidth ( 32                 ),
-      .AxiAddrWidth        ( AxiAddrWidth    ),
-      .AxiIdWidth          ( AxiOutIdWidth      ),
-      .aw_chan_t           ( axi_out_aw_chan_t  ),
-      .mst_w_chan_t        ( axi_out32_w_chan_t ),
-      .slv_w_chan_t        ( axi_out_w_chan_t   ),
-      .b_chan_t            ( axi_out_b_chan_t   ),
-      .ar_chan_t           ( axi_out_ar_chan_t  ),
-      .mst_r_chan_t        ( axi_out32_r_chan_t ),
-      .slv_r_chan_t        ( axi_out_r_chan_t   ),
-      .axi_mst_req_t       ( axi_out32_req_t    ),
-      .axi_mst_resp_t      ( axi_out32_resp_t    ),
-      .axi_slv_req_t       ( axi_out_req_t      ),
-      .axi_slv_resp_t      ( axi_out_resp_t     )
-   )  i_axi_dw_converter_tlul2axi (
-      .clk_i   ( clk_sys         ),
-      .rst_ni  ( rst_sys_n       ),
-      // slave port
-      .slv_req_i  ( tlul2axi_req ),
-      .slv_resp_o ( tlul2axi_rsp ),
-      // master port
-      .mst_req_o  ( tlul2axi32_req   ),
-      .mst_resp_i ( tlul2axi32_rsp   )
-   );
+  `AXI_ASSIGN_FROM_REQ(axi2mem_bus, axi_mem_req)
+  `AXI_ASSIGN_TO_RESP(axi_mem_rsp, axi2mem_bus)
 
-   axi2mem_tb #(
-      .AXI_ID_WIDTH   ( AxiOutIdWidth ),
-      .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-      .AXI_DATA_WIDTH ( 32            ),
-      .AXI_USER_WIDTH ( AxiUserWidth  )
-   ) axi2mem_tb (
-      .clk_i   ( clk_sys         ),
-      .rst_ni  ( rst_sys_n       ),
-      .slave   ( axi_slv         ),
-      .req_o   ( mem_mst_req     ),
-      .we_o    ( mem_mst_wen     ),
-      .addr_o  ( mem_mst_add     ),
-      .be_o    ( mem_mst_be      ),
-      .data_o  ( mem_mst_wdata   ),
-      .data_i  ( mem_mst_r_rdata )
-   );
+  axi_dw_converter #(
+    .AxiMaxReads         ( 8                  ),
+    .AxiSlvPortDataWidth ( 64                 ),
+    .AxiMstPortDataWidth ( 32                 ),
+    .AxiAddrWidth        ( AxiAddrWidth       ),
+    .AxiIdWidth          ( AxiOutIdWidth      ),
+    .aw_chan_t           ( axi_out_aw_chan_t  ),
+    .mst_w_chan_t        ( axi_out32_w_chan_t ),
+    .slv_w_chan_t        ( axi_out_w_chan_t   ),
+    .b_chan_t            ( axi_out_b_chan_t   ),
+    .ar_chan_t           ( axi_out_ar_chan_t  ),
+    .mst_r_chan_t        ( axi_out32_r_chan_t ),
+    .slv_r_chan_t        ( axi_out_r_chan_t   ),
+    .axi_mst_req_t       ( axi_out32_req_t    ),
+    .axi_mst_resp_t      ( axi_out32_resp_t   ),
+    .axi_slv_req_t       ( axi_out_req_t      ),
+    .axi_slv_resp_t      ( axi_out_resp_t     )
+  )  i_axi_dw_converter_tlul2axi (
+    .clk_i   ( clk_sys   ),
+    .rst_ni  ( rst_sys_n ),
+    // slave port
+    .slv_req_i  ( tlul2axi_req ),
+    .slv_resp_o ( tlul2axi_rsp ),
+    // master port
+    .mst_req_o  ( tlul2axi32_req  ),
+    .mst_resp_i ( tlul2axi32_resp )
+  );
 
-   tc_sram #(
-      .NumWords  ( Depth   ),
-      .DataWidth ( 32      ),
-      .NumPorts  ( 1       ),
-      .SimInit   ( "zeros" )
-   ) sim_ram (
-      .clk_i   ( clk_sys                     ),
-      .rst_ni  ( rst_sys_n                   ),
-      .req_i   ( mem_mst_req                 ),
-      .addr_i  ( {2'b0, mem_mst_add[Aw-1:2]} ),
-      .wdata_i ( mem_mst_wdata               ),
-      .rdata_o ( mem_mst_r_rdata             ),
-      .we_i    ( mem_mst_wen                 ),
-      .be_i    ( mem_mst_be                  )
-   );
+  axi2mem_tb #(
+    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
+    .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
+    .AXI_DATA_WIDTH ( 32            ),
+    .AXI_USER_WIDTH ( AxiUserWidth  )
+  ) axi2mem_tb (
+    .clk_i   ( clk_sys         ),
+    .rst_ni  ( rst_sys_n       ),
+    .slave   ( axi2mem_bus     ),
+    .req_o   ( mem_mst_req     ),
+    .we_o    ( mem_mst_wen     ),
+    .addr_o  ( mem_mst_add     ),
+    .be_o    ( mem_mst_be      ),
+    .data_o  ( mem_mst_wdata   ),
+    .data_i  ( mem_mst_r_rdata )
+  );
+
+  tc_sram #(
+    .NumWords  ( Depth   ),
+    .DataWidth ( 32      ),
+    .NumPorts  ( 1       ),
+    .SimInit   ( "zeros" )
+  ) sim_ram (
+    .clk_i   ( clk_sys                     ),
+    .rst_ni  ( rst_sys_n                   ),
+    .req_i   ( mem_mst_req                 ),
+    .addr_i  ( {2'b0, mem_mst_add[Aw-1:2]} ),
+    .wdata_i ( mem_mst_wdata               ),
+    .rdata_o ( mem_mst_r_rdata             ),
+    .we_i    ( mem_mst_wen                 ),
+    .be_i    ( mem_mst_be                  )
+  );
+
+
+  ////////////////////////////////////////////////////
+  // ------------------------------------------------------
+  // AXI connection
+  // ------------------------------------------------------
+
+  logic s_doorbell_irq;
+
+  // xbar
+  localparam int unsigned NumRules = 2;
+  typedef struct packed {
+    int unsigned idx;
+    logic [AxiAddrWidth-1:0] start_addr;
+    logic [AxiAddrWidth-1:0] end_addr;
+  } xbar_rule_t;
+  xbar_rule_t [NumRules-1:0] addr_map;
+  logic [AxiAddrWidth-1:0] mem_base_addr;
+  logic [AxiAddrWidth-1:0] mem_end_addr;
+  logic [AxiAddrWidth-1:0] mbox_base_addr;
+  logic [AxiAddrWidth-1:0] mbox_end_addr;
+  assign mem_base_addr = 32'h1A00_0000;
+  assign mem_end_addr = 32'hC000_0000;
+  assign mbox_base_addr = 32'h1040_4000;
+  assign mbox_end_addr = 32'h1040_4FFF;
+  assign addr_map = '{
+    '{ // SRAM
+      start_addr: mem_base_addr,
+      end_addr:   mem_end_addr,
+      idx:        0
+    },
+    '{ // MBOX
+      start_addr: mbox_base_addr,
+      end_addr:   mbox_end_addr,
+      idx:        1
+    }
+  };
+  localparam int unsigned NumSlvPorts = 1;
+  localparam int unsigned NumMstPorts = 2;
+
+  localparam axi_pkg::xbar_cfg_t TbXbarCfg = '{
+    NoSlvPorts:                     NumSlvPorts,
+    NoMstPorts:                     NumMstPorts,
+    MaxMstTrans:                              1,
+    MaxSlvTrans:                              1,
+    FallThrough:                           1'b0,
+    LatencyMode:         axi_pkg::CUT_ALL_PORTS,
+    PipelineStages:                       32'd0,
+    AxiIdWidthSlvPorts:           AxiOutIdWidth,
+    AxiIdUsedSlvPorts:            AxiOutIdWidth,
+    UniqueIds:                             1'b0,
+    AxiAddrWidth:                  AxiAddrWidth,
+    AxiDataWidth:                            32,
+    NoAddrRules:                       NumRules
+  };
+
+  axi_xbar #(
+    .Cfg           ( TbXbarCfg           ),
+    .w_chan_t      ( axi_out32_w_chan_t  ),
+    .mst_aw_chan_t ( axi_out32_aw_chan_t ),
+    .mst_b_chan_t  ( axi_out32_b_chan_t  ),
+    .mst_ar_chan_t ( axi_out32_ar_chan_t ),
+    .mst_r_chan_t  ( axi_out32_r_chan_t  ),
+    .mst_req_t     ( axi_out32_req_t     ),
+    .mst_resp_t    ( axi_out32_resp_t    ),
+    .slv_aw_chan_t ( axi_out32_aw_chan_t ),
+    .slv_ar_chan_t ( axi_out32_ar_chan_t ),
+    .slv_b_chan_t  ( axi_out32_b_chan_t  ),
+    .slv_r_chan_t  ( axi_out32_r_chan_t  ),
+    .slv_req_t     ( axi_out32_req_t     ),
+    .slv_resp_t    ( axi_out32_resp_t    ),
+    .rule_t        ( xbar_rule_t         )
+  ) i_tb_axi_xbar (
+    .clk_i                  ( clk_sys                       ),
+    .rst_ni                 ( rst_sys_n                     ),
+    .test_i                 ( '0                            ),
+    .slv_ports_req_i        ( tlul2axi32_req                ),
+    .slv_ports_resp_o       ( tlul2axi32_resp               ),
+    .mst_ports_req_o        ( { axi_mbox_req, axi_mem_req } ),
+    .mst_ports_resp_i       ( { axi_mbox_rsp, axi_mem_rsp } ),
+    .addr_map_i             ( addr_map                      ),
+    .en_default_mst_port_i  ( '0                            ),
+    .default_mst_port_i     ( '0                            )
+  );
+
+  axi_scmi_mailbox #(
+    .AXI_MST_DATA_WIDTH ( 32 ),
+    .AXI_ID_WIDTH       ( AxiOutIdWidth    ),
+    .axi_req_t          ( axi_out32_req_t  ),
+    .axi_resp_t         ( axi_out32_resp_t )
+  ) i_scmi_tb_mailbox (
+    .clk_i            ( clk_sys        ),
+    .rst_ni           ( rst_sys_n      ),
+    .axi_mbox_req     ( axi_mbox_req   ),
+    .axi_mbox_rsp     ( axi_mbox_rsp   ),
+    .doorbell_irq_o   ( s_doorbell_irq ),
+    .completion_irq_o ()
+  );
 
 // -----------------------------------------------------------------------------------
 // DUT
 // -----------------------------------------------------------------------------------
 
    security_island #(.HartIdOffs(0)) dut (
-       .clk_i               ( clk_sys     ),
-       .clk_cluster_i       ( clk_cluster ),
-       .clk_ref_i           ( clk_sys     ),
-       .rst_ni              ( rst_sys_n   ),
-       .pwr_on_rst_ni       ( rst_sys_n   ),
-       .fetch_en_i          ( '0          ),
-       .bootmode_i          ( bootmode    ),
-       .test_enable_i       ( '0          ),
-       .irq_ibex_i          ( '0          ),
-       .cfi_req_irq_i       ( '0          ),
-       .cfi_watermark_irq_i ( '0          ),
+    .clk_i               ( clk_sys        ),
+    .clk_cluster_i       ( clk_cluster    ),
+    .clk_ref_i           ( clk_sys        ),
+    .rst_ni              ( rst_sys_n      ),
+    .pwr_on_rst_ni       ( rst_sys_n      ),
+    .fetch_en_i          ( '0             ),
+    .bootmode_i          ( bootmode       ),
+    .test_enable_i       ( '0             ),
+    .irq_ibex_i          ( s_doorbell_irq ),
+    .cfi_req_irq_i       ( '0             ),
+    .cfi_watermark_irq_i ( '0             ),
 
-       // JTAG port
-       .jtag_tck_i       ( jtag_i.tck    ),
-       .jtag_tms_i       ( jtag_i.tms    ),
-       .jtag_trst_n_i    ( jtag_i.trst_n ),
-       .jtag_tdi_i       ( jtag_i.tdi    ),
-       .jtag_tdo_o       ( jtag_o.tdo    ),
-       .jtag_tdo_oe_o    (               ),
-       // Asynch axi port
-       .async_axi_out_aw_data_o,
-       .async_axi_out_aw_wptr_o,
-       .async_axi_out_aw_rptr_i,
-       .async_axi_out_w_data_o,
-       .async_axi_out_w_wptr_o,
-       .async_axi_out_w_rptr_i,
-       .async_axi_out_b_data_i,
-       .async_axi_out_b_wptr_i,
-       .async_axi_out_b_rptr_o,
-       .async_axi_out_ar_data_o,
-       .async_axi_out_ar_wptr_o,
-       .async_axi_out_ar_rptr_i,
-       .async_axi_out_r_data_i,
-       .async_axi_out_r_wptr_i,
-       .async_axi_out_r_rptr_o,
-       // Uart
-       .ibex_uart_rx_i   ( ibex_uart_rx  ),
-       .ibex_uart_tx_o   ( ibex_uart_tx  ),
-       // SPI host
- `ifdef VIPS
-       .spi_host_SCK_o   ( SCK           ),
-       .spi_host_SCK_en_o(               ),
-       .spi_host_CSB_o   ( CSNeg         ),
-       .spi_host_CSB_en_o(               ),
-       .spi_host_SD_o    ( SPIdata_o     ),
-       .spi_host_SD_i    ( SPIdata_i     ),
-       .spi_host_SD_en_o ( SPIdata_oe_o  ),
- `else
-       .spi_host_SCK_o   (               ),
-       .spi_host_SCK_en_o(               ),
-       .spi_host_CSB_o   (               ),
-       .spi_host_CSB_en_o(               ),
-       .spi_host_SD_o    (               ),
-       .spi_host_SD_i    ( '0            ),
-       .spi_host_SD_en_o (               ),
- `endif
-       .gpio_0_i         ( '0            ),
-       .gpio_1_i         ( '0            ),
-       .gpio_0_o         (               ),
-       .gpio_1_o         (               ),
-       .gpio_0_oe_o      (               ),
-       .gpio_1_oe_o      (               )
+    // JTAG port
+    .jtag_tck_i       ( jtag_i.tck    ),
+    .jtag_tms_i       ( jtag_i.tms    ),
+    .jtag_trst_n_i    ( jtag_i.trst_n ),
+    .jtag_tdi_i       ( jtag_i.tdi    ),
+    .jtag_tdo_o       ( jtag_o.tdo    ),
+    .jtag_tdo_oe_o    (               ),
+    // Asynch axi port
+    .async_axi_out_aw_data_o,
+    .async_axi_out_aw_wptr_o,
+    .async_axi_out_aw_rptr_i,
+    .async_axi_out_w_data_o,
+    .async_axi_out_w_wptr_o,
+    .async_axi_out_w_rptr_i,
+    .async_axi_out_b_data_i,
+    .async_axi_out_b_wptr_i,
+    .async_axi_out_b_rptr_o,
+    .async_axi_out_ar_data_o,
+    .async_axi_out_ar_wptr_o,
+    .async_axi_out_ar_rptr_i,
+    .async_axi_out_r_data_i,
+    .async_axi_out_r_wptr_i,
+    .async_axi_out_r_rptr_o,
+    // Uart
+    .ibex_uart_rx_i   ( ibex_uart_rx  ),
+    .ibex_uart_tx_o   ( ibex_uart_tx  ),
+    // SPI host
+`ifdef VIPS
+    .spi_host_SCK_o   ( SCK           ),
+    .spi_host_SCK_en_o(               ),
+    .spi_host_CSB_o   ( CSNeg         ),
+    .spi_host_CSB_en_o(               ),
+    .spi_host_SD_o    ( SPIdata_o     ),
+    .spi_host_SD_i    ( SPIdata_i     ),
+    .spi_host_SD_en_o ( SPIdata_oe_o  ),
+`else
+    .spi_host_SCK_o   (               ),
+    .spi_host_SCK_en_o(               ),
+    .spi_host_CSB_o   (               ),
+    .spi_host_CSB_en_o(               ),
+    .spi_host_SD_o    (               ),
+    .spi_host_SD_i    ( '0            ),
+    .spi_host_SD_en_o (               ),
+`endif
+    .gpio_0_i         ( '0            ),
+    .gpio_1_i         ( '0            ),
+    .gpio_0_o         (               ),
+    .gpio_1_o         (               ),
+    .gpio_0_oe_o      (               ),
+    .gpio_1_oe_o      (               )
    );
 
 

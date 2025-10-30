@@ -9,6 +9,7 @@ dependencies:
   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",  rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467"  } # v0.4.5
   pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "b0cf8ace5a431e36fae35397fc2159116015f85f" } # branch: gl/ot_integration
+  axi_scmi_mailbox:     { git: "https://github.com/AlSaqr-platform/axi_scmi_mailbox.git", rev: "96650c4c39dcfc683e48015abb1453d182c1d837" }
 
 export_include_dirs:
       - hw/ip/prim/rtl
