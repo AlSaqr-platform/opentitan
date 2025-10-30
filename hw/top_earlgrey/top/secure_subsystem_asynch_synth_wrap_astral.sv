@@ -141,10 +141,12 @@ module security_island
                   axi_cls_mst_rsp;
 
    axi_req_t      axi_tlul_req,
-                  axi_idma_req, axi_cls_slv_req;
+                  axi_idma_req,
+                  axi_cls_slv_req;
 
    axi_resp_t     axi_tlul_rsp,
-                  axi_idma_rsp, axi_cls_slv_rsp;
+                  axi_idma_rsp,
+                  axi_cls_slv_rsp;
 
    axi_out_req_t  [NumMstPorts-1:0] axi_mst_req;
    axi_out_resp_t [NumMstPorts-1:0] axi_mst_rsp;
@@ -387,7 +389,7 @@ module security_island
 
   assign axi_out_mst_req = axi_mst_req[0];
   assign axi_cls_mst_req = axi_mst_req[1];
-  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp};
+  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_out_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[0];
@@ -536,7 +538,6 @@ module security_island
 // Pulp Cluster//
 /////////////////
 
-  // FIXME: copy-paste from pulp_cluster_tb //
   localparam AxiAw  = 32;
   localparam bit[AxiAw-1:0] ClustBase       = 'hB0000000;
   localparam bit[AxiAw-1:0] ClustPeriphOffs = 'h00200000;
