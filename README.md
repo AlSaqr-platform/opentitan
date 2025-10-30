@@ -123,16 +123,19 @@ At first source this setup file:
 source sw/tests/pulp-runtime/configs/pulp_cluster.sh
 ```
 
-Under each test-name dir (for instance addressability test), to compile Ibex image run:
+Under each test-name/stimuli (for instance addressability test) run:
+```
+cd sw/tests/cluster/addressability/stimuli
+make clean all
+make dump_header
+```
+
+Then under the test-name dir, to compile Ibex image which includes the previously generated stimuli inside "cluster_code.h", run:
 ```
 cd sw/tests/cluster/addressability
 make clean all
 ```
-And under test-name/stimuli run again:
-```
-cd sw/tests/cluster/addressability/stimuli
-make clean all
-```
+
 The outputs are found under test-name/test-name.elf for Ibex and test-name/stimuli/build/stimuli/stimuli for cluster.
 
 ### Scripts
