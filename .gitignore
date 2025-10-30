@@ -96,4 +96,5 @@ work-dpi
 working_dir/
 *.dis
 *.elf
+*.dump
 bender
