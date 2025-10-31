@@ -30,9 +30,5 @@ int main() {
     pulp_write32(0x10404020, 0x1); //ring doorbell
   }
 
-  while (1) {
-          __asm__ volatile("wfi;");
-  }
-
   return 0;
 }

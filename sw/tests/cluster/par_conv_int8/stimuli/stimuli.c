@@ -64,7 +64,6 @@ int check_result(int8_t *result) {
     int diff = abs((int8_t)result[i] - (int8_t)ref[i]);
     printf_cl("At index %d: read %d (ref: %d)\r\n",i,(int8_t)result[i],(int8_t)ref[i]);
     if (diff > THR){
-      //      printf_cl("Error at %d: read %d (ref: %d)\r\n",i,(int8_t)result[i],(int8_t)ref[i]);
       err++;
     }
   }
@@ -126,10 +125,6 @@ void main_fn(int *retval) {
      printf("Num.Istr: %d - Num.Cycles: %d\r\n",instr_cnt,cycles_cnt);
   }
 
-  //pi_perf_start();
-  //quantize_dummy();
-  //pi_perf_stop();
-
 #ifdef CHECK
   if (core_id() == 0) {
     *retval = check_result(matC);
@@ -145,6 +140,5 @@ int main() {
     pulp_write32(0x10404008, retval);
     pulp_write32(0x10404020, 0x1);
   }
-  while (1) __asm__ volatile("wfi;");
   return 0;
 }
