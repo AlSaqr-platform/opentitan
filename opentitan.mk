@@ -105,32 +105,12 @@ secure_boot_jtag:
 secure_boot_spi:
 	make clean sim BOOTMODE=1 vip=1
 
-bender:
-	wget "https://github.com/pulp-platform/bender/releases/download/v0.22.0/bender-0.22.0-x86_64-linux-gnu-centos7.8.2003.tar.gz"
-	tar -xvzf bender-0.22.0-x86_64-linux-gnu-centos7.8.2003.tar.gz
-	rm bender-0.22.0-x86_64-linux-gnu-centos7.8.2003.tar.gz
-	$(BENDER) --version | grep -q "bender 0.22.0"
-
-
-$(OT_ROOT)/hw/tb/vips/s25fs256s.v:
-	wget --no-check-certificate https://freemodelfoundry.com/fmf_vlog_models/flash/s25fs256s.v -O $@
-	touch $@
-
 $(OT_ROOT)/hw/tb/vips:
 	rm -rf $@
 	mkdir $@
 	wget --no-check-certificate --content-disposition "https://freemodelfoundry.com/fmf_vlog_models/flash/s25fs256s.v" -O ./hw/tb/vips/s25fs256s.v
 
-# 	rm -rf model_tmp && mkdir model_tmp
-# 	cd model_tmp; wget https://www.infineon.com/dgdl/Infineon-S25fs256s-SimulationModels-v02_00-EN.zip?fileId=8ac78c8c7d0d8da4017d0f6251a24e7b
-# 	cd model_tmp; mv 'Infineon-S25fs256s-SimulationModels-v02_00-EN.zip?fileId=8ac78c8c7d0d8da4017d0f6251a24e7b' model.zip
-# 	cd model_tmp; unzip model.zip
-# 	cd model_tmp; mv 'S25fs256s' exe_folder
-# 	cd model_tmp/exe_folder; unzip S25fs256s.exe
-# 	cp model_tmp/exe_folder/S25fs256s/model/s25fs256s.v model_tmp/exe_folder/S25fs256s/model/s25fs256s_verilog.sdf $@
-# 	rm -rf model_tmp
-
-init: bender update scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips/s25fs256s.v
+init: update scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
 
 # DPI
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))
