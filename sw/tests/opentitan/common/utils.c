@@ -22,6 +22,7 @@ unsigned int get_mtval() {
   __asm__ volatile("csrr %0, mtval;" : "=r"(result));
   return result;
   }*/
+#define CFG_FPGA_EMULATION 1
 
 
 void simple_exc_handler(void) {
@@ -38,6 +39,41 @@ void simple_exc_handler(void) {
   */
 }
 
+void init_gpio_a2_out() {
+  volatile int * tmp;
+  // Configure Mux GPIO A2
+  tmp = (int *) 0x1A104014;
+  *tmp = 0x2;
+  // Enable GPIO A2
+  tmp = (int *) 0x1A105004;
+  *tmp = 0x4;
+  // Set GPIO A2 as output
+  tmp = (int *) 0x1A105000;
+  *tmp = 0x4;
+
+}
+
+void utils_printf_init() {
+
+  int * tmp;
+  #if CFG_FPGA_EMULATION == 0
+    tmp = (int *) 0x1a104004;
+    *tmp = 3;
+    tmp = (int *) 0x1a10400C;
+    *tmp = 3;
+    int baud_rate = 115200;
+    int test_freq = 100000000;
+  #else
+    tmp = (int *) 0x1a104074;
+    *tmp = 1;
+    tmp = (int *) 0x1a10407C;
+    *tmp = 1;
+    int baud_rate = 38400;
+    int test_freq = 40000000;
+  #endif
+  uart_set_cfg(0,(test_freq/baud_rate)>>4);
+
+}
 
 void uart_set_cfg(int parity, uint16_t clk_counter) {
   unsigned int i;

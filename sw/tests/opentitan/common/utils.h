@@ -77,5 +77,6 @@ int puts(const char *s);
 int printf(const char *format, ...);
 void * memset (void *dest, int val, size_t len);
 int putchar(int s);
-
+void utils_printf_init();
+void init_gpio_a2_out();
 #endif
