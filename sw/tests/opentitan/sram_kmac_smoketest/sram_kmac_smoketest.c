@@ -10,6 +10,7 @@
 #include "sw/device/lib/testing/test_framework/ottf_main.h"
 #include "sw/device/silicon_creator/rom/uart.h"
 #include "sw/device/silicon_creator/rom/string_lib.h"
+#include "sw/tests/opentitan/common/utils.h"
 
 
 #include "hw/top_earlgrey/sw/autogen/top_earlgrey.h"
@@ -205,27 +206,6 @@ bool entropy_init(void) {
   return true;
 }
 
-void utils_printf_init() {
-
-  int * tmp;
-  #if CFG_FPGA_EMULATION == 0
-    tmp = (int *) 0x1a104004;
-    *tmp = 3;
-    tmp = (int *) 0x1a10400C;
-    *tmp = 3;
-    int baud_rate = 115200;
-    int test_freq = 100000000;
-  #else
-    tmp = (int *) 0x1a104074;
-    *tmp = 1;
-    tmp = (int *) 0x1a10407C;
-    *tmp = 1;
-    int baud_rate = 38400;
-    int test_freq = 40000000;
-  #endif
-  uart_set_cfg(0,(test_freq/baud_rate)>>4);
-
-}
 /**
  * Run a SHA-3 test case with varying alignments.
  */
@@ -283,8 +263,10 @@ void run_sha3_alignment_test(dif_kmac_t *kmac) {
  * Run SHAKE test cases using single blocking absorb/squeeze operations.
  */
 void run_shake_test(dif_kmac_t *kmac) {
+  volatile int * tmp;
+  tmp = (int *) 0x1A105000;
   dif_kmac_operation_state_t operation_state;
-
+  //printf("running test\r\n");
   for (int i = 0; i < ARRAYSIZE(shake_tests); ++i) {
     shake_test_t test = shake_tests[i];
 
@@ -304,32 +286,30 @@ void run_shake_test(dif_kmac_t *kmac) {
             "test %d: mismatch at %d got=0x%x want=0x%x", i, j, out[j],
             test.digest[j]);
     }
+    *tmp ^= 0x00000004;
   }
 }
 
 int main(int argc, char **argv) {
-  utils_printf_init();
 
-  printf("Running KMAC DIF test...");
+  init_gpio_a2_out();
 
   // Intialize KMAC hardware.
   dif_kmac_t kmac;
-  CHECK_DIF_OK(
-      dif_kmac_init(mmio_region_from_addr(TOP_EARLGREY_KMAC_BASE_ADDR), &kmac));
-
-  // Configure KMAC hardware using software entropy.
-  dif_kmac_config_t config = (dif_kmac_config_t){
-      .entropy_mode = kDifKmacEntropyModeSoftware,
-      .entropy_seed = {0xaa25b4bf, 0x48ce8fff, 0x5a78282a, 0x48465647,
-                       0x70410fef},
-      .entropy_fast_process = kDifToggleEnabled,
-  };
-  CHECK_DIF_OK(dif_kmac_configure(&kmac, config));
-
-  run_sha3_test(&kmac);
-  run_sha3_alignment_test(&kmac);
-  run_shake_test(&kmac);
-
-  printf("Succeed!\r\n");
+    while(1){
+    CHECK_DIF_OK(
+        dif_kmac_init(mmio_region_from_addr(TOP_EARLGREY_KMAC_BASE_ADDR), &kmac));
+    // Configure KMAC hardware using software entropy.
+    dif_kmac_config_t config = (dif_kmac_config_t){
+        .entropy_mode = kDifKmacEntropyModeSoftware,
+        .entropy_seed = {0xaa25b4bf, 0x48ce8fff, 0x5a78282a, 0x48465647,
+                         0x70410fef},
+        .entropy_fast_process = kDifToggleEnabled,
+    };
+    CHECK_DIF_OK(dif_kmac_configure(&kmac, config));
+    run_sha3_test(&kmac);
+    run_sha3_alignment_test(&kmac);
+    run_shake_test(&kmac);
+    }
   return true;
 }
