@@ -5,7 +5,7 @@
 #define SHARED_ADDR 0xB0000000
 #define SIZE 1024
 
-#define L2_BASE 0x1C001000
+#define L2_BASE 0x1C000000
 
 int main() {
 

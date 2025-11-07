@@ -1,7 +1,7 @@
 PULP_RUNTIME := ../../../pulp-runtime/
 COMMON       := ../../common
 PULP_NN      := ../../../pulp-nn-mixed
-PULP_SDK     := ../../../pulp-sdk
+# PULP_SDK     := ../../../pulp-sdk
 
 #PULP_EXT_LIBS += -I$(PULP_RUNTIME)/include
 #-I$(PULP_RUNTIME)/include/chips/pulp -I$(PULP_RUNTIME)/include/archi
@@ -24,11 +24,11 @@ PULP_SDK     := ../../../pulp-sdk
 #PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pmsis/pmsis_api/include/pmsis/rtos/event_kernel
 #PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pmsis/pmsis_api/include/pmsis/rtos/malloc
 #PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pmsis/pmsis_api/include/pmsis/rtos/os_fronted_api
-PULP_APP_CFLAGS += -I$(PULP_SDK)/../cluster/common/
-PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/pulp/include
-PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/common/include/pos/data/
-PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/common/include/pos/implem/
-PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pmsis/pmsis_api/include
+# PULP_APP_CFLAGS += -I$(PULP_SDK)/../cluster/common/
+# PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/pulp/include
+# PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/common/include/pos/data/
+# PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/common/include/pos/implem/
+# PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pmsis/pmsis_api/include
 PULP_APP_CFLAGS += -I$(PULP_SDK)/rtos/pulpos/common/include/
 PULP_APP_CFLAGS += -I$(PULP_NN)/XpulpV2/32bit/include
 

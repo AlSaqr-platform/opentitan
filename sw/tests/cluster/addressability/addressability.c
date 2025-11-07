@@ -5,23 +5,29 @@
 #include "utils.h"
 
 #define SIZE 1024
-
-#define L3_BASE 0x80000000
 #define L2_BASE 0x1C001000
 
-#define SNOOP_BASE 0x71000000
-
+#define EntryAddr 0x1C008080
+#define ClusterBootAddrReg 0xB0200040
+#define ClusterFethEnableReg 0xff000020
+#define ClusterEocReg 0xff000024
+#define ClusterNumCores 8
+#define EdnEnAddrReg 0xc1170014
 
 int main() {
 
-  volatile int * fetch_en, * eoc, * edn_enable, * p_reg1;
-
+  volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * p_reg1;
   int err;
 
-  fetch_en = (int *) 0xff000020;
-  eoc = (int *) 0xff000024;
-  edn_enable = (int *) 0xc1170014;
+  fetch_en = (int *) ClusterFethEnableReg;
+  eoc = (int *) ClusterEocReg;
+  edn_enable = (int *) EdnEnAddrReg;
   *edn_enable = 0x9996;
+
+  for (int i = 0; i < ClusterNumCores; i++) {
+    boot_addr = (int *) (ClusterBootAddrReg + 0x4*i);
+    *boot_addr = EntryAddr;
+  }
 
   /////////////////////////
   // Cluster offloading  //
@@ -37,7 +43,7 @@ int main() {
 
   err = 0;
   p_reg1 = (int *) L2_BASE;
-  // Read L2 and L3
+  // Read L2
   for(int i=0;i<SIZE;i++){
     p_reg1 = (int *)(L2_BASE + 0x8000 + i*4);
     if( *p_reg1 != i*4){

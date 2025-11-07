@@ -1,8 +1,8 @@
-PULP_APP = stimuli
+PULP_APP = test
 
 PULP_APP_FC_SRCS = stimuli.c
 
-PULP_CFLAGS += -O3 -g3 
+PULP_CFLAGS += -O3 -g3
 PULP_CFLAGS += -mno-memcpy
 
 XLEN:=32

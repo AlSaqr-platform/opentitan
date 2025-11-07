@@ -63,7 +63,7 @@ int check_result(int8_t *result) {
   for (int i = 0; i < DIM_OUT_X * DIM_OUT_Y * CH_OUT; i++) {
     int diff = abs((int8_t)result[i] - (int8_t)ref[i]);
     printf_cl("At index %d: read %d (ref: %d)\r\n",i,(int8_t)result[i],(int8_t)ref[i]);
-    if (diff > THR){
+    if (diff > 0){
       err++;
     }
   }
