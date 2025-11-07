@@ -9,3 +9,7 @@
 	path = sw/tests/pulp-runtime
 	url = git@github.com:alsaqr-platform/pulp-runtime.git
 	branch = mc/titancfi
+[submodule "sw/tests/regression_tests"]
+	path = sw/tests/regression_tests
+	url = git@github.com:FondazioneChipsIT/regression_tests.git
+	branch = gl/ot_cluster
