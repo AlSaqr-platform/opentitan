@@ -1,14 +1,10 @@
-[submodule "sw/tests/pulp-sdk"]
-	path = sw/tests/pulp-sdk
-	url = git@github.com:pulp-platform/pulp-sdk.git
-	branch = mc/titancfi
 [submodule "sw/tests/pulp-nn-mixed"]
 	path = sw/tests/pulp-nn-mixed
 	url = git@github.com:pulp-platform/pulp-nn-mixed.git
 [submodule "sw/tests/pulp-runtime"]
 	path = sw/tests/pulp-runtime
 	url = git@github.com:alsaqr-platform/pulp-runtime.git
-	branch = mc/titancfi
+	branch = ot_target
 [submodule "sw/tests/regression_tests"]
 	path = sw/tests/regression_tests
 	url = git@github.com:FondazioneChipsIT/regression_tests.git
