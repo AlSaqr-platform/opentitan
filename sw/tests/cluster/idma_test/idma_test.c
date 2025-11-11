@@ -15,11 +15,11 @@
 #define ClusterEocReg 0xff000024
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
+#define MboxAddrReg0 0x10404008
 
 int main() {
 
   volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * p_reg1;
-  int err;
 
   fetch_en = (int *) ClusterFethEnableReg;
   eoc = (int *) ClusterEocReg;
@@ -43,25 +43,11 @@ int main() {
   // Test Check  //
   /////////////////
 
-  err = 0;
-  p_reg1 = (int *) L1BaseAddr;
+  p_reg1 = (int *) MboxAddrReg0;
 
-  // Check idma copy L2 to L1
-  for(int i=0;i<SIZE;i++){
-    p_reg1 = (int *)(L1BaseAddr + i*4);
-    if( *p_reg1 != i*4){
-      err++;
-    }
+  if(*p_reg1 != 0){
+    return -1;
   }
 
-  // p_reg1 = (int *) L2_BASE;
-  // // Check idma copy L1 to L2
-  // for(int i=0;i<SIZE;i++){
-  //   p_reg1 = (int *)(L2_BASE + 0xB000 + i*4);
-  //   if( *p_reg1 != i*4){
-  //     err++;
-  //   }
-  // }
-
-  return err;
+  return 0;
 }
