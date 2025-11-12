@@ -244,11 +244,20 @@ module testbench_asynch_astral ();
     .AXI_USER_WIDTH ( AxiUserWidth  )
   ) axi2mem_bus();
 
-  axi_out32_req_t   axi_mbox_req, axi_mem_req;
-  axi_out32_resp_t  axi_mbox_rsp, axi_mem_rsp;
+  AXI_BUS #(
+    .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
+    .AXI_DATA_WIDTH ( 32            ),
+    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
+    .AXI_USER_WIDTH ( AxiUserWidth  )
+  ) axi2uart_bus();
+
+  axi_out32_req_t   axi_uart_req, axi_mbox_req, axi_mem_req;
+  axi_out32_resp_t  axi_uart_rsp, axi_mbox_rsp, axi_mem_rsp;
 
   `AXI_ASSIGN_FROM_REQ(axi2mem_bus, axi_mem_req)
   `AXI_ASSIGN_TO_RESP(axi_mem_rsp, axi2mem_bus)
+  `AXI_ASSIGN_FROM_REQ(axi2uart_bus, axi_uart_req)
+  `AXI_ASSIGN_TO_RESP(axi_uart_rsp, axi2uart_bus)
 
   axi_dw_converter #(
     .AxiMaxReads         ( 8                  ),
@@ -320,7 +329,7 @@ module testbench_asynch_astral ();
   logic s_doorbell_irq;
 
   // xbar
-  localparam int unsigned NumRules = 2;
+  localparam int unsigned NumRules = 3;
   typedef struct packed {
     int unsigned idx;
     logic [AxiAddrWidth-1:0] start_addr;
@@ -331,10 +340,14 @@ module testbench_asynch_astral ();
   logic [AxiAddrWidth-1:0] mem_end_addr;
   logic [AxiAddrWidth-1:0] mbox_base_addr;
   logic [AxiAddrWidth-1:0] mbox_end_addr;
-  assign mem_base_addr = 32'h1A00_0000;
+  logic [AxiAddrWidth-1:0] uart_base_addr;
+  logic [AxiAddrWidth-1:0] uart_end_addr;
+  assign mem_base_addr = 32'h1C00_0000;
   assign mem_end_addr = 32'hC000_0000;
   assign mbox_base_addr = 32'h1040_4000;
   assign mbox_end_addr = 32'h1040_4FFF;
+  assign uart_base_addr = 32'h1A22_2000;
+  assign uart_end_addr = 32'h1B22_2000;
   assign addr_map = '{
     '{ // SRAM
       start_addr: mem_base_addr,
@@ -345,10 +358,15 @@ module testbench_asynch_astral ();
       start_addr: mbox_base_addr,
       end_addr:   mbox_end_addr,
       idx:        1
+    },
+    '{ // UART
+      start_addr: uart_base_addr,
+      end_addr:   uart_end_addr,
+      idx:        2
     }
   };
   localparam int unsigned NumSlvPorts = 1;
-  localparam int unsigned NumMstPorts = 2;
+  localparam int unsigned NumMstPorts = 3;
 
   localparam axi_pkg::xbar_cfg_t TbXbarCfg = '{
     NoSlvPorts:                     NumSlvPorts,
@@ -388,8 +406,8 @@ module testbench_asynch_astral ();
     .test_i                 ( '0                            ),
     .slv_ports_req_i        ( tlul2axi32_req                ),
     .slv_ports_resp_o       ( tlul2axi32_resp               ),
-    .mst_ports_req_o        ( { axi_mbox_req, axi_mem_req } ),
-    .mst_ports_resp_i       ( { axi_mbox_rsp, axi_mem_rsp } ),
+    .mst_ports_req_o        ( { axi_uart_req, axi_mbox_req, axi_mem_req } ),
+    .mst_ports_resp_i       ( { axi_uart_rsp, axi_mbox_rsp, axi_mem_rsp } ),
     .addr_map_i             ( addr_map                      ),
     .en_default_mst_port_i  ( '0                            ),
     .default_mst_port_i     ( '0                            )
@@ -407,6 +425,19 @@ module testbench_asynch_astral ();
     .axi_mbox_rsp     ( axi_mbox_rsp   ),
     .doorbell_irq_o   ( s_doorbell_irq ),
     .completion_irq_o ()
+  );
+
+  mock_uart_axi #(
+    .AxiIw    ( AxiOutIdWidth ),
+    .AxiAw    ( AxiAddrWidth  ),
+    .AxiDw    ( 32            ),
+    .AxiUw    ( AxiUserWidth  ),
+    .BaseAddr ( 32'h1A222000  )
+  ) i_mock_uart_axi (
+    .clk_i  ( clk_sys      ),
+    .rst_ni ( rst_sys_n    ),
+    .test_i ( '0           ),
+    .uart   ( axi2uart_bus )
   );
 
 // -----------------------------------------------------------------------------------
