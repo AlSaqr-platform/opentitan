@@ -69,6 +69,9 @@ generate_idma_rtl:
 build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
 	$(QUESTA) vsim -64 -c -do 'source $(compile_script); quit'
 
+sim_no_gui: generate_idma_rtl build
+	$(QUESTA) vsim -c -64 -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
+
 sim: generate_idma_rtl build
 	$(QUESTA) vsim -64 -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
 
