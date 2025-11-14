@@ -863,3 +863,9 @@ sources:
            - hw/vendor/pulp_riscv_dbg/src/jtag_test.sv
            - hw/vendor/common_pads/src/pad_alsaqr.sv
            - hw/tb/testbench_asynch_astral.sv
+
+      - target: synthesis
+        files:
+           - syn/gf22/sourcecode/tc_sram.sv
+           - syn/gf22/sourcecode/tc_clk.sv
+
