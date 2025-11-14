@@ -4,26 +4,6 @@
 
 #include "utils.h"
 
-/*
-unsigned int get_mepc() {
-  uint32_t result;
-  __asm__ volatile("csrr %0, mepc;" : "=r"(result));
-  return result;
-}
-
-unsigned int get_mcause() {
-  uint32_t result;
-  __asm__ volatile("csrr %0, mcause;" : "=r"(result));
-  return result;
-}
-
-unsigned int get_mtval() {
-  uint32_t result;
-  __asm__ volatile("csrr %0, mtval;" : "=r"(result));
-  return result;
-  }*/
-
-
 void simple_exc_handler(void) {
   printf("EXCEPTION!!!\r\n");
   /*
@@ -38,9 +18,7 @@ void simple_exc_handler(void) {
   */
 }
 
-
 void uart_set_cfg(int parity, uint16_t clk_counter) {
-  unsigned int i;
   *(volatile unsigned int*)(UART_REG_LCR) = 0x83; //sets 8N1 and set DLAB to 1
   *(volatile unsigned int*)(UART_REG_DLM) = (clk_counter >> 8) & 0xFF;
   *(volatile unsigned int*)(UART_REG_DLL) =  clk_counter       & 0xFF;
@@ -187,7 +165,7 @@ static int qprinti(char **out, int i, int b, int sg, int width, int pad, char le
   char print_buf[PRINT_BUF_LEN];
   register char *s;
   register int neg = 0, pc = 0;
-  unsigned int t,u = i;
+  unsigned int u = i;
 
   if (i == 0)
   {
