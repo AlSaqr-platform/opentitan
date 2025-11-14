@@ -98,3 +98,5 @@ working_dir/
 *.elf
 *.dump
 bender
+wlft*
+WORKSPACE
