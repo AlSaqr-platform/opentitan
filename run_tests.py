@@ -13,7 +13,12 @@ COMPILE_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
     "sw/tests/regression_tests/parallel_bare_tests/conv16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32"
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul8",
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul16",
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
 ]
 
 RUN_FOLDERS = [
@@ -22,7 +27,12 @@ RUN_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
     "sw/tests/regression_tests/parallel_bare_tests/conv16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32"
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul8",
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul16",
+    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
+    "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
 ]
 
 # 2. Generic Command to compile. This runs INSIDE each TEST_FOLDER.
@@ -35,7 +45,7 @@ COMPILE_COMMAND = "make clean all"
 RUN_COMMAND_TEMPLATE = "make clean sim_no_gui SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
 
 # 4. Maximum number of tests to run simultaneously.
-MAX_RUN_WORKERS = 8
+MAX_RUN_WORKERS = 1
 
 # --- Global Context ---
 # Store the absolute path of the top-level directory where the script is executed.
@@ -119,6 +129,8 @@ def run_single_test_globally(test_folder_path):
 
 def main():
     start_time = time.time()
+
+    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
 
     # Step 1: Sequential Compilation (Local Context)
     compile_projects()
