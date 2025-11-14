@@ -622,7 +622,6 @@ module security_island
       .pwr_on_rst_ni                   ( pwr_on_rst_ni                        ),
       .pmu_mem_pwdn_i                  ( 1'b0                                 ),
 
-      .base_addr_i                     ( ClustBase[31:28]                     ),
       .test_mode_i                     ( 1'b0                                 ),
       .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
 
