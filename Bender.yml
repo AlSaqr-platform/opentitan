@@ -8,7 +8,7 @@ dependencies:
   cluster_interconnect: { git: "https://github.com/pulp-platform/cluster_interconnect.git", rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27" } # v1.2.1
   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",  rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467"  } # v0.4.5
-  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "2cde5ac7a39b84153e9cf97d6b866b4a4f831038" } # branch: gl/ot_integration
+  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "14f9fa16132cd8aac7adb417e829f44ab06dca47" } # branch: gl/ot_integration
   axi_scmi_mailbox:     { git: "https://github.com/AlSaqr-platform/axi_scmi_mailbox.git", rev: "96650c4c39dcfc683e48015abb1453d182c1d837" }
 
 export_include_dirs:
