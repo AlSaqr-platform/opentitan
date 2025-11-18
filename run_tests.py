@@ -2,6 +2,7 @@ import os
 import subprocess
 import concurrent.futures
 import time
+import glob
 
 # --- Configuration ---
 
@@ -111,21 +112,51 @@ def compile_projects():
 
 
 def run_single_test_globally(test_folder_path):
-    """Runs a single test from the TOP_DIR using a customized command with the full path."""
+    """
+    Executes a single test and removes any generated *.wlft files from the test folder.
+    """
 
-    # 1. Customize RUN command: Inject the full relative path into the template
-    run_cmd = RUN_COMMAND_TEMPLATE.format(test_folder_path)
     test_dir_name = os.path.basename(test_folder_path)
+    run_cmd = RUN_COMMAND_TEMPLATE.format(test_folder_path)
 
-    print(f"--- Starting run for: {test_dir_name} (Command: {run_cmd}) ---")
+    print(f"--- Starting run for: {test_folder_path} (Command: {run_cmd}) ---")
 
-    # 2. Execute command from the TOP_DIR (Global Context)
-    if execute_command(run_cmd, TOP_DIR):
-        print(f"[{test_dir_name}] Tests finished: SUCCESS.")
-        return f"SUCCESS in {test_dir_name} test"
+    success = False
+
+    # 1. Execute the RUN command
+    try:
+        # execute_command should return True/False and handle subprocess errors
+        if execute_command(run_cmd, TOP_DIR):
+            print(f"[{test_folder_path}] Tests finished: SUCCESS.")
+            success = True
+        else:
+            print(f"[{test_folder_path}] Tests finished: FAILURE during command execution.")
+            # If execute_command returned False, it means the subprocess failed
+
+    except Exception as e:
+        # Catch any unexpected Python exceptions (I/O, threading, logic)
+        print(f"[{test_folder_path}] CRITICAL PYTHON ERROR: {type(e).__name__}: {str(e)}")
+        return f"CRITICAL FAILURE ({type(e).__name__}) in {test_folder_path}"
+
+    # 2. **CLEANUP: Delete wlft* files**
+    try:
+        # Use glob to find files ending in .wlft within the specific test folder
+        wlft_files = glob.glob(os.path.join(test_folder_path, 'wlft*'))
+
+        if wlft_files:
+            for file_path in wlft_files:
+                os.remove(file_path)
+            print(f"[{test_folder_path}] Cleanup: Eliminated {len(wlft_files)} wlft* files.")
+
+    except Exception as e:
+        print(f"[{test_folder_path}] WARNING: Cleanup failed for wlft* files. Error: {str(e)}")
+        # Log the cleanup failure but don't fail the entire test job
+
+    # 3. Return the result
+    if success:
+        return f"SUCCESS in {test_folder_path}"
     else:
-        print(f"[{test_dir_name}] Tests finished: FAILURE.")
-        return f"FAILURE (Run) in {test_folder_path} test"
+        return f"FAILURE in {test_folder_path}"
 
 def main():
     start_time = time.time()
