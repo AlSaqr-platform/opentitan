@@ -1,6 +1,3 @@
-[submodule "sw/tests/pulp-nn-mixed"]
-	path = sw/tests/pulp-nn-mixed
-	url = git@github.com:pulp-platform/pulp-nn-mixed.git
 [submodule "sw/tests/pulp-runtime"]
 	path = sw/tests/pulp-runtime
 	url = git@github.com:alsaqr-platform/pulp-runtime.git
@@ -9,3 +6,7 @@
 	path = sw/tests/regression_tests
 	url = git@github.com:FondazioneChipsIT/regression_tests.git
 	branch = gl/ot_cluster
+[submodule "syn/gf22"]
+	path = syn/gf22
+	url = git@gitlab.chips.it:lghionda/gf22.git
+	branch = security_island
