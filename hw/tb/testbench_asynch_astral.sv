@@ -296,7 +296,7 @@ axi_sim_mem_intf #(
   .UNINITIALIZED_DATA ("zeros"),
   .APPL_DELAY (2ns),
   .ACQ_DELAY  (8ns)
-  ) sim_ram (
+) sim_ram (
   .clk_i (clk_sys),
   .rst_ni (rst_sys_n),
   .axi_slv (axi2mem_bus),
@@ -314,7 +314,7 @@ axi_sim_mem_intf #(
   .mon_r_user_o (),
   .mon_r_beat_count_o (),
   .mon_r_last_o ()
-  );
+);
 
   ////////////////////////////////////////////////////
   // ------------------------------------------------------
@@ -438,8 +438,11 @@ axi_sim_mem_intf #(
 // -----------------------------------------------------------------------------------
 // DUT
 // -----------------------------------------------------------------------------------
-
+`ifdef TECH_SIM
+   security_island dut (
+`else
    security_island #(.HartIdOffs(0)) dut (
+`endif
     .clk_i               ( clk_sys        ),
     .clk_cluster_i       ( clk_cluster    ),
     .clk_ref_i           ( clk_sys        ),
