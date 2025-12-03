@@ -9,6 +9,12 @@
 # specific language governing permissions and limitations under the License.
 #
 #
+ROOT_DIR := $(patsubst %/,%, $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+TECH_DIR := $(ROOT_DIR)/target/gf22
+VER_DIR  := $(TECH_DIR)/sourcecode/verilog
+
+# required to source the verilog models of the tech memories
+include $(TECH_DIR)/tech.mk
 
 GIT ?= git
 BENDER ?= bender
@@ -25,6 +31,7 @@ BENDER_GIT_DIR ?= .bender/git/checkouts
 cl-bin         ?= none
 OT_CLUSTER     = $(cl-bin)
 
+library        ?= work
 dpi-library    ?= work-dpi
 
 # Ensure half-built targets are purged
@@ -33,6 +40,9 @@ dpi-library    ?= work-dpi
 # --------------
 # RTL SIMULATION
 # --------------
+top_level ?= testbench_asynch_astral
+
+vsim_args += +notimingchecks +nospecify
 
 ifdef flash_preload
   VLOG_ARGS += +define+FLASH_PRELOAD
@@ -52,6 +62,14 @@ ifdef nogui
 	GUI := -c
 endif
 
+ifeq ($(debug), 1)
+vopt_args += -debug +designfile
+vsim_args += -qwavedb=+signal+memory
+else
+vsim_args += -c
+do_command += run -all
+endif
+
 VLOG_ARGS += -incr -64 -nologo -quiet -suppress vlog-2583 -suppress vlog-13314 \"+incdir+\$$ROOT/hw/include\" +nospecify +notimingchecks -timescale \"1 ns / 1 ps\"
 XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingchecks
 
@@ -67,13 +85,40 @@ generate_idma_rtl:
 	$(MAKE) -C $(shell find $(BENDER_GIT_DIR) -type d -name 'idma*' | head -n 1) idma_hw_all
 
 build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl scripts/compile_opentitan_vip.tcl $(OT_ROOT)/hw/tb/vips
-	$(QUESTA) vsim -64 -c -do 'source $(compile_script); quit'
+	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
+
+build_tech_mem: build
+	vlog -incr -work $(library) ${VER_DIR}/../tc_sram.sv
+	vlog -incr -work $(library) ${VER_DIR}/std_primitives.v
+
+	$(foreach mem,$(REGFILECUTS),\
+		vlog -incr +define+INITIALIZE_MEM -work $(library) $(VER_DIR)/$(mem).v;\
+	)
+	$(foreach mem,$(SRAMCUTS),\
+		vlog -incr +define+INITIALIZE_MEM -work $(library) $(VER_DIR)/$(mem).v;\
+	)
 
 sim_no_gui: generate_idma_rtl build
-	$(QUESTA) vsim -c -64 -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
+	qopt -work $(library) ${top_level} -o ${top_level}_opt
+	qsim -c ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
+	-do "$(do_command)" \
+	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
 
-sim: generate_idma_rtl build
-	$(QUESTA) vsim -64 -quiet -do 'set SRAM $(SRAM); set OT_CLUSTER $(OT_CLUSTER); set BOOTMODE $(BOOTMODE); source $(run_script)'
+sim_rtl: generate_idma_rtl build
+	qopt -debug +designfile -work $(library) ${top_level} -o ${top_level}_opt
+	qsim -qwavedb=+signal+memory ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
+	-do "set StdArithNoWarnings 1; set NumericStdNoWarnings 1;"	\
+	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
+
+sim_rtl_tech_mem: generate_idma_rtl build_tech_mem
+	qopt  $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
+	qsim  $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
+	$(vsim_args) +init_mem_data=0 \
+	-do "$(do_command)" \
+	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
+
+sim_gls:
+	$(MAKE) -C target/gf22/questasim int_gls_sim
 
 update:
 	$(BENDER) update

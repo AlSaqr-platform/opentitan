@@ -100,3 +100,12 @@ working_dir/
 bender
 wlft*
 WORKSPACE
+
+# questasim
+*.ini
+vish_stacktrace.vstf
+*.wlf
+.qsim
+design.bin
+qwave.db*
+*.ses
