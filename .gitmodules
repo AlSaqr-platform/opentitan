@@ -6,7 +6,3 @@
 	path = sw/tests/regression_tests
 	url = git@github.com:FondazioneChipsIT/regression_tests.git
 	branch = gl/ot_cluster
-[submodule "target/gf22"]
-	path = target/gf22
-	url = git@gitlab.chips.it:lghionda/gf22.git
-	branch = security_island
