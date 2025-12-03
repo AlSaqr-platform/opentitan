@@ -8,7 +8,7 @@ dependencies:
   cluster_interconnect: { git: "https://github.com/pulp-platform/cluster_interconnect.git", rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27" } # v1.2.1
   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git", rev: 4e2aad04a328f04ef494bd435f02b13605c9145f }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",  rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467"  } # v0.4.5
-  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "0abb663ddb998a8d6b4f40fcf4b52574e0247f27" } # branch: gl/ot_integration
+  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git", rev: "53d6c16d97f766f18c6e9334cbcabf3ad9c30212" } # branch: chips-it
   axi_scmi_mailbox:     { git: "https://github.com/AlSaqr-platform/axi_scmi_mailbox.git", rev: "96650c4c39dcfc683e48015abb1453d182c1d837" }
 
 export_include_dirs:
@@ -37,6 +37,7 @@ sources:
 
 ###### prim
 
+      - hw/ip/prim/rtl/prim_assert.sv
       - hw/vendor/lowrisc_ibex/dv/uvm/core_ibex/common/prim/prim_pkg.sv
       - hw/ip/prim/rtl/prim_assert_yosys_macros.svh
       - hw/ip/prim/rtl/prim_flop_macros.svh
@@ -52,7 +53,6 @@ sources:
       - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
       - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
       - hw/ip/rv_dm/rtl/jtag_pkg.sv
-      - hw/ip/prim/rtl/prim_assert.sv
       - hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv
       - hw/top_earlgrey/rtl/top_pkg.sv
       - hw/ip/tlul/rtl/tlul_pkg.sv
@@ -848,7 +848,6 @@ sources:
            - hw/tb/vip_security_island_soc.sv
            - hw/tb/testbench_asynch_astral.sv
 
-
       -  target: test_ot_vip
          defines:
            VIPS: ~
@@ -859,13 +858,115 @@ sources:
            - hw/tb/util/uart.sv
            - hw/tb/vips/s25fs256s.v
            - hw/tb/util/jtag_intf.sv
-           - hw/tb/util/axi2mem.sv
+           - hw/tb/util/axi2mem_tb.sv
            - hw/vendor/pulp_riscv_dbg/src/jtag_test.sv
            - hw/vendor/common_pads/src/pad_alsaqr.sv
            - hw/tb/testbench_asynch_astral.sv
 
       - target: synthesis
         files:
-           - syn/gf22/sourcecode/tc_sram.sv
-           - syn/gf22/sourcecode/tc_clk.sv
+           - target/gf22/sourcecode/tc_sram.sv
+           - target/gf22/sourcecode/tc_clk.sv
 
+      # - target: tech_sim
+      #   files:
+      #       - hw/vendor/pulp_riscv_dbg/src/dm_pkg.sv
+      #       - hw/vendor/lowrisc_ibex/dv/uvm/core_ibex/common/prim/prim_pkg.sv
+      #       - hw/ip/prim/rtl/prim_assert_yosys_macros.svh
+      #       - hw/ip/prim/rtl/prim_flop_macros.svh
+      #       - hw/top_earlgrey/ip_autogen/alert_handler/rtl/alert_handler_reg_pkg.sv
+      #       - hw/ip/prim/rtl/prim_mubi_pkg.sv
+      #       - hw/ip/prim/rtl/prim_util_pkg.sv
+      #       - hw/ip/prim/rtl/prim_secded_pkg.sv
+      #       - hw/ip/entropy_src/rtl/entropy_src_pkg.sv
+      #       - hw/ip/edn/rtl/edn_pkg.sv
+      #       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_pkg.sv
+      #       - hw/ip/lc_ctrl/rtl/lc_ctrl_reg_pkg.sv
+      #       - hw/ip/lc_ctrl/rtl/lc_ctrl_pkg.sv
+      #       - hw/ip/otp_ctrl/rtl/otp_ctrl_reg_pkg.sv
+      #       - hw/ip/otp_ctrl/rtl/otp_ctrl_pkg.sv
+      #       - hw/ip/rv_dm/rtl/jtag_pkg.sv
+      #       - hw/ip/prim/rtl/prim_assert.sv
+      #       - hw/top_earlgrey/ip/ast/rtl/ast_pkg.sv
+      #       - hw/top_earlgrey/rtl/top_pkg.sv
+      #       - hw/ip/tlul/rtl/tlul_pkg.sv
+      #       - hw/top_earlgrey/ip/flash_ctrl/rtl/autogen/flash_ctrl_reg_pkg.sv
+      #       - hw/ip/flash_ctrl/rtl/flash_ctrl_pkg.sv
+      #       - hw/ip/flash_ctrl/rtl/flash_phy_pkg.sv
+      #       - hw/ip/prim/rtl/prim_subreg_pkg.sv
+      #       - hw/ip/prim/rtl/prim_alert_pkg.sv
+      #       - hw/ip/prim/rtl/prim_cipher_pkg.sv
+      #       - hw/ip/prim/rtl/prim_esc_pkg.sv
+      #       - hw/ip/prim/rtl/prim_otp_pkg.sv
+      #       - hw/ip/prim/rtl/prim_pad_wrapper_pkg.sv
+      #       - hw/ip/prim/rtl/prim_ram_2p_pkg.sv
+      #       - hw/ip/prim/rtl/prim_ram_1p_pkg.sv
+      #       - hw/ip/prim/rtl/prim_rom_pkg.sv
+      #       - hw/vendor/lowrisc_ibex/rtl/ibex_pkg.sv
+      #       - hw/vendor/lowrisc_ibex/rtl/ibex_tracer_pkg.sv
+      #       - hw/top_earlgrey/ip/pwrmgr/rtl/autogen/pwrmgr_reg_pkg.sv
+      #       - hw/ip/pwrmgr/rtl/pwrmgr_pkg.sv
+      #       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_pkg.sv
+      #       - hw/ip/rv_core_ibex/rtl/rv_core_ibex_reg_pkg.sv
+      #       - hw/ip/rv_dm/rtl/rv_dm_reg_pkg.sv
+      #       - hw/ip/kmac/rtl/sha3_pkg.sv
+      #       - hw/ip/kmac/rtl/kmac_reg_pkg.sv
+      #       - hw/ip/kmac/rtl/kmac_pkg.sv
+      #       - hw/ip/keymgr/rtl/keymgr_reg_pkg.sv
+      #       - hw/ip/keymgr/rtl/keymgr_pkg.sv
+      #       - hw/ip/boot_manager/rtl/boot_manager_regs_reg_pkg.sv
+      #       - hw/ip/rom_ctrl/rtl/rom_ctrl_pkg.sv
+      #       - hw/ip/rom_ctrl/rtl/rom_ctrl_reg_pkg.sv
+      #       - hw/top_earlgrey/ip_autogen/rv_plic/rtl/rv_plic_reg_pkg.sv
+      #       - hw/top_earlgrey/ip_autogen/alert_handler/rtl/alert_pkg.sv
+      #       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv.tpl
+      #       - hw/ip/otp_ctrl/rtl/otp_ctrl_part_pkg.sv
+      #       - hw/ip/hmac/rtl/hmac_reg_pkg.sv
+      #       - hw/ip/hmac/rtl/hmac_pkg.sv
+      #       - hw/ip/lc_ctrl/rtl/lc_ctrl_state_pkg.sv.tpl
+      #       - hw/ip/sram_ctrl/rtl/sram_ctrl_reg_pkg.sv
+      #       - hw/ip/sram_ctrl/rtl/sram_ctrl_pkg.sv
+      #       - hw/ip/uart/rtl/uart_reg_pkg.sv
+      #       - hw/ip/pattgen/rtl/pattgen_ctrl_pkg.sv
+      #       - hw/ip/pattgen/rtl/pattgen_reg_pkg.sv
+      #       - hw/ip/usbdev/rtl/usbdev_pkg.sv
+      #       - hw/ip/usbdev/rtl/usbdev_reg_pkg.sv
+      #       - hw/ip/usbdev/rtl/usb_consts_pkg.sv
+      #       - hw/top_earlgrey/ip/sensor_ctrl/rtl/sensor_ctrl_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/sensor_ctrl/rtl/sensor_ctrl_pkg.sv
+      #       - hw/ip/adc_ctrl/rtl/adc_ctrl_pkg.sv
+      #       - hw/ip/adc_ctrl/rtl/adc_ctrl_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/clkmgr/rtl/autogen/clkmgr_pkg.sv
+      #       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_pkg.sv
+      #       - hw/ip/sysrst_ctrl/rtl/sysrst_ctrl_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/rstmgr/rtl/autogen/rstmgr_pkg.sv
+      #       - hw/ip/aes/rtl/aes_reg_pkg.sv
+      #       - hw/ip/aes/rtl/aes_pkg.sv
+      #       - hw/ip/aes/rtl/aes_sbox_canright_pkg.sv
+      #       - hw/ip/csrng/rtl/csrng_reg_pkg.sv
+      #       - hw/ip/csrng/rtl/csrng_pkg.sv
+      #       - hw/ip/edn/rtl/edn_reg_pkg.sv
+      #       - hw/ip/otbn/rtl/otbn_pkg.sv
+      #       - hw/ip/otbn/rtl/otbn_reg_pkg.sv
+      #       - hw/ip/entropy_src/rtl/entropy_src_reg_pkg.sv
+      #       - hw/ip/entropy_src/rtl/entropy_src_ack_sm_pkg.sv
+      #       - hw/ip/entropy_src/rtl/entropy_src_main_sm_pkg.sv
+      #       - hw/ip/spi_device/rtl/spi_device_reg_pkg.sv
+      #       - hw/ip/spi_device/rtl/spi_device_pkg.sv
+      #       - hw/ip/spi_host/rtl/spi_host_reg_pkg.sv
+      #       - hw/ip/spi_host/rtl/spi_host_cmd_pkg.sv
+      #       - hw/ip/aon_timer/rtl/aon_timer_reg_pkg.sv
+      #       - hw/ip/rv_timer/rtl/rv_timer_reg_pkg.sv
+      #       - hw/top_earlgrey/ip/pinmux/rtl/autogen/pinmux_reg_pkg.sv
+      #       - hw/ip/pinmux/rtl/pinmux_pkg.sv
+      #       - hw/top_earlgrey/ip/crossbar/xbar_peri/rtl/autogen/tl_peri_pkg.sv
+      #       - hw/top_earlgrey/ip/crossbar/xbar_main/rtl/autogen/tl_main_pkg.sv
+      #       - hw/ip/perfcounters_t/rtl/perfcounters_t_reg_pkg.sv
+      #       - hw/ip/tlul2axi/rtl/tlul2axi_pkg.sv
+      #       - hw/ip/pwm/rtl/pwm_reg_pkg.sv
+      #       - hw/top_earlgrey/rtl/autogen/top_earlgrey_pkg.sv
+      #       - hw/top_earlgrey/rtl/autogen/top_earlgrey_rnd_cnst_pkg.sv
+      #       - hw/top_earlgrey/rtl/jtag_id_pkg.sv
+      #       - hw/top_earlgrey/top/secure_subsystem_synth_astral_pkg.sv
