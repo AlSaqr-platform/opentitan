@@ -40,7 +40,7 @@ COMPILE_COMMAND = "make clean all"
 
 # 3. Command Templates based on netlist type
 RUN_COMMAND_MAP = {
-    "rtl": "make clean sim_no_gui SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
+    "rtl": "make clean sim_rtl_tech_mem SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
     "gate": "make clean sim_netlist SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
 }
 DEFAULT_NETLIST_TYPE = "rtl"
@@ -70,7 +70,7 @@ MAX_RUN_WORKERS = 1
 def parse_arguments():
     """Defines and parses command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Run local compilation and global simulation tests in parallel.",
+        description="Run local compilation and global simulation tests in sequence.",
         formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
@@ -241,8 +241,8 @@ def main():
         print("\nFATAL: Compilation failed. Test execution aborted.")
         return
 
-    # Step 5: Parallel Test Execution (Global Context)
-    print("\n--- Starting Parallel Test Execution (from Top Dir) ---")
+    # Step 5: Sequential Test Execution (Global Context)
+    print("\n--- Starting Sequential Test Execution (from Top Dir) ---")
     results = []
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_RUN_WORKERS) as executor:
