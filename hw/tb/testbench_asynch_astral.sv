@@ -287,39 +287,34 @@ module testbench_asynch_astral ();
     .mst_resp_i ( tlul2axi32_resp )
   );
 
-  axi2mem_tb #(
-    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
-    .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-    .AXI_DATA_WIDTH ( 32            ),
-    .AXI_USER_WIDTH ( AxiUserWidth  )
-  ) axi2mem_tb (
-    .clk_i   ( clk_sys         ),
-    .rst_ni  ( rst_sys_n       ),
-    .slave   ( axi2mem_bus     ),
-    .req_o   ( mem_mst_req     ),
-    .we_o    ( mem_mst_wen     ),
-    .addr_o  ( mem_mst_add     ),
-    .be_o    ( mem_mst_be      ),
-    .data_o  ( mem_mst_wdata   ),
-    .data_i  ( mem_mst_r_rdata )
-  );
 
-  tc_sram #(
-    .NumWords  ( Depth   ),
-    .DataWidth ( 32      ),
-    .NumPorts  ( 1       ),
-    .SimInit   ( "zeros" )
+axi_sim_mem_intf #(
+  .AXI_ADDR_WIDTH (AxiAddrWidth),
+  .AXI_DATA_WIDTH (32),
+  .AXI_ID_WIDTH   (AxiOutIdWidth),
+  .AXI_USER_WIDTH (AxiUserWidth),
+  .UNINITIALIZED_DATA ("zeros"),
+  .APPL_DELAY (2ns),
+  .ACQ_DELAY  (8ns)
   ) sim_ram (
-    .clk_i   ( clk_sys                     ),
-    .rst_ni  ( rst_sys_n                   ),
-    .req_i   ( mem_mst_req                 ),
-    .addr_i  ( {2'b0, mem_mst_add[Aw-1:2]} ),
-    .wdata_i ( mem_mst_wdata               ),
-    .rdata_o ( mem_mst_r_rdata             ),
-    .we_i    ( mem_mst_wen                 ),
-    .be_i    ( mem_mst_be                  )
+  .clk_i (clk_sys),
+  .rst_ni (rst_sys_n),
+  .axi_slv (axi2mem_bus),
+  .mon_w_valid_o (),
+  .mon_w_addr_o (),
+  .mon_w_data_o (),
+  .mon_w_id_o (),
+  .mon_w_user_o (),
+  .mon_w_beat_count_o (),
+  .mon_w_last_o (),
+  .mon_r_valid_o (),
+  .mon_r_addr_o (),
+  .mon_r_data_o (),
+  .mon_r_id_o (),
+  .mon_r_user_o (),
+  .mon_r_beat_count_o (),
+  .mon_r_last_o ()
   );
-
 
   ////////////////////////////////////////////////////
   // ------------------------------------------------------
