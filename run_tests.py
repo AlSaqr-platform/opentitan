@@ -41,7 +41,7 @@ COMPILE_COMMAND = "make clean all"
 # 3. Command Templates based on netlist type
 RUN_COMMAND_MAP = {
     "rtl": "make clean sim_rtl_tech_mem SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
-    "gate": "make clean sim_netlist SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
+    "gate": "make clean sim_gls SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
 }
 DEFAULT_NETLIST_TYPE = "rtl"
 
