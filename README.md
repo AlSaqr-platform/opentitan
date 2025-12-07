@@ -124,18 +124,33 @@ An example is provided with the Addressability Test, where the cluster writes so
 
 The tests which uses the cluster are found under "OpenTitan/sw/tests/cluster". Undear each test-name dir, a test-name.c (Ibex binary) and a stimuli/ directory (for cluster binary) are found. The two binary are compiled separately. For Ibex binary, RISC-V Toolchain is required, while for cluster binary PULP RISC-V Toolchain is required.
 
+As first, fetch the git modules (if not cloned via make init from ot repo or alsaqr repo):
+
+```
+git submodule update --init --recursive
+
+```
+Then, source the config file of the cluster under pulp-runtime:
+
+```
+cd sw/tests/pulp-runtime/configs
+source pulp_cluster.sh
+
+```
+
 Under each test-name dir (for instance addressability test), to compile Ibex image run:
 ```
 cd sw/tests/cluster/addressability
 make clean all
 
 ```
-And under test-name/stimuli run again:
+And under test-name/stimuli compile cluster image:
 ```
 cd sw/tests/cluster/addressability/stimuli
 make clean all
 
 ```
+
 The outputs are found under test-name/test-name.elf for Ibex and test-name/stimuli/build/stimuli/stimuli for cluster.
 
 ### Scripts
