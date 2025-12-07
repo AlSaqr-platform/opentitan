@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <time.h>
 #include "utils.h"
-#include "cluster_code.h"
 
 int main() {
 
@@ -48,10 +47,10 @@ int main() {
   /////////////////////////
   // Cluster offloading  //
   /////////////////////////
-  err = load_cluster_code();
+  err = 0;
   *fetch_en = 0x1;
 
-  if(err==0) printf_cl("Cluster preloaded, now wfi!\r\n");
+  printf_cl("Cluster preloaded, now wfi!\r\n");
 
   asm volatile ("wfi");
 
