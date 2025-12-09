@@ -13,9 +13,6 @@ ROOT_DIR := $(patsubst %/,%, $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 TECH_DIR := $(ROOT_DIR)/target/gf22
 VER_DIR  := $(TECH_DIR)/sourcecode/verilog
 
-# required to source the verilog models of the tech memories
-include $(TECH_DIR)/tech.mk
-
 GIT ?= git
 BENDER ?= bender
 VSIM ?= vsim
@@ -159,6 +156,23 @@ $(OT_ROOT)/hw/tb/vips:
 	wget --no-check-certificate --content-disposition "https://freemodelfoundry.com/fmf_vlog_models/flash/s25fs256s.v" -O ./hw/tb/vips/s25fs256s.v
 
 init: update scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips
+
+
+##############
+# Technology #
+##############
+tech-repo := git@gitlab.chips.it:digitalresearchline/referencedesignflow/gf22/security_island.git
+tech-branch := develop
+
+tech-clone:
+	git clone $(tech-repo) target/gf22
+
+tech-init: tech-clone
+	cd $(TECH_DIR) && git checkout $(tech-branch)
+	$(MAKE) -C $(TECH_DIR) init
+
+# required to source the verilog models of the tech memories
+-include $(TECH_DIR)/tech.mk
 
 # DPI
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))
