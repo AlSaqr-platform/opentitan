@@ -306,12 +306,12 @@ module security_island
 
    axi_id_serialize #(
     .AxiSlvPortIdWidth      ( AxiOutIdWidth              ),
-    .AxiMstPortMaxUniqIds   ( 16                         ),
-    .AxiMstPortMaxTxnsPerId ( 16                         ),
-    .AxiMstPortIdWidth      ( 4                          ),
-    .AxiAddrWidth           ( 64                         ),
-    .AxiUserWidth           ( 1                          ),
-    .AxiDataWidth           ( 64                         ),
+    .AxiMstPortMaxUniqIds   ( 4                          ),
+    .AxiMstPortMaxTxnsPerId ( 4                          ),
+    .AxiMstPortIdWidth      ( AxiOutIdWidth              ),
+    .AxiAddrWidth           ( AxiAddrWidth               ),
+    .AxiUserWidth           ( AxiUserWidth               ),
+    .AxiDataWidth           ( AxiDataWidth               ),
     .slv_req_t              ( synth_axi_out_req_t        ),
     .slv_resp_t             ( synth_axi_out_resp_t       ),
     .mst_req_t              ( synth_axi_remap_out_req_t  ),
