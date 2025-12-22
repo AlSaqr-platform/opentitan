@@ -36,6 +36,11 @@ module security_island
    parameter int unsigned AxiUserWidth          = SynthOtAxiUserWidth,
    parameter int unsigned AxiIdWidth            = SynthOtAxiOutIdWidth,
 
+   parameter int unsigned AxiAddrWidthRemap     = SynthAxiAddrWidthRemap,
+   parameter int unsigned AxiDataWidthRemap     = SynthAxiDataWidthRemap,
+   parameter int unsigned AxiUserWidthRemap     = SynthAxiUserWidthRemap,
+   parameter int unsigned AxiIdWidthRemap       = SynthAxiOutIdWidthRemap,
+
    parameter int unsigned AsyncAxiOutAwWidth    = SynthAsyncAxiOutAwWidth,
    parameter int unsigned AsyncAxiOutWWidth     = SynthAsyncAxiOutWWidth,
    parameter int unsigned AsyncAxiOutBWidth     = SynthAsyncAxiOutBWidth,
@@ -305,17 +310,17 @@ module security_island
    );
 
    axi_id_serialize #(
-    .AxiSlvPortIdWidth      ( AxiOutIdWidth              ),
-    .AxiMstPortMaxUniqIds   ( 4                          ),
-    .AxiMstPortMaxTxnsPerId ( 4                          ),
-    .AxiMstPortIdWidth      ( AxiOutIdWidth              ),
-    .AxiAddrWidth           ( AxiAddrWidth               ),
-    .AxiUserWidth           ( AxiUserWidth               ),
-    .AxiDataWidth           ( AxiDataWidth               ),
-    .slv_req_t              ( synth_axi_out_req_t        ),
-    .slv_resp_t             ( synth_axi_out_resp_t       ),
-    .mst_req_t              ( synth_axi_remap_out_req_t  ),
-    .mst_resp_t             ( synth_axi_remap_out_resp_t )
+    .AxiSlvPortIdWidth      ( AxiOutIdWidth        ),
+    .AxiMstPortMaxUniqIds   ( 4                    ),
+    .AxiMstPortMaxTxnsPerId ( 4                    ),
+    .AxiMstPortIdWidth      ( AxiIdWidthRemap      ),
+    .AxiAddrWidth           ( AxiAddrWidth         ),
+    .AxiUserWidth           ( AxiUserWidth         ),
+    .AxiDataWidth           ( AxiDataWidth         ),
+    .slv_req_t              ( axi_out_req_t        ),
+    .slv_resp_t             ( axi_out_resp_t       ),
+    .mst_req_t              ( axi_remap_out_req_t  ),
+    .mst_resp_t             ( axi_remap_out_resp_t )
    ) ot_id_remap (
     .clk_i      ( clk_i                 ),
     .rst_ni     ( rst_ni                ),
