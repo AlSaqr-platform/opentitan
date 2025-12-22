@@ -108,6 +108,9 @@ module security_island
    input logic [AsyncAxiOutRWidth-1:0]   async_axi_out_r_data_i,
    input logic [LogDepth:0]              async_axi_out_r_wptr_i,
    output logic [LogDepth:0]             async_axi_out_r_rptr_o,
+   // Axi Isolate
+   input  logic                          axi_isolate_i,
+   output logic                          axi_isolated_o,
    // Interrupt signal
    input logic                           irq_ibex_i,
    input logic                           cfi_req_irq_i,
@@ -165,8 +168,8 @@ module security_island
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
 
-   synth_axi_remap_out_req_t  axi_out_mst_remap_req;
-   synth_axi_remap_out_resp_t axi_out_mst_remap_rsp;
+   synth_axi_remap_out_req_t  axi_out_mst_remap_req, axi_out_mst_remap_iso_req;
+   synth_axi_remap_out_resp_t axi_out_mst_remap_rsp, axi_out_mst_remap_iso_rsp;
 
    logic [15:0] dio_in_i;
    logic [15:0] dio_out_o;
@@ -273,6 +276,37 @@ module security_island
      .serial_o ( irq_ibex_sync )
    );
 
+   sync #(
+     .STAGES     ( SyncStages ),
+     .ResetValue ( 1'b1       )
+   ) i_isolate_sync_tlul2axi (
+     .clk_i,
+     .rst_ni   ( pwr_on_rst_ni    ),
+     .serial_i ( axi_isolate_i    ),
+     .serial_o ( axi_isolate_sync )
+   );
+
+   axi_isolate            #(
+     .NumPending           ( secure_subsystem_synth_astral_pkg::AxiMaxOutTrans ),
+     .TerminateTransaction ( 1              ),
+     .AtopSupport          ( 1              ),
+     .AxiAddrWidth         ( AxiAddrWidth   ),
+     .AxiDataWidth         ( AxiDataWidth   ),
+     .AxiIdWidth           ( AxiIdWidthRemap  ),
+     .AxiUserWidth         ( AxiUserWidth   ),
+     .axi_req_t            ( axi_remap_out_req_t  ),
+     .axi_resp_t           ( axi_remap_out_resp_t )
+   ) i_axi_out_isolate_tlul2axi (
+     .clk_i                ( clk_i            ),
+     .rst_ni               ( rst_ni           ),
+     .slv_req_i            ( axi_out_mst_remap_req     ),
+     .slv_resp_o           ( axi_out_mst_remap_rsp     ),
+     .mst_req_o            ( axi_out_mst_remap_iso_req ),
+     .mst_resp_i           ( axi_out_mst_remap_iso_rsp ),
+     .isolate_i            ( axi_isolate_sync ),
+     .isolated_o           ( axi_isolated_o   )
+   );
+
 ////////////////////
 // Output AXI CDC //
 ////////////////////
@@ -290,8 +324,8 @@ module security_island
    ) i_cdc_out_tlul2axi (
       .src_clk_i                  ( clk_i                   ),
       .src_rst_ni                 ( pwr_on_rst_ni           ),
-      .src_req_i                  ( axi_out_mst_remap_req   ),
-      .src_resp_o                 ( axi_out_mst_remap_rsp   ),
+      .src_req_i                  ( axi_out_mst_remap_iso_req   ),
+      .src_resp_o                 ( axi_out_mst_remap_iso_rsp   ),
       .async_data_master_aw_data_o( async_axi_out_aw_data_o ),
       .async_data_master_aw_wptr_o( async_axi_out_aw_wptr_o ),
       .async_data_master_aw_rptr_i( async_axi_out_aw_rptr_i ),
