@@ -12,22 +12,22 @@
 
 package secure_subsystem_synth_astral_pkg;
 
-  localparam SynthAxiAddrWidth    = 64;
+  localparam SynthAxiAddrWidth    = 48;
   localparam SynthAxiOutIdWidth   = 8;
   localparam SynthAxiUserWidth    = 1;
   localparam SynthAxiDataWidth    = 64;
 
-  localparam SynthAxiAddrWidthRemap    = 64;
+  localparam SynthAxiAddrWidthRemap    = 48;
   localparam SynthAxiOutIdWidthRemap   = 4;
   localparam SynthAxiUserWidthRemap    = 1;
   localparam SynthAxiDataWidthRemap    = 64;
 
-  localparam SynthOtAxiAddrWidth  = 64;
+  localparam SynthOtAxiAddrWidth  = 48;
   localparam SynthOtAxiOutIdWidth = 6;
   localparam SynthOtAxiUserWidth  = 1;
   localparam SynthOtAxiDataWidth  = 64;
 
-  localparam Synth32OtAxiAddrWidth  = 64;
+  localparam Synth32OtAxiAddrWidth  = 48;
   localparam Synth32OtAxiOutIdWidth = 6;
   localparam Synth32OtAxiUserWidth  = 1;
   localparam Synth32OtAxiDataWidth  = 32;
