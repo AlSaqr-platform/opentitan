@@ -16,6 +16,7 @@
 
 module testbench_asynch_astral ();
 
+   import axi_pkg::*;
    import lc_ctrl_pkg::*;
    import jtag_ot_pkg::*;
    import jtag_ot_test::*;
@@ -41,37 +42,24 @@ module testbench_asynch_astral ();
    localparam int unsigned AxiAddrWidth          = SynthAxiAddrWidth;
    localparam int unsigned AxiDataWidth          = SynthAxiDataWidth;
    localparam int unsigned AxiUserWidth          = SynthAxiUserWidth;
-   localparam int unsigned AxiOutIdWidth         = SynthAxiOutIdWidthRemap;
-
-   localparam int unsigned AxiOtAddrWidth        = SynthOtAxiAddrWidth;
-   localparam int unsigned AxiOtDataWidth        = SynthOtAxiDataWidth;
-   localparam int unsigned AxiOtUserWidth        = SynthOtAxiUserWidth;
-   localparam int unsigned AxiOtOutIdWidth       = SynthOtAxiOutIdWidth;
-
-   localparam int unsigned AsyncAxiOutAwWidth    = SynthAsyncAxiOutAwWidth;
-   localparam int unsigned AsyncAxiOutWWidth     = SynthAsyncAxiOutWWidth;
-   localparam int unsigned AsyncAxiOutBWidth     = SynthAsyncAxiOutBWidth;
-   localparam int unsigned AsyncAxiOutArWidth    = SynthAsyncAxiOutArWidth;
-   localparam int unsigned AsyncAxiOutRWidth     = SynthAsyncAxiOutRWidth;
-
-   localparam type         axi_out_aw_chan_t     = synth_axi_remap_out_aw_chan_t;
-   localparam type         axi_out_w_chan_t      = synth_axi_remap_out_w_chan_t;
-   localparam type         axi_out_b_chan_t      = synth_axi_remap_out_b_chan_t;
-   localparam type         axi_out_ar_chan_t     = synth_axi_remap_out_ar_chan_t;
-   localparam type         axi_out_r_chan_t      = synth_axi_remap_out_r_chan_t;
-   localparam type         axi_out_req_t         = synth_axi_remap_out_req_t;
-   localparam type         axi_out_resp_t        = synth_axi_remap_out_resp_t;
-
-   localparam type         axi_ot_out_aw_chan_t  = synth_ot_axi_out_aw_chan_t;
-   localparam type         axi_ot_out_w_chan_t   = synth_ot_axi_out_w_chan_t;
-   localparam type         axi_ot_out_b_chan_t   = synth_ot_axi_out_b_chan_t;
-   localparam type         axi_ot_out_ar_chan_t  = synth_ot_axi_out_ar_chan_t;
-   localparam type         axi_ot_out_r_chan_t   = synth_ot_axi_out_r_chan_t;
-   localparam type         axi_ot_out_req_t      = synth_ot_axi_out_req_t;
-   localparam type         axi_ot_out_resp_t     = synth_ot_axi_out_resp_t;
+   localparam int unsigned AxiExtIdWidth         = SynthAxiExtIdWidth;
 
    localparam int  unsigned LogDepth             = SynthLogDepth;
    localparam int  unsigned CdcSyncStages        = SynthCdcSyncStages;
+
+   localparam int unsigned AsyncAxiExtAwWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth);
+   localparam int unsigned AsyncAxiExtWWidth = (2**LogDepth)*axi_pkg::w_width(AxiDataWidth, AxiUserWidth);
+   localparam int unsigned AsyncAxiExtBWidth = (2**LogDepth)*axi_pkg::b_width(AxiExtIdWidth, AxiUserWidth);
+   localparam int unsigned AsyncAxiExtArWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth);
+   localparam int unsigned AsyncAxiExtRWidth = (2**LogDepth)*axi_pkg::r_width(AxiDataWidth, AxiExtIdWidth, AxiUserWidth);
+
+   localparam type         axi_ext_aw_chan_t     = synth_axi_ext_aw_chan_t;
+   localparam type         axi_ext_w_chan_t      = synth_axi_ext_w_chan_t;
+   localparam type         axi_ext_b_chan_t      = synth_axi_ext_b_chan_t;
+   localparam type         axi_ext_ar_chan_t     = synth_axi_ext_ar_chan_t;
+   localparam type         axi_ext_r_chan_t      = synth_axi_ext_r_chan_t;
+   localparam type         axi_ext_req_t         = synth_axi_ext_req_t;
+   localparam type         axi_ext_resp_t        = synth_axi_ext_resp_t;
 
    localparam int  Depth = 512*1024;
    localparam int  Aw    = $clog2(Depth);
@@ -101,21 +89,21 @@ module testbench_asynch_astral ();
    wire  PWROK_S, IOPWROK_S, BIAS_S, RETC_S;
    wire  ibex_uart_rx, ibex_uart_tx;
 
-   logic [AsyncAxiOutAwWidth-1:0] async_axi_out_aw_data_o;
-   logic             [LogDepth:0] async_axi_out_aw_wptr_o;
-   logic             [LogDepth:0] async_axi_out_aw_rptr_i;
-   logic [ AsyncAxiOutWWidth-1:0] async_axi_out_w_data_o;
-   logic             [LogDepth:0] async_axi_out_w_wptr_o;
-   logic             [LogDepth:0] async_axi_out_w_rptr_i;
-   logic [ AsyncAxiOutBWidth-1:0] async_axi_out_b_data_i;
-   logic             [LogDepth:0] async_axi_out_b_wptr_i;
-   logic             [LogDepth:0] async_axi_out_b_rptr_o;
-   logic [AsyncAxiOutArWidth-1:0] async_axi_out_ar_data_o;
-   logic             [LogDepth:0] async_axi_out_ar_wptr_o;
-   logic             [LogDepth:0] async_axi_out_ar_rptr_i;
-   logic [ AsyncAxiOutRWidth-1:0] async_axi_out_r_data_i;
-   logic             [LogDepth:0] async_axi_out_r_wptr_i;
-   logic             [LogDepth:0] async_axi_out_r_rptr_o;
+   logic [AsyncAxiExtAwWidth-1:0] async_axi_ext_aw_data_o;
+   logic             [LogDepth:0] async_axi_ext_aw_wptr_o;
+   logic             [LogDepth:0] async_axi_ext_aw_rptr_i;
+   logic [ AsyncAxiExtWWidth-1:0] async_axi_ext_w_data_o;
+   logic             [LogDepth:0] async_axi_ext_w_wptr_o;
+   logic             [LogDepth:0] async_axi_ext_w_rptr_i;
+   logic [ AsyncAxiExtBWidth-1:0] async_axi_ext_b_data_i;
+   logic             [LogDepth:0] async_axi_ext_b_wptr_i;
+   logic             [LogDepth:0] async_axi_ext_b_rptr_o;
+   logic [AsyncAxiExtArWidth-1:0] async_axi_ext_ar_data_o;
+   logic             [LogDepth:0] async_axi_ext_ar_wptr_o;
+   logic             [LogDepth:0] async_axi_ext_ar_rptr_i;
+   logic [ AsyncAxiExtRWidth-1:0] async_axi_ext_r_data_i;
+   logic             [LogDepth:0] async_axi_ext_r_wptr_i;
+   logic             [LogDepth:0] async_axi_ext_r_rptr_o;
 
 
    logic                      mem_mst_req;
@@ -131,10 +119,8 @@ module testbench_asynch_astral ();
    typedef logic [63:0]  axi32_addr_t;
    typedef logic [31:0]  axi32_data_t;
    typedef logic [3:0]   axi32_strb_t;
-   typedef logic         axi32_user_t;
-   typedef logic [3:0]   axi32_out_id_t;
 
-   `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, axi32_out_id_t, axi32_data_t, axi32_strb_t, axi32_user_t)
+   `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, synth_axi_ext_id_t, axi32_data_t, axi32_strb_t, synth_axi_user_t)
 
    axi_out32_req_t   tlul2axi32_req;
    axi_out32_resp_t  tlul2axi32_resp;
@@ -156,8 +142,8 @@ module testbench_asynch_astral ();
    jtag_ot_pkg::jtag_req_t jtag_i;
    jtag_ot_pkg::jtag_rsp_t jtag_o;
 
-   axi_out_req_t   tlul2axi_req;
-   axi_out_resp_t  tlul2axi_rsp;
+   axi_ext_req_t   tlul2axi_req;
+   axi_ext_resp_t  tlul2axi_rsp;
 
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
@@ -208,29 +194,29 @@ module testbench_asynch_astral ();
   axi_cdc_dst #(
     .LogDepth   ( LogDepth          ),
     .SyncStages ( CdcSyncStages     ),
-    .aw_chan_t  ( axi_out_aw_chan_t ),
-    .w_chan_t   ( axi_out_w_chan_t  ),
-    .b_chan_t   ( axi_out_b_chan_t  ),
-    .ar_chan_t  ( axi_out_ar_chan_t ),
-    .r_chan_t   ( axi_out_r_chan_t  ),
-    .axi_req_t  ( axi_out_req_t     ),
-    .axi_resp_t ( axi_out_resp_t    )
+    .aw_chan_t  ( axi_ext_aw_chan_t ),
+    .w_chan_t   ( axi_ext_w_chan_t  ),
+    .b_chan_t   ( axi_ext_b_chan_t  ),
+    .ar_chan_t  ( axi_ext_ar_chan_t ),
+    .r_chan_t   ( axi_ext_r_chan_t  ),
+    .axi_req_t  ( axi_ext_req_t     ),
+    .axi_resp_t ( axi_ext_resp_t    )
   ) i_cdc_in_tlul2axi (
-    .async_data_slave_aw_data_i( async_axi_out_aw_data_o ),
-    .async_data_slave_aw_wptr_i( async_axi_out_aw_wptr_o ),
-    .async_data_slave_aw_rptr_o( async_axi_out_aw_rptr_i ),
-    .async_data_slave_w_data_i ( async_axi_out_w_data_o  ),
-    .async_data_slave_w_wptr_i ( async_axi_out_w_wptr_o  ),
-    .async_data_slave_w_rptr_o ( async_axi_out_w_rptr_i  ),
-    .async_data_slave_b_data_o ( async_axi_out_b_data_i  ),
-    .async_data_slave_b_wptr_o ( async_axi_out_b_wptr_i  ),
-    .async_data_slave_b_rptr_i ( async_axi_out_b_rptr_o  ),
-    .async_data_slave_ar_data_i( async_axi_out_ar_data_o ),
-    .async_data_slave_ar_wptr_i( async_axi_out_ar_wptr_o ),
-    .async_data_slave_ar_rptr_o( async_axi_out_ar_rptr_i ),
-    .async_data_slave_r_data_o ( async_axi_out_r_data_i  ),
-    .async_data_slave_r_wptr_o ( async_axi_out_r_wptr_i  ),
-    .async_data_slave_r_rptr_i ( async_axi_out_r_rptr_o  ),
+    .async_data_slave_aw_data_i( async_axi_ext_aw_data_o ),
+    .async_data_slave_aw_wptr_i( async_axi_ext_aw_wptr_o ),
+    .async_data_slave_aw_rptr_o( async_axi_ext_aw_rptr_i ),
+    .async_data_slave_w_data_i ( async_axi_ext_w_data_o  ),
+    .async_data_slave_w_wptr_i ( async_axi_ext_w_wptr_o  ),
+    .async_data_slave_w_rptr_o ( async_axi_ext_w_rptr_i  ),
+    .async_data_slave_b_data_o ( async_axi_ext_b_data_i  ),
+    .async_data_slave_b_wptr_o ( async_axi_ext_b_wptr_i  ),
+    .async_data_slave_b_rptr_i ( async_axi_ext_b_rptr_o  ),
+    .async_data_slave_ar_data_i( async_axi_ext_ar_data_o ),
+    .async_data_slave_ar_wptr_i( async_axi_ext_ar_wptr_o ),
+    .async_data_slave_ar_rptr_o( async_axi_ext_ar_rptr_i ),
+    .async_data_slave_r_data_o ( async_axi_ext_r_data_i  ),
+    .async_data_slave_r_wptr_o ( async_axi_ext_r_wptr_i  ),
+    .async_data_slave_r_rptr_i ( async_axi_ext_r_rptr_o  ),
     .dst_clk_i                 ( clk_sys      ),
     .dst_rst_ni                ( rst_sys_n    ),
     .dst_req_o                 ( tlul2axi_req ),
@@ -240,14 +226,14 @@ module testbench_asynch_astral ();
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
     .AXI_DATA_WIDTH ( 32            ),
-    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
+    .AXI_ID_WIDTH   ( AxiExtIdWidth ),
     .AXI_USER_WIDTH ( AxiUserWidth  )
   ) axi2mem_bus();
 
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
     .AXI_DATA_WIDTH ( 32            ),
-    .AXI_ID_WIDTH   ( AxiOutIdWidth ),
+    .AXI_ID_WIDTH   ( AxiExtIdWidth ),
     .AXI_USER_WIDTH ( AxiUserWidth  )
   ) axi2uart_bus();
 
@@ -264,18 +250,18 @@ module testbench_asynch_astral ();
     .AxiSlvPortDataWidth ( 64                 ),
     .AxiMstPortDataWidth ( 32                 ),
     .AxiAddrWidth        ( AxiAddrWidth       ),
-    .AxiIdWidth          ( AxiOutIdWidth      ),
-    .aw_chan_t           ( axi_out_aw_chan_t  ),
+    .AxiIdWidth          ( AxiExtIdWidth      ),
+    .aw_chan_t           ( axi_ext_aw_chan_t  ),
     .mst_w_chan_t        ( axi_out32_w_chan_t ),
-    .slv_w_chan_t        ( axi_out_w_chan_t   ),
-    .b_chan_t            ( axi_out_b_chan_t   ),
-    .ar_chan_t           ( axi_out_ar_chan_t  ),
+    .slv_w_chan_t        ( axi_ext_w_chan_t   ),
+    .b_chan_t            ( axi_ext_b_chan_t   ),
+    .ar_chan_t           ( axi_ext_ar_chan_t  ),
     .mst_r_chan_t        ( axi_out32_r_chan_t ),
-    .slv_r_chan_t        ( axi_out_r_chan_t   ),
+    .slv_r_chan_t        ( axi_ext_r_chan_t   ),
     .axi_mst_req_t       ( axi_out32_req_t    ),
     .axi_mst_resp_t      ( axi_out32_resp_t   ),
-    .axi_slv_req_t       ( axi_out_req_t      ),
-    .axi_slv_resp_t      ( axi_out_resp_t     )
+    .axi_slv_req_t       ( axi_ext_req_t      ),
+    .axi_slv_resp_t      ( axi_ext_resp_t     )
   )  i_axi_dw_converter_tlul2axi (
     .clk_i   ( clk_sys   ),
     .rst_ni  ( rst_sys_n ),
@@ -291,7 +277,7 @@ module testbench_asynch_astral ();
 axi_sim_mem_intf #(
   .AXI_ADDR_WIDTH (AxiAddrWidth),
   .AXI_DATA_WIDTH (32),
-  .AXI_ID_WIDTH   (AxiOutIdWidth),
+  .AXI_ID_WIDTH   (AxiExtIdWidth),
   .AXI_USER_WIDTH (AxiUserWidth),
   .UNINITIALIZED_DATA ("zeros"),
   .APPL_DELAY (2ns),
@@ -371,8 +357,8 @@ axi_sim_mem_intf #(
     FallThrough:                           1'b0,
     LatencyMode:         axi_pkg::CUT_ALL_PORTS,
     PipelineStages:                       32'd0,
-    AxiIdWidthSlvPorts:           AxiOutIdWidth,
-    AxiIdUsedSlvPorts:            AxiOutIdWidth,
+    AxiIdWidthSlvPorts:           AxiExtIdWidth,
+    AxiIdUsedSlvPorts:            AxiExtIdWidth,
     UniqueIds:                             1'b0,
     AxiAddrWidth:                  AxiAddrWidth,
     AxiDataWidth:                            32,
@@ -410,7 +396,7 @@ axi_sim_mem_intf #(
 
   axi_scmi_mailbox #(
     .AXI_MST_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH       ( AxiOutIdWidth    ),
+    .AXI_ID_WIDTH       ( AxiExtIdWidth    ),
     .axi_req_t          ( axi_out32_req_t  ),
     .axi_resp_t         ( axi_out32_resp_t )
   ) i_scmi_tb_mailbox (
@@ -423,7 +409,7 @@ axi_sim_mem_intf #(
   );
 
   mock_uart_axi #(
-    .AxiIw    ( AxiOutIdWidth ),
+    .AxiIw    ( AxiExtIdWidth ),
     .AxiAw    ( AxiAddrWidth  ),
     .AxiDw    ( 32            ),
     .AxiUw    ( AxiUserWidth  ),
@@ -463,21 +449,21 @@ axi_sim_mem_intf #(
     .jtag_tdo_o       ( jtag_o.tdo    ),
     .jtag_tdo_oe_o    (               ),
     // Asynch axi port
-    .async_axi_out_aw_data_o,
-    .async_axi_out_aw_wptr_o,
-    .async_axi_out_aw_rptr_i,
-    .async_axi_out_w_data_o,
-    .async_axi_out_w_wptr_o,
-    .async_axi_out_w_rptr_i,
-    .async_axi_out_b_data_i,
-    .async_axi_out_b_wptr_i,
-    .async_axi_out_b_rptr_o,
-    .async_axi_out_ar_data_o,
-    .async_axi_out_ar_wptr_o,
-    .async_axi_out_ar_rptr_i,
-    .async_axi_out_r_data_i,
-    .async_axi_out_r_wptr_i,
-    .async_axi_out_r_rptr_o,
+    .async_axi_ext_aw_data_o,
+    .async_axi_ext_aw_wptr_o,
+    .async_axi_ext_aw_rptr_i,
+    .async_axi_ext_w_data_o,
+    .async_axi_ext_w_wptr_o,
+    .async_axi_ext_w_rptr_i,
+    .async_axi_ext_b_data_i,
+    .async_axi_ext_b_wptr_i,
+    .async_axi_ext_b_rptr_o,
+    .async_axi_ext_ar_data_o,
+    .async_axi_ext_ar_wptr_o,
+    .async_axi_ext_ar_rptr_i,
+    .async_axi_ext_r_data_i,
+    .async_axi_ext_r_wptr_i,
+    .async_axi_ext_r_rptr_o,
     // Uart
     .ibex_uart_rx_i   ( ibex_uart_rx  ),
     .ibex_uart_tx_o   ( ibex_uart_tx  ),
