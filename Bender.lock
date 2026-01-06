@@ -138,7 +138,7 @@ packages:
     dependencies:
     - common_cells
   hci:
-    revision: 572698a0bb9824d0a503571eff7d66606b7549f6
+    revision: 3e63936991569d0b1e315d6914478937b37bb338
     version: null
     source:
       Git: https://github.com/FondazioneChipsIT/hci.git
@@ -240,7 +240,7 @@ packages:
     dependencies:
     - axi_slice
   pulp_cluster:
-    revision: 5db284d2a75093d6c7697264981f3f8d546de9a2
+    revision: d238fd99a03db1de2b55155c1f88232533149abc
     version: null
     source:
       Git: https://github.com/FondazioneChipsIT/pulp_cluster.git
