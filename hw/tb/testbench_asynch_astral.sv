@@ -64,12 +64,15 @@ module testbench_asynch_astral ();
    localparam int  Depth = 512*1024;
    localparam int  Aw    = $clog2(Depth);
 
+   localparam int unsigned DataWidth = 32;
+   localparam int unsigned StrbWidth = DataWidth/8;
+
    localparam int unsigned RTC_CLOCK_PERIOD = 10ns;
    localparam int unsigned RTC_CLOCK_CL_PERIOD = 10ns;
 
-   int          secd_sections [bit [31:0]];
-   logic [31:0] secd_memory[bit [31:0]];
-   logic [1:0]  boot_mode;
+   int                   secd_sections [bit [DataWidth-1:0]];
+   logic [DataWidth-1:0] secd_memory[bit [DataWidth-1:0]];
+   logic           [1:0] boot_mode;
 
    string       sram;
    string       ot_cluster;
@@ -83,7 +86,7 @@ module testbench_asynch_astral ();
    logic es_rng_fips;
    logic SCK, CSNeg;
 
-   logic [3:0] SPIdata_i, SPIdata_o, SPIdata_oe_o;
+   logic [StrbWidth-1:0] SPIdata_i, SPIdata_o, SPIdata_oe_o;
 
    wire  I0, I1, I2, I3, WPNeg, RESETNeg;
    wire  PWROK_S, IOPWROK_S, BIAS_S, RETC_S;
@@ -109,18 +112,17 @@ module testbench_asynch_astral ();
    logic                      mem_mst_req;
    logic [AxiAddrWidth-1:0]   mem_mst_add;
    logic                      mem_mst_wen;
-   logic [31:0]               mem_mst_wdata;
+   logic [DataWidth-1:0]      mem_mst_wdata;
    logic                      mem_mst_gnt;
    logic                      mem_mst_r_valid;
-   logic [31:0]               mem_mst_r_rdata;
-   logic [3:0]                mem_mst_be;
+   logic [DataWidth-1:0]      mem_mst_r_rdata;
+   logic [StrbWidth-1:0]      mem_mst_be;
    logic                      mem_rvalid_d, rvalid_d, rvalid_q;
 
-   typedef logic [63:0]  axi32_addr_t;
-   typedef logic [31:0]  axi32_data_t;
-   typedef logic [3:0]   axi32_strb_t;
+   typedef logic [DataWidth-1:0]  axi32_data_t;
+   typedef logic [StrbWidth-1:0]  axi32_strb_t;
 
-   `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, synth_axi_ext_id_t, axi32_data_t, axi32_strb_t, synth_axi_user_t)
+   `AXI_TYPEDEF_ALL(axi_out32, synth_axi_addr_t, synth_axi_ext_id_t, axi32_data_t, axi32_strb_t, synth_axi_user_t)
 
    axi_out32_req_t   tlul2axi32_req;
    axi_out32_resp_t  tlul2axi32_resp;
@@ -225,14 +227,14 @@ module testbench_asynch_astral ();
 
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-    .AXI_DATA_WIDTH ( 32            ),
+    .AXI_DATA_WIDTH ( DataWidth     ),
     .AXI_ID_WIDTH   ( AxiExtIdWidth ),
     .AXI_USER_WIDTH ( AxiUserWidth  )
   ) axi2mem_bus();
 
   AXI_BUS #(
     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-    .AXI_DATA_WIDTH ( 32            ),
+    .AXI_DATA_WIDTH ( DataWidth     ),
     .AXI_ID_WIDTH   ( AxiExtIdWidth ),
     .AXI_USER_WIDTH ( AxiUserWidth  )
   ) axi2uart_bus();
@@ -247,8 +249,8 @@ module testbench_asynch_astral ();
 
   axi_dw_converter #(
     .AxiMaxReads         ( 8                  ),
-    .AxiSlvPortDataWidth ( 64                 ),
-    .AxiMstPortDataWidth ( 32                 ),
+    .AxiSlvPortDataWidth ( AxiDataWidth       ),
+    .AxiMstPortDataWidth ( DataWidth          ),
     .AxiAddrWidth        ( AxiAddrWidth       ),
     .AxiIdWidth          ( AxiExtIdWidth      ),
     .aw_chan_t           ( axi_ext_aw_chan_t  ),
@@ -276,7 +278,7 @@ module testbench_asynch_astral ();
 
 axi_sim_mem_intf #(
   .AXI_ADDR_WIDTH (AxiAddrWidth),
-  .AXI_DATA_WIDTH (32),
+  .AXI_DATA_WIDTH (DataWidth),
   .AXI_ID_WIDTH   (AxiExtIdWidth),
   .AXI_USER_WIDTH (AxiUserWidth),
   .UNINITIALIZED_DATA ("zeros"),
@@ -323,12 +325,12 @@ axi_sim_mem_intf #(
   logic [AxiAddrWidth-1:0] mbox_end_addr;
   logic [AxiAddrWidth-1:0] uart_base_addr;
   logic [AxiAddrWidth-1:0] uart_end_addr;
-  assign mem_base_addr = 32'h1C00_0000;
-  assign mem_end_addr = 32'hC000_0000;
-  assign mbox_base_addr = 32'h1040_4000;
-  assign mbox_end_addr = 32'h1040_4FFF;
-  assign uart_base_addr = 32'h1A22_2000;
-  assign uart_end_addr = 32'h1B22_2000;
+  assign mem_base_addr = 'h1C00_0000;
+  assign mem_end_addr = 'hC000_0000;
+  assign mbox_base_addr = 'h1040_4000;
+  assign mbox_end_addr = 'h1040_4FFF;
+  assign uart_base_addr = 'h1A22_2000;
+  assign uart_end_addr = 'h1B22_2000;
   assign addr_map = '{
     '{ // SRAM
       start_addr: mem_base_addr,
@@ -356,12 +358,12 @@ axi_sim_mem_intf #(
     MaxSlvTrans:                              1,
     FallThrough:                           1'b0,
     LatencyMode:         axi_pkg::CUT_ALL_PORTS,
-    PipelineStages:                       32'd0,
+    PipelineStages:                         'd0,
     AxiIdWidthSlvPorts:           AxiExtIdWidth,
     AxiIdUsedSlvPorts:            AxiExtIdWidth,
     UniqueIds:                             1'b0,
     AxiAddrWidth:                  AxiAddrWidth,
-    AxiDataWidth:                            32,
+    AxiDataWidth:                     DataWidth,
     NoAddrRules:                       NumRules
   };
 
@@ -395,8 +397,10 @@ axi_sim_mem_intf #(
   );
 
   axi_scmi_mailbox #(
-    .AXI_MST_DATA_WIDTH ( 32 ),
-    .AXI_ID_WIDTH       ( AxiExtIdWidth    ),
+    .AXI_MST_DATA_WIDTH ( DataWidth ),
+    .AXI_ID_WIDTH       ( AxiExtIdWidth ),
+    .AXI_ADDR_WIDTH     ( AxiAddrWidth ),
+    .AXI_USER_WIDTH     ( AxiUserWidth ),
     .axi_req_t          ( axi_out32_req_t  ),
     .axi_resp_t         ( axi_out32_resp_t )
   ) i_scmi_tb_mailbox (
@@ -411,9 +415,9 @@ axi_sim_mem_intf #(
   mock_uart_axi #(
     .AxiIw    ( AxiExtIdWidth ),
     .AxiAw    ( AxiAddrWidth  ),
-    .AxiDw    ( 32            ),
+    .AxiDw    ( DataWidth     ),
     .AxiUw    ( AxiUserWidth  ),
-    .BaseAddr ( 32'h1A222000  )
+    .BaseAddr ( 'h1A222000    )
   ) i_mock_uart_axi (
     .clk_i  ( clk_sys      ),
     .rst_ni ( rst_sys_n    ),
@@ -448,6 +452,9 @@ axi_sim_mem_intf #(
     .jtag_tdi_i       ( jtag_i.tdi    ),
     .jtag_tdo_o       ( jtag_o.tdo    ),
     .jtag_tdo_oe_o    (               ),
+    // Axi Isolate
+    .axi_isolate_i ( '0 ),
+    .axi_isolated_o ( ),
     // Asynch axi port
     .async_axi_ext_aw_data_o,
     .async_axi_ext_aw_wptr_o,
@@ -548,11 +555,11 @@ axi_sim_mem_intf #(
                    load_secd_binary(ot_cluster);
                 end
                jtag_secd_data_preload();
-               jtag_secd_wakeup(32'h e0000080); //preload the flashif
+               jtag_secd_wakeup('h e0000080); //preload the flashif
           `ifdef JTAG_SEC_BOOT
                repeat(250000)
                  @(posedge clk_sys);
-               jtag_secd_wakeup(32'h d0008080); //secure boot
+               jtag_secd_wakeup('h d0008080); //secure boot
           `endif
                jtag_secd_wait_eoc();
           end
@@ -569,7 +576,7 @@ axi_sim_mem_intf #(
   end // block: bootmodes
 
   task debug_secd_module_init;
-     logic [31:0]  idcode;
+     logic [DataWidth-1:0]  idcode;
      automatic dm_ot::sbcs_t sbcs = '{
        sbautoincrement: 1'b1,
        sbreadondata   : 1'b1,
@@ -584,14 +591,14 @@ axi_sim_mem_intf #(
      // Check Idcode
      $display("[JTAG SECD] IDCode = %h", idcode);
      // Activate Debug Module
-     riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
+     riscv_dbg.write_dmi(dm_ot::DMControl, 'h0000_0001);
      do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
      while (sbcs.sbbusy);
 
   endtask
 
   task jtag_secd_data_preload;
-     logic [31:0] rdata;
+     logic [DataWidth-1:0] rdata;
      automatic dm_ot::sbcs_t sbcs = '{
        sbautoincrement: 1'b1,
        sbreadondata   : 1'b1,
@@ -628,8 +635,8 @@ axi_sim_mem_intf #(
   endtask
 
   task jtag_secd_wakeup;
-    input logic [31:0] start_addr;
-    logic [31:0] dm_status;
+    input logic [DataWidth-1:0] start_addr;
+    logic [DataWidth-1:0] dm_status;
 
     automatic dm_ot::sbcs_t sbcs = '{
       sbautoincrement: 1'b1,
@@ -649,14 +656,14 @@ axi_sim_mem_intf #(
     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
     while (sbcs.sbbusy);
     // Halt Req
-    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h8000_0001);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 'h8000_0001);
     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
     while (sbcs.sbbusy);
     // Wait for CVA6 to be halted
     do riscv_dbg.read_dmi(dm_ot::DMStatus, dm_status, dmi_wait_cycles);
     while (!dm_status[8]);
     // Ensure haltreq, resumereq and ackhavereset all equal to 0
-    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 'h0000_0001);
     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
     while (sbcs.sbbusy);
     // Register Access Abstract Command
@@ -665,10 +672,10 @@ axi_sim_mem_intf #(
     while (sbcs.sbbusy);
     // Resume req. Exiting from debug mode Secd CVA6 will jump at the DPC address.
     // Ensure haltreq, resumereq and ackhavereset all equal to 0
-    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h4000_0001);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 'h4000_0001);
     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
     while (sbcs.sbbusy);
-    riscv_dbg.write_dmi(dm_ot::DMControl, 32'h0000_0001);
+    riscv_dbg.write_dmi(dm_ot::DMControl, 'h0000_0001);
     do riscv_dbg.read_dmi(dm_ot::SBCS, sbcs, dmi_wait_cycles);
 
     while (sbcs.sbbusy);
@@ -677,7 +684,7 @@ axi_sim_mem_intf #(
 
   task load_secd_binary;
     input string binary;                   // File name
-    logic [31:0] section_addr, section_len;
+    logic [DataWidth-1:0] section_addr, section_len;
     byte         buffer[];
 
     // Read ELF
@@ -709,9 +716,9 @@ axi_sim_mem_intf #(
       sbreadondata   : 1'b1,
       default        : 1'b0
     };
-    logic [31:0] retval;
-    logic [31:0] to_host_addr;
-    to_host_addr = 32'h c11c0018;
+    logic [DataWidth-1:0] retval;
+    logic [DataWidth-1:0] to_host_addr;
+    to_host_addr = 'h c11c0018;
 
     // Initialize the dm module again, otherwise it will not work
     debug_secd_module_init();
@@ -733,7 +740,7 @@ axi_sim_mem_intf #(
        # 400ns;
     end while (~retval[0]);
 
-    if (retval != 32'h00000001) $error("[JTAG] FAILED: return code %0d", retval);
+    if (retval != 'h00000001) $error("[JTAG] FAILED: return code %0d", retval);
     else $display("[JTAG] SUCCESS");
 
     $finish;
