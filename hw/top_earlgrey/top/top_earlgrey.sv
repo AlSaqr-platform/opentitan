@@ -835,11 +835,18 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   otp_ctrl_pkg::otp_device_id_t       keymgr_otp_device_id;
   prim_mubi_pkg::mubi8_t       sram_ctrl_main_otp_en_sram_ifetch;
 
+  localparam int unsigned Axi32DataWidth = 32;
+  typedef logic [AxiAddrWidth-1:0]     axi_addr_t;
+  typedef logic [Axi32DataWidth-1:0]   axi32_data_t;
+  typedef logic [Axi32DataWidth/8-1:0] axi32_strb_t;
+  typedef logic [AxiUserWidth-1:0]     axi_user_t;
+  typedef logic [AxiIdWidth-1:0]       axi_id_t;
   axi_req_t axi_req_tcdm;
   axi_rsp_t axi_rsp_tcdm;
 
-  synth_32_ot_axi_out_req_t  axi_req_tcdm_32, axi_req_tcdm_cut;
-  synth_32_ot_axi_out_resp_t axi_rsp_tcdm_32, axi_rsp_tcdm_cut;
+  `AXI_TYPEDEF_ALL(axi32, axi_addr_t, axi_id_t, axi32_data_t, axi32_strb_t, axi_user_t)
+  axi32_req_t  axi_req_tcdm_32, axi_req_tcdm_cut, tlul2axi_req32;
+  axi32_resp_t axi_rsp_tcdm_32, axi_rsp_tcdm_cut, tlul2axi_rsp32;
 
   // define mixed connection to port
   assign edn0_edn_req[2] = ast_edn_req_i;
@@ -2153,22 +2160,22 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .r_rdata_o ( tcdm_mst_r_rdata )
   );
   axi_dw_converter #(
-      .AxiMaxReads         ( 8                            ),
-      .AxiSlvPortDataWidth ( SynthOtAxiDataWidth          ),
-      .AxiMstPortDataWidth ( Synth32OtAxiDataWidth        ),
-      .AxiAddrWidth        ( SynthOtAxiAddrWidth          ),
-      .AxiIdWidth          ( SynthOtAxiOutIdWidth         ),
-      .aw_chan_t           ( synth_ot_axi_out_aw_chan_t   ),
-      .mst_w_chan_t        ( synth_32_ot_axi_out_w_chan_t ),
-      .slv_w_chan_t        ( axi_w_chan_t    ),
-      .b_chan_t            ( synth_ot_axi_out_b_chan_t    ),
-      .ar_chan_t           ( synth_ot_axi_out_ar_chan_t   ),
-      .mst_r_chan_t        ( synth_32_ot_axi_out_r_chan_t ),
-      .slv_r_chan_t        ( axi_r_chan_t    ),
-      .axi_mst_req_t       ( synth_32_ot_axi_out_req_t    ),
-      .axi_mst_resp_t      ( synth_32_ot_axi_out_resp_t   ),
-      .axi_slv_req_t       ( axi_req_t                    ),
-      .axi_slv_resp_t      ( axi_rsp_t                   )
+      .AxiMaxReads         ( 8              ),
+      .AxiSlvPortDataWidth ( AxiDataWidth   ),
+      .AxiMstPortDataWidth ( Axi32DataWidth ),
+      .AxiAddrWidth        ( AxiAddrWidth   ),
+      .AxiIdWidth          ( AxiIdWidth     ),
+      .aw_chan_t           ( axi_aw_chan_t  ),
+      .b_chan_t            ( axi_b_chan_t   ),
+      .ar_chan_t           ( axi_ar_chan_t  ),
+      .mst_w_chan_t        ( axi32_w_chan_t ),
+      .mst_r_chan_t        ( axi32_r_chan_t ),
+      .axi_mst_req_t       ( axi32_req_t    ),
+      .axi_mst_resp_t      ( axi32_resp_t   ),
+      .slv_w_chan_t        ( axi_w_chan_t   ),
+      .slv_r_chan_t        ( axi_r_chan_t   ),
+      .axi_slv_req_t       ( axi_req_t      ),
+      .axi_slv_resp_t      ( axi_rsp_t      )
   )  i_axi_dw_converter_crypto_mem (
       .clk_i (clkmgr_aon_clocks.clk_main_secure),
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel]),
@@ -2180,13 +2187,13 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .mst_resp_i ( axi_rsp_tcdm_32 )
   );
   axi_cut #(
-      .aw_chan_t  ( synth_32_ot_axi_out_aw_chan_t ),
-      .w_chan_t   ( synth_32_ot_axi_out_w_chan_t  ),
-      .ar_chan_t  ( synth_32_ot_axi_out_ar_chan_t ),
-      .r_chan_t   ( synth_32_ot_axi_out_r_chan_t  ),
-      .b_chan_t   ( synth_32_ot_axi_out_b_chan_t  ),
-      .axi_req_t  ( synth_32_ot_axi_out_req_t     ),
-      .axi_resp_t ( synth_32_ot_axi_out_resp_t    )
+      .aw_chan_t  ( axi32_aw_chan_t ),
+      .w_chan_t   ( axi32_w_chan_t  ),
+      .ar_chan_t  ( axi32_ar_chan_t ),
+      .r_chan_t   ( axi32_r_chan_t  ),
+      .b_chan_t   ( axi32_b_chan_t  ),
+      .axi_req_t  ( axi32_req_t     ),
+      .axi_resp_t ( axi32_resp_t    )
   ) i_axi_cut_idma (
       .clk_i (clkmgr_aon_clocks.clk_main_secure),
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel]),
@@ -2196,8 +2203,8 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .mst_resp_i ( axi_rsp_tcdm_cut )
   );
   axi_to_mem #(
-      .axi_req_t(synth_32_ot_axi_out_req_t),
-      .axi_resp_t(synth_32_ot_axi_out_resp_t),
+      .axi_req_t(axi32_req_t),
+      .axi_resp_t(axi32_resp_t),
       .AddrWidth(15),
       .DataWidth(32),
       .IdWidth(AxiIdWidth),
@@ -2267,34 +2274,23 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   assign crypto_sram_tl_rsp = '0;
 `endif
 
-  typedef logic [63:0]               axi32_addr_t;
-  typedef logic [31:0]               axi32_data_t;
-  typedef logic [3:0]                axi32_strb_t;
-  typedef logic                      axi32_user_t;
-  typedef logic [AxiIdWidth-1:0]     axi32_out_id_t;
-
-  `AXI_TYPEDEF_ALL(axi_out32, axi32_addr_t, axi32_out_id_t, axi32_data_t, axi32_strb_t, axi32_user_t)
-
-  axi_out32_req_t  tlul2axi_req32;
-  axi_out32_resp_t tlul2axi_rsp32;
-
   axi_dw_converter #(
-      .AxiMaxReads         ( 8                  ),
-      .AxiSlvPortDataWidth ( 32                 ),
-      .AxiMstPortDataWidth ( AxiDataWidth       ),
-      .AxiAddrWidth        ( AxiAddrWidth       ),
-      .AxiIdWidth          ( AxiIdWidth         ),
-      .aw_chan_t           ( axi_aw_chan_t      ),
-      .mst_w_chan_t        ( axi_w_chan_t       ),
-      .slv_w_chan_t        ( axi_out32_w_chan_t ),
-      .b_chan_t            ( axi_b_chan_t       ),
-      .ar_chan_t           ( axi_ar_chan_t      ),
-      .mst_r_chan_t        ( axi_r_chan_t       ),
-      .slv_r_chan_t        ( axi_out32_r_chan_t ),
-      .axi_mst_req_t       ( axi_req_t          ),
-      .axi_mst_resp_t      ( axi_rsp_t          ),
-      .axi_slv_req_t       ( axi_out32_req_t    ),
-      .axi_slv_resp_t      ( axi_out32_resp_t   )
+      .AxiMaxReads         ( 8              ),
+      .AxiSlvPortDataWidth ( Axi32DataWidth ),
+      .AxiMstPortDataWidth ( AxiDataWidth   ),
+      .AxiAddrWidth        ( AxiAddrWidth   ),
+      .AxiIdWidth          ( AxiIdWidth     ),
+      .aw_chan_t           ( axi_aw_chan_t  ),
+      .mst_w_chan_t        ( axi_w_chan_t   ),
+      .slv_w_chan_t        ( axi32_w_chan_t ),
+      .b_chan_t            ( axi_b_chan_t   ),
+      .ar_chan_t           ( axi_ar_chan_t  ),
+      .mst_r_chan_t        ( axi_r_chan_t   ),
+      .slv_r_chan_t        ( axi32_r_chan_t ),
+      .axi_mst_req_t       ( axi_req_t      ),
+      .axi_mst_resp_t      ( axi_rsp_t      ),
+      .axi_slv_req_t       ( axi32_req_t    ),
+      .axi_slv_resp_t      ( axi32_resp_t   )
   )  i_axi_dw_converter_tlul2axi (
       .clk_i (clkmgr_aon_clocks.clk_main_secure),
       .rst_ni (rstmgr_aon_resets.rst_lc_io_div4_n[rstmgr_pkg::DomainAonSel]),
@@ -2306,8 +2302,8 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .mst_resp_i ( tlul2axi_rsp_i )
   );
   tlul2axi  #(
-      .axi_req_t( axi_out32_req_t  ),
-      .axi_rsp_t( axi_out32_resp_t )
+      .axi_req_t( axi32_req_t  ),
+      .axi_rsp_t( axi32_resp_t )
   ) u_tlul2axi (
 
       // Interrupt

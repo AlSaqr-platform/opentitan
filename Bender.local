@@ -12,4 +12,4 @@ overrides:
   cv32e40p:             { git: "https://github.com/pulp-platform/cv32e40p.git", rev: astral-v1.0 }
   scm:                  { git: "https://github.com/pulp-platform/scm.git", version: =1.2.0 }
   redundancy_cells:     { git: "https://github.com/pulp-platform/redundancy_cells.git", rev: 6ba6f41 }
-  hci:                  { git: "https://github.com/FondazioneChipsIT/hci.git", rev: 572698a0bb9824d0a503571eff7d66606b7549f6 } # gl/ot_integration
+  hci:                  { git: "https://github.com/FondazioneChipsIT/hci.git", rev: 3e63936991569d0b1e315d6914478937b37bb338 } # yt/opentitan
