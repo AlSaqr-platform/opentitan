@@ -108,3 +108,6 @@ vish_stacktrace.vstf
 design.bin
 qwave.db*
 *.ses
+
+# target
+target/*

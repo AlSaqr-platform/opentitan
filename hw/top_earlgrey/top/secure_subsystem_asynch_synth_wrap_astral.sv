@@ -50,7 +50,7 @@ module security_island
    localparam int unsigned AsyncAxiExtAwWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth),
    localparam int unsigned AsyncAxiExtWWidth = (2**LogDepth)*axi_pkg::w_width(AxiDataWidth, AxiUserWidth),
    localparam int unsigned AsyncAxiExtBWidth = (2**LogDepth)*axi_pkg::b_width(AxiExtIdWidth, AxiUserWidth),
-   localparam int unsigned AsyncAxiExtArWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth),
+   localparam int unsigned AsyncAxiExtArWidth = (2**LogDepth)*axi_pkg::ar_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth),
    localparam int unsigned AsyncAxiExtRWidth = (2**LogDepth)*axi_pkg::r_width(AxiDataWidth, AxiExtIdWidth, AxiUserWidth),
    // Internal crossbar AXI ID Widths
    // These are from the AXI XBAR perspective, so:
