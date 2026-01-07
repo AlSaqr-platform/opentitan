@@ -50,7 +50,7 @@ module testbench_asynch_astral ();
    localparam int unsigned AsyncAxiExtAwWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth);
    localparam int unsigned AsyncAxiExtWWidth = (2**LogDepth)*axi_pkg::w_width(AxiDataWidth, AxiUserWidth);
    localparam int unsigned AsyncAxiExtBWidth = (2**LogDepth)*axi_pkg::b_width(AxiExtIdWidth, AxiUserWidth);
-   localparam int unsigned AsyncAxiExtArWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth);
+   localparam int unsigned AsyncAxiExtArWidth = (2**LogDepth)*axi_pkg::ar_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth);
    localparam int unsigned AsyncAxiExtRWidth = (2**LogDepth)*axi_pkg::r_width(AxiDataWidth, AxiExtIdWidth, AxiUserWidth);
 
    localparam type         axi_ext_aw_chan_t     = synth_axi_ext_aw_chan_t;
