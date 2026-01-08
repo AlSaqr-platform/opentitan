@@ -591,7 +591,7 @@ module security_island
     NumCores: 8,
     DmaNumPlugs: 4,
     DmaNumOutstandingBursts: 8,
-    DmaBurstLength: 256,
+    DmaBurstLength: 5,
     NumMstPeriphs: `NB_MPERIPHS,
     NumSlvPeriphs: `NB_SPERIPHS,
     ClusterAlias: 1,
