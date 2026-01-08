@@ -1,6 +1,6 @@
 [submodule "sw/tests/pulp-runtime"]
 	path = sw/tests/pulp-runtime
-	url = git@github.com:alsaqr-platform/pulp-runtime.git
+	url = git@github.com:FondazioneChipsIT/pulp-runtime.git
 	branch = ot_target
 [submodule "sw/tests/regression_tests"]
 	path = sw/tests/regression_tests
