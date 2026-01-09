@@ -86,7 +86,7 @@ generate_idma_rtl: venv
 build: $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
 	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
 
-build_tech_mem: build
+build_tech_mem: tech-init build
 	vlog -incr -work $(library) ${VER_DIR}/../tc_sram.sv
 	vlog -incr -work $(library) ${VER_DIR}/std_primitives.v
 
@@ -110,7 +110,7 @@ sim_rtl_tech_mem:
 	-do "$(do_command)" \
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
 
-sim_gls_compile:
+sim_gls_compile: tech-init
 	$(MAKE) -C target/gf22/questasim sim_gls_compile
 
 sim_gls_run:
@@ -128,7 +128,6 @@ clean:
 	rm -rf modelsim.ini
 	rm -rf vsim.wlf
 	rm -rf uart
-
 
 # Targets #
 common_targs += -t cv32e40p_use_ff_regfile
@@ -171,11 +170,14 @@ tech-repo := git@gitlab.chips.it:digitalresearchline/referencedesignflow/gf22/se
 tech-branch := develop
 
 tech-clone:
+	rm -rf target/gf22
 	git clone $(tech-repo) target/gf22
 
 tech-init: tech-clone
 	cd $(TECH_DIR) && git checkout $(tech-branch)
 	$(MAKE) -C $(TECH_DIR) init
+
+-include $(TECH_DIR)/tech.mk
 
 # DPI
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))
