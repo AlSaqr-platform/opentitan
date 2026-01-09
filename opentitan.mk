@@ -77,7 +77,7 @@ endef
 generate_idma_rtl:
 	$(MAKE) -C $(shell find $(BENDER_GIT_DIR) -type d -name 'idma*' | head -n 1) idma_hw_all
 
-build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips
+build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
 	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
 
 build_tech_mem: build
@@ -91,13 +91,13 @@ build_tech_mem: build
 		vlog -incr +define+INITIALIZE_MEM -work $(library) $(VER_DIR)/$(mem).v;\
 	)
 
-sim_rtl: generate_idma_rtl
+sim_rtl:
 	qopt $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
 	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	-do "$(do_command)"	\
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
 
-sim_rtl_tech_mem: generate_idma_rtl
+sim_rtl_tech_mem:
 	qopt  $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
 	qsim  $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	$(vsim_args) +init_mem_data=0 \
@@ -170,9 +170,6 @@ tech-clone:
 tech-init: tech-clone
 	cd $(TECH_DIR) && git checkout $(tech-branch)
 	$(MAKE) -C $(TECH_DIR) init
-
-# required to source the verilog models of the tech memories
--include $(TECH_DIR)/tech.mk
 
 # DPI
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))
