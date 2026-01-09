@@ -99,6 +99,7 @@ working_dir/
 bender
 wlft*
 WORKSPACE
+venv
 
 # questasim
 *.ini

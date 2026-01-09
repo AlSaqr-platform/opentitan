@@ -27,6 +27,7 @@ BENDER_GIT_DIR ?= .bender/git/checkouts
 
 cl-bin         ?= none
 OT_CLUSTER     = $(cl-bin)
+VENV  		   := venv
 
 library        ?= work
 dpi-library    ?= work-dpi
@@ -74,10 +75,15 @@ endef
 
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 
-generate_idma_rtl:
-	$(MAKE) -C $(shell find $(BENDER_GIT_DIR) -type d -name 'idma*' | head -n 1) idma_hw_all
+venv:
+	python3 -m venv $(VENV) && \
+	$(VENV)/bin/python -m pip install -U pip && \
+	$(VENV)/bin/python -m pip install -r $(shell bender path idma)/requirements.txt
 
-build:  $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
+generate_idma_rtl: venv
+	. "$(VENV)/bin/activate" && $(MAKE) -C $(shell bender path idma) idma_hw_all
+
+build: $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
 	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
 
 build_tech_mem: build
