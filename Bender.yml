@@ -863,7 +863,7 @@ sources:
            - hw/vendor/common_pads/src/pad_alsaqr.sv
            - hw/tb/testbench_asynch_astral.sv
 
-      - target: synthesis
+      - target: ot_synthesis
         files:
            - target/gf22/sourcecode/tc_sram.sv
            - target/gf22/sourcecode/tc_clk.sv
