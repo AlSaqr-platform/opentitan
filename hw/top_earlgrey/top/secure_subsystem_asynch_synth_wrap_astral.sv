@@ -135,7 +135,7 @@ module security_island
    // Req/Resp structs for AXI XBAR slave ports
    `AXI_TYPEDEF_ALL(axi_in, axi_addr_t, axi_in_id_t, axi_data_t, axi_strb_t, axi_user_t)
 
-   localparam int unsigned NumMstPorts = 2;
+   localparam int unsigned NumMstPorts = 3;
    localparam int unsigned NumSlvPorts = 3;
 
    // Connections to the external AXI bus
@@ -148,9 +148,11 @@ module security_island
    axi_out_req_t [NumMstPorts-1:0] axi_mst_req;
    axi_out_resp_t [NumMstPorts-1:0] axi_mst_rsp;
    axi_out_req_t axi_ext_mst_req,
-                 axi_cls_mst_req;
+                 axi_cls_mst_req,
+                 axi_l2_mst_req;
    axi_out_resp_t axi_ext_mst_rsp,
-                  axi_cls_mst_rsp;
+                  axi_cls_mst_rsp,
+                  axi_l2_mst_rsp;
 
    // Connections to the AXI XBAR slave ports
    axi_in_req_t [NumSlvPorts-1:0] axi_slv_req;
@@ -382,8 +384,7 @@ module security_island
   //////////////////
   // AXI Crossbar //
   //////////////////
-
-  localparam int unsigned NumRules = 2;
+  localparam int unsigned NumRules = 3;
   typedef struct packed {
     int unsigned idx;
     logic [AxiAddrWidth-1:0] start_addr;
@@ -401,6 +402,8 @@ module security_island
   assign host_end_addr = 32'hB000_0000;
   assign cls_base_addr = 32'hB000_0000;
   assign cls_end_addr = 32'hC000_0000;
+  assign l2_base_addr = 32'hD000_0000;
+  assign l2_end_addr = 32'hDFFF_FFFF;
 
   assign addr_map = '{
     '{ // Host
@@ -412,6 +415,11 @@ module security_island
       start_addr: cls_base_addr,
       end_addr:   cls_end_addr,
       idx:        1
+    },
+    '{ // L2
+      start_addr: l2_base_addr,
+      end_addr:   l2_end_addr,
+      idx:        2
     }
   };
 
@@ -433,7 +441,8 @@ module security_island
 
   assign axi_ext_mst_req = axi_mst_req[0];
   assign axi_cls_mst_req = axi_mst_req[1];
-  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_ext_mst_rsp };
+  assign axi_l2_mst_req  = axi_mst_req[2];
+  assign axi_mst_rsp     = { axi_l2_mst_rsp, axi_cls_mst_rsp, axi_ext_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[0];
@@ -470,6 +479,78 @@ module security_island
     .en_default_mst_port_i  ( '0          ),
     .default_mst_port_i     ( '0          )
   );
+
+  /////////////////////
+  // L2 memory slave //
+  /////////////////////
+  localparam int unsigned L2MemSize = 512*1024;
+  localparam int unsigned MemDataWidth = 32;
+  localparam int unsigned NumBanks = 2 * AxiDataWidth / MemDataWidth;
+  localparam int unsigned L2BankSize = L2MemSize / NumBanks;
+
+  logic [NumBanks-1:0]                         l2_mem_slave_req;
+  logic [NumBanks-1:0]                         l2_mem_slave_gnt;
+  logic [NumBanks-1:0]                         l2_mem_slave_we;
+  logic [NumBanks-1:0][AxiDataWidth/8-1:0    ] l2_mem_slave_be;
+  logic [NumBanks-1:0][$clog2(L2BankSize)-1:0] l2_mem_slave_add;
+  logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_data;
+  logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_r_data;
+
+  axi_to_mem_banked #(
+      .AxiIdWidth    ( AxiOutIdWidth     ),
+      .AxiAddrWidth  ( AxiAddrWidth      ),
+      .AxiDataWidth  ( AxiDataWidth      ),
+      .axi_aw_chan_t ( axi_out_aw_chan_t ),
+      .axi_w_chan_t  ( axi_out_w_chan_t  ),
+      .axi_b_chan_t  ( axi_out_b_chan_t  ),
+      .axi_ar_chan_t ( axi_out_ar_chan_t ),
+      .axi_r_chan_t  ( axi_out_r_chan_t  ),
+      .axi_req_t     ( axi_out_req_t     ),
+      .axi_resp_t    ( axi_out_resp_t    ),
+      .MemNumBanks   ( NumBanks          ),
+      .MemAddrWidth  ( $clog2(L2BankSize)),
+      .MemDataWidth  ( AxiDataWidth      )
+  ) axi_to_mem_instance (
+      .clk_i       ( clk_i               ),
+      .rst_ni      ( rst_ni              ),
+      .axi_req_i   ( axi_l2_mst_req      ),
+      .axi_resp_o  ( axi_l2_mst_rsp      ),
+      .mem_req_o   ( l2_mem_slave_req    ),
+      .mem_gnt_i   ( l2_mem_slave_gnt    ),
+      .mem_add_o   ( l2_mem_slave_add    ),
+      .mem_we_o    ( l2_mem_slave_we     ),
+      .mem_wdata_o ( l2_mem_slave_data   ),
+      .mem_be_o    ( l2_mem_slave_be     ),
+      .mem_rdata_i ( l2_mem_slave_r_data )
+  );
+
+  for(genvar i=0; i<NumBanks; i++) begin : l2_banks_gen
+
+    // With regular TCDM banks, the grant is always asserted.
+    assign l2_mem_slave_gnt[i] = 1'b1;
+
+    tc_sram #(
+      .NumWords   (L2BankSize  ), // Number of Words in data array
+      .DataWidth  (AxiDataWidth), // Data signal width
+      .NumPorts   (1           ), // Number of read and write ports
+    `ifndef SYNTHESIS
+      .ByteWidth  (8        ), // Width of a data byte
+      .SimInit    ("ones"   ), // Simulation initialization
+      .PrintSimCfg(0        ), // Print configuration
+    `endif
+      .Latency    (1        ) // Latency when the read data is available
+    ) i_bank (
+      .clk_i  (clk_i                 ), // Clock
+      .rst_ni (rst_ni                ), // Asynchronous reset active low
+      .req_i  (l2_mem_slave_req   [i]), // request
+      .we_i   (l2_mem_slave_we    [i]), // write enable
+      .addr_i (l2_mem_slave_add   [i]), // request address
+      .wdata_i(l2_mem_slave_data  [i]), // write data
+      .be_i   (l2_mem_slave_be    [i]), // write byte enable
+      .rdata_o(l2_mem_slave_r_data[i])  // read data
+    );
+
+  end
 
   // -----------------------------------------------------------------------------
   // Cluster Domain
