@@ -326,7 +326,7 @@ axi_sim_mem_intf #(
   logic [AxiAddrWidth-1:0] uart_base_addr;
   logic [AxiAddrWidth-1:0] uart_end_addr;
   assign mem_base_addr = 'h1C00_0000;
-  assign mem_end_addr = 'hC000_0000;
+  assign mem_end_addr = 'hBFFF_FFFF;
   assign mbox_base_addr = 'h1040_4000;
   assign mbox_end_addr = 'h1040_4FFF;
   assign uart_base_addr = 'h1A22_2000;
