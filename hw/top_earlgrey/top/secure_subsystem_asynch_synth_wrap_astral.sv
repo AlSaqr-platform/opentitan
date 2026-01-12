@@ -302,25 +302,25 @@ module security_island
       .axi_req_t  ( axi_ext_req_t     ),
       .axi_resp_t ( axi_ext_resp_t    )
    ) i_cdc_out_tlul2axi (
-      .src_clk_i                  ( clk_i                   ),
-      .src_rst_ni                 ( pwr_on_rst_ni           ),
-      .async_data_master_aw_data_o( async_axi_ext_aw_data_o ),
-      .async_data_master_aw_wptr_o( async_axi_ext_aw_wptr_o ),
-      .async_data_master_aw_rptr_i( async_axi_ext_aw_rptr_i ),
-      .async_data_master_w_data_o ( async_axi_ext_w_data_o  ),
-      .async_data_master_w_wptr_o ( async_axi_ext_w_wptr_o  ),
-      .async_data_master_w_rptr_i ( async_axi_ext_w_rptr_i  ),
-      .async_data_master_b_data_i ( async_axi_ext_b_data_i  ),
-      .async_data_master_b_wptr_i ( async_axi_ext_b_wptr_i  ),
-      .async_data_master_b_rptr_o ( async_axi_ext_b_rptr_o  ),
-      .async_data_master_ar_data_o( async_axi_ext_ar_data_o ),
-      .async_data_master_ar_wptr_o( async_axi_ext_ar_wptr_o ),
-      .async_data_master_ar_rptr_i( async_axi_ext_ar_rptr_i ),
-      .async_data_master_r_data_i ( async_axi_ext_r_data_i  ),
-      .async_data_master_r_wptr_i ( async_axi_ext_r_wptr_i  ),
-      .async_data_master_r_rptr_o ( async_axi_ext_r_rptr_o  ),
-      .src_req_i                  ( axi_ext_isolated_req ),
-      .src_resp_o                 ( axi_ext_isolated_rsp )
+      .src_clk_i                   ( clk_i                   ),
+      .src_rst_ni                  ( pwr_on_rst_ni           ),
+      .async_data_master_aw_data_o ( async_axi_ext_aw_data_o ),
+      .async_data_master_aw_wptr_o ( async_axi_ext_aw_wptr_o ),
+      .async_data_master_aw_rptr_i ( async_axi_ext_aw_rptr_i ),
+      .async_data_master_w_data_o  ( async_axi_ext_w_data_o  ),
+      .async_data_master_w_wptr_o  ( async_axi_ext_w_wptr_o  ),
+      .async_data_master_w_rptr_i  ( async_axi_ext_w_rptr_i  ),
+      .async_data_master_b_data_i  ( async_axi_ext_b_data_i  ),
+      .async_data_master_b_wptr_i  ( async_axi_ext_b_wptr_i  ),
+      .async_data_master_b_rptr_o  ( async_axi_ext_b_rptr_o  ),
+      .async_data_master_ar_data_o ( async_axi_ext_ar_data_o ),
+      .async_data_master_ar_wptr_o ( async_axi_ext_ar_wptr_o ),
+      .async_data_master_ar_rptr_i ( async_axi_ext_ar_rptr_i ),
+      .async_data_master_r_data_i  ( async_axi_ext_r_data_i  ),
+      .async_data_master_r_wptr_i  ( async_axi_ext_r_wptr_i  ),
+      .async_data_master_r_rptr_o  ( async_axi_ext_r_rptr_o  ),
+      .src_req_i                   ( axi_ext_isolated_req    ),
+      .src_resp_o                  ( axi_ext_isolated_rsp    )
    );
 
    axi_isolate            #(
@@ -334,33 +334,33 @@ module security_island
      .axi_req_t            ( axi_ext_req_t  ),
      .axi_resp_t           ( axi_ext_resp_t )
    ) i_axi_out_isolate_tlul2axi (
-     .clk_i                ( clk_i            ),
-     .rst_ni               ( rst_ni           ),
-     .slv_req_i            ( axi_ext_serialized_req     ),
-     .slv_resp_o           ( axi_ext_serialized_rsp     ),
-     .mst_req_o            ( axi_ext_isolated_req ),
-     .mst_resp_i           ( axi_ext_isolated_rsp ),
-     .isolate_i            ( axi_isolate_sync ),
-     .isolated_o           ( axi_isolated_o   )
+     .clk_i                ( clk_i                  ),
+     .rst_ni               ( rst_ni                 ),
+     .slv_req_i            ( axi_ext_serialized_req ),
+     .slv_resp_o           ( axi_ext_serialized_rsp ),
+     .mst_req_o            ( axi_ext_isolated_req   ),
+     .mst_resp_i           ( axi_ext_isolated_rsp   ),
+     .isolate_i            ( axi_isolate_sync       ),
+     .isolated_o           ( axi_isolated_o         )
    );
 
    axi_id_serialize #(
-    .AxiSlvPortIdWidth      ( AxiOutIdWidth        ),
-    .AxiMstPortMaxUniqIds   ( 4                    ),
-    .AxiMstPortMaxTxnsPerId ( 4                    ),
-    .AxiMstPortIdWidth      ( AxiExtIdWidth      ),
-    .AxiAddrWidth           ( AxiAddrWidth         ),
-    .AxiUserWidth           ( AxiUserWidth      ),
-    .AxiDataWidth           ( AxiDataWidth         ),
-    .slv_req_t              ( axi_out_req_t        ),
-    .slv_resp_t             ( axi_out_resp_t       ),
+    .AxiSlvPortIdWidth      ( AxiOutIdWidth  ),
+    .AxiMstPortMaxUniqIds   ( 4              ),
+    .AxiMstPortMaxTxnsPerId ( 4              ),
+    .AxiMstPortIdWidth      ( AxiExtIdWidth  ),
+    .AxiAddrWidth           ( AxiAddrWidth   ),
+    .AxiUserWidth           ( AxiUserWidth   ),
+    .AxiDataWidth           ( AxiDataWidth   ),
+    .slv_req_t              ( axi_out_req_t  ),
+    .slv_resp_t             ( axi_out_resp_t ),
     .mst_req_t              ( axi_ext_req_t  ),
     .mst_resp_t             ( axi_ext_resp_t )
    ) ot_id_remap (
-    .clk_i      ( clk_i                 ),
-    .rst_ni     ( rst_ni                ),
-    .slv_req_i  ( axi_ext_mst_req       ),
-    .slv_resp_o ( axi_ext_mst_rsp       ),
+    .clk_i      ( clk_i                  ),
+    .rst_ni     ( rst_ni                 ),
+    .slv_req_i  ( axi_ext_mst_req        ),
+    .slv_resp_o ( axi_ext_mst_rsp        ),
     .mst_req_o  ( axi_ext_serialized_req ),
     .mst_resp_i ( axi_ext_serialized_rsp )
    );
@@ -442,19 +442,19 @@ module security_island
 
   axi_xbar #(
     .Cfg          ( XbarCfg           ),
-    .slv_aw_chan_t( axi_in_aw_chan_t     ),
+    .slv_aw_chan_t( axi_in_aw_chan_t  ),
     .mst_aw_chan_t( axi_out_aw_chan_t ),
     // W channel does not depend on IDs,
     // so it is the same for master/slave ports
     .w_chan_t     ( axi_out_w_chan_t  ),
-    .slv_b_chan_t ( axi_in_b_chan_t      ),
+    .slv_b_chan_t ( axi_in_b_chan_t   ),
     .mst_b_chan_t ( axi_out_b_chan_t  ),
-    .slv_ar_chan_t( axi_in_ar_chan_t     ),
+    .slv_ar_chan_t( axi_in_ar_chan_t  ),
     .mst_ar_chan_t( axi_out_ar_chan_t ),
-    .slv_r_chan_t ( axi_in_r_chan_t      ),
+    .slv_r_chan_t ( axi_in_r_chan_t   ),
     .mst_r_chan_t ( axi_out_r_chan_t  ),
-    .slv_req_t    ( axi_in_req_t         ),
-    .slv_resp_t   ( axi_in_resp_t        ),
+    .slv_req_t    ( axi_in_req_t      ),
+    .slv_resp_t   ( axi_in_resp_t     ),
     .mst_req_t    ( axi_out_req_t     ),
     .mst_resp_t   ( axi_out_resp_t    ),
     .rule_t       ( xbar_rule_t       )
@@ -511,11 +511,11 @@ module security_island
    ) cluster_to_soc_axi_bus();
 
    AXI_BUS_ASYNC_GRAY #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-     .AXI_DATA_WIDTH ( AxiDataWidth  ),
-     .AXI_ID_WIDTH   ( AxiInIdWidth  ),
-     .AXI_USER_WIDTH ( AxiUserWidth  ),
-     .LOG_DEPTH      ( LogDepth      )
+     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
+     .AXI_DATA_WIDTH ( AxiDataWidth ),
+     .AXI_ID_WIDTH   ( AxiInIdWidth ),
+     .AXI_USER_WIDTH ( AxiUserWidth ),
+     .LOG_DEPTH      ( LogDepth     )
    ) async_cluster_to_soc_axi_bus();
 
   // Assign PULP cluster structs to interfaces
@@ -731,7 +731,7 @@ module security_island
 ///////////////
 
    top_earlgrey #(
-      .HartIdOffs    ( HartIdOffs    ),
+      .HartIdOffs    ( HartIdOffs       ),
       .axi_w_chan_t  ( axi_in_w_chan_t  ),
       .axi_b_chan_t  ( axi_in_b_chan_t  ),
       .axi_r_chan_t  ( axi_in_r_chan_t  ),
@@ -739,10 +739,10 @@ module security_island
       .axi_ar_chan_t ( axi_in_ar_chan_t ),
       .axi_req_t     ( axi_in_req_t     ),
       .axi_rsp_t     ( axi_in_resp_t    ),
-      .AxiAddrWidth  ( AxiAddrWidth  ),
-      .AxiDataWidth  ( AxiDataWidth  ),
-      .AxiIdWidth    ( AxiInIdWidth ),
-      .AxiUserWidth  ( AxiUserWidth )
+      .AxiAddrWidth  ( AxiAddrWidth     ),
+      .AxiDataWidth  ( AxiDataWidth     ),
+      .AxiIdWidth    ( AxiInIdWidth     ),
+      .AxiUserWidth  ( AxiUserWidth     )
    ) u_RoT (
       .mio_attr_o                   (                       ),
       .dio_attr_o                   (                       ),
