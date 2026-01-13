@@ -45,6 +45,8 @@ module security_island
    parameter int unsigned LogDepth = SynthLogDepth,
    parameter int unsigned CdcSyncStages = SynthCdcSyncStages,
    parameter int unsigned SyncStages = 3,
+   // AXI cut parameter
+   parameter bit L2AxiCutBypass = 1'b0,
    // Derived local parameters
    // Parameters for asynchronous CDC interface
    localparam int unsigned AsyncAxiExtAwWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth),
@@ -149,10 +151,12 @@ module security_island
    axi_out_resp_t [NumMstPorts-1:0] axi_mst_rsp;
    axi_out_req_t axi_ext_mst_req,
                  axi_cls_mst_req,
-                 axi_l2_mst_req;
+                 axi_l2_mst_req,
+                 axi_l2_mst_req_del;
    axi_out_resp_t axi_ext_mst_rsp,
                   axi_cls_mst_rsp,
-                  axi_l2_mst_rsp;
+                  axi_l2_mst_rsp,
+                  axi_l2_mst_rsp_del;
 
    // Connections to the AXI XBAR slave ports
    axi_in_req_t [NumSlvPorts-1:0] axi_slv_req;
@@ -498,6 +502,24 @@ module security_island
   logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_data;
   logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_r_data;
 
+  axi_cut #(
+      .Bypass     ( L2AxiCutBypass    ),
+      .aw_chan_t  ( axi_out_aw_chan_t ),
+      .w_chan_t   ( axi_out_w_chan_t  ),
+      .b_chan_t   ( axi_out_b_chan_t  ),
+      .ar_chan_t  ( axi_out_ar_chan_t ),
+      .r_chan_t   ( axi_out_r_chan_t  ),
+      .axi_req_t  ( axi_out_req_t     ),
+      .axi_resp_t ( axi_out_resp_t    )
+  ) i_axi_cut (
+      .clk_i      ( clk_i              ),
+      .rst_ni     ( rst_ni             ),
+      .slv_req_i  ( axi_l2_mst_req     ),
+      .slv_resp_o ( axi_l2_mst_rsp     ),
+      .mst_req_o  ( axi_l2_mst_req_del ),
+      .mst_resp_i ( axi_l2_mst_rsp_del )
+  );
+
   axi_to_mem_banked #(
       .AxiIdWidth    ( AxiOutIdWidth     ),
       .AxiAddrWidth  ( AxiAddrWidth      ),
@@ -515,8 +537,9 @@ module security_island
   ) axi_to_mem_instance (
       .clk_i       ( clk_i               ),
       .rst_ni      ( rst_ni              ),
-      .axi_req_i   ( axi_l2_mst_req      ),
-      .axi_resp_o  ( axi_l2_mst_rsp      ),
+      .test_i      ( '0                  ),
+      .axi_req_i   ( axi_l2_mst_req_del  ),
+      .axi_resp_o  ( axi_l2_mst_rsp_del  ),
       .mem_req_o   ( l2_mem_slave_req    ),
       .mem_gnt_i   ( l2_mem_slave_gnt    ),
       .mem_add_o   ( l2_mem_slave_add    ),
