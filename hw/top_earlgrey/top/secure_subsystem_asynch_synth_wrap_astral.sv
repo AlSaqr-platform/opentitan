@@ -405,11 +405,11 @@ module security_island
                            l2_end_addr;
 
   assign host_base_addr = 32'h0001_0000;
-  assign host_end_addr = 32'hB000_0000;
+  assign host_end_addr = 32'hAFFF_FFFF;
   assign cls_base_addr = 32'hB000_0000;
-  assign cls_end_addr = 32'hC000_0000;
-  assign l2_base_addr = 32'hD000_0000;
-  assign l2_end_addr = 32'hDFFF_FFFF;
+  assign cls_end_addr = 32'hBFFF_FFFF;
+  assign l2_base_addr = 32'hC000_0000;
+  assign l2_end_addr = 32'hCFFF_FFFF;
 
   assign addr_map = '{
     '{ // Host
