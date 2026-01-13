@@ -98,6 +98,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   // parameters for sram_ctrl_main
   parameter              SramCtrlMainMemInitFile = "",
   parameter bit          SramCtrlMainInstrExec = 1,
+  parameter int unsigned MemSizeMainSram = 32*1024,
   // parameters for rom_ctrl
   parameter              RomCtrlBootRomInitFile = "",
   parameter bit          SecRomCtrlDisableScrambling = 1'b0,
@@ -2806,7 +2807,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
     .MemInitFile(SramCtrlMainMemInitFile),
     .RndCnstLfsrSeed(RndCnstSramCtrlMainLfsrSeed),
     .RndCnstLfsrPerm(RndCnstSramCtrlMainLfsrPerm),
-    .MemSizeRam(32768*16),
+    .MemSizeRam(MemSizeMainSram),
     .InstrExec(SramCtrlMainInstrExec)
   ) u_sram_ctrl_main (
       // [59]: fatal_error
