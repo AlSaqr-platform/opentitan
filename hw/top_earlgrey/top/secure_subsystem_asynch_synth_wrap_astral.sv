@@ -491,7 +491,9 @@ module security_island
   /////////////////////
   localparam int unsigned L2MemSize = 512*1024;
   localparam int unsigned MemDataWidth = 32;
-  localparam int unsigned NumBanks = 2 * AxiDataWidth / MemDataWidth;
+  // NumBanks = 2 * AxiDataWidth / MemDataWidth = 4 banks is the min value
+  // imposed by axi_to_mem
+  localparam int unsigned NumBanks = 16;
   localparam int unsigned L2BankSize = L2MemSize / NumBanks;
 
   logic [NumBanks-1:0]                         l2_mem_slave_req;
