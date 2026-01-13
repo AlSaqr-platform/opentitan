@@ -571,7 +571,7 @@ module security_island
       .rst_ni (rst_ni                ), // Asynchronous reset active low
       .req_i  (l2_mem_slave_req   [i]), // request
       .we_i   (l2_mem_slave_we    [i]), // write enable
-      .addr_i (l2_mem_slave_add   [i]), // request address
+      .addr_i ( {l2_mem_slave_add [i][$clog2(L2BankSize)-1:2], 2'b00} ), // request address
       .wdata_i(l2_mem_slave_data  [i]), // write data
       .be_i   (l2_mem_slave_be    [i]), // write byte enable
       .rdata_o(l2_mem_slave_r_data[i])  // read data
