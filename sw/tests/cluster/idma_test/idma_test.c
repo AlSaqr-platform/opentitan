@@ -11,7 +11,7 @@
 
 #define EntryAddr 0x1C008080
 #define ClusterBootAddrReg 0xB0200040
-#define ClusterFethEnableReg 0xff000020
+#define ClusterFetchEnableReg 0xff000020
 #define ClusterEocReg 0xff000024
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
@@ -21,7 +21,7 @@ int main() {
 
   volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * p_reg1;
 
-  fetch_en = (int *) ClusterFethEnableReg;
+  fetch_en = (int *) ClusterFetchEnableReg;
   eoc = (int *) ClusterEocReg;
   edn_enable = (int *) EdnEnAddrReg;
   *edn_enable = 0x9996;
