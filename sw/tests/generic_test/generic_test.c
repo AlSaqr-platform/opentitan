@@ -4,7 +4,7 @@
 #include <time.h>
 #include "utils.h"
 
-#define EntryAddr 0x1C008080
+#define EntryAddr 0xC0008080
 #define L1BaseAddr 0xB0000000
 #define ClusterBootAddrReg 0xB0200040
 #define ClusterFetchEnableReg 0xff000020
