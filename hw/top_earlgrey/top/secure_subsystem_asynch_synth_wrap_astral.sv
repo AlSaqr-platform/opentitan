@@ -396,7 +396,9 @@ module security_island
   logic [AxiAddrWidth-1:0] host_base_addr,
                            host_end_addr,
                            cls_base_addr,
-                           cls_end_addr;
+                           cls_end_addr,
+                           l2_base_addr,
+                           l2_end_addr;
 
   assign host_base_addr = 32'h0001_0000;
   assign host_end_addr = 32'hB000_0000;
