@@ -41,7 +41,7 @@ module security_island
    parameter type axi_ext_r_chan_t = synth_axi_ext_r_chan_t,
    parameter type axi_ext_req_t = synth_axi_ext_req_t,
    parameter type axi_ext_resp_t = synth_axi_ext_resp_t,
-   // Synchronizaton parameters
+   // Synchronization parameters
    parameter int unsigned LogDepth = SynthLogDepth,
    parameter int unsigned CdcSyncStages = SynthCdcSyncStages,
    parameter int unsigned SyncStages = 3,
@@ -489,6 +489,8 @@ module security_island
   /////////////////////
   // L2 memory slave //
   /////////////////////
+
+  // parameters
   localparam int unsigned L2MemSize = 512*1024;
   localparam int unsigned MemDataWidth = 32;
   // NumBanks = 2 * AxiDataWidth / MemDataWidth = 4 banks is the min value
@@ -496,6 +498,7 @@ module security_island
   localparam int unsigned NumBanks = 16;
   localparam int unsigned L2BankSize = L2MemSize / NumBanks;
 
+  //  signals
   logic [NumBanks-1:0]                         l2_mem_slave_req;
   logic [NumBanks-1:0]                         l2_mem_slave_gnt;
   logic [NumBanks-1:0]                         l2_mem_slave_we;
@@ -557,15 +560,10 @@ module security_island
     assign l2_mem_slave_gnt[i] = 1'b1;
 
     tc_sram #(
-      .NumWords   (L2BankSize  ), // Number of Words in data array
-      .DataWidth  (AxiDataWidth), // Data signal width
-      .NumPorts   (1           ), // Number of read and write ports
-    `ifndef SYNTHESIS
-      .ByteWidth  (8        ), // Width of a data byte
-      .SimInit    ("ones"   ), // Simulation initialization
-      .PrintSimCfg(0        ), // Print configuration
-    `endif
-      .Latency    (1        ) // Latency when the read data is available
+      .NumWords  ( L2BankSize   ), // Number of Words in data array
+      .DataWidth ( AxiDataWidth ), // Data signal width
+      .NumPorts  ( 1            ), // Number of read and write ports
+      .Latency   ( 1            )  // Latency when the read data is available
     ) i_bank (
       .clk_i  (clk_i                 ), // Clock
       .rst_ni (rst_ni                ), // Asynchronous reset active low
