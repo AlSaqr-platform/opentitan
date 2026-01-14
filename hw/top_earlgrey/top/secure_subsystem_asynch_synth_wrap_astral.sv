@@ -737,7 +737,7 @@ module security_island
     L2Size: 512*1024,
     DmBaseAddr: 'h60203000, // FIXME: CHECK!
     BootRomBaseAddr: 32'h1A000000,
-    BootAddr: 32'h1C000080,
+    BootAddr: 32'hA0008080,
     EnablePrivateFpu: 1,
     EnablePrivateFpDivSqrt: 1,
     NumAxiIn: pulp_cluster_package::NumAxiSubordinatePorts,
