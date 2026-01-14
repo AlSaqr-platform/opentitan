@@ -497,6 +497,7 @@ module security_island
   // imposed by axi_to_mem
   localparam int unsigned NumBanks = 16;
   localparam int unsigned L2BankSize = L2MemSize / NumBanks;
+  localparam int unsigned L2BankWords = L2BankSize / 4;
 
   //  signals
   logic [NumBanks-1:0]                         l2_mem_slave_req;
@@ -560,10 +561,13 @@ module security_island
     assign l2_mem_slave_gnt[i] = 1'b1;
 
     tc_sram #(
-      .NumWords  ( L2BankSize   ), // Number of Words in data array
-      .DataWidth ( AxiDataWidth ), // Data signal width
-      .NumPorts  ( 1            ), // Number of read and write ports
-      .Latency   ( 1            )  // Latency when the read data is available
+      .NumWords    ( L2BankWords  ), // Number of Words in data array
+      .DataWidth   ( MemDataWidth ), // Data signal width
+      .NumPorts    ( 1            ), // Number of read and write ports
+      .ByteWidth   ( 8            ), // Width of a data byte
+      .SimInit     ( "ones"       ), // Simulation initialization
+      .PrintSimCfg ( 0            ), // Print configuration
+      .Latency     ( 0            )  // Latency when the read data is available
     ) i_bank (
       .clk_i  (clk_i                 ), // Clock
       .rst_ni (rst_ni                ), // Asynchronous reset active low
