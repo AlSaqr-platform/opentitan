@@ -500,13 +500,13 @@ module security_island
   localparam int unsigned L2BankWords = L2BankSize / 4;
 
   //  signals
-  logic [NumBanks-1:0]                         l2_mem_slave_req;
-  logic [NumBanks-1:0]                         l2_mem_slave_gnt;
-  logic [NumBanks-1:0]                         l2_mem_slave_we;
-  logic [NumBanks-1:0][AxiDataWidth/8-1:0    ] l2_mem_slave_be;
-  logic [NumBanks-1:0][$clog2(L2BankSize)-1:0] l2_mem_slave_add;
-  logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_data;
-  logic [NumBanks-1:0][AxiDataWidth-1:0      ] l2_mem_slave_r_data;
+  logic [NumBanks-1:0]                          l2_mem_slave_req;
+  logic [NumBanks-1:0]                          l2_mem_slave_gnt;
+  logic [NumBanks-1:0]                          l2_mem_slave_we;
+  logic [NumBanks-1:0][MemDataWidth/8-1:0     ] l2_mem_slave_be;
+  logic [NumBanks-1:0][$clog2(L2BankWords)-1:0] l2_mem_slave_add;
+  logic [NumBanks-1:0][MemDataWidth-1:0       ] l2_mem_slave_data;
+  logic [NumBanks-1:0][MemDataWidth-1:0       ] l2_mem_slave_r_data;
 
   axi_cut #(
       .Bypass     ( L2AxiCutBypass    ),
@@ -527,19 +527,19 @@ module security_island
   );
 
   axi_to_mem_banked #(
-      .AxiIdWidth    ( AxiOutIdWidth     ),
-      .AxiAddrWidth  ( AxiAddrWidth      ),
-      .AxiDataWidth  ( AxiDataWidth      ),
-      .axi_aw_chan_t ( axi_out_aw_chan_t ),
-      .axi_w_chan_t  ( axi_out_w_chan_t  ),
-      .axi_b_chan_t  ( axi_out_b_chan_t  ),
-      .axi_ar_chan_t ( axi_out_ar_chan_t ),
-      .axi_r_chan_t  ( axi_out_r_chan_t  ),
-      .axi_req_t     ( axi_out_req_t     ),
-      .axi_resp_t    ( axi_out_resp_t    ),
-      .MemNumBanks   ( NumBanks          ),
-      .MemAddrWidth  ( $clog2(L2BankSize)),
-      .MemDataWidth  ( AxiDataWidth      )
+      .AxiIdWidth    ( AxiOutIdWidth      ),
+      .AxiAddrWidth  ( AxiAddrWidth       ),
+      .AxiDataWidth  ( AxiDataWidth       ),
+      .axi_aw_chan_t ( axi_out_aw_chan_t  ),
+      .axi_w_chan_t  ( axi_out_w_chan_t   ),
+      .axi_b_chan_t  ( axi_out_b_chan_t   ),
+      .axi_ar_chan_t ( axi_out_ar_chan_t  ),
+      .axi_r_chan_t  ( axi_out_r_chan_t   ),
+      .axi_req_t     ( axi_out_req_t      ),
+      .axi_resp_t    ( axi_out_resp_t     ),
+      .MemNumBanks   ( NumBanks           ),
+      .MemAddrWidth  ( $clog2(L2BankWords)),
+      .MemDataWidth  ( MemDataWidth       )
   ) axi_to_mem_instance (
       .clk_i       ( clk_i               ),
       .rst_ni      ( rst_ni              ),
@@ -567,13 +567,13 @@ module security_island
       .ByteWidth   ( 8            ), // Width of a data byte
       .SimInit     ( "ones"       ), // Simulation initialization
       .PrintSimCfg ( 0            ), // Print configuration
-      .Latency     ( 0            )  // Latency when the read data is available
+      .Latency     ( 1            )  // Latency when the read data is available
     ) i_bank (
       .clk_i   ( clk_i                  ), // Clock
       .rst_ni  ( rst_ni                 ), // Asynchronous reset active low
       .req_i   ( l2_mem_slave_req   [i] ), // request
       .we_i    ( l2_mem_slave_we    [i] ), // write enable
-      .addr_i  ( {l2_mem_slave_add  [i][$clog2(L2BankSize)-1:2], 2'b00} ), // request address
+      .addr_i  ( l2_mem_slave_add   [i] ), // request address
       .wdata_i ( l2_mem_slave_data  [i] ), // write data
       .be_i    ( l2_mem_slave_be    [i] ), // write byte enable
       .rdata_o ( l2_mem_slave_r_data[i] )  // read data
