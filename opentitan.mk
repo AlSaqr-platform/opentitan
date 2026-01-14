@@ -86,7 +86,7 @@ generate_idma_rtl: venv
 build: $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
 	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
 
-build_tech_mem: tech-init build
+build_tech_mem: build
 	vlog -incr -work $(library) ${VER_DIR}/../tc_sram.sv
 	vlog -incr -work $(library) ${VER_DIR}/std_primitives.v
 
