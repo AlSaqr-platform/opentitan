@@ -4,7 +4,7 @@
 
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
-#define L2_BASE        0x1C001000
+#define L2_BASE        0xC0001000
 
 #define SIZE           128
 #define OFFSET         32
