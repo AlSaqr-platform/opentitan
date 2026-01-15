@@ -4,7 +4,7 @@
 
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
-#define L2_BASE        0xC0001000
+#define L2_BASE        0xA0001000
 
 #define SIZE           128
 #define OFFSET         32
@@ -12,8 +12,8 @@
 #define IDMA_SRC_ADDR_OFFSET         0x000000d8
 #define IDMA_DST_ADDR_OFFSET         0x000000d0
 #define IDMA_LENGTH_OFFSET           0x000000e0
-#define IDMA_NEXT_ID_OFFSET          0x00000044
-#define IDMA_DONE_ID_OFFSET          0x00000084
+#define IDMA_NEXT_ID_OFFSET          0x0000000c
+#define IDMA_DONE_ID_OFFSET          0x00000014
 #define IDMA_REPS_2                  0x000000f8
 #define IDMA_REPS_3                  0x00000110
 #define IDMA_CONF                    0x00000000
@@ -76,7 +76,6 @@ int main(int argc, char **argv) {
   bool b=0;
 
   b = b || dma_test(L2_BASE, TCDM_BASE, SIZE);
-
 
   return b;
 }
