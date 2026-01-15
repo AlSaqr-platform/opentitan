@@ -132,13 +132,53 @@ module security_island
 // Defs and assignments //
 //////////////////////////
 
+  // L2 Memory parameters
+  localparam int unsigned L2MemSize = 512*1024;
+  localparam int unsigned MemDataWidth = 32;
+  // The axi_to_mem imposes NumBanks = 2 * AxiDataWidth / MemDataWidth = 4 banks as a min value
+  localparam int unsigned NumBanks = 16;
+  localparam int unsigned L2BankSize = L2MemSize / NumBanks;
+  localparam int unsigned L2BankWords = L2BankSize / 4;
+
+  // Cluster parameters
+  localparam bit [5:0]  ClusterIdx        = 'h0;
+  localparam axi_addr_t ClusterPeriphOffs = 'h00200000;
+  localparam axi_addr_t ClusterExtOffs    = 'h00400000;
+
+  // Security island AXI address map
+  // Idx of the AXI crossbar slave ports (in)
+  localparam int unsigned AxiInOtIdx      = 0;
+  localparam int unsigned AxiInDMAIdx     = 1;
+  localparam int unsigned AxiInClusterIdx = 2;
+  // Map of the AXI crossbar master ports (out)
+  // External port maps at idx 0, starting from 0x0001_0000 to L2MemBase
+  localparam int unsigned AxiOutExtAddrIdx  = 0;
+  localparam axi_addr_t   AxiOutExtAddrBase = 'h0001_0000;
+  localparam int unsigned AxiOutExtAddrSize = 'h9FFF_0000;
+  // L2 port maps at idx 1, starting from 0xA000_0000 up to L2MemSize
+  localparam int unsigned AxiOutL2AddrIdx  = 1;
+  localparam axi_addr_t   AxiOutL2AddrBase = 'hA000_0000;
+  localparam int unsigned AxiOutL2AddrSize = L2MemSize;
+  // Cluster port maps at idx 2, starting from 0xB000_0000 up to ClusterExtOffs
+  localparam int unsigned AxiOutClusterAddrIdx  = 2;
+  localparam axi_addr_t   AxiOutClusterAddrBase = 'hB0000000;
+  localparam int unsigned AxiOutClusterAddrSize = ClusterExtOffs;
+
+   // AXI crossbars ports and rules
+   localparam int unsigned NumMstPorts = 3;
+   localparam int unsigned NumSlvPorts = 3;
+   localparam int unsigned NumRules = 3;
+
+   typedef struct packed {
+     int unsigned idx;
+     axi_addr_t start_addr;
+     axi_addr_t end_addr;
+   } xbar_rule_t;
+
    // Req/Resp structs for AXI XBAR master ports
    `AXI_TYPEDEF_ALL(axi_out, axi_addr_t, axi_out_id_t, axi_data_t, axi_strb_t, axi_user_t)
    // Req/Resp structs for AXI XBAR slave ports
    `AXI_TYPEDEF_ALL(axi_in, axi_addr_t, axi_in_id_t, axi_data_t, axi_strb_t, axi_user_t)
-
-   localparam int unsigned NumMstPorts = 3;
-   localparam int unsigned NumSlvPorts = 3;
 
    // Connections to the external AXI bus
    axi_ext_req_t axi_ext_serialized_req,
@@ -388,44 +428,27 @@ module security_island
   //////////////////
   // AXI Crossbar //
   //////////////////
-  localparam int unsigned NumRules = 3;
-  typedef struct packed {
-    int unsigned idx;
-    logic [AxiAddrWidth-1:0] start_addr;
-    logic [AxiAddrWidth-1:0] end_addr;
-  } xbar_rule_t;
 
   xbar_rule_t [NumRules-1:0] addr_map;
 
-  logic [AxiAddrWidth-1:0] host_base_addr,
-                           host_end_addr,
-                           cls_base_addr,
-                           cls_end_addr,
-                           l2_base_addr,
-                           l2_end_addr;
-
-  assign host_base_addr = 32'h0001_0000;
-  assign host_end_addr = 32'hA000_0000;
-  assign l2_base_addr = 32'hA000_0000;
-  assign l2_end_addr = 32'hA008_0000;
-  assign cls_base_addr = 32'hB000_0000;
-  assign cls_end_addr = 32'hB040_0000;
-
   assign addr_map = '{
-    '{ // Host
-      start_addr: host_base_addr,
-      end_addr:   host_end_addr,
-      idx:        0
+    '{
+      idx:        AxiOutExtAddrIdx,
+      start_addr: AxiOutExtAddrBase,
+      end_addr:   AxiOutExtAddrBase +
+                  AxiOutExtAddrSize
     },
-    '{ // Cluster
-      start_addr: cls_base_addr,
-      end_addr:   cls_end_addr,
-      idx:        1
+    '{
+      idx:        AxiOutL2AddrIdx,
+      start_addr: AxiOutL2AddrBase,
+      end_addr:   AxiOutL2AddrBase +
+                  AxiOutL2AddrSize
     },
-    '{ // L2
-      start_addr: l2_base_addr,
-      end_addr:   l2_end_addr,
-      idx:        2
+    '{
+      idx:        AxiOutClusterAddrIdx,
+      start_addr: AxiOutClusterAddrBase,
+      end_addr:   AxiOutClusterAddrBase +
+                  AxiOutClusterAddrSize
     }
   };
 
@@ -445,15 +468,15 @@ module security_island
     NoAddrRules:                      NumRules
   };
 
-  assign axi_ext_mst_req = axi_mst_req[0];
-  assign axi_cls_mst_req = axi_mst_req[1];
-  assign axi_l2_mst_req  = axi_mst_req[2];
-  assign axi_mst_rsp     = { axi_l2_mst_rsp, axi_cls_mst_rsp, axi_ext_mst_rsp };
+  assign axi_ext_mst_req = axi_mst_req[AxiOutExtAddrIdx];
+  assign axi_l2_mst_req  = axi_mst_req[AxiOutL2AddrIdx];
+  assign axi_cls_mst_req = axi_mst_req[AxiOutClusterAddrIdx];
+  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
-  assign axi_tlul_rsp    = axi_slv_rsp[0];
-  assign axi_idma_rsp    = axi_slv_rsp[1];
-  assign axi_cls_slv_rsp = axi_slv_rsp[2];
+  assign axi_tlul_rsp    = axi_slv_rsp[AxiInOtIdx];
+  assign axi_idma_rsp    = axi_slv_rsp[AxiInDMAIdx];
+  assign axi_cls_slv_rsp = axi_slv_rsp[AxiInClusterIdx];
 
   axi_xbar #(
     .Cfg          ( XbarCfg           ),
@@ -486,18 +509,9 @@ module security_island
     .default_mst_port_i     ( '0          )
   );
 
-  /////////////////////
-  // L2 memory slave //
-  /////////////////////
-
-  // parameters
-  localparam int unsigned L2MemSize = 512*1024;
-  localparam int unsigned MemDataWidth = 32;
-  // NumBanks = 2 * AxiDataWidth / MemDataWidth = 4 banks is the min value
-  // imposed by axi_to_mem
-  localparam int unsigned NumBanks = 16;
-  localparam int unsigned L2BankSize = L2MemSize / NumBanks;
-  localparam int unsigned L2BankWords = L2BankSize / 4;
+  ///////////////
+  // L2 memory //
+  ///////////////
 
   //  signals
   logic [NumBanks-1:0]                          l2_mem_slave_req;
@@ -690,12 +704,6 @@ module security_island
 // Pulp Cluster//
 /////////////////
 
-  localparam bit[31:0] ClustBase       = 'hB0000000;
-  localparam bit[31:0] ClustPeriphOffs = 'h00200000;
-  localparam bit[31:0] ClustExtOffs    = 'h00400000;
-  localparam bit[ 5:0] ClustIdx        = 'h0;
-  localparam bit[31:0] ClustBaseAddr   = ClustBase - (ClustIdx << 22);
-
   localparam pulp_cluster_cfg_t OTClusterCfg = '{
     CoreType: pulp_cluster_package::RI5CY,
     NumCores: 8,
@@ -737,7 +745,7 @@ module security_island
     L2Size: 512*1024,
     DmBaseAddr: 'h60203000, // FIXME: CHECK!
     BootRomBaseAddr: 32'h1A000000,
-    BootAddr: 32'hA0008080,
+    BootAddr: AxiOutL2AddrBase + 'h8080,
     EnablePrivateFpu: 1,
     EnablePrivateFpDivSqrt: 1,
     NumAxiIn: pulp_cluster_package::NumAxiSubordinatePorts,
@@ -753,9 +761,9 @@ module security_island
     AxiCdcLogDepth: LogDepth,
     AxiCdcSyncStages: CdcSyncStages,
     SyncStages: CdcSyncStages,
-    ClusterBaseAddr: ClustBaseAddr,
-    ClusterPeriphOffs: ClustPeriphOffs,
-    ClusterExternalOffs: ClustExtOffs,
+    ClusterBaseAddr: AxiOutClusterAddrBase - (ClusterIdx << 22),
+    ClusterPeriphOffs: ClusterPeriphOffs,
+    ClusterExternalOffs: ClusterExtOffs,
     EnableRemapAddress: 0,
     SnitchICache: 0,
     default: '0
@@ -775,7 +783,7 @@ module security_island
       .test_mode_i                     ( 1'b0                                 ),
       .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
 
-      .cluster_id_i                    ( 6'b000000                            ),
+      .cluster_id_i                    ( ClusterIdx                           ),
       .fetch_en_i                      ( cluster_fetch_enable                 ),
       .eoc_o                           ( s_cluster_eoc                        ),
       .busy_o                          (                                      ),
