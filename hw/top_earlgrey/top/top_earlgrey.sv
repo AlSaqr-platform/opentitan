@@ -2262,8 +2262,8 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .AxiDataWidth(AxiDataWidth),
       .AxiIdWidth(AxiIdWidth),
       .AxiUserWidth(AxiUserWidth),
-      .HostBaseAddr(IdmaHostBaseAddr),
-      .HostEndAddr(IdmaHostEndAddr)
+      .HostBaseAddr(HostBaseAddr),
+      .HostEndAddr(HostEndAddr)
   ) idma_wrap_i (
       .clk_i          ( clkmgr_aon_clocks.clk_main_infra ),
       .rst_ni         ( rstmgr_aon_resets.rst_lc_n[rstmgr_pkg::Domain0Sel] ),
