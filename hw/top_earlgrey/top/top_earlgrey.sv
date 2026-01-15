@@ -99,6 +99,9 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   parameter              SramCtrlMainMemInitFile = "",
   parameter bit          SramCtrlMainInstrExec = 1,
   parameter int unsigned MemSizeMainSram = 32*1024,
+  // parameters for idma
+  parameter logic [31:0] HostBaseAddr = 32'h0001_0000,
+  parameter logic [31:0] HostEndAddr = 32'hA000_0000,
   // parameters for rom_ctrl
   parameter              RomCtrlBootRomInitFile = "",
   parameter bit          SecRomCtrlDisableScrambling = 1'b0,
@@ -644,14 +647,14 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   logic       usbdev_usb_aon_bus_reset;
   logic       usbdev_usb_aon_sense_lost;
   logic       pinmux_aon_usbdev_wake_detect_active;
-   
+
   logic        datapath_o;
   logic        debug_flash_write;
   logic        debug_flash_req;
   logic [15:0] debug_flash_addr;
   logic [75:0] debug_flash_wdata;
   logic [75:0] debug_flash_wmask;
-   
+
   edn_pkg::edn_req_t [7:0] edn0_edn_req;
   edn_pkg::edn_rsp_t [7:0] edn0_edn_rsp;
   edn_pkg::edn_req_t [7:0] edn1_edn_req;
@@ -734,7 +737,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   tlul_ot_pkg::tl_d2h_t       kmac_tl_rsp;
   tlul_ot_pkg::tl_h2d_t       aes_tl_req;
   tlul_ot_pkg::tl_d2h_t       aes_tl_rsp;
-//Alex Grinshpun 
+//Alex Grinshpun
   tlul_ot_pkg::tl_h2d_t       perfcounters_t_top_req;
   tlul_ot_pkg::tl_d2h_t       perfcounters_t_top_rsp;
 
@@ -2258,7 +2261,9 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       .AxiAddrWidth(AxiAddrWidth),
       .AxiDataWidth(AxiDataWidth),
       .AxiIdWidth(AxiIdWidth),
-      .AxiUserWidth(AxiUserWidth)
+      .AxiUserWidth(AxiUserWidth),
+      .HostBaseAddr(IdmaHostBaseAddr),
+      .HostEndAddr(IdmaHostEndAddr)
   ) idma_wrap_i (
       .clk_i          ( clkmgr_aon_clocks.clk_main_infra ),
       .rst_ni         ( rstmgr_aon_resets.rst_lc_n[rstmgr_pkg::Domain0Sel] ),
@@ -3132,7 +3137,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
     // debug mode interface
     .tl_dbg_mode_o(bootmode_tl_req),
     .tl_dbg_mode_i(bootmode_tl_rsp),
-                         
+
     // port: tl_rom_ctrl__regs
     .tl_rom_ctrl__regs_o(rom_ctrl_regs_tl_req),
     .tl_rom_ctrl__regs_i(rom_ctrl_regs_tl_rsp),
