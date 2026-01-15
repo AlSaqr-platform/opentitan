@@ -132,6 +132,8 @@ module security_island
 // Defs and assignments //
 //////////////////////////
 
+  // OT Main Memory parameters
+  localparam OtMemSizeMainSram = 32*1024;
   // L2 Memory parameters
   localparam int unsigned L2MemSize = 512*1024;
   localparam int unsigned MemDataWidth = 32;
@@ -849,19 +851,21 @@ module security_island
 ///////////////
 
    top_earlgrey #(
-      .HartIdOffs       ( HartIdOffs       ),
-      .axi_w_chan_t     ( axi_in_w_chan_t  ),
-      .axi_b_chan_t     ( axi_in_b_chan_t  ),
-      .axi_r_chan_t     ( axi_in_r_chan_t  ),
-      .axi_aw_chan_t    ( axi_in_aw_chan_t ),
-      .axi_ar_chan_t    ( axi_in_ar_chan_t ),
-      .axi_req_t        ( axi_in_req_t     ),
-      .axi_rsp_t        ( axi_in_resp_t    ),
-      .AxiAddrWidth     ( AxiAddrWidth     ),
-      .AxiDataWidth     ( AxiDataWidth     ),
-      .AxiIdWidth       ( AxiInIdWidth     ),
-      .AxiUserWidth     ( AxiUserWidth     ),
-      .MemSizeMainSram  ( 32*1024          )
+      .HartIdOffs       ( HartIdOffs                          ),
+      .axi_w_chan_t     ( axi_in_w_chan_t                     ),
+      .axi_b_chan_t     ( axi_in_b_chan_t                     ),
+      .axi_r_chan_t     ( axi_in_r_chan_t                     ),
+      .axi_aw_chan_t    ( axi_in_aw_chan_t                    ),
+      .axi_ar_chan_t    ( axi_in_ar_chan_t                    ),
+      .axi_req_t        ( axi_in_req_t                        ),
+      .axi_rsp_t        ( axi_in_resp_t                       ),
+      .AxiAddrWidth     ( AxiAddrWidth                        ),
+      .AxiDataWidth     ( AxiDataWidth                        ),
+      .AxiIdWidth       ( AxiInIdWidth                        ),
+      .AxiUserWidth     ( AxiUserWidth                        ),
+      .MemSizeMainSram  ( OtMemSizeMainSram                   ),
+      .HostBaseAddr     ( AxiOutExtAddrBase                   ),
+      .HostEndAddr      ( AxiOutL2AddrBase + AxiOutL2AddrSize )
    ) u_RoT (
       .mio_attr_o                   (                       ),
       .dio_attr_o                   (                       ),

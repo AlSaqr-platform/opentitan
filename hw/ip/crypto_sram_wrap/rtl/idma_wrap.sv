@@ -29,6 +29,8 @@ module idma_wrap  import idma_pkg::*; #(
   parameter int unsigned AxiIdWidth            = 7,
   parameter int unsigned AxiUserWidth          = 1,
   parameter int unsigned StrideWidth           = 32,
+  parameter logic [31:0] HostBaseAddr          = 32'h0001_0000,
+  parameter logic [31:0] HostEndAddr           = 32'hA000_0000,
   parameter type         axi_req_t             = logic,
   parameter type         axi_rsp_t             = logic,
   parameter type         reg_req_t             = logic,
@@ -245,8 +247,8 @@ module idma_wrap  import idma_pkg::*; #(
   logic [AxiAddrWidth-1:0] host_end_addr;
   logic [AxiAddrWidth-1:0] tcdm_base_addr;
   logic [AxiAddrWidth-1:0] tcdm_end_addr;
-  assign host_base_addr = 32'h0001_0000;
-  assign host_end_addr = 32'hA000_0000;
+  assign host_base_addr = HostBaseAddr;
+  assign host_end_addr = HostEndAddr;
   assign tcdm_base_addr = 32'hfff0_0000;
   assign tcdm_end_addr = 32'hfff0_8000;
   assign addr_map = '{
