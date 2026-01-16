@@ -1,6 +1,5 @@
 import os
 import subprocess
-import concurrent.futures
 import time
 import glob
 import argparse
@@ -34,16 +33,16 @@ RUN_FOLDERS = [
     "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
     "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
 ]
-
-# 2. Generic Command to compile SW/Test applications.
+# 2. Generic Command to compile Cluster Test applications.
 COMPILE_COMMAND = "make clean all"
 
 # 3. Command Templates based on simulation type
 RUN_COMMAND_MAP = {
-    "rtl": "make sim_rtl_tech_mem SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
+    "rtl": "make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
+    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
     "gate": "make sim_gls_run SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
 }
-DEFAULT_SIMULATION_TYPE = "rtl" # Renamed from DEFAULT_NETLIST_TYPE
+DEFAULT_SIMULATION_TYPE = "rtl"
 
 # 4. Tests that need to be run 3 TIMES (These are the last 3 entries in RUN_FOLDERS)
 RUN_TRIPLE_TESTS = [
@@ -60,15 +59,28 @@ PARAM_CONFIGS = {
 }
 
 # 6. Design Compilation Commands (Run once from TOP_DIR)
-# NOTE: Modify these commands if your targets for the specific design builds are different.
-RTL_BUILD_COMMAND = "make build_tech_mem"
-GATE_BUILD_COMMAND = "make sim_gls_compile"
+RTL_BUILD_COMMAND = "make clean build"
+RTL_TECH_BUILD_COMMAND = "make clean build_tech_mem"
+GATE_BUILD_COMMAND = "make clean sim_gls_compile"
+
+# 7. OT Test Configuration
+# List of OT tests to be built and run
+OT_TEST_LIST = ["idma_test"]
+OT_TARGET = "opentitan"
+
+# Templates for OT Build and Run
+OT_TEST_BUILD_TEMPLATE = "make compile-bazel-sram test_name={} target={}"
+OT_TEST_RUN_TEMPLATES = {
+    "rtl": "make sim_rtl SRAM=sw/tests/opentitan/{}/bazel-out/{}.elf",
+    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/opentitan/{}/bazel-out/{}.elf",
+    "gate": "make sim_gls_run SRAM=sw/tests/opentitan/{}/bazel-out/{}.elf"
+}
 
 # --- Global Context ---
 TOP_DIR = os.getcwd()
 COMPILATION_SUCCESS = True
 RUN_COMMAND_TEMPLATE = ""
-LOG_FILE_PATH = "test_run.log" # New global constant for log file
+LOG_FILE_PATH = "test_run.log"
 
 # --- Argument Parsing Function ---
 
@@ -81,9 +93,9 @@ def parse_arguments():
     parser.add_argument(
         '--sim',
         type=str,
-        default=DEFAULT_SIMULATION_TYPE, # Use new constant name
+        default=DEFAULT_SIMULATION_TYPE,
         choices=RUN_COMMAND_MAP.keys(),
-        help=f'Selects the simulation type (e.g., RTL or Gate-Level). Default is "{DEFAULT_SIMULATION_TYPE}".\nChoices: {list(RUN_COMMAND_MAP.keys())}' # Updated help text
+        help=f'Selects the simulation type (RTL, RTL with tech memories or Gate-Level). Default is "{DEFAULT_SIMULATION_TYPE}".\nChoices: {list(RUN_COMMAND_MAP.keys())}'
     )
     return parser.parse_args()
 
@@ -95,14 +107,12 @@ def execute_command(command, directory):
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     full_path = os.path.abspath(directory)
 
-    # 1. Log command execution attempt
     with open(LOG_FILE_PATH, "a") as f:
         f.write(f"\n==================================\n")
         f.write(f"[{timestamp}] --- EXECUTING ---\n")
         f.write(f"[CWD] {full_path}\n")
         f.write(f"[CMD] {command}\n")
 
-    # 2. Execute command
     try:
         result = subprocess.run(
             command,
@@ -114,235 +124,193 @@ def execute_command(command, directory):
             universal_newlines=True
         )
 
-        # 3. Log success
         with open(LOG_FILE_PATH, "a") as f:
             f.write(f"[{timestamp}] --- SUCCESS ---\n")
-            f.write(f"[CWD] {directory} finished successfully.\n")
-            f.write(f"[STDOUT (Excerpt)]\n{result.stdout[:500]}...\n" if result.stdout else "[STDOUT] (No output)\n")
+            f.write(f"[STDOUT (Excerpt)]\n{result.stdout[:1000]}...\n" if result.stdout else "[STDOUT] (No output)\n")
 
         return True
 
-    # 4. Log subprocess failure (CalledProcessError)
     except subprocess.CalledProcessError as e:
-        print(f"[{directory}] FAILED Command: {command}")
-        print(f"Stdout:\n{e.stdout}\nStderr:\n{e.stderr}")
-
+        print(f"FAILED Command: {command}")
         with open(LOG_FILE_PATH, "a") as f:
             f.write(f"[{timestamp}] --- FAILURE (CalledProcessError) ---\n")
             f.write(f"[CWD] {directory} FAILED Command: {command}\n")
             f.write(f"[STDOUT]\n{e.stdout}\n")
             f.write(f"[STDERR]\n{e.stderr}\n")
-
         return False
 
-    # 5. Log command not found error
     except FileNotFoundError:
-        print(f"[{directory}] ERROR: Command not found. Check your environment PATH or command spelling.")
-
-        with open(LOG_FILE_PATH, "a") as f:
-            f.write(f"[{timestamp}] --- ERROR (FileNotFound) ---\n")
-            f.write(f"[CWD] {directory} ERROR: Command not found.\n")
-
+        print(f"[{directory}] ERROR: Command not found.")
         return False
 
-def build_design(simulation_type, build_command):
-    """Builds the global simulation structure once from the top directory."""
-    print(f"--- Starting {simulation_type.upper()} Build ---")
-    # Execute the dedicated build command from the top directory
-    if not execute_command(build_command, TOP_DIR):
-        print(f"{simulation_type.upper()} Build FAILED with command: {build_command}. Aborting subsequent steps.")
+def build_design(simulation_name, build_command):
+    """Builds the hardware design (RTL or Gate) before running tests."""
+    print(f"\n--- Starting {simulation_name} Design Build ---")
+    success = execute_command(build_command, TOP_DIR)
+    if not success:
+        print(f"FATAL: {simulation_name} build failed. Aborting.")
         return False
-    print(f"--- Finished {simulation_type.upper()} Build ---")
+    print(f"--- {simulation_name} Design Build Finished ---")
     return True
 
 def compile_projects():
-    """Compiles all software projects sequentially within their own folders."""
+    """Compiles Cluster Test apps sequentially."""
     global COMPILATION_SUCCESS
-    print("--- Starting Sequential Local Compilation (Software) ---")
+    print("\n--- Starting Cluster Tests Compilation ---")
     for folder in COMPILE_FOLDERS:
-        print(f"[{folder}] Compiling with command: {COMPILE_COMMAND}")
+        print(f"[{folder}] Compiling...")
         if not execute_command(COMPILE_COMMAND, folder):
             print(f"Compilation FAILED for {folder}. Aborting subsequent steps.")
             COMPILATION_SUCCESS = False
             break
-    print("--- Finished Compilation ---")
+    print("--- Finished Cluster Tests Compilation ---")
 
-
-def run_single_test_globally(test_folder_path):
-    """
-    Executes a single test, applies the correct conditional parameter based on the suffix,
-    and cleans up wlft* files.
-    """
+def run_single_test_globally(test_name):
+    """Executes a simulation sequence, handling parametric suffixes and cleanup."""
     global RUN_COMMAND_TEMPLATE
     global PARAM_CONFIGS
 
-    # 1. Determine the actual folder path for the command and the required suffix
-    base_folder_for_cmd = test_folder_path
+    base_folder = test_name
     extra_parameter = ""
 
-    # Check if the path ends with any of the defined suffixes
+    # Resolve parametric name to real folder path
     for suffix, param_str in PARAM_CONFIGS.items():
-        if test_folder_path.endswith(suffix):
-            # If it matches a suffix, strip it to get the base folder path
-            base_folder_for_cmd = test_folder_path[:-len(suffix)]
+        if test_name.endswith(suffix):
+            base_folder = test_name[:-len(suffix)]
             extra_parameter = param_str
             break
 
-    # Start with the base command
-    run_cmd = RUN_COMMAND_TEMPLATE.format(base_folder_for_cmd)
-
-    # 2. --- CONDITIONAL PARAMETER APPENDING ---
-    if extra_parameter:
-        run_cmd += extra_parameter
-        print(f"[{test_folder_path}] NOTE: Appending parameter: {extra_parameter.strip()}")
-
-    print(f"--- Starting run for: {test_folder_path} (Final Command: {run_cmd}) ---")
+    run_cmd = RUN_COMMAND_TEMPLATE.format(base_folder) + extra_parameter
+    print(f"--- Running: {test_name} ---")
 
     success = False
-
-    # 3. Execute the RUN command
     try:
-        # RUN is executed from the TOP_DIR
         if execute_command(run_cmd, TOP_DIR):
-            print(f"[{test_folder_path}] Tests finished: SUCCESS.")
+            print(f"[{test_name}] SUCCESS.")
             success = True
         else:
-            print(f"[{test_folder_path}] Tests finished: FAILURE during command execution.")
+            print(f"[{test_name}] FAILURE.")
 
     except Exception as e:
-        print(f"[{test_folder_path}] CRITICAL PYTHON ERROR: {type(e).__name__}: {str(e)}")
-        # Log critical internal script error
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        with open(LOG_FILE_PATH, "a") as f:
-            f.write(f"\n[{timestamp}] --- CRITICAL PYTHON ERROR ---\n")
-            f.write(f"Script internal error during test {test_folder_path}: {type(e).__name__}: {str(e)}\n")
+        print(f"[{test_name}] Python Error: {str(e)}")
+        return f"ERROR in {test_name}"
 
-        return f"CRITICAL FAILURE ({type(e).__name__}) in {test_folder_path}"
-
-    # 4. **CLEANUP: Delete wlft* files**
+    # Cleanup simulation artifacts
     try:
-        # Cleanup targets the base folder path where the compilation artifacts reside
-        wlft_files = glob.glob(os.path.join(base_folder_for_cmd, 'wlft*'))
-        if wlft_files:
-            for file_path in wlft_files:
-                os.remove(file_path)
-            print(f"[{test_folder_path}] Cleanup: Eliminated {len(wlft_files)} wlft* files.")
+        wlft_files = glob.glob(os.path.join(base_folder, 'wlft*'))
+        for f in wlft_files:
+            os.remove(f)
+    except Exception:
+        pass
 
-    except Exception as e:
-        print(f"[{test_folder_path}] WARNING: Cleanup failed for wlft* files. Error: {str(e)}")
-
-    # 5. Return the result
-    if success:
-        return f"SUCCESS in {test_folder_path}"
-    else:
-        return f"FAILURE in {test_folder_path}"
-
+    return f"{'SUCCESS' if success else 'FAILURE'} in {test_name}"
 
 def main():
     global COMPILATION_SUCCESS
     global RUN_COMMAND_TEMPLATE
-    global RUN_FOLDERS
 
-    # 0. Start by clearing the log file
+    # Init log
     with open(LOG_FILE_PATH, "w") as f:
-        f.write("--- TEST RUN LOG STARTED ---\n")
-        f.write(f"Run started at: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Test Run Log - Started: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
 
-    # 1. Parse Arguments and Set Global Variables
     args = parse_arguments()
     RUN_COMMAND_TEMPLATE = RUN_COMMAND_MAP[args.sim]
 
-    # 2. Job Duplication Logic for tests that must run 3 times
-    FINAL_RUN_FOLDERS = []
-
-    # Add all tests that are NOT tripled
+    # Expand Test Sequence
+    FINAL_RUN_SEQUENCE = []
     for folder in RUN_FOLDERS:
         if folder not in RUN_TRIPLE_TESTS:
-            FINAL_RUN_FOLDERS.append(folder)
+            FINAL_RUN_SEQUENCE.append(folder)
 
-    # Generate the 3 parametric jobs for each of the 3 triple tests (9 jobs total)
     for test_folder in RUN_TRIPLE_TESTS:
         for suffix in PARAM_CONFIGS.keys():
-            # Create a unique job identifier: e.g., '...idma_multi_core_PARAM_A'
-            parametric_job_name = test_folder + suffix
-            FINAL_RUN_FOLDERS.append(parametric_job_name)
+            FINAL_RUN_SEQUENCE.append(test_folder + suffix)
 
-    # Logic to select and print the global build command
-    design_build_command = None
-    simulation_name = args.sim.upper()
-    if args.sim == 'rtl':
-        design_build_command = RTL_BUILD_COMMAND
-    elif args.sim == 'gate':
-        design_build_command = GATE_BUILD_COMMAND
+    # Determine hardware build command
+    build_cmd = None
+    if args.sim == 'rtl': build_cmd = RTL_BUILD_COMMAND
+    elif args.sim == 'rtl_tech': build_cmd = RTL_TECH_BUILD_COMMAND
+    elif args.sim == 'gate': build_cmd = GATE_BUILD_COMMAND
 
-    # --- PRINTING THE CONFIGURATION SUMMARY (and logging it) ---
-    summary = "==================================\n"
-    summary += "      TEST RUN CONFIGURATION      \n"
-    summary += "==================================\n"
-    summary += f"CLI Parameter: Sim Type: '{args.sim}'\n"
-    summary += f"Base Tests: {len(RUN_FOLDERS)}\n"
-    summary += f"Tripled Tests: {len(RUN_TRIPLE_TESTS)} (Running {len(RUN_TRIPLE_TESTS) * 3} times)\n"
-    summary += f"Total Jobs to Run: {len(FINAL_RUN_FOLDERS)}\n"
-    summary += f"Selected Run Command: {RUN_COMMAND_TEMPLATE}\n"
-
-    if design_build_command:
-         summary += f"{simulation_name} Build Command: {design_build_command}\n"
-
-    summary += "=================================="
-
-    print(summary)
-    with open(LOG_FILE_PATH, "a") as f:
-        f.write(f"\n{summary}\n")
+    print(f"Mode: {args.sim.upper()}")
+    print(f"Total Tests to Run: {len(FINAL_RUN_SEQUENCE)}")
 
     start_time = time.time()
-
-    # Step 3: Sequential Compilation (Local Context - Compiling SW/Tests)
-    compile_projects()
-
-    if not COMPILATION_SUCCESS:
-        print("\nFATAL: Local software compilation failed. Test execution aborted.")
-        with open(LOG_FILE_PATH, "a") as f:
-            f.write("\nFATAL: Local software compilation failed. Test execution aborted.\n")
-        return
-
-    # Step 4: Design Compilation (Executed conditionally)
-    if design_build_command:
-        if not build_design(simulation_name, design_build_command):
-            print(f"\nFATAL: {simulation_name} compilation failed. Test execution aborted.")
-            with open(LOG_FILE_PATH, "a") as f:
-                f.write(f"\nFATAL: {simulation_name} compilation failed. Test execution aborted.\n")
-            return
-
-    # Step 5: Sourcing Environment (Warning remains)
-    print("WARNING: Attempting to source environment script...")
-    # NOTE: Sourcing with subprocess.run(shell=True) might not persist the env in the current script context.
-    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
-
-
-    # Step 6: Test Execution (Global Context - Running Simulations)
-    print("\n--- Starting Test Execution (from Top Dir) ---")
     results = []
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        # Use the finalized list of jobs here
-        futures = {executor.submit(run_single_test_globally, folder): folder for folder in FINAL_RUN_FOLDERS}
+    # Step 1: Cluster Test Compilation
+    compile_projects()
+    if not COMPILATION_SUCCESS:
+        results.append("FAILURE in Cluster Test Compilation")
+        summary_and_exit(results, start_time)
+        return
+    results.append("SUCCESS in Cluster Test Compilation")
 
-        for future in concurrent.futures.as_completed(futures):
-            results.append(future.result())
+    # Step 2: Opentitan Test Build Command
+    print("\n--- Starting Opentitan Tests Compilation ---")
+    ot_comp_fail = False
+    for ot_test in OT_TEST_LIST:
+        ot_build_cmd = OT_TEST_BUILD_TEMPLATE.format(ot_test, OT_TARGET)
+        print(f"[sw/tests/opentitan/{ot_test}] Compiling...")
+        if not execute_command(ot_build_cmd, TOP_DIR):
+            print(f"FATAL: Opentitan Test Build failed for {ot_test}. Aborting.")
+            ot_comp_fail = True
+            break
 
-    # --- Summary Report (and logging it) ---
+    if ot_comp_fail:
+        results.append("FAILURE in Opentitan Tests Compilation")
+        summary_and_exit(results, start_time)
+        return
+
+    results.append("SUCCESS in Opentitan Tests Compilation")
+    print("--- Finished Opentitan Tests Compilation ---")
+
+    # Step 3: Hardware Build (Simulation specific)
+    if build_cmd:
+        hw_build_success = build_design(args.sim.upper(), build_cmd)
+        if not hw_build_success:
+            results.append(f"FAILURE in {args.sim.upper()} Design Build")
+            summary_and_exit(results, start_time)
+            return
+        results.append(f"SUCCESS in {args.sim.upper()} Design Build")
+
+    # Step 4: Environment Sourcing
+    print("Sourcing environment config...")
+    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
+
+    # Step 5: Cluster Tests Simulation
+    print("\n--- Starting Cluster Tests Simulation ---")
+    for test_item in FINAL_RUN_SEQUENCE:
+        result = run_single_test_globally(test_item)
+        results.append(result)
+
+    # Step 6: Opentitan Test Run Command
+    ot_run_template = OT_TEST_RUN_TEMPLATES.get(args.sim)
+    print("\n--- Starting Opentitan Tests Simulation ---")
+    if ot_run_template:
+        for ot_test in OT_TEST_LIST:
+            # Format the run command using the test name for both path and elf filename
+            print(f"--- Running: sw/tests/opentitan/{ot_test} ---")
+            ot_run_cmd = ot_run_template.format(ot_test, ot_test)
+            ot_run_success = execute_command(ot_run_cmd, TOP_DIR)
+
+            if ot_run_success:
+                results.append(f"SUCCESS in sw/tests/opentitan/{ot_test}")
+            else:
+                results.append(f"FAILURE in sw/tests/opentitan/{ot_test}")
+
+    summary_and_exit(results, start_time)
+
+def summary_and_exit(results, start_time):
+    """Prints the final summary report and logs it."""
     end_time = time.time()
-    final_summary = "\n==================================\n"
-    final_summary += "      FINAL EXECUTION SUMMARY    \n"
-    final_summary += "==================================\n"
-    for result in results:
-        final_summary += f"Result: {result}\n"
-    final_summary += f"\nTotal Time: {end_time - start_time:.2f} seconds\n"
-    final_summary += "==================================\n"
+    summary_block = "\n" + "="*34 + "\n      FINAL SUMMARY\n" + "="*34 + "\n"
+    for r in results: summary_block += f"{r}\n"
+    summary_block += f"\nTotal Time: {end_time - start_time:.2f}s\n" + "="*34
 
-    print(final_summary)
+    print(summary_block)
     with open(LOG_FILE_PATH, "a") as f:
-        f.write(f"\n{final_summary}\n")
+        f.write(f"\n{summary_block}\n")
 
 if __name__ == "__main__":
     main()

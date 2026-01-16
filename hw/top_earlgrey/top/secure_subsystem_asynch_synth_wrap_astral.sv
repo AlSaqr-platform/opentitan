@@ -41,10 +41,12 @@ module security_island
    parameter type axi_ext_r_chan_t = synth_axi_ext_r_chan_t,
    parameter type axi_ext_req_t = synth_axi_ext_req_t,
    parameter type axi_ext_resp_t = synth_axi_ext_resp_t,
-   // Synchronizaton parameters
+   // Synchronization parameters
    parameter int unsigned LogDepth = SynthLogDepth,
    parameter int unsigned CdcSyncStages = SynthCdcSyncStages,
    parameter int unsigned SyncStages = 3,
+   // AXI cut parameter
+   parameter bit L2AxiCutBypass = 1'b0,
    // Derived local parameters
    // Parameters for asynchronous CDC interface
    localparam int unsigned AsyncAxiExtAwWidth = (2**LogDepth)*axi_pkg::aw_width(AxiAddrWidth, AxiExtIdWidth, AxiUserWidth),
@@ -130,13 +132,55 @@ module security_island
 // Defs and assignments //
 //////////////////////////
 
+  // OT Main Memory parameters
+  localparam OtMemSizeMainSram = 32*1024;
+  // L2 Memory parameters
+  localparam int unsigned L2MemSize = 512*1024;
+  localparam int unsigned MemDataWidth = 32;
+  // The axi_to_mem imposes NumBanks = 2 * AxiDataWidth / MemDataWidth = 4 banks as a min value
+  localparam int unsigned NumBanks = 16;
+  localparam int unsigned L2BankSize = L2MemSize / NumBanks;
+  localparam int unsigned L2BankWords = L2BankSize / 4;
+
+  // Cluster parameters
+  localparam bit [5:0]  ClusterIdx        = 'h0;
+  localparam axi_addr_t ClusterPeriphOffs = 'h00200000;
+  localparam axi_addr_t ClusterExtOffs    = 'h00400000;
+
+  // Security island AXI address map
+  // Idx of the AXI crossbar slave ports (in)
+  localparam int unsigned AxiInOtIdx      = 0;
+  localparam int unsigned AxiInDMAIdx     = 1;
+  localparam int unsigned AxiInClusterIdx = 2;
+  // Map of the AXI crossbar master ports (out)
+  // External port maps at idx 0, starting from 0x0001_0000 to L2MemBase
+  localparam int unsigned AxiOutExtAddrIdx  = 0;
+  localparam axi_addr_t   AxiOutExtAddrBase = 'h0001_0000;
+  localparam int unsigned AxiOutExtAddrSize = 'h9FFF_0000;
+  // L2 port maps at idx 1, starting from 0xA000_0000 up to L2MemSize
+  localparam int unsigned AxiOutL2AddrIdx  = 1;
+  localparam axi_addr_t   AxiOutL2AddrBase = 'hA000_0000;
+  localparam int unsigned AxiOutL2AddrSize = L2MemSize;
+  // Cluster port maps at idx 2, starting from 0xB000_0000 up to ClusterExtOffs
+  localparam int unsigned AxiOutClusterAddrIdx  = 2;
+  localparam axi_addr_t   AxiOutClusterAddrBase = 'hB0000000;
+  localparam int unsigned AxiOutClusterAddrSize = ClusterExtOffs;
+
+   // AXI crossbars ports and rules
+   localparam int unsigned NumMstPorts = 3;
+   localparam int unsigned NumSlvPorts = 3;
+   localparam int unsigned NumRules = 3;
+
+   typedef struct packed {
+     int unsigned idx;
+     axi_addr_t start_addr;
+     axi_addr_t end_addr;
+   } xbar_rule_t;
+
    // Req/Resp structs for AXI XBAR master ports
    `AXI_TYPEDEF_ALL(axi_out, axi_addr_t, axi_out_id_t, axi_data_t, axi_strb_t, axi_user_t)
    // Req/Resp structs for AXI XBAR slave ports
    `AXI_TYPEDEF_ALL(axi_in, axi_addr_t, axi_in_id_t, axi_data_t, axi_strb_t, axi_user_t)
-
-   localparam int unsigned NumMstPorts = 2;
-   localparam int unsigned NumSlvPorts = 3;
 
    // Connections to the external AXI bus
    axi_ext_req_t axi_ext_serialized_req,
@@ -148,9 +192,13 @@ module security_island
    axi_out_req_t [NumMstPorts-1:0] axi_mst_req;
    axi_out_resp_t [NumMstPorts-1:0] axi_mst_rsp;
    axi_out_req_t axi_ext_mst_req,
-                 axi_cls_mst_req;
+                 axi_cls_mst_req,
+                 axi_l2_mst_req,
+                 axi_l2_mst_req_del;
    axi_out_resp_t axi_ext_mst_rsp,
-                  axi_cls_mst_rsp;
+                  axi_cls_mst_rsp,
+                  axi_l2_mst_rsp,
+                  axi_l2_mst_rsp_del;
 
    // Connections to the AXI XBAR slave ports
    axi_in_req_t [NumSlvPorts-1:0] axi_slv_req;
@@ -302,25 +350,25 @@ module security_island
       .axi_req_t  ( axi_ext_req_t     ),
       .axi_resp_t ( axi_ext_resp_t    )
    ) i_cdc_out_tlul2axi (
-      .src_clk_i                  ( clk_i                   ),
-      .src_rst_ni                 ( pwr_on_rst_ni           ),
-      .async_data_master_aw_data_o( async_axi_ext_aw_data_o ),
-      .async_data_master_aw_wptr_o( async_axi_ext_aw_wptr_o ),
-      .async_data_master_aw_rptr_i( async_axi_ext_aw_rptr_i ),
-      .async_data_master_w_data_o ( async_axi_ext_w_data_o  ),
-      .async_data_master_w_wptr_o ( async_axi_ext_w_wptr_o  ),
-      .async_data_master_w_rptr_i ( async_axi_ext_w_rptr_i  ),
-      .async_data_master_b_data_i ( async_axi_ext_b_data_i  ),
-      .async_data_master_b_wptr_i ( async_axi_ext_b_wptr_i  ),
-      .async_data_master_b_rptr_o ( async_axi_ext_b_rptr_o  ),
-      .async_data_master_ar_data_o( async_axi_ext_ar_data_o ),
-      .async_data_master_ar_wptr_o( async_axi_ext_ar_wptr_o ),
-      .async_data_master_ar_rptr_i( async_axi_ext_ar_rptr_i ),
-      .async_data_master_r_data_i ( async_axi_ext_r_data_i  ),
-      .async_data_master_r_wptr_i ( async_axi_ext_r_wptr_i  ),
-      .async_data_master_r_rptr_o ( async_axi_ext_r_rptr_o  ),
-      .src_req_i                  ( axi_ext_isolated_req ),
-      .src_resp_o                 ( axi_ext_isolated_rsp )
+      .src_clk_i                   ( clk_i                   ),
+      .src_rst_ni                  ( pwr_on_rst_ni           ),
+      .async_data_master_aw_data_o ( async_axi_ext_aw_data_o ),
+      .async_data_master_aw_wptr_o ( async_axi_ext_aw_wptr_o ),
+      .async_data_master_aw_rptr_i ( async_axi_ext_aw_rptr_i ),
+      .async_data_master_w_data_o  ( async_axi_ext_w_data_o  ),
+      .async_data_master_w_wptr_o  ( async_axi_ext_w_wptr_o  ),
+      .async_data_master_w_rptr_i  ( async_axi_ext_w_rptr_i  ),
+      .async_data_master_b_data_i  ( async_axi_ext_b_data_i  ),
+      .async_data_master_b_wptr_i  ( async_axi_ext_b_wptr_i  ),
+      .async_data_master_b_rptr_o  ( async_axi_ext_b_rptr_o  ),
+      .async_data_master_ar_data_o ( async_axi_ext_ar_data_o ),
+      .async_data_master_ar_wptr_o ( async_axi_ext_ar_wptr_o ),
+      .async_data_master_ar_rptr_i ( async_axi_ext_ar_rptr_i ),
+      .async_data_master_r_data_i  ( async_axi_ext_r_data_i  ),
+      .async_data_master_r_wptr_i  ( async_axi_ext_r_wptr_i  ),
+      .async_data_master_r_rptr_o  ( async_axi_ext_r_rptr_o  ),
+      .src_req_i                   ( axi_ext_isolated_req    ),
+      .src_resp_o                  ( axi_ext_isolated_rsp    )
    );
 
    axi_isolate            #(
@@ -334,33 +382,33 @@ module security_island
      .axi_req_t            ( axi_ext_req_t  ),
      .axi_resp_t           ( axi_ext_resp_t )
    ) i_axi_out_isolate_tlul2axi (
-     .clk_i                ( clk_i            ),
-     .rst_ni               ( rst_ni           ),
-     .slv_req_i            ( axi_ext_serialized_req     ),
-     .slv_resp_o           ( axi_ext_serialized_rsp     ),
-     .mst_req_o            ( axi_ext_isolated_req ),
-     .mst_resp_i           ( axi_ext_isolated_rsp ),
-     .isolate_i            ( axi_isolate_sync ),
-     .isolated_o           ( axi_isolated_o   )
+     .clk_i                ( clk_i                  ),
+     .rst_ni               ( rst_ni                 ),
+     .slv_req_i            ( axi_ext_serialized_req ),
+     .slv_resp_o           ( axi_ext_serialized_rsp ),
+     .mst_req_o            ( axi_ext_isolated_req   ),
+     .mst_resp_i           ( axi_ext_isolated_rsp   ),
+     .isolate_i            ( axi_isolate_sync       ),
+     .isolated_o           ( axi_isolated_o         )
    );
 
    axi_id_serialize #(
-    .AxiSlvPortIdWidth      ( AxiOutIdWidth        ),
-    .AxiMstPortMaxUniqIds   ( 4                    ),
-    .AxiMstPortMaxTxnsPerId ( 4                    ),
-    .AxiMstPortIdWidth      ( AxiExtIdWidth      ),
-    .AxiAddrWidth           ( AxiAddrWidth         ),
-    .AxiUserWidth           ( AxiUserWidth      ),
-    .AxiDataWidth           ( AxiDataWidth         ),
-    .slv_req_t              ( axi_out_req_t        ),
-    .slv_resp_t             ( axi_out_resp_t       ),
+    .AxiSlvPortIdWidth      ( AxiOutIdWidth  ),
+    .AxiMstPortMaxUniqIds   ( 4              ),
+    .AxiMstPortMaxTxnsPerId ( 4              ),
+    .AxiMstPortIdWidth      ( AxiExtIdWidth  ),
+    .AxiAddrWidth           ( AxiAddrWidth   ),
+    .AxiUserWidth           ( AxiUserWidth   ),
+    .AxiDataWidth           ( AxiDataWidth   ),
+    .slv_req_t              ( axi_out_req_t  ),
+    .slv_resp_t             ( axi_out_resp_t ),
     .mst_req_t              ( axi_ext_req_t  ),
     .mst_resp_t             ( axi_ext_resp_t )
    ) ot_id_remap (
-    .clk_i      ( clk_i                 ),
-    .rst_ni     ( rst_ni                ),
-    .slv_req_i  ( axi_ext_mst_req       ),
-    .slv_resp_o ( axi_ext_mst_rsp       ),
+    .clk_i      ( clk_i                  ),
+    .rst_ni     ( rst_ni                 ),
+    .slv_req_i  ( axi_ext_mst_req        ),
+    .slv_resp_o ( axi_ext_mst_rsp        ),
     .mst_req_o  ( axi_ext_serialized_req ),
     .mst_resp_i ( axi_ext_serialized_rsp )
    );
@@ -383,35 +431,26 @@ module security_island
   // AXI Crossbar //
   //////////////////
 
-  localparam int unsigned NumRules = 2;
-  typedef struct packed {
-    int unsigned idx;
-    logic [AxiAddrWidth-1:0] start_addr;
-    logic [AxiAddrWidth-1:0] end_addr;
-  } xbar_rule_t;
-
   xbar_rule_t [NumRules-1:0] addr_map;
 
-  logic [AxiAddrWidth-1:0] host_base_addr,
-                           host_end_addr,
-                           cls_base_addr,
-                           cls_end_addr;
-
-  assign host_base_addr = 32'h0001_0000;
-  assign host_end_addr = 32'hB000_0000;
-  assign cls_base_addr = 32'hB000_0000;
-  assign cls_end_addr = 32'hC000_0000;
-
   assign addr_map = '{
-    '{ // Host
-      start_addr: host_base_addr,
-      end_addr:   host_end_addr,
-      idx:        0
+    '{
+      idx:        AxiOutExtAddrIdx,
+      start_addr: AxiOutExtAddrBase,
+      end_addr:   AxiOutExtAddrBase +
+                  AxiOutExtAddrSize
     },
-    '{ // Cluster
-      start_addr: cls_base_addr,
-      end_addr:   cls_end_addr,
-      idx:        1
+    '{
+      idx:        AxiOutL2AddrIdx,
+      start_addr: AxiOutL2AddrBase,
+      end_addr:   AxiOutL2AddrBase +
+                  AxiOutL2AddrSize
+    },
+    '{
+      idx:        AxiOutClusterAddrIdx,
+      start_addr: AxiOutClusterAddrBase,
+      end_addr:   AxiOutClusterAddrBase +
+                  AxiOutClusterAddrSize
     }
   };
 
@@ -431,30 +470,31 @@ module security_island
     NoAddrRules:                      NumRules
   };
 
-  assign axi_ext_mst_req = axi_mst_req[0];
-  assign axi_cls_mst_req = axi_mst_req[1];
-  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_ext_mst_rsp };
+  assign axi_ext_mst_req = axi_mst_req[AxiOutExtAddrIdx];
+  assign axi_l2_mst_req  = axi_mst_req[AxiOutL2AddrIdx];
+  assign axi_cls_mst_req = axi_mst_req[AxiOutClusterAddrIdx];
+  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
-  assign axi_tlul_rsp    = axi_slv_rsp[0];
-  assign axi_idma_rsp    = axi_slv_rsp[1];
-  assign axi_cls_slv_rsp = axi_slv_rsp[2];
+  assign axi_tlul_rsp    = axi_slv_rsp[AxiInOtIdx];
+  assign axi_idma_rsp    = axi_slv_rsp[AxiInDMAIdx];
+  assign axi_cls_slv_rsp = axi_slv_rsp[AxiInClusterIdx];
 
   axi_xbar #(
     .Cfg          ( XbarCfg           ),
-    .slv_aw_chan_t( axi_in_aw_chan_t     ),
+    .slv_aw_chan_t( axi_in_aw_chan_t  ),
     .mst_aw_chan_t( axi_out_aw_chan_t ),
     // W channel does not depend on IDs,
     // so it is the same for master/slave ports
     .w_chan_t     ( axi_out_w_chan_t  ),
-    .slv_b_chan_t ( axi_in_b_chan_t      ),
+    .slv_b_chan_t ( axi_in_b_chan_t   ),
     .mst_b_chan_t ( axi_out_b_chan_t  ),
-    .slv_ar_chan_t( axi_in_ar_chan_t     ),
+    .slv_ar_chan_t( axi_in_ar_chan_t  ),
     .mst_ar_chan_t( axi_out_ar_chan_t ),
-    .slv_r_chan_t ( axi_in_r_chan_t      ),
+    .slv_r_chan_t ( axi_in_r_chan_t   ),
     .mst_r_chan_t ( axi_out_r_chan_t  ),
-    .slv_req_t    ( axi_in_req_t         ),
-    .slv_resp_t   ( axi_in_resp_t        ),
+    .slv_req_t    ( axi_in_req_t      ),
+    .slv_resp_t   ( axi_in_resp_t     ),
     .mst_req_t    ( axi_out_req_t     ),
     .mst_resp_t   ( axi_out_resp_t    ),
     .rule_t       ( xbar_rule_t       )
@@ -470,6 +510,92 @@ module security_island
     .en_default_mst_port_i  ( '0          ),
     .default_mst_port_i     ( '0          )
   );
+
+  ///////////////
+  // L2 memory //
+  ///////////////
+
+  //  signals
+  logic [NumBanks-1:0]                          l2_mem_slave_req;
+  logic [NumBanks-1:0]                          l2_mem_slave_gnt;
+  logic [NumBanks-1:0]                          l2_mem_slave_we;
+  logic [NumBanks-1:0][MemDataWidth/8-1:0     ] l2_mem_slave_be;
+  logic [NumBanks-1:0][$clog2(L2BankWords)-1:0] l2_mem_slave_add;
+  logic [NumBanks-1:0][MemDataWidth-1:0       ] l2_mem_slave_data;
+  logic [NumBanks-1:0][MemDataWidth-1:0       ] l2_mem_slave_r_data;
+
+  axi_cut #(
+      .Bypass     ( L2AxiCutBypass    ),
+      .aw_chan_t  ( axi_out_aw_chan_t ),
+      .w_chan_t   ( axi_out_w_chan_t  ),
+      .b_chan_t   ( axi_out_b_chan_t  ),
+      .ar_chan_t  ( axi_out_ar_chan_t ),
+      .r_chan_t   ( axi_out_r_chan_t  ),
+      .axi_req_t  ( axi_out_req_t     ),
+      .axi_resp_t ( axi_out_resp_t    )
+  ) i_axi_cut (
+      .clk_i      ( clk_i              ),
+      .rst_ni     ( rst_ni             ),
+      .slv_req_i  ( axi_l2_mst_req     ),
+      .slv_resp_o ( axi_l2_mst_rsp     ),
+      .mst_req_o  ( axi_l2_mst_req_del ),
+      .mst_resp_i ( axi_l2_mst_rsp_del )
+  );
+
+  axi_to_mem_banked #(
+      .AxiIdWidth    ( AxiOutIdWidth      ),
+      .AxiAddrWidth  ( AxiAddrWidth       ),
+      .AxiDataWidth  ( AxiDataWidth       ),
+      .axi_aw_chan_t ( axi_out_aw_chan_t  ),
+      .axi_w_chan_t  ( axi_out_w_chan_t   ),
+      .axi_b_chan_t  ( axi_out_b_chan_t   ),
+      .axi_ar_chan_t ( axi_out_ar_chan_t  ),
+      .axi_r_chan_t  ( axi_out_r_chan_t   ),
+      .axi_req_t     ( axi_out_req_t      ),
+      .axi_resp_t    ( axi_out_resp_t     ),
+      .MemNumBanks   ( NumBanks           ),
+      .MemAddrWidth  ( $clog2(L2BankWords)),
+      .MemDataWidth  ( MemDataWidth       )
+  ) axi_to_mem_instance (
+      .clk_i       ( clk_i               ),
+      .rst_ni      ( rst_ni              ),
+      .test_i      ( '0                  ),
+      .axi_req_i   ( axi_l2_mst_req_del  ),
+      .axi_resp_o  ( axi_l2_mst_rsp_del  ),
+      .mem_req_o   ( l2_mem_slave_req    ),
+      .mem_gnt_i   ( l2_mem_slave_gnt    ),
+      .mem_add_o   ( l2_mem_slave_add    ),
+      .mem_we_o    ( l2_mem_slave_we     ),
+      .mem_wdata_o ( l2_mem_slave_data   ),
+      .mem_be_o    ( l2_mem_slave_be     ),
+      .mem_rdata_i ( l2_mem_slave_r_data )
+  );
+
+  for(genvar i=0; i<NumBanks; i++) begin : l2_banks_gen
+
+    // With regular TCDM banks, the grant is always asserted.
+    assign l2_mem_slave_gnt[i] = 1'b1;
+
+    tc_sram #(
+      .NumWords    ( L2BankWords  ), // Number of Words in data array
+      .DataWidth   ( MemDataWidth ), // Data signal width
+      .NumPorts    ( 1            ), // Number of read and write ports
+      .ByteWidth   ( 8            ), // Width of a data byte
+      .SimInit     ( "ones"       ), // Simulation initialization
+      .PrintSimCfg ( 0            ), // Print configuration
+      .Latency     ( 1            )  // Latency when the read data is available
+    ) i_bank (
+      .clk_i   ( clk_i                  ), // Clock
+      .rst_ni  ( rst_ni                 ), // Asynchronous reset active low
+      .req_i   ( l2_mem_slave_req   [i] ), // request
+      .we_i    ( l2_mem_slave_we    [i] ), // write enable
+      .addr_i  ( l2_mem_slave_add   [i] ), // request address
+      .wdata_i ( l2_mem_slave_data  [i] ), // write data
+      .be_i    ( l2_mem_slave_be    [i] ), // write byte enable
+      .rdata_o ( l2_mem_slave_r_data[i] )  // read data
+    );
+
+  end
 
   // -----------------------------------------------------------------------------
   // Cluster Domain
@@ -511,11 +637,11 @@ module security_island
    ) cluster_to_soc_axi_bus();
 
    AXI_BUS_ASYNC_GRAY #(
-     .AXI_ADDR_WIDTH ( AxiAddrWidth  ),
-     .AXI_DATA_WIDTH ( AxiDataWidth  ),
-     .AXI_ID_WIDTH   ( AxiInIdWidth  ),
-     .AXI_USER_WIDTH ( AxiUserWidth  ),
-     .LOG_DEPTH      ( LogDepth      )
+     .AXI_ADDR_WIDTH ( AxiAddrWidth ),
+     .AXI_DATA_WIDTH ( AxiDataWidth ),
+     .AXI_ID_WIDTH   ( AxiInIdWidth ),
+     .AXI_USER_WIDTH ( AxiUserWidth ),
+     .LOG_DEPTH      ( LogDepth     )
    ) async_cluster_to_soc_axi_bus();
 
   // Assign PULP cluster structs to interfaces
@@ -580,12 +706,6 @@ module security_island
 // Pulp Cluster//
 /////////////////
 
-  localparam bit[31:0] ClustBase       = 'hB0000000;
-  localparam bit[31:0] ClustPeriphOffs = 'h00200000;
-  localparam bit[31:0] ClustExtOffs    = 'h00400000;
-  localparam bit[ 5:0] ClustIdx        = 'h0;
-  localparam bit[31:0] ClustBaseAddr   = ClustBase - (ClustIdx << 22);
-
   localparam pulp_cluster_cfg_t OTClusterCfg = '{
     CoreType: pulp_cluster_package::RI5CY,
     NumCores: 8,
@@ -627,7 +747,7 @@ module security_island
     L2Size: 512*1024,
     DmBaseAddr: 'h60203000, // FIXME: CHECK!
     BootRomBaseAddr: 32'h1A000000,
-    BootAddr: 32'h1C000080,
+    BootAddr: AxiOutL2AddrBase + 'h8080,
     EnablePrivateFpu: 1,
     EnablePrivateFpDivSqrt: 1,
     NumAxiIn: pulp_cluster_package::NumAxiSubordinatePorts,
@@ -643,9 +763,9 @@ module security_island
     AxiCdcLogDepth: LogDepth,
     AxiCdcSyncStages: CdcSyncStages,
     SyncStages: CdcSyncStages,
-    ClusterBaseAddr: ClustBaseAddr,
-    ClusterPeriphOffs: ClustPeriphOffs,
-    ClusterExternalOffs: ClustExtOffs,
+    ClusterBaseAddr: AxiOutClusterAddrBase - (ClusterIdx << 22),
+    ClusterPeriphOffs: ClusterPeriphOffs,
+    ClusterExternalOffs: ClusterExtOffs,
     EnableRemapAddress: 0,
     SnitchICache: 0,
     default: '0
@@ -665,7 +785,7 @@ module security_island
       .test_mode_i                     ( 1'b0                                 ),
       .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
 
-      .cluster_id_i                    ( 6'b000000                            ),
+      .cluster_id_i                    ( ClusterIdx                           ),
       .fetch_en_i                      ( cluster_fetch_enable                 ),
       .eoc_o                           ( s_cluster_eoc                        ),
       .busy_o                          (                                      ),
@@ -731,18 +851,21 @@ module security_island
 ///////////////
 
    top_earlgrey #(
-      .HartIdOffs    ( HartIdOffs    ),
-      .axi_w_chan_t  ( axi_in_w_chan_t  ),
-      .axi_b_chan_t  ( axi_in_b_chan_t  ),
-      .axi_r_chan_t  ( axi_in_r_chan_t  ),
-      .axi_aw_chan_t ( axi_in_aw_chan_t ),
-      .axi_ar_chan_t ( axi_in_ar_chan_t ),
-      .axi_req_t     ( axi_in_req_t     ),
-      .axi_rsp_t     ( axi_in_resp_t    ),
-      .AxiAddrWidth  ( AxiAddrWidth  ),
-      .AxiDataWidth  ( AxiDataWidth  ),
-      .AxiIdWidth    ( AxiInIdWidth ),
-      .AxiUserWidth  ( AxiUserWidth )
+      .HartIdOffs       ( HartIdOffs                          ),
+      .axi_w_chan_t     ( axi_in_w_chan_t                     ),
+      .axi_b_chan_t     ( axi_in_b_chan_t                     ),
+      .axi_r_chan_t     ( axi_in_r_chan_t                     ),
+      .axi_aw_chan_t    ( axi_in_aw_chan_t                    ),
+      .axi_ar_chan_t    ( axi_in_ar_chan_t                    ),
+      .axi_req_t        ( axi_in_req_t                        ),
+      .axi_rsp_t        ( axi_in_resp_t                       ),
+      .AxiAddrWidth     ( AxiAddrWidth                        ),
+      .AxiDataWidth     ( AxiDataWidth                        ),
+      .AxiIdWidth       ( AxiInIdWidth                        ),
+      .AxiUserWidth     ( AxiUserWidth                        ),
+      .MemSizeMainSram  ( OtMemSizeMainSram                   ),
+      .HostBaseAddr     ( AxiOutExtAddrBase                   ),
+      .HostEndAddr      ( AxiOutL2AddrBase + AxiOutL2AddrSize )
    ) u_RoT (
       .mio_attr_o                   (                       ),
       .dio_attr_o                   (                       ),

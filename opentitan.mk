@@ -86,7 +86,7 @@ generate_idma_rtl: venv
 build: $(dpi-library)/elfloader.so scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips generate_idma_rtl
 	$(QUESTA) qsim -c -do 'source $(compile_script); quit'
 
-build_tech_mem: tech-init build
+build_tech_mem: build
 	vlog -incr -work $(library) ${VER_DIR}/../tc_sram.sv
 	vlog -incr -work $(library) ${VER_DIR}/std_primitives.v
 
@@ -167,14 +167,14 @@ init: update scripts/compile_opentitan.tcl $(OT_ROOT)/hw/tb/vips
 # Technology #
 ##############
 tech-repo := git@gitlab.chips.it:digitalresearchline/referencedesignflow/gf22/security_island.git
-tech-branch := develop
+tech-commit := 03449ed7405ae4e6234c6d0b1993c0a5e9124984
 
 tech-clone:
 	rm -rf target/gf22
 	git clone $(tech-repo) target/gf22
 
 tech-init: tech-clone
-	cd $(TECH_DIR) && git checkout $(tech-branch)
+	cd $(TECH_DIR) && git checkout $(tech-commit)
 	$(MAKE) -C $(TECH_DIR) init
 
 -include $(TECH_DIR)/tech.mk
