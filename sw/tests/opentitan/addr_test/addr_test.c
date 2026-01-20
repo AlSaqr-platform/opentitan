@@ -4,63 +4,44 @@
 
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
-#define L2_BASE        0x1C001000
-#define L3_BASE        0x80000000
+#define L2_BASE        0xa0000000
 
-#define SIZE           0x1000 //4KiB
+#define SIZE           512*1024
 
 #define IDMA_SRC_ADDR_OFFSET         0x000000d8
 #define IDMA_DST_ADDR_OFFSET         0x000000d0
 #define IDMA_LENGTH_OFFSET           0x000000e0
-#define IDMA_NEXT_ID_OFFSET          0x00000044
-#define IDMA_DONE_ID_OFFSET          0x00000084
+#define IDMA_NEXT_ID_OFFSET          0x0000000c
+#define IDMA_DONE_ID_OFFSET          0x00000014
 #define IDMA_REPS_2                  0x000000f8
 #define IDMA_REPS_3                  0x00000110
 #define IDMA_CONF                    0x00000000
 #define EOC                          0xc11c0018
 
-void printf_init() {
-  int * tmp;
-  tmp = (int *) 0x1a104074;
-  *tmp = 1;
-  tmp = (int *) 0x1a10407C;
-  *tmp = 1;
-  int baud_rate = 9600;
-  int test_freq = 25000000;
-  uart_set_cfg(0,(test_freq/baud_rate)>>4);
-}
-
-void printf_mem(uint32_t b1, uint32_t size) {
-  uint32_t* ptr1 = (uint32_t*) b1;
-  for (uint32_t i = 0; i < size/4; ++i) {
-    printf("%d - 0x%x: %x\r\n", i, &(ptr1[i]), ptr1[i]);
-   }
-}
+volatile int * p_reg1;
+int err;
 
 void mem_init(uint32_t base, uint32_t size, bool mod) {
     int* ptr = (int*) base;
     size_t num_words = size / sizeof(int);
-    for (size_t i = 0; i < num_words; ++i) {
-        ptr[i] = mod ? num_words - i + 1 : 0;
+    for (size_t i = 0; i < num_words; i++) {
+        ptr[i] = mod ? i : 0;
     }
 }
 
-bool addr_test(uint32_t b1, uint32_t size) {
-  int next_id;
-  printf(" --- init memory ---\r\n");
-  mem_init(b1, size, 1);
-  printf(" --- print memory content ---\r\n");
-  printf_mem(b1, size);
-  return 0;
-}
+int main() {
 
-int main(int argc, char **argv) {
-  bool b=0;
+  mem_init(L2_BASE, SIZE, 1);
 
-  printf_init();
+  // Read L2
+  p_reg1 = (int *) L2_BASE;
+  err = 0;
+  for(int i=0;i<SIZE/4;i++){
+    p_reg1 = (int *)(L2_BASE + i*4);
+    if( *p_reg1 != i){
+      err++;
+    }
+  }
 
-  printf("--------------------- FROM HRAM TO TCDM ---------------------\r\n");
-  b = b || addr_test(L3_BASE, SIZE);
-
-  return b;
+  return err;
 }

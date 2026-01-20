@@ -4,9 +4,9 @@
 
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
-#define L2_BASE        0xA0001000
+#define L2_BASE        0xA0000000
 
-#define SIZE           128
+#define SIZE           1024
 #define OFFSET         32
 
 #define IDMA_SRC_ADDR_OFFSET         0x000000d8
