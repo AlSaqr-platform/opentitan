@@ -136,7 +136,8 @@ void init_spi_host(dif_spi_host_t *spi_host,
 }
 void spi_flash_load_data(void){
 
-  volatile int * datapath;
+
+  volatile int * datapath, * padframe;
   volatile int * address, * start, * payload_1, * payload_2, * payload_3, * test;
 
   int num_iter = 195;
@@ -155,6 +156,19 @@ void spi_flash_load_data(void){
   address    = (int *) 0xff00000C;
   start      = (int *) 0xff000010;
   datapath   = (int *) 0xff00001C;
+
+  padframe = (int *) 0x21000000 + 0x8;
+  *padframe = 5;
+  padframe = (int *) 0x21000000 + 0x10;
+  *padframe = 5;
+  padframe = (int *) 0x21000000 + 0x18;
+  *padframe = 3;
+  padframe = (int *) 0x21000000 + 0x20;
+  *padframe = 3;
+  padframe = (int *) 0x21000000 + 0x28;
+  *padframe = 4;
+  padframe = (int *) 0x21000000 + 0x30;
+  *padframe = 4;
 
   CHECK_DIF_OK(dif_spi_host_init(mmio_region_from_addr(base_addr), &spi_host));
   init_spi_host(&spi_host, (uint32_t)clkHz);
