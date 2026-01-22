@@ -18,7 +18,6 @@
 #define L3_BASE_ADDR 0x80400000
 #define EOC 0xc11c0018
 #define NUM_ITER 30
-#define L2
 #define L3
 
 int main(int argc, char **argv) {
