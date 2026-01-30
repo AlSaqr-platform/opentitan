@@ -12,6 +12,7 @@
 
 // Region of memory where each hart has 1
 // byte to read.
+#define CARFIELD 1
 #if CARFIELD
   #define FLAGS 0x3FC
 #else
