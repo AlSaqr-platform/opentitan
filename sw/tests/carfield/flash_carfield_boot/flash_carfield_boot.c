@@ -68,10 +68,10 @@ bool test_main(void) {
   int * pointer;
 
   pointer = (int *) S_1;
-  pointer = 0x00000000;
+  *pointer = 0x00000000;
 
   pointer = (int *) S_0;
-  *pointer = 0x78000000;
+  *pointer = 0x80000000;
 
   pointer = (int *) S_2;
   *pointer = 2;
