@@ -18,7 +18,8 @@ BENDER ?= bender
 VSIM ?= vsim
 DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
-SRAM ?= ""
+TESTS_DIR := sw/tests
+SRAM ?= ${TESTS_DIR}/generic_test/generic_test.elf
 BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
@@ -31,6 +32,12 @@ VENV  		   := venv
 
 library        ?= work
 dpi-library    ?= work-dpi
+
+PULP_RUNTIME_DIR := ${TESTS_DIR}/pulp-runtime
+PULP_REGR_DIR    := ${TESTS_DIR}/regression_tests
+PULP_SUBMODULES  := $(PULP_RUNTIME_DIR) $(PULP_REGR_DIR)
+
+include sw/sw.mk
 
 # Ensure half-built targets are purged
 .DELETE_ON_ERROR:
@@ -73,6 +80,20 @@ define generate_vsim
 	echo >> $1
 endef
 
+.PHONY: pulpd-sw-init pulpd-sw-build pulpd-sw-clean
+
+pulpd-sw-init: $(PULP_SUBMODULES)
+
+$(PULP_SUBMODULES):
+	git submodule update --init --recursive $@
+
+pulpd-sw-build: pulpd-sw-init
+	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
+	$(MAKE) pulpd-sw-all
+
+pulpd-sw-clean:
+	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
+
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 
 venv:
@@ -97,7 +118,7 @@ build_tech_mem: build
 		vlog -incr +define+INITIALIZE_MEM -work $(library) $(VER_DIR)/$(mem).v;\
 	)
 
-sim_rtl:
+sim_rtl: $(SRAM)
 	qopt $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
 	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	-do "$(do_command)"	\
