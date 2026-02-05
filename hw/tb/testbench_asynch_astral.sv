@@ -433,7 +433,8 @@ axi_sim_mem_intf #(
 `ifdef TECH_SIM
    security_island dut (
 `else
-   security_island #(.HartIdOffs(0)) dut (
+   // we are using hartid = 4 so that we can use the same debug rom as in scarv
+   security_island #(.HartIdOffs('d4)) dut (
 `endif
     .clk_i               ( clk_sys        ),
     .clk_cluster_i       ( clk_cluster    ),
