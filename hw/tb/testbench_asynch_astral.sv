@@ -327,8 +327,8 @@ axi_sim_mem_intf #(
   logic [AxiAddrWidth-1:0] uart_end_addr;
   assign mem_base_addr = 'h8000_0000;
   assign mem_end_addr = 'h9000_0000;
-  assign mbox_base_addr = 'h1040_4000;
-  assign mbox_end_addr = 'h1040_4FFF;
+  assign mbox_base_addr = 'h4000_0000;
+  assign mbox_end_addr = 'h4000_4FFF;
   assign uart_base_addr = 'h1A22_2000;
   assign uart_end_addr = 'h1B22_2000;
   assign addr_map = '{
