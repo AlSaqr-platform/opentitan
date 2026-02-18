@@ -6,6 +6,9 @@ COMMON_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 COMMON_SRCS = $(wildcard $(COMMON_DIR)/*.c)
 INCS := -I$(COMMON_DIR)
+ifeq ($(NO_STANDALONE),)
+COMMON_SRCS := $(filter-out $(wildcard $(COMMON_DIR)/host_*.c), $(COMMON_SRCS))
+endif
 
 # ARCH = rv32im # to disable compressed instructions
 ARCH ?= rv32imc_zicsr

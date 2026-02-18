@@ -4,6 +4,9 @@
 #include <time.h>
 #include "utils.h"
 #include "mailboxes.h"
+#ifdef NO_STANDALONE
+#include "host_uart.h"
+#endif
 
 #define EntryAddr 0xA0008080
 #define L1BaseAddr 0xB0000000
@@ -21,6 +24,11 @@ int main() {
 
   volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
   volatile int * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5;
+
+  #ifdef NO_STANDALONE
+  uint32_t reset_freq = 100035000; // FIXME Fixed value exctracted from Cheshire
+  host_uart_init(HOST_UART_BASE_ADDR, reset_freq, BAUDRATE);
+  #endif
 
   // Mbox interrupt configuration
   unsigned mtvec_cfg = 0xe0000001;

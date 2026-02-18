@@ -6,6 +6,11 @@
 
 # Name of the program $(PROGRAM).c will be added as a source file
 PROGRAM = generic_test
+# STANDALONE MODE
+ifneq ($(NO_STANDALONE),)
+PROGRAM_CFLAGS += -DNO_STANDALONE
+PROGRAM_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int
+endif
 PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 # Any extra source files to include in the build. Use the upper case .S
 # extension for assembly files
