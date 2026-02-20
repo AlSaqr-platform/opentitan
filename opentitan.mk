@@ -18,19 +18,31 @@ BENDER ?= bender
 VSIM ?= vsim
 DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
-SRAM ?= ""
+TESTS_DIR := sw/tests
+SRAM ?= ${TESTS_DIR}/generic_test/generic_test.elf
 BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
-QUESTASIM_HOME ?= /tools/siemens/questa_2022.3/questasim
+QUESTASIM_HOME ?= $(shell dirname "$$(dirname "$$(which $(VSIM))")")
 BENDER_GIT_DIR ?= .bender/git/checkouts
 
-cl-bin         ?= none
-OT_CLUSTER     = $(cl-bin)
 VENV  		   := venv
 
 library        ?= work
 dpi-library    ?= work-dpi
+
+PULP_RUNTIME_DIR := ${TESTS_DIR}/pulp-runtime
+PULP_REGR_DIR    := ${TESTS_DIR}/regression_tests
+PULP_SUBMODULES  := $(PULP_RUNTIME_DIR) $(PULP_REGR_DIR)
+
+cl-test        ?=
+cl-bin         = $(PULP_REGR_DIR)/opentitan-cluster/$(cl-test)/build/test/test
+OT_CLUSTER     = $(cl-bin)
+
+bwruntest = $(PULP_RUNTIME_DIR)/scripts/bwruntests.py
+
+include sw/sw.mk
+include regression.mk
 
 # Ensure half-built targets are purged
 .DELETE_ON_ERROR:
@@ -60,11 +72,11 @@ ifeq ($(debug), 1)
 vopt_args += -debug +designfile
 vsim_args += -qwavedb=+signal+memory
 else
-vsim_args += -c
+vsim_args += -batch
 do_command += run -all
 endif
 
-VLOG_ARGS += -incr -64 -nologo -quiet -suppress vlog-2583 -suppress vlog-13314 \"+incdir+\$$ROOT/hw/include\" +nospecify +notimingchecks -timescale \"1 ns / 1 ps\"
+VLOG_ARGS += -incr -64 -nologo -quiet -suppress vlog-2583 -suppress vlog-13314 -suppress 220 \"+incdir+\$$ROOT/hw/include\" +nospecify +notimingchecks -timescale \"1 ns / 1 ps\"
 XVLOG_ARGS += -64bit -compile -vtimescale 1ns/1ns -quiet +nospecify +notimingchecks
 
 define generate_vsim
@@ -72,6 +84,20 @@ define generate_vsim
 	$(BENDER) script $(VSIM) --vlog-arg="$(VLOG_ARGS)" $2 | grep -v "set ROOT" >> $1
 	echo >> $1
 endef
+
+.PHONY: pulpd-sw-init pulpd-sw-build pulpd-sw-clean
+
+pulpd-sw-init: $(PULP_SUBMODULES)
+
+$(PULP_SUBMODULES):
+	git submodule update --init --recursive $@
+
+pulpd-sw-build: pulpd-sw-init
+	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
+	$(MAKE) pulpd-sw-all
+
+pulpd-sw-clean:
+	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
 
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 
@@ -97,15 +123,16 @@ build_tech_mem: build
 		vlog -incr +define+INITIALIZE_MEM -work $(library) $(VER_DIR)/$(mem).v;\
 	)
 
-sim_rtl:
+opt_rtl:
 	qopt $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
+
+sim_rtl: $(SRAM)
 	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	-do "$(do_command)"	\
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
 
 sim_rtl_tech_mem:
-	qopt  $(vopt_args) -work $(library) ${top_level} -o ${top_level}_opt
-	qsim  $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
+	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	$(vsim_args) +init_mem_data=0 \
 	-do "$(do_command)" \
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader

@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "utils.h"
+#ifdef NO_STANDALONE
+#include "host_uart.h"
+#endif
 
 void simple_exc_handler(void) {
   printf("EXCEPTION!!!\r\n");
@@ -115,7 +118,12 @@ static unsigned remu10(unsigned n) {
 
 int putchar(int s)
 {
+  #ifdef NO_STANDALONE
+  host_uart_write(HOST_UART_BASE_ADDR, s);
+  host_uart_write_flush(HOST_UART_BASE_ADDR);
+  #else
   uart_sendchar(s);
+  #endif
   return s;
 }
 

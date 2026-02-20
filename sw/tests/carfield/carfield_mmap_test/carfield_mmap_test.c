@@ -14,7 +14,7 @@
 #include <stdbool.h>
 
 
-#define L2_BASE_ADDR 0x78000000
+#define L2_BASE_ADDR 0xA0000000
 #define L3_BASE_ADDR 0x80400000
 #define EOC 0xc11c0018
 #define NUM_ITER 30

@@ -97,4 +97,12 @@ int printf(const char *format, ...);
 void * memset (void *dest, int val, size_t len);
 int putchar(int s);
 
+static inline volatile uint8_t *reg8(void *base, int offs) {
+    return (volatile uint8_t *)((uint8_t *)base + offs);
+}
+
+static inline void fence() {
+    asm volatile("fence" ::: "memory");
+}
+
 #endif

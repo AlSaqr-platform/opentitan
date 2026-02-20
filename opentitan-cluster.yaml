@@ -1,0 +1,31 @@
+opentitan-cluster:
+   addressability:
+    path: .
+    command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=addressability
+   conv16:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=conv16
+   dmr_matmul:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=dmr_matmul
+   hello:
+    path: .
+    command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=hello
+   idma_test:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=idma_test
+   mbox_test:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=mbox_test
+   neureka:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=neureka
+   parMatrixMul8:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=parMatrixMul8
+   parMatrixMul16:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=parMatrixMul16
+   parMatrixMul32:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-test=parMatrixMul32

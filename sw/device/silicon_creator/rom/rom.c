@@ -148,18 +148,13 @@ void spi_flash_load_data(void){
   int index = 0;
   uintptr_t base_addr = TOP_EARLGREY_SPI_HOST0_BASE_ADDR;
   uint64_t clkHz = 50000000;
-  
+
   payload_1  = (int *) 0xff000000;
   payload_2  = (int *) 0xff000004;
   payload_3  = (int *) 0xff000008;
   address    = (int *) 0xff00000C;
   start      = (int *) 0xff000010;
   datapath   = (int *) 0xff00001C;
-
-  alsaqr_periph_padframe_periphs_ot_spi_00_mux_set( 1 );
-  alsaqr_periph_padframe_periphs_ot_spi_01_mux_set( 1 );
-  alsaqr_periph_padframe_periphs_ot_spi_02_mux_set( 1 );
-  alsaqr_periph_padframe_periphs_ot_spi_03_mux_set( 1 );
 
   CHECK_DIF_OK(dif_spi_host_init(mmio_region_from_addr(base_addr), &spi_host));
   init_spi_host(&spi_host, (uint32_t)clkHz);
@@ -182,7 +177,7 @@ void spi_flash_load_data(void){
                           .mode = kDifSpiHostAddrMode4b,
                           .address = addr_swap,
                       },
-     }; 
+     };
      segments[2] = (dif_spi_host_segment_t) {
                    .type = kDifSpiHostSegmentTypeRx,
                    .rx =
@@ -213,10 +208,10 @@ void spi_flash_load_data(void){
 
   if(*test == 0x01010101)
     *test= 0x0;
-  
+
   CHECK_DIF_OK(dif_spi_host_output_set_enabled(&spi_host, false));
 }
-  
+
 /**
  * Performs once-per-boot initialization of ROM modules and peripherals.
  */
@@ -227,7 +222,7 @@ static rom_error_t rom_init(void) {
   pinmux_init();
   // Configure UART0 as stdout.
   uart_init(kUartNCOValue);
-  #ifdef TARGET_SYNTHESIS                
+  #ifdef TARGET_SYNTHESIS
   int baud_rate = 115200;
   int test_freq = 50000000;
   #else
@@ -550,13 +545,13 @@ void rom_main(void) {
   CFI_FUNC_COUNTER_PREPCALL(rom_counters, kCfiRomMain, 1, kCfiRomInit);
   // Device initialization
   SHUTDOWN_IF_ERROR(rom_init());
-  
+
   // Populate embedded emulated Flash (bank 0)
   if(*pad_bootmode == 0x1)
     spi_flash_load_data();
-  
+
   //rom_bootstrap_message();
-  
+
   CFI_FUNC_COUNTER_INCREMENT(rom_counters, kCfiRomMain, 3);
   CFI_FUNC_COUNTER_CHECK(rom_counters, kCfiRomInit, 3);
 
@@ -570,7 +565,7 @@ void rom_main(void) {
 
   // `rom_try_boot` will not return unless there is an error.
   CFI_FUNC_COUNTER_PREPCALL(rom_counters, kCfiRomMain, 4, kCfiRomTryBoot);
-  
+
 
   shutdown_finalize(rom_try_boot());
 }

@@ -12,26 +12,32 @@ COMPILE_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
-    "sw/tests/regression_tests/parallel_bare_tests/conv16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul8",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
+    "sw/tests/regression_tests/opentitan-cluster/dmr_matmul",
+    "sw/tests/regression_tests/opentitan-cluster/ecc_test",
+    "sw/tests/regression_tests/opentitan-cluster/neureka",
+    "sw/tests/regression_tests/opentitan-cluster/conv16",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul8",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul16",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul32",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_2d",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d"
 ]
 RUN_FOLDERS = [
     "sw/tests/regression_tests/hello",
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
-    "sw/tests/regression_tests/parallel_bare_tests/conv16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul8",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul16",
-    "sw/tests/regression_tests/parallel_bare_tests/parMatrixMul32",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
+    "sw/tests/regression_tests/opentitan-cluster/dmr_matmul",
+    "sw/tests/regression_tests/opentitan-cluster/ecc_test",
+    "sw/tests/regression_tests/opentitan-cluster/neureka",
+    "sw/tests/regression_tests/opentitan-cluster/conv16",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul8",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul16",
+    "sw/tests/regression_tests/opentitan-cluster/parMatrixMul32",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_2d",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d"
 ]
 # 2. Generic Command to compile Cluster Test applications.
 COMPILE_COMMAND = "make clean all"
@@ -46,9 +52,9 @@ DEFAULT_SIMULATION_TYPE = "rtl"
 
 # 4. Tests that need to be run 3 TIMES (These are the last 3 entries in RUN_FOLDERS)
 RUN_TRIPLE_TESTS = [
-    "sw/tests/regression_tests/idma_tests/idma_multi_core",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_2d",
-    "sw/tests/regression_tests/idma_tests/idma_multi_core_3d"
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_2d",
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d"
 ]
 
 # 5. Definitions for the three unique parametric runs
@@ -59,8 +65,8 @@ PARAM_CONFIGS = {
 }
 
 # 6. Design Compilation Commands (Run once from TOP_DIR)
-RTL_BUILD_COMMAND = "make clean build"
-RTL_TECH_BUILD_COMMAND = "make clean build_tech_mem"
+RTL_BUILD_COMMAND = "make clean build opt_rtl"
+RTL_TECH_BUILD_COMMAND = "make clean build_tech_mem opt_rtl"
 GATE_BUILD_COMMAND = "make clean sim_gls_compile"
 
 # 7. OT Test Configuration
@@ -238,6 +244,10 @@ def main():
     start_time = time.time()
     results = []
 
+    # Environment Sourcing
+    print("Sourcing environment config...")
+    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
+
     # Step 1: Cluster Test Compilation
     compile_projects()
     if not COMPILATION_SUCCESS:
@@ -274,17 +284,13 @@ def main():
             return
         results.append(f"SUCCESS in {args.sim.upper()} Design Build")
 
-    # Step 4: Environment Sourcing
-    print("Sourcing environment config...")
-    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
-
-    # Step 5: Cluster Tests Simulation
+    # Step 4: Cluster Tests Simulation
     print("\n--- Starting Cluster Tests Simulation ---")
     for test_item in FINAL_RUN_SEQUENCE:
         result = run_single_test_globally(test_item)
         results.append(result)
 
-    # Step 6: Opentitan Test Run Command
+    # Step 5: Opentitan Test Run Command
     ot_run_template = OT_TEST_RUN_TEMPLATES.get(args.sim)
     print("\n--- Starting Opentitan Tests Simulation ---")
     if ot_run_template:

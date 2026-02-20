@@ -325,10 +325,10 @@ axi_sim_mem_intf #(
   logic [AxiAddrWidth-1:0] mbox_end_addr;
   logic [AxiAddrWidth-1:0] uart_base_addr;
   logic [AxiAddrWidth-1:0] uart_end_addr;
-  assign mem_base_addr = 'h1C00_0000;
-  assign mem_end_addr = 'hBFFF_FFFF;
-  assign mbox_base_addr = 'h1040_4000;
-  assign mbox_end_addr = 'h1040_4FFF;
+  assign mem_base_addr = 'h8000_0000;
+  assign mem_end_addr = 'h9000_0000;
+  assign mbox_base_addr = 'h4000_0000;
+  assign mbox_end_addr = 'h4000_4FFF;
   assign uart_base_addr = 'h1A22_2000;
   assign uart_end_addr = 'h1B22_2000;
   assign addr_map = '{
@@ -431,7 +431,8 @@ axi_sim_mem_intf #(
 `ifdef TECH_SIM
    security_island dut (
 `else
-   security_island #(.HartIdOffs(0)) dut (
+   // we are using hartid = 4 so that we can use the same debug rom as in scarv
+   security_island #(.HartIdOffs('d4)) dut (
 `endif
     .clk_i               ( clk_sys        ),
     .clk_cluster_i       ( clk_cluster    ),

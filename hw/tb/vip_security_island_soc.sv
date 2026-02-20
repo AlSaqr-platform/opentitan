@@ -138,7 +138,7 @@ module vip_security_island_soc
   assign jtag_secd.tdo = jtag_tdo;
 
   initial begin
-    @(negedge rst_n);
+    @(posedge rst_n);
     jtag_secd_dbg.reset_master();
   end
 
