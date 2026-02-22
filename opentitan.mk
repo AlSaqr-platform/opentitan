@@ -130,12 +130,14 @@ sim_rtl: $(SRAM)
 	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	-do "$(do_command)"	\
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
+	@if grep -q FAILED transcript; then exit 1; fi
 
 sim_rtl_tech_mem:
 	qsim $(vsim_args) ${top_level}_opt -t 1ps -suppress 3999 -suppress 8360 \
 	$(vsim_args) +init_mem_data=0 \
 	-do "$(do_command)" \
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
+	@if grep -q FAILED transcript; then exit 1; fi
 
 sim_gls_compile: tech-init
 	$(MAKE) -C target/gf22/questasim sim_gls_compile
