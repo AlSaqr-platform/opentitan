@@ -1,0 +1,72 @@
+// Copyright 2023 ETH Zurich and University of Bologna.
+// Solderpad Hardware License, Version 0.51, see LICENSE for details.
+// SPDX-License-Identifier: SHL-0.51
+// Gabriele Lodi (chips-it)
+{
+  name: "security_island",
+  clock_primary: "clk_i",
+  reset_primary: "rst_ni",
+  bus_interfaces: [
+    { protocol: "reg_iface",
+      direction: "device"
+    }
+  ],
+  regwidth: "32",
+  registers :[
+
+    { name: "PULP_CLUSTER_FETCH_EN",
+      desc: "Pulp Cluster Fetch Enable",
+      swaccess: "rw",
+      hwaccess: "hro",
+      resval: "0",
+      hwqe: "0",
+      fields: [
+        { bits: "0:0" }
+      ],
+    }
+
+    { name: "PULP_CLUSTER_EOC",
+      desc: "Pulp Cluster EOC",
+      swaccess: "ro",
+      hwaccess: "hwo",
+      resval: "0",
+      hwqe: "0",
+      fields: [
+        { bits: "0:0" }
+      ],
+    }
+
+    { name: "CL_CLK_EN",
+      desc: "Pulp Cluster clk gate enable",
+      swaccess: "rw",
+      hwaccess: "hro",
+      resval: "1",
+      hwqe: "0",
+      fields: [
+        { bits: "0:0" }
+      ],
+    }
+
+    { name: "CL_CLK_DIV_VALUE",
+      desc: "Pulp Cluster clk divider value",
+      swaccess: "rw",
+      hwaccess: "hro",
+      resval: "1",
+      hwqe: "1",
+      fields: [
+        { bits: "31:0" }
+      ],
+    }
+
+    { name: "OT_CLK_DIV_VALUE",
+      desc: "Opentitan clk divider value",
+      swaccess: "rw",
+      hwaccess: "hro",
+      resval: "1",
+      hwqe: "1",
+      fields: [
+        { bits: "31:0" }
+      ],
+    }
+  ],
+}
