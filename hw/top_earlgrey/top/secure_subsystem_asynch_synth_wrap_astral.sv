@@ -25,6 +25,7 @@ module security_island
    import lc_ctrl_pkg::*;
    import secure_subsystem_synth_astral_pkg::*;
    import top_earlgrey_pkg::*;
+   import security_island_reg_pkg::*;
 #(
    parameter int unsigned HartIdOffs = 0,
    // Shared AXI parameters
@@ -71,7 +72,6 @@ module security_island
    localparam type axi_in_id_t = logic [AxiInIdWidth-1:0]
 )  (
    input logic                           clk_i,
-   input logic                           clk_cluster_i,
    input logic                           clk_ref_i,
    input logic                           rst_ni,
    input logic                           pwr_on_rst_ni,
@@ -165,11 +165,16 @@ module security_island
   localparam int unsigned AxiOutClusterAddrIdx  = 2;
   localparam axi_addr_t   AxiOutClusterAddrBase = 'hB0000000;
   localparam int unsigned AxiOutClusterAddrSize = ClusterExtOffs;
+  // Register Interface port maps at idx3, starting from 0xBF00_0000 up to RegSize
+  localparam int unsigned RegSize = 'h1000;
+  localparam int unsigned AxiOutRegAddrIdx  = 3;
+  localparam axi_addr_t   AxiOutRegAddrBase = 'hBF000000;
+  localparam int unsigned AxiOutRegAddrSize = RegSize;
 
    // AXI crossbars ports and rules
-   localparam int unsigned NumMstPorts = 3;
+   localparam int unsigned NumMstPorts = 4;
    localparam int unsigned NumSlvPorts = 3;
-   localparam int unsigned NumRules = 3;
+   localparam int unsigned NumRules = 4;
 
    typedef struct packed {
      int unsigned idx;
@@ -194,11 +199,13 @@ module security_island
    axi_out_req_t axi_ext_mst_req,
                  axi_cls_mst_req,
                  axi_l2_mst_req,
-                 axi_l2_mst_req_del;
+                 axi_l2_mst_req_del,
+                 axi_reg_mst_req;
    axi_out_resp_t axi_ext_mst_rsp,
                   axi_cls_mst_rsp,
                   axi_l2_mst_rsp,
-                  axi_l2_mst_rsp_del;
+                  axi_l2_mst_rsp_del,
+                  axi_reg_mst_rsp;
 
    // Connections to the AXI XBAR slave ports
    axi_in_req_t [NumSlvPorts-1:0] axi_slv_req;
@@ -215,6 +222,9 @@ module security_island
 
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
+
+   security_island_reg2hw_t secd_regs_reg2hw;
+   security_island_hw2reg_t secd_regs_hw2reg;
 
    logic [15:0] dio_in_i;
    logic [15:0] dio_out_o;
@@ -235,12 +245,12 @@ module security_island
    wire [1:0] flash_testmode_tieoff;
    wire otp_ext_tieoff, flash_testvolt_tieoff;
 
-   logic cluster_fetch_enable;
    logic cluster_en_sa_boot = 1'b0;
 
    logic unused = clk_ref_i & test_enable_i;
 
    logic s_cluster_eoc;
+   logic s_clk_cluster, s_clk_ot;
 
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
@@ -451,6 +461,12 @@ module security_island
       start_addr: AxiOutClusterAddrBase,
       end_addr:   AxiOutClusterAddrBase +
                   AxiOutClusterAddrSize
+    },
+    '{
+      idx:        AxiOutRegAddrIdx,
+      start_addr: AxiOutRegAddrBase,
+      end_addr:   AxiOutRegAddrBase +
+                  AxiOutRegAddrSize
     }
   };
 
@@ -473,7 +489,8 @@ module security_island
   assign axi_ext_mst_req = axi_mst_req[AxiOutExtAddrIdx];
   assign axi_l2_mst_req  = axi_mst_req[AxiOutL2AddrIdx];
   assign axi_cls_mst_req = axi_mst_req[AxiOutClusterAddrIdx];
-  assign axi_mst_rsp     = { axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
+  assign axi_reg_mst_req = axi_mst_req[AxiOutRegAddrIdx];
+  assign axi_mst_rsp     = { axi_reg_mst_rsp, axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[AxiInOtIdx];
@@ -702,6 +719,98 @@ module security_island
        .dst        ( cluster_to_soc_axi_bus       )
    );
 
+  // REG TOP //
+  localparam int unsigned AW = 5;
+  localparam int unsigned DW = 32;
+  localparam int unsigned STRB_WIDTH = DW/8;
+
+  `include "register_interface/typedef.svh"
+  `include "register_interface/assign.svh"
+
+  // Define structs for reg_bus
+  typedef logic [AW-1:0] addr_t;
+  typedef logic [DW-1:0] data_t;
+  typedef logic [STRB_WIDTH-1:0] strb_t;
+  `REG_BUS_TYPEDEF_ALL(secd_bus, addr_t, data_t, strb_t)
+
+  secd_bus_req_t s_secd_reg_req;
+  secd_bus_rsp_t s_secd_reg_rsp;
+
+  axi_to_reg #(
+    .ADDR_WIDTH    ( AxiAddrWidth   ),
+    .DATA_WIDTH    ( AxiDataWidth   ),
+    .ID_WIDTH      ( AxiOutIdWidth  ),
+    .USER_WIDTH    ( AxiUserWidth   ),
+    .DECOUPLE_W    ( 0              ),
+    .axi_req_t     ( axi_out_req_t  ),
+    .axi_rsp_t     ( axi_out_resp_t ),
+    .reg_req_t     ( secd_bus_req_t ),
+    .reg_rsp_t     ( secd_bus_rsp_t )
+  ) u_axi2reg_regif (
+    .clk_i,
+    .rst_ni,
+    .testmode_i ( 1'b0            ),
+    .axi_req_i  ( axi_reg_mst_req ),
+    .axi_rsp_o  ( axi_reg_mst_rsp ),
+    .reg_req_o  ( s_secd_reg_req  ),
+    .reg_rsp_i  ( s_secd_reg_rsp  )
+  );
+
+  security_island_reg_top #(
+    .reg_req_t ( secd_bus_req_t ),
+    .reg_rsp_t ( secd_bus_rsp_t )
+  ) i_secd_reg_top (
+    .clk_i     ( clk_i            ),
+    .rst_ni    ( rst_ni           ),
+    .reg_req_i ( s_secd_reg_req   ),
+    .reg_rsp_o ( s_secd_reg_rsp   ),
+    .reg2hw    ( secd_regs_reg2hw ),
+    .hw2reg    ( secd_regs_hw2reg ),
+    .devmode_i ( 1'b1             )
+  );
+
+///////////////////
+// Clock Divider //
+///////////////////
+
+  localparam int unsigned ClkDivValueWidth = 32;
+
+  clk_int_div #(
+    .DIV_VALUE_WIDTH(ClkDivValueWidth),
+    .DEFAULT_DIV_VALUE('h1),
+    .ENABLE_CLOCK_IN_RESET(1)
+  ) i_clk_div_ot (
+    .clk_i          ( clk_i                                ),
+    .rst_ni         ( rst_ni                               ),
+    .en_i           ( 1'b1                                 ),
+    .test_mode_en_i ( 1'b0                                 ),
+    .div_i          ( secd_regs_reg2hw.ot_clk_div_value.q  ),
+    .div_valid_i    ( secd_regs_reg2hw.ot_clk_div_value.qe ),
+    .div_ready_o    (                                      ),
+    .clk_o          ( s_clk_ot                             ),
+    .cycl_count_o   (                                      )
+  );
+
+  clk_int_div #(
+    .DIV_VALUE_WIDTH(ClkDivValueWidth),
+    .DEFAULT_DIV_VALUE('h1),
+    .ENABLE_CLOCK_IN_RESET(1)
+  ) i_clk_div_cl (
+    .clk_i          ( clk_i                                ),
+    .rst_ni         ( rst_ni                               ),
+    .en_i           ( secd_regs_reg2hw.cl_clk_en.q         ),
+    .test_mode_en_i ( 1'b0                                 ),
+    .div_i          ( secd_regs_reg2hw.cl_clk_div_value.q  ),
+    .div_valid_i    ( secd_regs_reg2hw.cl_clk_div_value.qe ),
+    .div_ready_o    (                                      ),
+    .clk_o          ( s_clk_cluster                        ),
+    .cycl_count_o   (                                      )
+  );
+
+  // CLUSTER EOC //
+  assign secd_regs_hw2reg.pulp_cluster_eoc.de = 1'b1;
+  assign secd_regs_hw2reg.pulp_cluster_eoc.d = s_cluster_eoc;
+
 /////////////////
 // Pulp Cluster//
 /////////////////
@@ -774,7 +883,7 @@ module security_island
     .Cfg ( OTClusterCfg )
    ) cluster_i
    (
-      .clk_i                           ( clk_cluster_i                        ),
+      .clk_i                           ( s_clk_cluster                        ),
       .rst_ni                          ( rst_ni                               ),
       .ref_clk_i                       ( clk_ref_i                            ),
       .pwr_on_rst_ni                   ( pwr_on_rst_ni                        ),
@@ -783,10 +892,10 @@ module security_island
       .test_mode_i                     ( 1'b0                                 ),
       .en_sa_boot_i                    ( cluster_en_sa_boot                   ),
 
-      .cluster_id_i                    ( ClusterIdx                           ),
-      .fetch_en_i                      ( cluster_fetch_enable                 ),
-      .eoc_o                           ( s_cluster_eoc                        ),
-      .busy_o                          (                                      ),
+      .cluster_id_i                    ( ClusterIdx                               ),
+      .fetch_en_i                      ( secd_regs_reg2hw.pulp_cluster_fetch_en.q ),
+      .eoc_o                           ( s_cluster_eoc                            ),
+      .busy_o                          (                                          ),
 
       .axi_isolate_i                   ( '0                                   ),
       .axi_isolated_o                  (                                      ),
@@ -931,10 +1040,10 @@ module security_island
       .es_rng_rsp_i                 ( es_rng_rsp            ),
       .es_rng_req_o                 ( es_rng_req            ),
       .por_n_i                      ( {s_rst_n, s_rst_n}    ),
-      .clk_main_i                   ( clk_i                 ),
-      .clk_io_i                     ( clk_i                 ),
-      .clk_aon_i                    ( clk_i                 ),
-      .clk_usb_i                    ( clk_i                 ),
+      .clk_main_i                   ( s_clk_ot              ),
+      .clk_io_i                     ( s_clk_ot              ),
+      .clk_aon_i                    ( s_clk_ot              ),
+      .clk_usb_i                    ( s_clk_ot              ),
       .tlul2axi_req_o               ( axi_tlul_req          ),
       .tlul2axi_rsp_i               ( axi_tlul_rsp          ),
       .idma_axi_req_o               ( axi_idma_req          ),
@@ -946,8 +1055,8 @@ module security_island
       .jtag_rsp_o                   ( jtag_o                ),
       .fetch_en_i                   ( fetch_en_sync         ),
       .bootmode_i                   ( bootmode_i            ),
-      .cluster_fetch_en_o           ( cluster_fetch_enable  ),
-      .cluster_eoc_i                ( s_cluster_eoc         )
+      .cluster_fetch_en_o           ( ),
+      .cluster_eoc_i                ( '0                    )
    );
 
 endmodule
