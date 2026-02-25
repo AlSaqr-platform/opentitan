@@ -11,8 +11,9 @@
 #define EntryAddr 0xA0008080
 #define L1BaseAddr 0xB0000000
 #define ClusterBootAddrReg 0xB0200040
-#define ClusterFetchEnableReg 0xff000020
-#define ClusterEocReg 0xff000024
+#define ClusterFetchEnableReg 0xBF000000
+#define ClusterEocReg 0xBF000004
+#define ClusterEnReg 0xBF000008
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
 #define PlicPrioAddrReg 0xC800027C
@@ -22,7 +23,7 @@
 
 int main() {
 
-  volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
+  volatile int * fetch_en, * cluster_en, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
   volatile int * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5;
 
   #ifdef NO_STANDALONE
@@ -48,6 +49,7 @@ int main() {
 
   // Configure fetch enable
   fetch_en = (int *) ClusterFetchEnableReg;
+  cluster_en = (int *) ClusterEnReg;
   eoc = (int *) ClusterEocReg;
   edn_enable = (int *) EdnEnAddrReg;
   *edn_enable = 0x9996;
@@ -61,12 +63,14 @@ int main() {
   // Cluster offloading  //
   /////////////////////////
 
+  // *cluster_en = 0x1;
   *fetch_en = 0x1;
   // wait for mbox doorbell irq
   asm volatile ("wfi");
   // wait for EOC (redundant)
   while(!(*eoc));
   *fetch_en = 0x0;
+  // *cluster_en = 0x0;
 
   /////////////////
   // Test Check  //
