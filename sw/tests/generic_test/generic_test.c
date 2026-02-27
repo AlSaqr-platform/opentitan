@@ -14,6 +14,8 @@
 #define ClusterFetchEnableReg 0xBF000000
 #define ClusterEocReg 0xBF000004
 #define ClusterEnReg 0xBF000008
+#define ClClkDivReg 0xBF00000C
+#define OtClkDivReg 0xBF000010
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
 #define PlicPrioAddrReg 0xC800027C
@@ -23,7 +25,7 @@
 
 int main() {
 
-  volatile int * fetch_en, * cluster_en, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
+  volatile int * fetch_en, * cluster_en, * cl_clk_div, * ot_clk_div, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
   volatile int * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5;
 
   #ifdef NO_STANDALONE
@@ -51,6 +53,9 @@ int main() {
   fetch_en = (int *) ClusterFetchEnableReg;
   cluster_en = (int *) ClusterEnReg;
   eoc = (int *) ClusterEocReg;
+  cl_clk_div = (int *) ClClkDivReg;
+  ot_clk_div = (int *) OtClkDivReg;
+
   edn_enable = (int *) EdnEnAddrReg;
   *edn_enable = 0x9996;
 
@@ -63,14 +68,12 @@ int main() {
   // Cluster offloading  //
   /////////////////////////
 
-  // *cluster_en = 0x1;
   *fetch_en = 0x1;
   // wait for mbox doorbell irq
   asm volatile ("wfi");
   // wait for EOC (redundant)
   while(!(*eoc));
   *fetch_en = 0x0;
-  // *cluster_en = 0x0;
 
   /////////////////
   // Test Check  //
@@ -105,7 +108,7 @@ void external_irq_handler(void){
 
   // start of """Interrupt Service Routine"""
   plic_check = (int *) PlicCheckAddrReg;
-  while(*plic_check != mbox_id);   //check wether the intr is the correct one
+  while(*plic_check != mbox_id);   //check whether the intr is the correct one
   #ifdef NO_STANDALONE
   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
  *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_SET
