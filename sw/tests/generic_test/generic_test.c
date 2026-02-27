@@ -11,8 +11,11 @@
 #define EntryAddr 0xA0008080
 #define L1BaseAddr 0xB0000000
 #define ClusterBootAddrReg 0xB0200040
-#define ClusterFetchEnableReg 0xff000020
-#define ClusterEocReg 0xff000024
+#define ClusterFetchEnableReg 0xBF000000
+#define ClusterEocReg 0xBF000004
+#define ClusterClkEnReg 0xBF000008
+#define ClusterClkDivReg 0xBF00000C
+#define OtClkDivReg 0xBF000010
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
 #define PlicPrioAddrReg 0xC800027C
@@ -22,7 +25,7 @@
 
 int main() {
 
-  volatile int * fetch_en, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
+  volatile int * fetch_en, * cluster_en, * cl_clk_div, * ot_clk_div, * eoc, * edn_enable, * boot_addr, * plic_prio, * plic_en;
   volatile int * p_reg1, * p_reg2, * p_reg3, * p_reg4, * p_reg5;
 
   #ifdef NO_STANDALONE
@@ -48,7 +51,11 @@ int main() {
 
   // Configure fetch enable
   fetch_en = (int *) ClusterFetchEnableReg;
+  cluster_en = (int *) ClusterClkEnReg;
   eoc = (int *) ClusterEocReg;
+  cl_clk_div = (int *) ClusterClkDivReg;
+  ot_clk_div = (int *) OtClkDivReg;
+
   edn_enable = (int *) EdnEnAddrReg;
   *edn_enable = 0x9996;
 
@@ -101,7 +108,7 @@ void external_irq_handler(void){
 
   // start of """Interrupt Service Routine"""
   plic_check = (int *) PlicCheckAddrReg;
-  while(*plic_check != mbox_id);   //check wether the intr is the correct one
+  while(*plic_check != mbox_id);   //check whether the intr is the correct one
   #ifdef NO_STANDALONE
   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
  *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_SET

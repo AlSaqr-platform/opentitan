@@ -435,7 +435,6 @@ axi_sim_mem_intf #(
    security_island #(.HartIdOffs('d4)) dut (
 `endif
     .clk_i               ( clk_sys        ),
-    .clk_cluster_i       ( clk_cluster    ),
     .clk_ref_i           ( clk_sys        ),
     .rst_ni              ( rst_sys_n      ),
     .pwr_on_rst_ni       ( rst_sys_n      ),

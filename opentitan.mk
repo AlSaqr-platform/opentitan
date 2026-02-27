@@ -208,7 +208,24 @@ tech-init: tech-clone
 
 -include $(TECH_DIR)/tech.mk
 
+#####################
+# Generate Hardware #
+#####################
+PYTHON3 ?= python3
+REGGEN  ?= $(PYTHON3) $(shell $(BENDER) path register_interface)/vendor/lowrisc_opentitan/util/regtool.py
+
+SECD_ROOT   ?= $(shell $(BENDER) path security_island)
+# SECD_HW_DIR := $(SECD_ROOT)/hw/top_earlgrey/regs
+SECD_HW_DIR := hw/top_earlgrey/regs
+
+secd-reg-gen: $(SECD_HW_DIR)/security_island_reg_pkg.sv $(SECD_HW_DIR)/security_island_reg_top.sv
+
+$(SECD_HW_DIR)/security_island_reg_pkg.sv $(SECD_HW_DIR)/security_island_reg_top.sv: $(SECD_HW_DIR)/security_island_regs.hjson
+	$(REGGEN) $< -t $(SECD_HW_DIR) -r
+
+######
 # DPI
+######
 dpi := $(patsubst hw/tb/dpi/%.cc, ${dpi-library}/%.o, $(wildcard hw/tb/dpi/*.cc))
 
 
