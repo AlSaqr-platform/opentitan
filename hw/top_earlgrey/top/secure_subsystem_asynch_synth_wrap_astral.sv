@@ -166,10 +166,9 @@ module security_island
   localparam axi_addr_t   AxiOutClusterAddrBase = 'hB0000000;
   localparam int unsigned AxiOutClusterAddrSize = ClusterExtOffs;
   // Register Interface port maps at idx3, starting from 0xBF00_0000 up to RegSize
-  localparam int unsigned RegSize = 'h1000;
   localparam int unsigned AxiOutRegAddrIdx  = 3;
   localparam axi_addr_t   AxiOutRegAddrBase = 'hBF000000;
-  localparam int unsigned AxiOutRegAddrSize = RegSize;
+  localparam int unsigned AxiOutRegAddrSize = 'h1000;
 
    // AXI crossbars ports and rules
    localparam int unsigned NumMstPorts = 4;
@@ -720,17 +719,16 @@ module security_island
    );
 
   // REG TOP //
-  localparam int unsigned AW = 5;
-  localparam int unsigned DW = 32;
-  localparam int unsigned STRB_WIDTH = DW/8;
-
   `include "register_interface/typedef.svh"
   `include "register_interface/assign.svh"
 
+  localparam int unsigned RegDataWidth = 32;
+  localparam int unsigned RegStrbWidth = RegDataWidth/8;
+
   // Define structs for reg_bus
-  typedef logic [AW-1:0] addr_t;
-  typedef logic [DW-1:0] data_t;
-  typedef logic [STRB_WIDTH-1:0] strb_t;
+  typedef logic [security_island_reg_pkg::BlockAw-1:0] addr_t;
+  typedef logic [RegDataWidth-1:0] data_t;
+  typedef logic [RegStrbWidth-1:0] strb_t;
   `REG_BUS_TYPEDEF_ALL(secd_bus, addr_t, data_t, strb_t)
 
   secd_bus_req_t s_secd_reg_req;
@@ -741,8 +739,7 @@ module security_island
     .AxiDataWidth ( AxiDataWidth   ),
     .AxiIdWidth   ( AxiOutIdWidth  ),
     .AxiUserWidth ( AxiUserWidth   ),
-    .RegDataWidth ( 32 ),
-    .CutMemReqs   ( 1  ),
+    .RegDataWidth ( RegDataWidth   ),
     .axi_req_t    ( axi_out_req_t  ),
     .axi_rsp_t    ( axi_out_resp_t ),
     .reg_req_t    ( secd_bus_req_t ),
