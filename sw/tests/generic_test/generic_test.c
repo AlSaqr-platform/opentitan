@@ -13,8 +13,8 @@
 #define ClusterBootAddrReg 0xB0200040
 #define ClusterFetchEnableReg 0xBF000000
 #define ClusterEocReg 0xBF000004
-#define ClusterEnReg 0xBF000008
-#define ClClkDivReg 0xBF00000C
+#define ClusterClkEnReg 0xBF000008
+#define ClusterClkDivReg 0xBF00000C
 #define OtClkDivReg 0xBF000010
 #define ClusterNumCores 8
 #define EdnEnAddrReg 0xc1170014
@@ -51,9 +51,9 @@ int main() {
 
   // Configure fetch enable
   fetch_en = (int *) ClusterFetchEnableReg;
-  cluster_en = (int *) ClusterEnReg;
+  cluster_en = (int *) ClusterClkEnReg;
   eoc = (int *) ClusterEocReg;
-  cl_clk_div = (int *) ClClkDivReg;
+  cl_clk_div = (int *) ClusterClkDivReg;
   ot_clk_div = (int *) OtClkDivReg;
 
   edn_enable = (int *) EdnEnAddrReg;
