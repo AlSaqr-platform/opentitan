@@ -15,6 +15,8 @@
 `include "pulp_soc_defines.sv"
 `include "axi/typedef.svh"
 `include "axi/assign.svh"
+`include "register_interface/typedef.svh"
+`include "register_interface/assign.svh"
 
 module security_island
    import axi_pkg::*;
@@ -169,11 +171,15 @@ module security_island
   localparam int unsigned AxiOutRegAddrIdx  = 3;
   localparam axi_addr_t   AxiOutRegAddrBase = 'hBF000000;
   localparam int unsigned AxiOutRegAddrSize = 'h1000;
+  // Register Interface port maps at idx4, starting from 0xBFF0_0000 up to RegSize
+  localparam int unsigned AxiOutMboxAddrIdx  = 4;
+  localparam axi_addr_t   AxiOutMboxAddrBase = 'hBFF00000;
+  localparam int unsigned AxiOutMboxAddrSize = 'h100;
 
    // AXI crossbars ports and rules
-   localparam int unsigned NumMstPorts = 4;
+   localparam int unsigned NumMstPorts = 5;
    localparam int unsigned NumSlvPorts = 3;
-   localparam int unsigned NumRules = 4;
+   localparam int unsigned NumRules = 5;
 
    typedef struct packed {
      int unsigned idx;
@@ -199,12 +205,14 @@ module security_island
                  axi_cls_mst_req,
                  axi_l2_mst_req,
                  axi_l2_mst_req_del,
-                 axi_reg_mst_req;
+                 axi_reg_mst_req,
+                 axi_mbox_mst_req;
    axi_out_resp_t axi_ext_mst_rsp,
                   axi_cls_mst_rsp,
                   axi_l2_mst_rsp,
                   axi_l2_mst_rsp_del,
-                  axi_reg_mst_rsp;
+                  axi_reg_mst_rsp,
+                  axi_mbox_mst_rsp;
 
    // Connections to the AXI XBAR slave ports
    axi_in_req_t [NumSlvPorts-1:0] axi_slv_req;
@@ -222,8 +230,23 @@ module security_island
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
 
+   // REG TOP //
+   localparam int unsigned RegDataWidth = 32;
+   localparam int unsigned RegStrbWidth = RegDataWidth/8;
+
+   // Define structs for reg_bus
+   typedef logic [security_island_reg_pkg::BlockAw-1:0] addr_t;
+   typedef logic [RegDataWidth-1:0] data_t;
+   typedef logic [RegStrbWidth-1:0] strb_t;
+   `REG_BUS_TYPEDEF_ALL(secd_bus, addr_t, data_t, strb_t)
+
+   secd_bus_req_t s_secd_reg_req, s_secd_mbox_req;
+   secd_bus_rsp_t s_secd_reg_rsp, s_secd_mbox_rsp;
+
    security_island_reg2hw_t secd_regs_reg2hw;
    security_island_hw2reg_t secd_regs_hw2reg;
+
+   localparam int unsigned ClkDivValueWidth = 32;
 
    logic [15:0] dio_in_i;
    logic [15:0] dio_out_o;
@@ -250,6 +273,7 @@ module security_island
 
    logic s_cluster_eoc;
    logic s_clk_cluster, s_clk_ot;
+   logic s_mbox_irq;
 
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
@@ -466,6 +490,12 @@ module security_island
       start_addr: AxiOutRegAddrBase,
       end_addr:   AxiOutRegAddrBase +
                   AxiOutRegAddrSize
+    },
+    '{
+      idx:        AxiOutMboxAddrIdx,
+      start_addr: AxiOutMboxAddrBase,
+      end_addr:   AxiOutMboxAddrBase +
+                  AxiOutMboxAddrSize
     }
   };
 
@@ -489,7 +519,8 @@ module security_island
   assign axi_l2_mst_req  = axi_mst_req[AxiOutL2AddrIdx];
   assign axi_cls_mst_req = axi_mst_req[AxiOutClusterAddrIdx];
   assign axi_reg_mst_req = axi_mst_req[AxiOutRegAddrIdx];
-  assign axi_mst_rsp     = { axi_reg_mst_rsp, axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
+  assign axi_mbox_mst_req = axi_mst_req[AxiOutMboxAddrIdx];
+  assign axi_mst_rsp     = { axi_mbox_mst_rsp, axi_reg_mst_rsp, axi_cls_mst_rsp, axi_l2_mst_rsp, axi_ext_mst_rsp };
 
   assign axi_slv_req     = { axi_cls_slv_req, axi_idma_req, axi_tlul_req };
   assign axi_tlul_rsp    = axi_slv_rsp[AxiInOtIdx];
@@ -718,21 +749,10 @@ module security_island
        .dst        ( cluster_to_soc_axi_bus       )
    );
 
-  // REG TOP //
-  `include "register_interface/typedef.svh"
-  `include "register_interface/assign.svh"
 
-  localparam int unsigned RegDataWidth = 32;
-  localparam int unsigned RegStrbWidth = RegDataWidth/8;
-
-  // Define structs for reg_bus
-  typedef logic [security_island_reg_pkg::BlockAw-1:0] addr_t;
-  typedef logic [RegDataWidth-1:0] data_t;
-  typedef logic [RegStrbWidth-1:0] strb_t;
-  `REG_BUS_TYPEDEF_ALL(secd_bus, addr_t, data_t, strb_t)
-
-  secd_bus_req_t s_secd_reg_req;
-  secd_bus_rsp_t s_secd_reg_rsp;
+///////////////////
+// register if   //
+///////////////////
 
   axi_to_reg_v2 #(
     .AxiAddrWidth ( AxiAddrWidth   ),
@@ -767,10 +787,45 @@ module security_island
   );
 
 ///////////////////
-// Clock Divider //
+//    mailbox    //
 ///////////////////
 
-  localparam int unsigned ClkDivValueWidth = 32;
+  axi_to_reg_v2 #(
+    .AxiAddrWidth ( AxiAddrWidth   ),
+    .AxiDataWidth ( AxiDataWidth   ),
+    .AxiIdWidth   ( AxiOutIdWidth  ),
+    .AxiUserWidth ( AxiUserWidth   ),
+    .RegDataWidth ( 32 ),
+    .CutMemReqs   ( 1  ),
+    .axi_req_t    ( axi_out_req_t  ),
+    .axi_rsp_t    ( axi_out_resp_t ),
+    .reg_req_t    ( secd_bus_req_t ),
+    .reg_rsp_t    ( secd_bus_rsp_t )
+  ) u_axi2reg_mbox (
+    .clk_i,
+    .rst_ni,
+    .axi_req_i  ( axi_mbox_mst_req ),
+    .axi_rsp_o  ( axi_mbox_mst_rsp ),
+    .reg_req_o  ( s_secd_mbox_req  ),
+    .reg_rsp_i  ( s_secd_mbox_rsp  )
+  );
+
+  mailbox_unit #(
+    .reg_req_t( secd_bus_req_t ),
+    .reg_rsp_t( secd_bus_rsp_t ),
+    .NumMbox  ( 1 )
+  ) i_mailbox_unit (
+    .clk_i     ( clk_i           ),
+    .rst_ni    ( rst_ni          ),
+    .reg_req_i ( s_secd_mbox_req ),
+    .reg_rsp_o ( s_secd_mbox_rsp ),
+    .snd_irq_o ( s_mbox_irq      ),
+    .rcv_irq_o (  )
+  );
+
+///////////////////
+// Clock Divider //
+///////////////////
 
   clk_int_div #(
     .DIV_VALUE_WIDTH(ClkDivValueWidth),
@@ -904,7 +959,7 @@ module security_island
       .dma_pe_irq_valid_o              (                                      ),
 
       .dbg_irq_valid_i                 ( '0                                   ),
-      .mbox_irq_i                      ( '0                                   ),
+      .mbox_irq_i                      ( s_mbox_irq                           ),
 
       .pf_evt_ack_i                    ( 1'b1                                 ),
       .pf_evt_valid_o                  (                                      ),
