@@ -736,20 +736,20 @@ module security_island
   secd_bus_req_t s_secd_reg_req;
   secd_bus_rsp_t s_secd_reg_rsp;
 
-  axi_to_reg #(
-    .ADDR_WIDTH    ( AxiAddrWidth   ),
-    .DATA_WIDTH    ( AxiDataWidth   ),
-    .ID_WIDTH      ( AxiOutIdWidth  ),
-    .USER_WIDTH    ( AxiUserWidth   ),
-    .DECOUPLE_W    ( 0              ),
-    .axi_req_t     ( axi_out_req_t  ),
-    .axi_rsp_t     ( axi_out_resp_t ),
-    .reg_req_t     ( secd_bus_req_t ),
-    .reg_rsp_t     ( secd_bus_rsp_t )
+  axi_to_reg_v2 #(
+    .AxiAddrWidth ( AxiAddrWidth   ),
+    .AxiDataWidth ( AxiDataWidth   ),
+    .AxiIdWidth   ( AxiOutIdWidth  ),
+    .AxiUserWidth ( AxiUserWidth   ),
+    .RegDataWidth ( 32 ),
+    .CutMemReqs   ( 1  ),
+    .axi_req_t    ( axi_out_req_t  ),
+    .axi_rsp_t    ( axi_out_resp_t ),
+    .reg_req_t    ( secd_bus_req_t ),
+    .reg_rsp_t    ( secd_bus_rsp_t )
   ) u_axi2reg_regif (
     .clk_i,
     .rst_ni,
-    .testmode_i ( 1'b0            ),
     .axi_req_i  ( axi_reg_mst_req ),
     .axi_rsp_o  ( axi_reg_mst_rsp ),
     .reg_req_o  ( s_secd_reg_req  ),
