@@ -238,13 +238,13 @@ module security_island
 
    // Register Interface port maps at idx0, maps to error outside of valid addr ranges
    localparam int unsigned ErrAddrIdx  = 0;
-   // Register Interface port maps at idx10, starting from 0xBF00_0000 up to RegAddrSize
+   // Register Interface port maps at idx10, starting from RegAddrBase up to RegAddrSize
    localparam int unsigned RegAddrIdx  = 1;
    localparam axi_addr_t   RegAddrBase = 'hBF000000;
-   localparam int unsigned RegAddrSize = 'h1000;
-   // Register Interface port maps at idx2, starting from 0xBF00_1000 up to MboxAddrSize
+   localparam int unsigned RegAddrSize = 'h10000;
+   // Register Interface port maps at idx2, starting from MboxAddrBase up to MboxAddrSize
    localparam int unsigned MboxAddrIdx  = 2;
-   localparam axi_addr_t   MboxAddrBase = 'hBF001000;
+   localparam axi_addr_t   MboxAddrBase = 'hBF010000;
    localparam int unsigned MboxAddrSize = 'h100;
 
    logic [cf_math_pkg::idx_width(NumRegOut)-1:0] s_secd_reg_select;
@@ -283,7 +283,8 @@ module security_island
 
    logic s_cluster_eoc;
    logic s_clk_cluster, s_clk_ot;
-   logic s_mbox_irq;
+   logic s_mbox2cl_irq;
+   logic s_mbox2ibex_irq;
 
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
@@ -859,8 +860,8 @@ module security_island
     .rst_ni,
     .reg_req_i ( s_secd_reg_out_req[MboxAddrIdx] ), // 2
     .reg_rsp_o ( s_secd_reg_out_rsp[MboxAddrIdx] ), // 2
-    .snd_irq_o ( s_mbox_irq ),
-    .rcv_irq_o (  )
+    .snd_irq_o ( s_mbox2ibex_irq ),
+    .rcv_irq_o ( s_mbox2cl_irq   )
   );
 
 ///////////////////
@@ -999,7 +1000,7 @@ module security_island
       .dma_pe_irq_valid_o              (                                      ),
 
       .dbg_irq_valid_i                 ( '0                                   ),
-      .mbox_irq_i                      ( s_mbox_irq                           ),
+      .mbox_irq_i                      ( s_mbox2cl_irq                        ),
 
       .pf_evt_ack_i                    ( 1'b1                                 ),
       .pf_evt_valid_o                  (                                      ),
@@ -1140,6 +1141,7 @@ module security_island
       .tlul2axi_rsp_i               ( axi_tlul_rsp          ),
       .idma_axi_req_o               ( axi_idma_req          ),
       .idma_axi_rsp_i               ( axi_idma_rsp          ),
+      .irq_mbox_i                   ( s_mbox2ibex_irq       ),
       .irq_ibex_i                   ( irq_ibex_sync         ),
       .irq_cfi_req_i                ( cfi_req_irq_i         ),
       .cfi_watermark_irq_i          ( cfi_watermark_irq_i   ),
