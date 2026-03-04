@@ -8,7 +8,7 @@ import argparse
 
 # 1. Base test lists
 COMPILE_FOLDERS = [
-    "sw/tests/generic_test", "sw/tests/regression_tests/hello",
+    "sw/tests/cluster_offload", "sw/tests/regression_tests/hello",
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
@@ -44,9 +44,9 @@ COMPILE_COMMAND = "make clean all"
 
 # 3. Command Templates based on simulation type
 RUN_COMMAND_MAP = {
-    "rtl": "make sim_rtl SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
-    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test",
-    "gate": "make sim_gls_run SRAM=sw/tests/generic_test/generic_test.elf cl-bin={}/build/test/test"
+    "rtl": "make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
+    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
+    "gate": "make sim_gls_run SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test"
 }
 DEFAULT_SIMULATION_TYPE = "rtl"
 

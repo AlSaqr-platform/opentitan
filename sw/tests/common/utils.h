@@ -15,9 +15,11 @@
 #define DEV_READ(addr, val) (*((volatile uint32_t *)(addr)))
 #define PCOUNT_READ(name, dst) asm volatile("csrr %0, " #name ";" : "=r"(dst))
 
+#define EXT_MBOX_IRQ_ID 159
+#define SECD_MBOX_IRQ_ID 160
+
 #define UART_H
 #define UART_BASE_ADDR 0x40000000
-
 
 #define UART_REG_RBR ( UART_BASE_ADDR + 0x00) // Receiver Buffer Register (Read Only)
 #define UART_REG_DLL ( UART_BASE_ADDR + 0x00) // Divisor Latch (LS)
@@ -84,10 +86,8 @@ char uart_getchar();
 
 void uart_wait_tx_done(void);
 
-
 void external_irq_handler(void) __attribute__((interrupt));
 void simple_exc_handler(void) ;
-
 
 size_t strlen (const char *str);
 int  strcmp (const char *s1, const char *s2);

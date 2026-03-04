@@ -1,8 +1,8 @@
 PULP_SW_DIR  := $(PULP_REGR_DIR)
 
-GENERIC_TEST := $(TESTS_DIR)/generic_test
+GENERIC_TEST := $(TESTS_DIR)/cluster_offload
 
-$(GENERIC_TEST)/generic_test.elf:
+$(GENERIC_TEST)/cluster_offload.elf:
 	$(MAKE) -C $(GENERIC_TEST) clean all
 
 PULP_TEST_DIRS := $(wildcard $(PULP_SW_DIR)/opentitan-cluster/*)
