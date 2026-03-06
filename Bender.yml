@@ -11,6 +11,7 @@ dependencies:
   pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git",     rev: "b7a87e042f91582789663164f962bcb19cad7653" } # branch: lg/hmr_uart_fix
   axi_scmi_mailbox:     { git: "https://github.com/AlSaqr-platform/axi_scmi_mailbox.git",   rev: "96650c4c39dcfc683e48015abb1453d182c1d837" }
   common_cells:         { git: https://github.com/pulp-platform/common_cells.git,           version: 1.37.0                                 } # branch: master
+  mailbox_unit:         { git: https://github.com/pulp-platform/mailbox_unit.git,           version: 1.1.0                                  }
 
 export_include_dirs:
       - hw/ip/prim/rtl

@@ -15,6 +15,8 @@
 `include "pulp_soc_defines.sv"
 `include "axi/typedef.svh"
 `include "axi/assign.svh"
+`include "register_interface/typedef.svh"
+`include "register_interface/assign.svh"
 
 module security_island
    import axi_pkg::*;
@@ -168,12 +170,12 @@ module security_island
   // Register Interface port maps at idx3, starting from 0xBF00_0000 up to RegSize
   localparam int unsigned AxiOutRegAddrIdx  = 3;
   localparam axi_addr_t   AxiOutRegAddrBase = 'hBF000000;
-  localparam int unsigned AxiOutRegAddrSize = 'h1000;
+  localparam int unsigned AxiOutRegAddrSize = 'h00100000;
 
    // AXI crossbars ports and rules
    localparam int unsigned NumMstPorts = 4;
    localparam int unsigned NumSlvPorts = 3;
-   localparam int unsigned NumRules = 4;
+   localparam int unsigned NumAxiRules = 4;
 
    typedef struct packed {
      int unsigned idx;
@@ -222,8 +224,39 @@ module security_island
    entropy_src_pkg::entropy_src_rng_req_t es_rng_req;
    entropy_src_pkg::entropy_src_rng_rsp_t es_rng_rsp;
 
+   // REG TOP //
+   localparam int unsigned RegDataWidth = 32;
+   localparam int unsigned RegStrbWidth = RegDataWidth/8;
+
+   // Define structs for reg_bus
+   typedef logic [RegDataWidth-1:0] reg_data_t;
+   typedef logic [RegStrbWidth-1:0] reg_strb_t;
+   `REG_BUS_TYPEDEF_ALL(secd_bus, axi_addr_t, reg_data_t, reg_strb_t)
+
+   localparam int unsigned NumRegRules = 2;
+   localparam int unsigned NumRegOut = 3;
+
+   // Register Interface port maps at idx0, maps to error outside of valid addr ranges
+   localparam int unsigned ErrAddrIdx  = 0;
+   // Register Interface port maps at idx10, starting from RegAddrBase up to RegAddrSize
+   localparam int unsigned RegAddrIdx  = 1;
+   localparam axi_addr_t   RegAddrBase = 'hBF000000;
+   localparam int unsigned RegAddrSize = 'h10000;
+   // Register Interface port maps at idx2, starting from MboxAddrBase up to MboxAddrSize
+   localparam int unsigned MboxAddrIdx  = 2;
+   localparam axi_addr_t   MboxAddrBase = 'hBF010000;
+   localparam int unsigned MboxAddrSize = 'h100;
+
+   logic [cf_math_pkg::idx_width(NumRegOut)-1:0] s_secd_reg_select;
+   secd_bus_req_t [NumRegOut-1:0] s_secd_reg_out_req;
+   secd_bus_rsp_t [NumRegOut-1:0] s_secd_reg_out_rsp;
+   secd_bus_req_t s_secd_reg_req;
+   secd_bus_rsp_t s_secd_reg_rsp;
+
    security_island_reg2hw_t secd_regs_reg2hw;
    security_island_hw2reg_t secd_regs_hw2reg;
+
+   localparam int unsigned ClkDivValueWidth = 32;
 
    logic [15:0] dio_in_i;
    logic [15:0] dio_out_o;
@@ -250,6 +283,8 @@ module security_island
 
    logic s_cluster_eoc;
    logic s_clk_cluster, s_clk_ot;
+   logic s_mbox2cl_irq;
+   logic s_mbox2ibex_irq;
 
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
@@ -440,9 +475,9 @@ module security_island
   // AXI Crossbar //
   //////////////////
 
-  xbar_rule_t [NumRules-1:0] addr_map;
+  xbar_rule_t [NumAxiRules-1:0] axi_addr_map;
 
-  assign addr_map = '{
+  assign axi_addr_map = '{
     '{
       idx:        AxiOutExtAddrIdx,
       start_addr: AxiOutExtAddrBase,
@@ -482,7 +517,7 @@ module security_island
     UniqueIds:                            1'b0,
     AxiAddrWidth:                 AxiAddrWidth,
     AxiDataWidth:                 AxiDataWidth,
-    NoAddrRules:                      NumRules
+    NoAddrRules:                   NumAxiRules
   };
 
   assign axi_ext_mst_req = axi_mst_req[AxiOutExtAddrIdx];
@@ -522,7 +557,7 @@ module security_island
     .slv_ports_resp_o       ( axi_slv_rsp ),
     .mst_ports_req_o        ( axi_mst_req ),
     .mst_ports_resp_i       ( axi_mst_rsp ),
-    .addr_map_i             ( addr_map    ),
+    .addr_map_i             ( axi_addr_map),
     .en_default_mst_port_i  ( '0          ),
     .default_mst_port_i     ( '0          )
   );
@@ -718,21 +753,6 @@ module security_island
        .dst        ( cluster_to_soc_axi_bus       )
    );
 
-  // REG TOP //
-  `include "register_interface/typedef.svh"
-  `include "register_interface/assign.svh"
-
-  localparam int unsigned RegDataWidth = 32;
-  localparam int unsigned RegStrbWidth = RegDataWidth/8;
-
-  // Define structs for reg_bus
-  typedef logic [security_island_reg_pkg::BlockAw-1:0] addr_t;
-  typedef logic [RegDataWidth-1:0] data_t;
-  typedef logic [RegStrbWidth-1:0] strb_t;
-  `REG_BUS_TYPEDEF_ALL(secd_bus, addr_t, data_t, strb_t)
-
-  secd_bus_req_t s_secd_reg_req;
-  secd_bus_rsp_t s_secd_reg_rsp;
 
   axi_to_reg_v2 #(
     .AxiAddrWidth ( AxiAddrWidth   ),
@@ -744,7 +764,7 @@ module security_island
     .axi_rsp_t    ( axi_out_resp_t ),
     .reg_req_t    ( secd_bus_req_t ),
     .reg_rsp_t    ( secd_bus_rsp_t )
-  ) u_axi2reg_regif (
+  ) i_axi2reg (
     .clk_i,
     .rst_ni,
     .axi_req_i  ( axi_reg_mst_req ),
@@ -753,24 +773,100 @@ module security_island
     .reg_rsp_i  ( s_secd_reg_rsp  )
   );
 
+  xbar_rule_t [NumRegRules-1:0] reg_addr_map;
+
+  assign reg_addr_map = '{
+    '{
+      idx:        RegAddrIdx,
+      start_addr: RegAddrBase,
+      end_addr:   RegAddrBase +
+                  RegAddrSize
+    },
+    '{
+      idx:        MboxAddrIdx,
+      start_addr: MboxAddrBase,
+      end_addr:   MboxAddrBase +
+                  MboxAddrSize
+    }
+  };
+
+  // Non-matching addresses are directed to an error slave
+  addr_decode #(
+    .NoIndices  ( NumRegOut   ),
+    .NoRules    ( NumRegRules ),
+    .addr_t     ( axi_addr_t  ),
+    .rule_t     ( xbar_rule_t )
+  ) i_reg_demux_decode (
+    .addr_i           ( s_secd_reg_req.addr ),
+    .addr_map_i       ( reg_addr_map        ),
+    .idx_o            ( s_secd_reg_select   ),
+    .dec_valid_o      ( ),
+    .dec_error_o      ( ),
+    .en_default_idx_i ( 1'b1 ),
+    .default_idx_i    ( (cf_math_pkg::idx_width(NumRegOut))'(ErrAddrIdx) )
+  );
+
+  reg_demux #(
+    .NoPorts  ( NumRegOut      ),
+    .req_t    ( secd_bus_req_t ),
+    .rsp_t    ( secd_bus_rsp_t )
+  ) i_reg_demux (
+    .clk_i,
+    .rst_ni,
+    .in_select_i  ( s_secd_reg_select  ),
+    .in_req_i     ( s_secd_reg_req     ),
+    .in_rsp_o     ( s_secd_reg_rsp     ),
+    .out_req_o    ( s_secd_reg_out_req ),
+    .out_rsp_i    ( s_secd_reg_out_rsp )
+  );
+
+  reg_err_slv #(
+    .DW       ( RegDataWidth ),
+    .ERR_VAL  ( 32'hBADCAB1E ),
+    .req_t    ( secd_bus_req_t ),
+    .rsp_t    ( secd_bus_rsp_t )
+  ) i_reg_err_slv (
+    .req_i  ( s_secd_reg_out_req[ErrAddrIdx] ), // 0
+    .rsp_o  ( s_secd_reg_out_rsp[ErrAddrIdx] )  // 0
+  );
+
+///////////////////
+// register if   //
+///////////////////
+
   security_island_reg_top #(
     .reg_req_t ( secd_bus_req_t ),
     .reg_rsp_t ( secd_bus_rsp_t )
   ) i_secd_reg_top (
-    .clk_i     ( clk_i            ),
-    .rst_ni    ( rst_ni           ),
-    .reg_req_i ( s_secd_reg_req   ),
-    .reg_rsp_o ( s_secd_reg_rsp   ),
+    .clk_i,
+    .rst_ni,
+    .reg_req_i ( s_secd_reg_out_req[RegAddrIdx] ), // 1
+    .reg_rsp_o ( s_secd_reg_out_rsp[RegAddrIdx] ), // 1
     .reg2hw    ( secd_regs_reg2hw ),
     .hw2reg    ( secd_regs_hw2reg ),
     .devmode_i ( 1'b1             )
   );
 
 ///////////////////
-// Clock Divider //
+//    mailbox    //
 ///////////////////
 
-  localparam int unsigned ClkDivValueWidth = 32;
+  mailbox_unit #(
+    .reg_req_t( secd_bus_req_t ),
+    .reg_rsp_t( secd_bus_rsp_t ),
+    .NumMbox  ( 1 )
+  ) i_mailbox_unit (
+    .clk_i,
+    .rst_ni,
+    .reg_req_i ( s_secd_reg_out_req[MboxAddrIdx] ), // 2
+    .reg_rsp_o ( s_secd_reg_out_rsp[MboxAddrIdx] ), // 2
+    .snd_irq_o ( s_mbox2ibex_irq ),
+    .rcv_irq_o ( s_mbox2cl_irq   )
+  );
+
+///////////////////
+// Clock Divider //
+///////////////////
 
   clk_int_div #(
     .DIV_VALUE_WIDTH(ClkDivValueWidth),
@@ -904,7 +1000,7 @@ module security_island
       .dma_pe_irq_valid_o              (                                      ),
 
       .dbg_irq_valid_i                 ( '0                                   ),
-      .mbox_irq_i                      ( '0                                   ),
+      .mbox_irq_i                      ( s_mbox2cl_irq                        ),
 
       .pf_evt_ack_i                    ( 1'b1                                 ),
       .pf_evt_valid_o                  (                                      ),
@@ -1045,6 +1141,7 @@ module security_island
       .tlul2axi_rsp_i               ( axi_tlul_rsp          ),
       .idma_axi_req_o               ( axi_idma_req          ),
       .idma_axi_rsp_i               ( axi_idma_rsp          ),
+      .irq_mbox_i                   ( s_mbox2ibex_irq       ),
       .irq_ibex_i                   ( irq_ibex_sync         ),
       .irq_cfi_req_i                ( cfi_req_irq_i         ),
       .cfi_watermark_irq_i          ( cfi_watermark_irq_i   ),
