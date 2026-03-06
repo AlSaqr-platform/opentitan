@@ -1,9 +1,9 @@
 PULP_SW_DIR  := $(PULP_REGR_DIR)
 
-GENERIC_TEST := $(TESTS_DIR)/cluster_offload
+CLUSTER_OFFLOAD_TEST := $(TESTS_DIR)/cluster_offload
 
-$(GENERIC_TEST)/cluster_offload.elf:
-	$(MAKE) -C $(GENERIC_TEST) clean all
+$(CLUSTER_OFFLOAD_TEST)/cluster_offload_int_irq.elf:
+	$(MAKE) -C $(CLUSTER_OFFLOAD_TEST) clean all
 
 PULP_TEST_DIRS := $(filter-out %deeploy, $(wildcard $(PULP_SW_DIR)/opentitan-cluster/*))
 DEEPLOY_TEST_DIRS := $(wildcard $(PULP_SW_DIR)/opentitan-cluster/deeploy/*/*)

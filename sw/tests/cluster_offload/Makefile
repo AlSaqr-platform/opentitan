@@ -5,7 +5,7 @@
 # Generate a baremetal application
 
 # Name of the program $(PROGRAM).c will be added as a source file
-PROGRAM = cluster_offload
+PROGRAM = cluster_offload_int_irq
 # STANDALONE MODE
 ifneq ($(NO_STANDALONE),)
 PROGRAM_CFLAGS += -DNO_STANDALONE
