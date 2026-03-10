@@ -1,9 +1,14 @@
 PULP_SW_DIR  := $(PULP_REGR_DIR)
 
 CLUSTER_OFFLOAD_TEST := $(TESTS_DIR)/cluster_offload
+CLUSTER_OFFLOAD_EXT_TEST := $(CLUSTER_OFFLOAD_TEST)/ext_mbox
+CLUSTER_OFFLOAD_INT_TEST := $(CLUSTER_OFFLOAD_TEST)/int_mbox
 
-$(CLUSTER_OFFLOAD_TEST)/cluster_offload.elf:
-	$(MAKE) -C $(CLUSTER_OFFLOAD_TEST) clean all
+$(CLUSTER_OFFLOAD_EXT_TEST)/cluster_offload_ext_irq.elf:
+	$(MAKE) -C $(CLUSTER_OFFLOAD_EXT_TEST) clean all
+
+$(CLUSTER_OFFLOAD_INT_TEST)/cluster_offload_int_irq.elf:
+	$(MAKE) -C $(CLUSTER_OFFLOAD_INT_TEST) clean all
 
 PULP_TEST_DIRS := $(filter-out %deeploy, $(wildcard $(PULP_SW_DIR)/opentitan-cluster/*))
 DEEPLOY_TEST_DIRS := $(wildcard $(PULP_SW_DIR)/opentitan-cluster/deeploy/*/*)

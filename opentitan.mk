@@ -19,7 +19,7 @@ VSIM ?= vsim
 DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
 TESTS_DIR := sw/tests
-SRAM ?= ${TESTS_DIR}/cluster_offload/cluster_offload_int_irq.elf
+SRAM ?= ${TESTS_DIR}/cluster_offload/int_mbox/cluster_offload_int_irq.elf
 BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
@@ -94,7 +94,7 @@ $(PULP_SUBMODULES):
 
 pulpd-sw-build: pulpd-sw-init
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(MAKE) pulpd-sw-all
+	$(MAKE) pulpd-sw-all $(CLUSTER_OFFLOAD_EXT_TEST)/cluster_offload_ext_irq.elf $(CLUSTER_OFFLOAD_INT_TEST)/cluster_offload_int_irq.elf
 
 pulpd-sw-clean:
 	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)

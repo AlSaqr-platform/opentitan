@@ -5,7 +5,7 @@
 # Generate a baremetal application
 
 # Name of the program $(PROGRAM).c will be added as a source file
-PROGRAM = cluster_offload_int_irq cluster_offload_ext_irq
+PROGRAM = cluster_offload_ext_irq
 # STANDALONE MODE
 ifneq ($(NO_STANDALONE),)
 PROGRAM_CFLAGS += -DNO_STANDALONE
@@ -19,4 +19,4 @@ utils_dir = $(PROGRAM_DIR)/inc/
 directories = drivers/inc drivers/src string_lib/inc string_lib/src
 EXTRA_SRCS = $(foreach d, $(directories), -I$(utils_dir)$d)
 
-include ${PROGRAM_DIR}/../common/common.mk
+include ${PROGRAM_DIR}/../../common/common.mk

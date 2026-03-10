@@ -1,49 +1,49 @@
 opentitan-cluster:
    hello_wfi:
     path: .
-    command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_ext_irq.elf cl-test=hello_ibex
+    command: make sim_rtl SRAM=sw/tests/cluster_offload/ext_mbox/cluster_offload_ext_irq.elf cl-test=hello_ibex
    addressability:
     path: .
-    command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=addressability
+    command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=addressability
    conv16:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=conv16
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=conv16
    dmr_matmul:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=dmr_matmul
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=dmr_matmul
    hello:
     path: .
-    command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=hello
+    command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=hello
    idma_test:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=idma_test
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=idma_test
    mbox_test:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=mbox_test
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=mbox_test
    neureka:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=neureka
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=neureka
    parMatrixMul8:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=parMatrixMul8
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=parMatrixMul8
    parMatrixMul16:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=parMatrixMul16
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=parMatrixMul16
    parMatrixMul32:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=parMatrixMul32
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=parMatrixMul32
    deeploy/Adder/Adder_tiled:
       path: .
-      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=deeploy/Adder/Adder_tiled
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=deeploy/Adder/Adder_tiled
    deeploy/Adder/Adder_untiled:
       path: .
-      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=deeploy/Adder/Adder_untiled
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=deeploy/Adder/Adder_untiled
    deeploy/Attention/Attention_tiled:
       path: .
-      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=deeploy/Attention/Attention_tiled
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=deeploy/Attention/Attention_tiled
    deeploy/simpleCNN/simpleCNN_tiled:
       path: .
-      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=deeploy/simpleCNN/simpleCNN_tiled
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=deeploy/simpleCNN/simpleCNN_tiled
    deeploy/TitanCFI/TitanCFI-RQS-s8-small:
       path: .
-      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=deeploy/TitanCFI/TitanCFI-RQS-s8-small
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-test=deeploy/TitanCFI/TitanCFI-RQS-s8-small

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 #include "utils.h"
+#include "mailboxes.h"
 #ifdef NO_STANDALONE
 #include "host_uart.h"
 #endif
@@ -93,11 +94,19 @@ int main() {
   // Test Check  //
   /////////////////
 
+  #ifdef NO_STANDALONE
+  p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER0_OFFSET);
+  p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER1_OFFSET);
+  p_reg3 = 0;
+  p_reg4 = 0;
+  p_reg5 = 0;
+  #else
   p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG0_OFFSET);
   p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG1_OFFSET);
   p_reg3 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG2_OFFSET);
   p_reg4 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG3_OFFSET);
   p_reg5 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG4_OFFSET);
+  #endif
 
   if(*p_reg1 == 0xBAADC0DE && *p_reg2 == 0xBAADC0DE && *p_reg3 == 0xBAADC0DE && *p_reg4 == 0xBAADC0DE && *p_reg5 == 0xBAADC0DE){
     return 0;
@@ -116,8 +125,17 @@ void external_irq_handler(void){
   plic_check = (int *) PlicCheckAddrReg;
   while(*plic_check != mbox_id);   //check whether the intr is the correct one
 
+  #ifdef NO_STANDALONE
+  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
+ *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_SET
+  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_EN_OFFSET);
+ *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_EN
+   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_CLR_OFFSET);
+ *p_reg = 0x00000001;         // clean MAILBOX_IRQ_SND_CLR
+  #else
   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG5_OFFSET);
  *p_reg = 0x00000000;        //clearing the pending interrupt signal
+  #endif
 
  *plic_check = mbox_id;      //completing interrupt
 
