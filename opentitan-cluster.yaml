@@ -1,4 +1,7 @@
 opentitan-cluster:
+   hello_wfi:
+    path: .
+    command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_ext_irq.elf cl-test=hello_ibex
    addressability:
     path: .
     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload_int_irq.elf cl-test=addressability

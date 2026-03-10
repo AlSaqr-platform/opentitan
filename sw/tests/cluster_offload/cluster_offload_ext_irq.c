@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <time.h>
 #include "utils.h"
-#include "mailboxes.h"
 #ifdef NO_STANDALONE
 #include "host_uart.h"
 #endif
@@ -24,6 +23,18 @@
 #define PlicCheckAddrReg 0xC8200004 // CC0
 #define PlicIntEnAddrReg 0xC8002010 // IE0_4
 #define PlicPrioAddrReg 0xC800027C // int line 159
+// Mailboxes
+#define ARCHI_SOC_MAILBOXES_ADDR   0x40000000
+#define ARCHI_SOC_MAILBOX_OFFSET   0x0
+
+#define ARCHI_MAILBOXES_REG0_OFFSET  0x08
+#define ARCHI_MAILBOXES_REG1_OFFSET  0x10
+#define ARCHI_MAILBOXES_REG2_OFFSET  0x14
+#define ARCHI_MAILBOXES_REG3_OFFSET  0x18
+#define ARCHI_MAILBOXES_REG4_OFFSET  0x1C
+#define ARCHI_MAILBOXES_REG5_OFFSET  0x20
+
+#define MAILBOX_BASE_ADDR   (ARCHI_SOC_MAILBOXES_ADDR + ARCHI_SOC_MAILBOX_OFFSET)
 
 int main() {
 
@@ -82,11 +93,11 @@ int main() {
   // Test Check  //
   /////////////////
 
-  p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER0_OFFSET);
-  p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER1_OFFSET);
-  p_reg3 = 0;
-  p_reg4 = 0;
-  p_reg5 = 0;
+  p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG0_OFFSET);
+  p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG1_OFFSET);
+  p_reg3 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG2_OFFSET);
+  p_reg4 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG3_OFFSET);
+  p_reg5 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG4_OFFSET);
 
   if(*p_reg1 == 0xBAADC0DE && *p_reg2 == 0xBAADC0DE && *p_reg3 == 0xBAADC0DE && *p_reg4 == 0xBAADC0DE && *p_reg5 == 0xBAADC0DE){
     return 0;
@@ -105,12 +116,8 @@ void external_irq_handler(void){
   plic_check = (int *) PlicCheckAddrReg;
   while(*plic_check != mbox_id);   //check whether the intr is the correct one
 
-  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
- *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_SET
-  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_EN_OFFSET);
- *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_EN
-  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_CLR_OFFSET);
- *p_reg = 0x00000001;         // clean MAILBOX_IRQ_SND_CLR
+  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG5_OFFSET);
+ *p_reg = 0x00000000;        //clearing the pending interrupt signal
 
  *plic_check = mbox_id;      //completing interrupt
 
