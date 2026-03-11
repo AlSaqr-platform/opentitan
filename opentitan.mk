@@ -94,7 +94,11 @@ $(PULP_SUBMODULES):
 
 pulpd-sw-build: pulpd-sw-init
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(MAKE) pulpd-sw-all $(CLUSTER_OFFLOAD_EXT_TEST)/cluster_offload_ext_irq.elf $(CLUSTER_OFFLOAD_INT_TEST)/cluster_offload_int_irq.elf
+	$(MAKE) pulpd-sw-all
+
+ot-sw-build: $(CLUSTER_OFFLOAD_EXT_TEST)/cluster_offload_ext_irq.elf $(CLUSTER_OFFLOAD_INT_TEST)/cluster_offload_int_irq.elf
+
+sw-build-all: ot-sw-build pulpd-sw-build
 
 pulpd-sw-clean:
 	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
