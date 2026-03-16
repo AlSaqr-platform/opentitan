@@ -8,7 +8,8 @@ import argparse
 
 # 1. Base test lists
 COMPILE_FOLDERS = [
-    "sw/tests/cluster_offload/int_mbox/", "sw/tests/regression_tests/hello",
+    "sw/tests/cluster_offload/int_mbox",
+    "sw/tests/regression_tests/opentitan-cluster/hello",
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
@@ -29,7 +30,7 @@ COMPILE_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/deeploy/TitanCFI/TitanCFI-RQS-s8-small",
 ]
 RUN_FOLDERS = [
-    "sw/tests/regression_tests/hello",
+    "sw/tests/regression_tests/opentitan-cluster/hello",
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
@@ -230,6 +231,10 @@ def main():
     global COMPILATION_SUCCESS
     global RUN_COMMAND_TEMPLATE
 
+    # Environment Sourcing
+    print("Sourcing environment config...")
+    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
+
     # Init log
     with open(LOG_FILE_PATH, "w") as f:
         f.write(f"Test Run Log - Started: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -258,10 +263,6 @@ def main():
 
     start_time = time.time()
     results = []
-
-    # Environment Sourcing
-    print("Sourcing environment config...")
-    subprocess.run("source sw/tests/pulp-runtime/configs/opentitan-cluster.sh", shell=True)
 
     # Step 1: Cluster Test Compilation
     compile_projects()
