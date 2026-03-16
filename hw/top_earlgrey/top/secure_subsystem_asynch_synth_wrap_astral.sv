@@ -349,7 +349,7 @@ module security_island
      .STAGES     ( SyncStages ),
      .ResetValue ( 1'b0       )
    ) i_fetch_en_sync (
-     .clk_i,
+     .clk_i    ( s_clk_ot      ),
      .rst_ni   ( pwr_on_rst_ni ),
      .serial_i ( fetch_en_i    ),
      .serial_o ( fetch_en_sync )
@@ -359,7 +359,7 @@ module security_island
      .STAGES     ( SyncStages ),
      .ResetValue ( 1'b0       )
    ) i_irq_sync (
-     .clk_i,
+     .clk_i    ( s_clk_ot      ),
      .rst_ni   ( pwr_on_rst_ni ),
      .serial_i ( irq_ibex_i    ),
      .serial_o ( irq_ibex_sync )
@@ -369,7 +369,7 @@ module security_island
      .STAGES     ( SyncStages ),
      .ResetValue ( 1'b1       )
    ) i_isolate_sync_tlul2axi (
-     .clk_i,
+     .clk_i    ( s_clk_ot         ),
      .rst_ni   ( pwr_on_rst_ni    ),
      .serial_i ( axi_isolate_i    ),
      .serial_o ( axi_isolate_sync )
@@ -394,7 +394,7 @@ module security_island
       .axi_req_t  ( axi_ext_req_t     ),
       .axi_resp_t ( axi_ext_resp_t    )
    ) i_cdc_out_tlul2axi (
-      .src_clk_i                   ( clk_i                   ),
+      .src_clk_i                   ( s_clk_ot                ),
       .src_rst_ni                  ( pwr_on_rst_ni           ),
       .async_data_master_aw_data_o ( async_axi_ext_aw_data_o ),
       .async_data_master_aw_wptr_o ( async_axi_ext_aw_wptr_o ),
@@ -426,7 +426,7 @@ module security_island
      .axi_req_t            ( axi_ext_req_t  ),
      .axi_resp_t           ( axi_ext_resp_t )
    ) i_axi_out_isolate_tlul2axi (
-     .clk_i                ( clk_i                  ),
+     .clk_i                ( s_clk_ot               ),
      .rst_ni               ( rst_ni                 ),
      .slv_req_i            ( axi_ext_serialized_req ),
      .slv_resp_o           ( axi_ext_serialized_rsp ),
@@ -449,7 +449,7 @@ module security_island
     .mst_req_t              ( axi_ext_req_t  ),
     .mst_resp_t             ( axi_ext_resp_t )
    ) ot_id_remap (
-    .clk_i      ( clk_i                  ),
+    .clk_i      ( s_clk_ot               ),
     .rst_ni     ( rst_ni                 ),
     .slv_req_i  ( axi_ext_mst_req        ),
     .slv_resp_o ( axi_ext_mst_rsp        ),
@@ -460,9 +460,9 @@ module security_island
    rng #(
       .EntropyStreams ( 4 )
    ) u_rng (
-      .clk_i          ( clk_i                 ),
+      .clk_i          ( s_clk_ot              ),
       .rst_ni         ( s_rst_n               ),
-      .clk_ast_rng_i  ( clk_i                 ),
+      .clk_ast_rng_i  ( s_clk_ot              ),
       .rst_ast_rng_ni ( s_rst_n               ),
       .rng_en_i       ( es_rng_req.rng_enable ),
       .rng_fips_i     ( es_rng_fips           ),
@@ -550,7 +550,7 @@ module security_island
     .mst_resp_t   ( axi_out_resp_t    ),
     .rule_t       ( xbar_rule_t       )
   ) i_axi_xbar (
-    .clk_i                  ( clk_i       ),
+    .clk_i                  ( s_clk_ot    ),
     .rst_ni                 ( rst_ni      ),
     .test_i                 ( '0          ),
     .slv_ports_req_i        ( axi_slv_req ),
@@ -585,7 +585,7 @@ module security_island
       .axi_req_t  ( axi_out_req_t     ),
       .axi_resp_t ( axi_out_resp_t    )
   ) i_axi_cut (
-      .clk_i      ( clk_i              ),
+      .clk_i      ( s_clk_ot           ),
       .rst_ni     ( rst_ni             ),
       .slv_req_i  ( axi_l2_mst_req     ),
       .slv_resp_o ( axi_l2_mst_rsp     ),
@@ -608,7 +608,7 @@ module security_island
       .MemAddrWidth  ( $clog2(L2BankWords)),
       .MemDataWidth  ( MemDataWidth       )
   ) axi_to_mem_instance (
-      .clk_i       ( clk_i               ),
+      .clk_i       ( s_clk_ot            ),
       .rst_ni      ( rst_ni              ),
       .test_i      ( '0                  ),
       .axi_req_i   ( axi_l2_mst_req_del  ),
@@ -636,7 +636,7 @@ module security_island
       .PrintSimCfg ( 0            ), // Print configuration
       .Latency     ( 1            )  // Latency when the read data is available
     ) i_bank (
-      .clk_i   ( clk_i                  ), // Clock
+      .clk_i   ( s_clk_ot               ), // Clock
       .rst_ni  ( rst_ni                 ), // Asynchronous reset active low
       .req_i   ( l2_mem_slave_req   [i] ), // request
       .we_i    ( l2_mem_slave_we    [i] ), // write enable
@@ -715,7 +715,7 @@ module security_island
      .AXI_DATA_WIDTH (AxiDataWidth),
      .AXI_USER_WIDTH (AxiUserWidth)
    ) u_cluster_slave_id_serializer (
-     .clk_i (clk_i),
+     .clk_i (s_clk_ot),
      .rst_ni (pwr_on_rst_ni),
      .slv (soc_to_cluster_axi_bus),
      .mst (serialized_soc_to_cluster_axi_bus)
@@ -733,7 +733,7 @@ module security_island
      .LOG_DEPTH      ( LogDepth      ),
      .SYNC_STAGES    ( SyncStages    )
    ) soc_to_cluster_src_cdc_fifo_i (
-       .src_clk_i  ( clk_i                             ),
+       .src_clk_i  ( s_clk_ot                          ),
        .src_rst_ni ( pwr_on_rst_ni                     ),
        .src        ( serialized_soc_to_cluster_axi_bus ),
        .dst        ( async_soc_to_cluster_axi_bus      )
@@ -747,7 +747,7 @@ module security_island
      .LOG_DEPTH      ( LogDepth     ),
      .SYNC_STAGES    ( SyncStages   )
    ) cluster_to_soc_dst_cdc_fifo_i (
-       .dst_clk_i  ( clk_i                        ),
+       .dst_clk_i  ( s_clk_ot                     ),
        .dst_rst_ni ( pwr_on_rst_ni                ),
        .src        ( async_cluster_to_soc_axi_bus ),
        .dst        ( cluster_to_soc_axi_bus       )
@@ -765,7 +765,7 @@ module security_island
     .reg_req_t    ( secd_bus_req_t ),
     .reg_rsp_t    ( secd_bus_rsp_t )
   ) i_axi2reg (
-    .clk_i,
+    .clk_i      ( s_clk_ot        ),
     .rst_ni,
     .axi_req_i  ( axi_reg_mst_req ),
     .axi_rsp_o  ( axi_reg_mst_rsp ),
@@ -811,7 +811,7 @@ module security_island
     .req_t    ( secd_bus_req_t ),
     .rsp_t    ( secd_bus_rsp_t )
   ) i_reg_demux (
-    .clk_i,
+    .clk_i        ( s_clk_ot           ),
     .rst_ni,
     .in_select_i  ( s_secd_reg_select  ),
     .in_req_i     ( s_secd_reg_req     ),
@@ -838,7 +838,7 @@ module security_island
     .reg_req_t ( secd_bus_req_t ),
     .reg_rsp_t ( secd_bus_rsp_t )
   ) i_secd_reg_top (
-    .clk_i,
+    .clk_i     ( s_clk_ot         ),
     .rst_ni,
     .reg_req_i ( s_secd_reg_out_req[RegAddrIdx] ), // 1
     .reg_rsp_o ( s_secd_reg_out_rsp[RegAddrIdx] ), // 1
@@ -856,7 +856,7 @@ module security_island
     .reg_rsp_t( secd_bus_rsp_t ),
     .NumMbox  ( 1 )
   ) i_mailbox_unit (
-    .clk_i,
+    .clk_i     ( s_clk_ot         ),
     .rst_ni,
     .reg_req_i ( s_secd_reg_out_req[MboxAddrIdx] ), // 2
     .reg_rsp_o ( s_secd_reg_out_rsp[MboxAddrIdx] ), // 2
