@@ -77,6 +77,8 @@
 
 #define inf 1.0f / 0.0f
 
+
+
 void uart_set_cfg(int parity, uint16_t clk_counter);
 
 void uart_send(const char* str, unsigned int len);
@@ -100,6 +102,11 @@ int putchar(int s);
 static inline volatile uint8_t *reg8(void *base, int offs) {
     return (volatile uint8_t *)((uint8_t *)base + offs);
 }
+
+static inline volatile uint32_t *reg32(void *base, int offs) {
+    return (volatile uint32_t *)((uint8_t *)base + offs);
+}
+
 
 static inline void fence() {
     asm volatile("fence" ::: "memory");
