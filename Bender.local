@@ -1,7 +1,7 @@
 overrides:
   riscv:                { git: "https://github.com/AlSaqr-platform/riscv_nn.git", rev: "e437cff049443dac25a2c3a35e9890a577f9493a" } # branch: alsaqr-2.0
   tech_cells_generic:   { git: "https://github.com/pulp-platform/tech_cells_generic.git", version: =0.2.13 }
-  fpnew:                { git: "https://github.com/pulp-platform/cvfpu.git", rev: pulp-v0.1.3 }
+  fpnew:                { git: "https://github.com/FondazioneChipsIT/cvfpu.git", rev: 49b1cb4d50893a9d23f8329d857527ebe5bc8529 } # branch: yt/pulp-merge-v2
   hwpe-ctrl:            { git: "https://github.com/pulp-platform/hwpe-ctrl.git", rev: 3690a3c }
   hwpe-stream:          { git: "https://github.com/pulp-platform/hwpe-stream.git", rev: c1e25094bf9f2fee754611ef7491b7a1144e11b9 }
   axi:                  { git: "https://github.com/pulp-platform/axi.git", version: =0.39.8 }

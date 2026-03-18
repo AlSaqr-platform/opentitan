@@ -29,7 +29,7 @@ module security_island
    import top_earlgrey_pkg::*;
    import security_island_reg_pkg::*;
 #(
-   parameter int unsigned HartIdOffs = 0,
+   parameter int unsigned HartIdOffs = 4,
    // Shared AXI parameters
    parameter int unsigned AxiAddrWidth = SynthAxiAddrWidth,
    parameter int unsigned AxiDataWidth = SynthAxiDataWidth,

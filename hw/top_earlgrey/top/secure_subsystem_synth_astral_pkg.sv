@@ -14,9 +14,9 @@ package secure_subsystem_synth_astral_pkg;
 
   localparam SynthAxiAddrWidth    = 48;
   localparam SynthAxiDataWidth    = 64;
-  localparam SynthAxiUserWidth    = 1;
+  localparam SynthAxiUserWidth    = 10;
   // External AXI master port ID Width
-  localparam SynthAxiExtIdWidth   = 4;
+  localparam SynthAxiExtIdWidth   = 2;
   // Security Island internal crossbar AXI ID Widths
   // These are from the AXI XBAR perspective, so:
   // - "out" refers to XBAR master ports (slave devices -> external, PULP cluster slave)
@@ -39,7 +39,7 @@ package secure_subsystem_synth_astral_pkg;
   `AXI_TYPEDEF_ALL(synth_axi_in, synth_axi_addr_t, synth_axi_in_id_t, synth_axi_data_t, synth_axi_strb_t, synth_axi_user_t)
 
   localparam SynthLogDepth = 3;
-  localparam SynthCdcSyncStages = 2;
+  localparam SynthCdcSyncStages = 3;
 
   localparam AxiMaxOutTrans = 2;
 
