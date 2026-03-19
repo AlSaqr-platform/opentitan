@@ -35,9 +35,15 @@ PULP_RUNTIME_DIR := ${TESTS_DIR}/pulp-runtime
 PULP_REGR_DIR    := ${TESTS_DIR}/regression_tests
 PULP_SUBMODULES  := $(PULP_RUNTIME_DIR) $(PULP_REGR_DIR)
 
-cl-test        ?=
-cl-bin         = $(PULP_REGR_DIR)/opentitan-cluster/$(cl-test)/build/test/test
-OT_CLUSTER     = $(cl-bin)
+cl-bin         ?= none
+cl-test        ?= none
+ifneq ($(cl-bin), none)
+OT_CLUSTER = $(cl-bin)
+else ifneq ($(cl-test), none)
+OT_CLUSTER = $(PULP_REGR_DIR)/opentitan-cluster/$(cl-test)/build/test/test
+else
+OT_CLUSTER = none
+endif
 
 bwruntest = $(PULP_RUNTIME_DIR)/scripts/bwruntests.py
 
@@ -143,7 +149,7 @@ sim_rtl_tech_mem:
 	+SRAM=${SRAM} +OT_CLUSTER=${OT_CLUSTER} +BOOTMODE=${BOOTMODE} -sv_lib $(dpi-library)/elfloader
 	@if grep -q FAILED transcript; then exit 1; fi
 
-sim_gls_compile: tech-init
+sim_gls_compile:
 	$(MAKE) -C target/gf22/questasim sim_gls_compile
 
 sim_gls_run:
