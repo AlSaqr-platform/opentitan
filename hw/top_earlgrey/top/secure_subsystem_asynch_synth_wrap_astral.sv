@@ -273,6 +273,7 @@ module security_island
 
    logic fetch_en_sync;
    logic irq_ibex_sync;
+   logic axi_isolate_sync;
 
    wire [1:0] flash_testmode_tieoff;
    wire otp_ext_tieoff, flash_testvolt_tieoff;
