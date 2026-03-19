@@ -871,3 +871,4 @@ sources:
         files:
            - target/gf22/sourcecode/tc_sram.sv
            - target/gf22/sourcecode/tc_clk.sv
+           - target/gf22/sourcecode/sync.sv
