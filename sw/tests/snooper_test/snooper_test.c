@@ -1,10 +1,6 @@
 // Copyright 2023 ETH Zurich and University of Bologna.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
-//
-// Nicole Narr <narrn@student.ethz.ch>
-// Christopher Reinwardt <creinwar@student.ethz.ch>
-// Paul Scheffler <paulsc@iis.ee.ethz.ch>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,16 +9,16 @@
 #include <time.h>
 #include "utils.h"
 #include "regs/snooper_regs.h"
-// Define the absolute hardware addresses
+volatile uint32_t irq_handled = 0;
+
+// Define the absolute hardware addresses for the Snooper
 #define BASE_SNPRCFG ((void *)0x15000000)
 #define BASE_SNPR    ((void *)0x16000000)
-enum car_irq_router_target {
-    IRQ_ROUTER_TARGET_NONE            = 0,
-    IRQ_ROUTER_TARGET_PLIC            = 1,
-    IRQ_ROUTER_TARGET_CVA6_CLIC       = 1 << 1,
-    IRQ_ROUTER_TARGET_SECURITY_ISLAND = 1 << 2,
-};
 
+// Define the absolute hardware addresses for the PLIC (Target 0, IRQ 158)
+#define PlicPrioAddrReg  0xC8000278  // Priority reg for IRQ 158
+#define PlicEnAddrReg    0xC8002010  // Enable reg for IRQs 128-159
+#define PlicCheckAddrReg 0xC8200004  // Claim/Complete reg for Target 0
 
 void set_register_bit(void *base_addr, uint32_t reg_offset, uint32_t bit_position) {
     uint32_t reg_value = *reg32(base_addr, reg_offset);
@@ -36,11 +32,40 @@ void clear_register_bit(void *base_addr, uint32_t reg_offset, uint32_t bit_posit
     *reg32(base_addr, reg_offset) = reg_value;
 }
 
+// Bare-metal Interrupt Service Routine
+void external_irq_handler(void){
+    int irq_id = 158;
+    int volatile * plic_check;
+    
+
+    // Start of Interrupt Service Routine: Claim the interrupt
+    plic_check = (int *) PlicCheckAddrReg;
+    printf("Interrupt received, claiming IRQ...\n\r");
+    //print the plic pending register for debugging
+    uint32_t pending = *(volatile uint32_t *)0xC8001010;
+    printf("PLIC Pending Register: 0x%08x\n\r", pending);
+    
+    // Wait and verify it's the correct IRQ (158)
+    if(*plic_check == irq_id){
+    printf("IRQ %d claimed, handling interrupt...\n\r", irq_id);
+    clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET, CFG_REGS_CTRL_TRIG_PC_0_BIT);
+    irq_handled = 1;
+    // clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET, CFG_REGS_CTRL_WATERMARK_EN_BIT);
+
+
+    // Complete the interrupt by writing the IRQ ID back to the claim/complete register
+    *plic_check = irq_id;    }      
+
+    return;
+}
 
 int main(void) {
 
-
     extern char dummy1_code_start, dummy1_code_end, dummy2_code_start, dummy2_code_end;
+    // volatile uint64_t counter = 0;
+    // while(1){
+    //     counter++;
+    // }
 
     static const uint32_t instructions[] = {
         0xf3000017, 0xf3000017, 
@@ -55,88 +80,46 @@ int main(void) {
     };
     printf("hello ibex\n\r");
 
-
     //---------------------------------------------------------------------------------------------//
     //--------------------------------------INSTR MODE TEST----------------------------------------//
     //---------------------------------------------------------------------------------------------//
 
-    // // Configure LSBs and MSBs of START_ADDRESS for RANGE_0, first and only logging region
-    // *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_H_REG_OFFSET) = 0x00000000;
-    // *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x1000155c;
+    printf("%x\n\r", (unsigned int)*reg32(BASE_SNPR, 0));
+    printf("%x\n\r", (unsigned int)*reg32(BASE_SNPRCFG, CFG_REGS_BASE_REG_OFFSET));
 
-    // // Configure LSBs and MSBs of END_ADDRESS for RANGE_0, first and only logging region
-    // *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_H_REG_OFFSET) = 0x00000000;
-    // *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x1000159c;
-    // START_ADDRESS (Base: 0x15000000)
-    printf("%x\n\r", *reg32(BASE_SNPR, 0));
-    printf("%x\n\r", *reg32(BASE_SNPRCFG, CFG_REGS_BASE_REG_OFFSET));
-    //prrint all the registers starting from BASE_SNPRCFG to BASE_SNPRCFG + 0x29
-
- // Configure LSBs and MSBs of START_ADDRESS for RANGE_0, first and only logging region
+    // Configure LSBs and MSBs of START_ADDRESS for RANGE_0
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x1000149e;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x100014ca;
 
-    // Configure LSBs and MSBs of END_ADDRESS for RANGE_0, first and only logging region
+    // Configure LSBs and MSBs of END_ADDRESS for RANGE_0
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x100014de;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x1000150a;
 
     // Configure Snooper to log only instructions executed in M mode
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_M_MODE_BIT);
 
-    // Set this bit to snoop from core 1 instead of core 0
-    // set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_CORE_SELECT_BIT);
-
     // Configure Snooper Logging mode: Instr
-    // Instr mode to log the opcode of every instruction
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRACE_MODE_OFFSET);
 
-    // Enable RANGE_0 from CTRL register, this will enable the snooper to log the RANGE_0
+    // Enable RANGE_0 from CTRL register
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_PC_RANGE_0_BIT);
 
     fence();
     
     for (int i = 0; i < 0x2c; i+=4) {
-        printf("Offset 0x%x: %x\n\r", i, *reg32(BASE_SNPRCFG, i));
+        printf("Offset 0x%x: %x\n\r", i, (unsigned int)*reg32(BASE_SNPRCFG, i));
     }
 
-    // 2. Poll the register
     uint32_t last_address = 0;
     const uint32_t target_size = 16 * 4; // 64 bytes
 
     while (1) {
         // Perform a volatile read to force a hardware bus transaction
-        last_address = *(volatile uint32_t *)0x15000008;
-        
+        last_address = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
         if (last_address >= target_size) {
             break; 
         }
-        
-        // Optional: add a small barrier to prevent the CPU from 
-        // flooding the bus too aggressively
-        // asm volatile("nop");
     }
-
-    // asm volatile (
-    //     "dummy1_code_start: \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "li	zero,1 \n\r"
-    //     "addi	zero,a5,-602 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "li	zero,2 \n\r"
-    //     "addi	zero,a5,-614 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "li	zero,3 \n\r"
-    //     "addi	zero,a5,-626 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "addi	zero,a4,-638 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "addi	zero,a5,-654 \n\r"
-    //     "auipc	zero,0xf3000 \n\r"
-    //     "dummy1_code_end: \n\r"
-    //     "addi	zero,a5,-666 \n\r"
-    // );
 
     // Stop snooper logging
     clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_PC_RANGE_0_BIT);
@@ -146,108 +129,91 @@ int main(void) {
     base = *reg32(BASE_SNPRCFG, CFG_REGS_BASE_REG_OFFSET);
     last = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
 
-    for(int i=base;i<=last;i=i+4) { // Instruction mode
-        printf("%x\n\r", *reg32(BASE_SNPR, i));
+    for(int i=base;i<=last;i=i+4) { 
+        printf("%x\n\r", (unsigned int)*reg32(BASE_SNPR, i));
         if (*reg32(BASE_SNPR, i) != instructions[i/4])
-            return 1; // return error in case the logged instruction is different from the expected instruction
+            return 1; 
     }
 
     //--------------------------------------------------------------------------------------------//
     //--------------------------------------ADDR MODE TEST----------------------------------------//
     //--------------------------------------------------------------------------------------------//
 
-    // Configure LSBs and MSBs of START_ADDRESS for RANGE_0, first and only logging region
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x100014e2;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x1000150e;
 
-    // Configure LSBs and MSBs of END_ADDRESS for RANGE_0, first and only logging region
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x10001534;
-
-    // Configure Snooper Logging mode: Addr
-    // Addr mode to log PC src, PC dst and ctr_type of branches and jumps
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x10001560;
+    
+    // // Configure Snooper Logging mode: Addr
+    // // Addr mode to log PC src, PC dst and ctr_type of branches and jumps
     clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRACE_MODE_OFFSET);
 
-    // enable watermark interrupt for security island
-    //car_irq_router_enable(58, IRQ_ROUTER_TARGET_SECURITY_ISLAND);
-    // enable trigger interrupt for security island
-    //car_irq_router_enable(59, IRQ_ROUTER_TARGET_SECURITY_ISLAND);
+    //-----------------------------------PLIC IRQ 158 CONFIG---------------------------------------//
+    // 1. CPU interrupt configuration via CSRs
+    unsigned mtvec_cfg = 0xe0000001;
+    asm volatile("csrw mtvec, %0\n" : : "r"(mtvec_cfg));
 
+    unsigned mstatus_cfg = 0x00001808;  // Set global interrupt enable
+    unsigned mie_cfg = 0x00000800;      // Set external interrupts
+
+    asm volatile("csrw  mstatus, %0\n" : : "r"(mstatus_cfg));
+    asm volatile("csrw  mie, %0\n"     : : "r"(mie_cfg));
+
+    // 2. PLIC peripheral configuration via raw memory addresses
+    volatile int * plic_prio = (int *) PlicPrioAddrReg; 
+    volatile int * plic_en   = (int *) PlicEnAddrReg;   
+
+    *plic_prio  = 1;                   // Set IRQ 158 priority to 1
+    *plic_en    = 0x40000000;          // Enable IRQ 158 (bit 30 in the 128-159 range register)
+
+
+    // //---------------------------------------------------------------------------------------------//
 
     //-------------------------------------TRIGGER INTERRUPT---------------------------------------//
-    // This interrupt triggers when the snooper reads a committing instruction with PC=TRIGGER_PC0
-    // The trigger interrupt resets the snooper ctrl register, this stops the snooper operation
-    // allowing to read the execution trace without the risk of new instructions 
-    // overwriting the instructions already stored in the buffer
-
-    // Configure LSBs and MSBs of TRIGGER_PC0
     *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_L_REG_OFFSET) = (uintptr_t)0x10001534;
-    // Enable trigger interrupt for PC0
+    *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_L_REG_OFFSET) = (uintptr_t)0x10001560;
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRIG_PC_0_BIT);
 
 
     //------------------------------------WATERMARK INTERRUPT--------------------------------------//
-    // Watermark interrupt can only be used in instruction mode
-    // This interrupt triggers when the numbers of instructions stored in the buffer minus
-    // the number of instructions previously read through AXI is higher than the watermark lvl
-    // The interrupt is high as long as this condition is met and does not stop the snooper operation
+    // *reg32(BASE_SNPRCFG, CFG_REGS_WATERMARK_LEVEL_REG_OFFSET) = 0x0000000a; 
+    // set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_WATERMARK_EN_BIT);
 
-    // Set watermark level to 10 instructions
-    *reg32(BASE_SNPRCFG, CFG_REGS_WATERMARK_LEVEL_REG_OFFSET) = 0x0000000a; 
-    // Enable watermark interrupt
-    set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_WATERMARK_EN_BIT);
-
-
-    // Enable RANGE_0 from CTRL register, this will enable the snooper to log the RANGE_0
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_PC_RANGE_0_BIT);
 
     fence();
-    uint32_t ctrl_status;
-    do {
-        // Read the CTRL register using your macro
-        ctrl_status = *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET); 
-        
-        // Optional: slight delay
-        asm volatile("nop");
-        
-    // Keep looping while the RANGE_0 bit is still a '1'
-    } while (ctrl_status & (1 << CFG_REGS_CTRL_PC_RANGE_0_BIT));
     
+    // uint32_t ctrl_status;
+    // do {
+    //     ctrl_status = *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET); 
+    //     asm volatile("nop");
+    // } while (ctrl_status & (1 << CFG_REGS_CTRL_TRIG_PC_0_BIT));
 
-    // asm volatile ("dummy2_code_start:");
-
-    // *reg32(&__base_regs, CHESHIRE_SCRATCH_0_REG_OFFSET) = 0;
-    // *reg32(&__base_regs, CHESHIRE_SCRATCH_1_REG_OFFSET) = 1;
-    // *reg32(&__base_regs, CHESHIRE_SCRATCH_2_REG_OFFSET) = 2;
-    // *reg32(&__base_regs, CHESHIRE_SCRATCH_3_REG_OFFSET) = 3;
-    // for (int i=0; i<(int) *reg32(&__base_regs, CHESHIRE_SCRATCH_3_REG_OFFSET); i++) {
-    //     *reg32(&__base_regs, CHESHIRE_SCRATCH_0_REG_OFFSET) = 0;  
-    // }
-
-    // asm volatile ("dummy2_code_end:");
-
+    // // Wait for the ISR to set the flag
+    uint32_t pending = *(volatile uint32_t *)0xC8001010;
+    while (!irq_handled) {
+        asm volatile("wfi"); // Wait For Interrupt (saves power)
+        
+        // if (pending & (1 << 29)) printf("IRQ 157 is PENDING in PLIC\n\r");
+        // if (pending & (1 << 30)) printf("IRQ 158 is PENDING in PLIC\n\r");
+    }
+    printf("Interrupt successfully caught!\n");
+    
     new_base = last + 4;
     new_last = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
     printf("printing logged PCs in the buffer:\n\r");
+    printf("New Base: 0x%x, New Last: 0x%x\n\r", (unsigned int)new_base, (unsigned int)new_last);
 
     for(int i = new_base; i < new_last; i = i + 20) { 
-        // 1. Read 64-bit Source PC (Lower word at 0x00)
         uint32_t pc_src_low  = *reg32(BASE_SNPR, i + 0x00);
-        uint32_t pc_src_high = *reg32(BASE_SNPR, i + 0x04);
-
-        // 2. Read 64-bit Destination PC (Lower word at 0x08)
         uint32_t pc_dst_low  = *reg32(BASE_SNPR, i + 0x08);
-        uint32_t pc_dst_high = *reg32(BASE_SNPR, i + 0x0C);
-
-        // 3. Read 32-bit Metadata (Offset 0x10)
         uint32_t metadata = *reg32(BASE_SNPR, i + 0x10);
 
-        printf("Src: %x  -->  Dst: %x  |  Meta: %x\n\r", pc_src_low, pc_dst_low, metadata);
+        printf("Src: %x  -->  Dst: %x  |  Meta: %x\n\r", (unsigned int)pc_src_low, (unsigned int)pc_dst_low, (unsigned int)metadata);
 
-        // 4. Hardcoded Safety Check
-        if ((pc_src_low <= (uintptr_t)0x100014e2) || (pc_src_low >= (uintptr_t)0x10001534)){
-            printf("test failed! PC outside of logging region: %x\n\r", pc_src_low);
+        if ((pc_src_low <= (uintptr_t)0x1000150e) || (pc_src_low >= (uintptr_t)0x10001560)){
+            printf("test failed! PC outside of logging region: %x\n\r", (unsigned int)pc_src_low);
             return 1; 
         }
     }
