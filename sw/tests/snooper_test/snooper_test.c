@@ -1,6 +1,10 @@
 // Copyright 2023 ETH Zurich and University of Bologna.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
+//
+// Nicole Narr <narrn@student.ethz.ch>
+// Christopher Reinwardt <creinwar@student.ethz.ch>
+// Paul Scheffler <paulsc@iis.ee.ethz.ch>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +13,15 @@
 #include <time.h>
 #include "utils.h"
 #include "regs/snooper_regs.h"
+#define OT_PLATFORM_RV32
+
+// OpenTitan Library Includes
+#include "sw/device/lib/dif/dif_rv_plic.h" 
+#include "sw/device/lib/base/mmio.h"       
+#include "sw/device/lib/runtime/irq.h"
 volatile uint32_t irq_handled = 0;
+// Global PLIC Handle
+dif_rv_plic_t plic;
 
 // Define the absolute hardware addresses for the Snooper
 #define BASE_SNPRCFG ((void *)0x15000000)
@@ -149,23 +161,21 @@ int main(void) {
     // // Addr mode to log PC src, PC dst and ctr_type of branches and jumps
     clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRACE_MODE_OFFSET);
 
-    //-----------------------------------PLIC IRQ 158 CONFIG---------------------------------------//
-    // 1. CPU interrupt configuration via CSRs
-    unsigned mtvec_cfg = 0xe0000001;
-    asm volatile("csrw mtvec, %0\n" : : "r"(mtvec_cfg));
+    // 1. CPU interrupt configuration using helper routines
+    irq_set_vector_offset(0xe0000001); // Sets mtvec (Base address 0xe0000000 + Vectored mode 1)
+    irq_global_ctrl(true);             // Sets mstatus MIE bit (Global interrupt enable)
+    irq_external_ctrl(true);           // Sets mie MEIE bit (External interrupt enable)
+    // 1. Set the base address
+    plic.base_addr = mmio_region_from_addr(0xC8000000);
 
-    unsigned mstatus_cfg = 0x00001808;  // Set global interrupt enable
-    unsigned mie_cfg = 0x00000800;      // Set external interrupts
-
-    asm volatile("csrw  mstatus, %0\n" : : "r"(mstatus_cfg));
-    asm volatile("csrw  mie, %0\n"     : : "r"(mie_cfg));
-
-    // 2. PLIC peripheral configuration via raw memory addresses
-    volatile int * plic_prio = (int *) PlicPrioAddrReg; 
-    volatile int * plic_en   = (int *) PlicEnAddrReg;   
-
-    *plic_prio  = 1;                   // Set IRQ 158 priority to 1
-    *plic_en    = 0x40000000;          // Enable IRQ 158 (bit 30 in the 128-159 range register)
+    // // 2. PLIC peripheral configuration
+    dif_rv_plic_reset(&plic);
+    
+    dif_rv_plic_target_set_threshold(&plic, 0, 0);                 // Unmask interrupts above priority 0
+    printf("Configuring PLIC for IRQ 158...\n\r");
+    dif_rv_plic_irq_set_priority(&plic, 158, 1);                   // Set IRQ 158 to priority 1
+    dif_rv_plic_irq_set_enabled(&plic, 158, 0, kDifToggleEnabled); // Enable IRQ 158 for target 0
+    printf("PLIC configured. Waiting for interrupt...\n\r");
 
 
     // //---------------------------------------------------------------------------------------------//
@@ -183,20 +193,11 @@ int main(void) {
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_PC_RANGE_0_BIT);
 
     fence();
-    
-    // uint32_t ctrl_status;
-    // do {
-    //     ctrl_status = *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET); 
-    //     asm volatile("nop");
-    // } while (ctrl_status & (1 << CFG_REGS_CTRL_TRIG_PC_0_BIT));
 
     // // Wait for the ISR to set the flag
     uint32_t pending = *(volatile uint32_t *)0xC8001010;
     while (!irq_handled) {
-        asm volatile("wfi"); // Wait For Interrupt (saves power)
-        
-        // if (pending & (1 << 29)) printf("IRQ 157 is PENDING in PLIC\n\r");
-        // if (pending & (1 << 30)) printf("IRQ 158 is PENDING in PLIC\n\r");
+        asm volatile("wfi"); 
     }
     printf("Interrupt successfully caught!\n");
     

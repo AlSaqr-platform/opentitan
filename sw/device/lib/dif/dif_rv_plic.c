@@ -11,7 +11,7 @@
 #include "sw/device/lib/base/bitfield.h"
 #include "sw/device/lib/base/mmio.h"
 
-#include "rv_plic_regs.h"  // Generated.
+#include "hw/top_earlgrey/sw/autogen/rv_plic_regs.h"  // Generated.
 
 const uint32_t kDifRvPlicMinPriority = 0;
 const uint32_t kDifRvPlicMaxPriority = RV_PLIC_PRIO0_PRIO0_MASK;
