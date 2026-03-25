@@ -198,10 +198,9 @@ init: update generate_idma_rtl $(OT_ROOT)/hw/tb/vips scripts/compile_opentitan.t
 # Technology #
 ##############
 tech-repo := git@gitlab.chips.it:digitalresearchline/referencedesignflow/gf22/security_island.git
-tech-commit := 03449ed7405ae4e6234c6d0b1993c0a5e9124984
+tech-commit := 83374e87e95426849791db289951267558c93089 # scarv-devel
 
 tech-clone:
-	rm -rf target/gf22
 	git clone $(tech-repo) target/gf22
 
 tech-init: tech-clone
