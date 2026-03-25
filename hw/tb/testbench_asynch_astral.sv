@@ -428,7 +428,7 @@ axi_sim_mem_intf #(
 // -----------------------------------------------------------------------------------
 // DUT
 // -----------------------------------------------------------------------------------
-`ifdef TECH_SIM
+`ifdef SECD_NETLIST
    security_island dut (
 `else
    // we are using hartid = 4 so that we can use the same debug rom as in scarv
