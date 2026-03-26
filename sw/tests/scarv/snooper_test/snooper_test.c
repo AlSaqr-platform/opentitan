@@ -13,7 +13,8 @@
 #include <time.h>
 #include "utils.h"
 #include "regs/snooper_regs.h"
-#define OT_PLATFORM_RV32
+#include "host_uart.h"
+
 
 // OpenTitan Library Includes
 #include "sw/device/lib/dif/dif_rv_plic.h" 
@@ -26,6 +27,16 @@ dif_rv_plic_t plic;
 // Define the absolute hardware addresses for the Snooper
 #define BASE_SNPRCFG ((void *)0x15000000)
 #define BASE_SNPR    ((void *)0x16000000)
+
+// Cheshire scratch registers (host-side, visible from ibex via HOST_REGS_BASE_ADDR)
+// CVA6 writes dummy code addresses here before booting ibex so ibex never needs
+// to hard-code them after looking at a disassembly.
+#define HOST_SCRATCH_4_REG_OFFSET  0x10  // dummy1_code_start
+#define HOST_SCRATCH_5_REG_OFFSET  0x14  // dummy1_code_end
+#define HOST_SCRATCH_6_REG_OFFSET  0x18  // dummy2_code_start
+#define HOST_SCRATCH_7_REG_OFFSET  0x1c  // dummy2_code_end
+#define HOST_SCRATCH_8_REG_OFFSET  0x20  // ready sentinel (0xdeadbeef when valid)
+#define HOST_SCRATCH_READY_SENTINEL 0xdeadbeef
 
 // Define the absolute hardware addresses for the PLIC (Target 0, IRQ 158)
 #define PlicPrioAddrReg  0xC8000278  // Priority reg for IRQ 158
@@ -60,6 +71,7 @@ void external_irq_handler(void){
     // Wait and verify it's the correct IRQ (158)
     if(*plic_check == irq_id){
     printf("IRQ %d claimed, handling interrupt...\n\r", irq_id);
+    clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRIGGER_IRQ_BIT);
     clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET, CFG_REGS_CTRL_TRIG_PC_0_BIT);
     irq_handled = 1;
     // clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET, CFG_REGS_CTRL_WATERMARK_EN_BIT);
@@ -72,12 +84,6 @@ void external_irq_handler(void){
 }
 
 int main(void) {
-
-    extern char dummy1_code_start, dummy1_code_end, dummy2_code_start, dummy2_code_end;
-    // volatile uint64_t counter = 0;
-    // while(1){
-    //     counter++;
-    // }
 
     static const uint32_t instructions[] = {
         0xf3000017, 0xf3000017, 
@@ -92,6 +98,19 @@ int main(void) {
     };
     printf("hello ibex\n\r");
 
+    // Wait for CVA6 to publish dummy code addresses via scratch registers
+    void *host_regs = (void *)HOST_REGS_BASE_ADDR;
+    while (*reg32(host_regs, HOST_SCRATCH_8_REG_OFFSET) != HOST_SCRATCH_READY_SENTINEL)
+        ;
+
+    uintptr_t dummy1_start = *reg32(host_regs, HOST_SCRATCH_4_REG_OFFSET);
+    uintptr_t dummy1_end   = *reg32(host_regs, HOST_SCRATCH_5_REG_OFFSET);
+    uintptr_t dummy2_start = *reg32(host_regs, HOST_SCRATCH_6_REG_OFFSET);
+    uintptr_t dummy2_end   = *reg32(host_regs, HOST_SCRATCH_7_REG_OFFSET);
+
+    printf("dummy1: 0x%x - 0x%x\n\r", (unsigned int)dummy1_start, (unsigned int)dummy1_end);
+    printf("dummy2: 0x%x - 0x%x\n\r", (unsigned int)dummy2_start, (unsigned int)dummy2_end);
+
     //---------------------------------------------------------------------------------------------//
     //--------------------------------------INSTR MODE TEST----------------------------------------//
     //---------------------------------------------------------------------------------------------//
@@ -101,11 +120,11 @@ int main(void) {
 
     // Configure LSBs and MSBs of START_ADDRESS for RANGE_0
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x100014ca;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = dummy1_start;
 
     // Configure LSBs and MSBs of END_ADDRESS for RANGE_0
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x1000150a;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = dummy1_end;
 
     // Configure Snooper to log only instructions executed in M mode
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_M_MODE_BIT);
@@ -152,14 +171,16 @@ int main(void) {
     //--------------------------------------------------------------------------------------------//
 
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = (uintptr_t)0x1000150e;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_BASE_L_REG_OFFSET) = dummy2_start;
 
     *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = (uintptr_t)0x10001560;
+    *reg32(BASE_SNPRCFG, CFG_REGS_RANGE_0_LAST_L_REG_OFFSET) = dummy2_end;
     
     // // Configure Snooper Logging mode: Addr
     // // Addr mode to log PC src, PC dst and ctr_type of branches and jumps
+    set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_LEVEL_TRIGGER_EN_BIT);
     clear_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRACE_MODE_OFFSET);
+    
 
     // 1. CPU interrupt configuration using helper routines
     irq_set_vector_offset(0xe0000001); // Sets mtvec (Base address 0xe0000000 + Vectored mode 1)
@@ -169,12 +190,12 @@ int main(void) {
     plic.base_addr = mmio_region_from_addr(0xC8000000);
 
     // // 2. PLIC peripheral configuration
-    dif_rv_plic_reset(&plic);
+    (void)dif_rv_plic_reset(&plic);
     
-    dif_rv_plic_target_set_threshold(&plic, 0, 0);                 // Unmask interrupts above priority 0
+    (void)dif_rv_plic_target_set_threshold(&plic, 0, 0);                 // Unmask interrupts above priority 0
     printf("Configuring PLIC for IRQ 158...\n\r");
-    dif_rv_plic_irq_set_priority(&plic, 158, 1);                   // Set IRQ 158 to priority 1
-    dif_rv_plic_irq_set_enabled(&plic, 158, 0, kDifToggleEnabled); // Enable IRQ 158 for target 0
+    (void)dif_rv_plic_irq_set_priority(&plic, 158, 1);                   // Set IRQ 158 to priority 1
+    (void)dif_rv_plic_irq_set_enabled(&plic, 158, 0, kDifToggleEnabled); // Enable IRQ 158 for target 0
     printf("PLIC configured. Waiting for interrupt...\n\r");
 
 
@@ -182,7 +203,7 @@ int main(void) {
 
     //-------------------------------------TRIGGER INTERRUPT---------------------------------------//
     *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_H_REG_OFFSET) = 0x00000000;
-    *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_L_REG_OFFSET) = (uintptr_t)0x10001560;
+    *reg32(BASE_SNPRCFG, CFG_REGS_TRIG_PC0_L_REG_OFFSET) = dummy2_end;
     set_register_bit(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET,CFG_REGS_CTRL_TRIG_PC_0_BIT);
 
 
@@ -213,12 +234,11 @@ int main(void) {
 
         printf("Src: %x  -->  Dst: %x  |  Meta: %x\n\r", (unsigned int)pc_src_low, (unsigned int)pc_dst_low, (unsigned int)metadata);
 
-        if ((pc_src_low <= (uintptr_t)0x1000150e) || (pc_src_low >= (uintptr_t)0x10001560)){
+        if ((pc_src_low <= dummy2_start) || (pc_src_low >= dummy2_end)){
             printf("test failed! PC outside of logging region: %x\n\r", (unsigned int)pc_src_low);
             return 1; 
         }
     }
     printf("Test passed!\n\r");
-
     return 0;
 }
