@@ -21,7 +21,12 @@ COMPILE_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul32",
     "sw/tests/regression_tests/opentitan-cluster/idma_multi_core",
     "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_2d",
-    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d"
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Adder/Adder_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Adder/Adder_untiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Attention/Attention_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/simpleCNN/simpleCNN_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/TitanCFI/TitanCFI-RQS-s8-small",
 ]
 RUN_FOLDERS = [
     "sw/tests/regression_tests/hello",
@@ -37,7 +42,12 @@ RUN_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul32",
     "sw/tests/regression_tests/opentitan-cluster/idma_multi_core",
     "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_2d",
-    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d"
+    "sw/tests/regression_tests/opentitan-cluster/idma_multi_core_3d",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Adder/Adder_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Adder/Adder_untiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/Attention/Attention_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/simpleCNN/simpleCNN_tiled",
+    "sw/tests/regression_tests/opentitan-cluster/deeploy/TitanCFI/TitanCFI-RQS-s8-small",
 ]
 # 2. Generic Command to compile Cluster Test applications.
 COMPILE_COMMAND = "make clean all"
@@ -165,6 +175,9 @@ def compile_projects():
     print("\n--- Starting Cluster Tests Compilation ---")
     for folder in COMPILE_FOLDERS:
         print(f"[{folder}] Compiling...")
+        cmd = COMPILE_COMMAND
+        if 'deeploy' in folder:
+            cmd += ' pulp_nn'
         if not execute_command(COMPILE_COMMAND, folder):
             print(f"Compilation FAILED for {folder}. Aborting subsequent steps.")
             COMPILATION_SUCCESS = False
