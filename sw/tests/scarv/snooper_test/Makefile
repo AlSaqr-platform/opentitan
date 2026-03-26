@@ -20,12 +20,14 @@ $(info PROGRAM_DIR is: $(PROGRAM_DIR))
 PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # --- ADDED FOR OPENTITAN LIBRARIES ---
-# Since this Makefile is inside sw/tests/snooper_test, the OpenTitan root is 3 levels up.
-# abspath resolves the "../../.." into a clean, absolute path.
-OPENTITAN_DIR := $(abspath $(PROGRAM_DIR)/../../..)
+# Since this Makefile is inside sw/tests/scarv/snooper_test, the OpenTitan root is 4 levels up.
+# abspath resolves the "../../../.." into a clean, absolute path.
+OPENTITAN_DIR := $(abspath $(PROGRAM_DIR)/../../../..)
 
 # Add the OpenTitan root to the include paths
 PROGRAM_CFLAGS += -I$(OPENTITAN_DIR)
+# Add autogen directory so rv_plic_regs.h is found by dif_rv_plic.c
+PROGRAM_CFLAGS += -I$(OPENTITAN_DIR)/hw/top_earlgrey/sw/autogen
 
 
 # ------------------------------------------------
@@ -43,7 +45,7 @@ EXTRA_SRCS += $(OPENTITAN_DIR)/sw/device/lib/base/mmio.c
 EXTRA_SRCS += $(OPENTITAN_DIR)/sw/device/lib/base/bitfield.c
 EXTRA_SRCS += $(OPENTITAN_DIR)/sw/device/lib/base/memory.c  # <--- Added for memcpy & misalignment32_of
 
-include ${PROGRAM_DIR}/../common/common.mk
+include ${PROGRAM_DIR}/../../common/common.mk
 
 # Override the common.mk linking rule to safely append libgcc at the end
 # without poisoning the $(OBJS) variable used by 'make clean'.

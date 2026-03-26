@@ -24,9 +24,15 @@ ld_library(
 cc_library(
     name = "common",
     srcs = [
-    	"utils.h",
+        "host_uart.c",
         "utils.c",
     ],
+    hdrs = [
+        "host_uart.h",
+        "utils.h",
+    ],
+    defines = ["NO_STANDALONE"],
+    includes = ["."],
     target_compatible_with = [OPENTITAN_CPU],
     alwayslink = True,
 )
@@ -38,4 +44,11 @@ cc_library(
     ],
     target_compatible_with = [OPENTITAN_CPU],
     alwayslink = True,
+)
+
+cc_library(
+    name = "regs",
+    hdrs = ["regs/snooper_regs.h"],
+    includes = ["."],
+    target_compatible_with = [OPENTITAN_CPU],
 )

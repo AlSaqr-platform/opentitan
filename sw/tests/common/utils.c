@@ -119,8 +119,8 @@ static unsigned remu10(unsigned n) {
 int putchar(int s)
 {
   #ifdef NO_STANDALONE
-  host_uart_write(HOST_UART_BASE_ADDR, s);
-  host_uart_write_flush(HOST_UART_BASE_ADDR);
+  host_uart_write((void*)HOST_UART_BASE_ADDR, s);
+  host_uart_write_flush((void*)HOST_UART_BASE_ADDR);
   #else
   uart_sendchar(s);
   #endif
