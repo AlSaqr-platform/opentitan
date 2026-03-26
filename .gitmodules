@@ -6,3 +6,7 @@
 	path = sw/tests/regression_tests
 	url = https://github.com/FondazioneChipsIT/regression_tests.git
 	branch = gl/ot_cluster
+[submodule "sw/tests/pulp-nn-mixed"]
+	path = sw/tests/pulp-nn-mixed
+	url = https://github.com/FondazioneChipsIT/pulp-nn-mixed.git
+	branch = rg_add_runtime_support
