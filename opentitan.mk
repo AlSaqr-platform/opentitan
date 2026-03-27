@@ -189,6 +189,8 @@ $(OT_ROOT)/hw/tb/vips:
 	mkdir $@
 	wget --no-check-certificate --content-disposition "https://freemodelfoundry.com/fmf_vlog_models/flash/s25fs256s.v" -O ./hw/tb/vips/s25fs256s.v
 
+.PHONY: scripts/compile_opentitan.tcl
+
 init: update generate_idma_rtl $(OT_ROOT)/hw/tb/vips scripts/compile_opentitan.tcl
 
 
