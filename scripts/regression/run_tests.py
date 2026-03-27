@@ -58,7 +58,7 @@ COMPILE_PULPNN_COMMAND = "make clean pulp_nn all"
 RUN_COMMAND_MAP = {
     "rtl": "make sim_rtl SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-bin={}/build/test/test",
     "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-bin={}/build/test/test",
-    "gate": "make sim_gls_run SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-bin={}/build/test/test"
+    "gate": "make sim_gls_run SRAM=sw/tests/cluster_offload/int_mbox/cluster_offload_int_irq.elf cl-bin={}/build/test/test post_layout=1"
 }
 DEFAULT_SIMULATION_TYPE = "rtl"
 
@@ -79,7 +79,7 @@ PARAM_CONFIGS = {
 # 6. Design Compilation Commands (Run once from TOP_DIR)
 RTL_BUILD_COMMAND = "make clean build opt_rtl"
 RTL_TECH_BUILD_COMMAND = "make clean build_tech_mem opt_rtl"
-GATE_BUILD_COMMAND = "make clean sim_gls_compile"
+GATE_BUILD_COMMAND = "make clean sim_gls_compile post_layout=1"
 
 # 7. OT Test Configuration
 # List of OT tests to be built and run
