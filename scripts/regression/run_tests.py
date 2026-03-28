@@ -51,6 +51,7 @@ RUN_FOLDERS = [
 ]
 # 2. Generic Command to compile Cluster Test applications.
 COMPILE_COMMAND = "make clean all"
+COMPILE_PULPNN_COMMAND = "make clean pulp_nn all"
 
 # 3. Command Templates based on simulation type
 RUN_COMMAND_MAP = {
@@ -175,10 +176,11 @@ def compile_projects():
     print("\n--- Starting Cluster Tests Compilation ---")
     for folder in COMPILE_FOLDERS:
         print(f"[{folder}] Compiling...")
-        cmd = COMPILE_COMMAND
         if 'deeploy' in folder:
-            cmd += ' pulp_nn'
-        if not execute_command(COMPILE_COMMAND, folder):
+            cmd = COMPILE_PULPNN_COMMAND
+        else:
+            cmd = COMPILE_COMMAND
+        if not execute_command(cmd, folder):
             print(f"Compilation FAILED for {folder}. Aborting subsequent steps.")
             COMPILATION_SUCCESS = False
             break
