@@ -8,7 +8,7 @@ dependencies:
   cluster_interconnect: { git: "https://github.com/pulp-platform/cluster_interconnect.git", rev: "7d0a4f8acae71a583a6713cab5554e60b9bb8d27" } # v1.2.1
   idma:                 { git: "https://github.com/FondazioneChipsIT/iDMA.git",             rev: "ChipsIt-v0.0.0"                           }
   register_interface:   { git: "https://github.com/pulp-platform/register_interface.git",   rev: "5daa85d164cf6b54ad061ea1e4c6f3624556e467" } # v0.4.5
-  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git",     rev: "b7a87e042f91582789663164f962bcb19cad7653" } # branch: lg/hmr_uart_fix
+  pulp_cluster:         { git: "https://github.com/FondazioneChipsIT/pulp_cluster.git",     rev: "3856719aee82c4c36430e6bf400fe101395f87cb" } # branch: chips-it
   axi_scmi_mailbox:     { git: "https://github.com/AlSaqr-platform/axi_scmi_mailbox.git",   rev: "96650c4c39dcfc683e48015abb1453d182c1d837" }
   common_cells:         { git: https://github.com/pulp-platform/common_cells.git,           version: 1.37.0                                 } # branch: master
   mailbox_unit:         { git: https://github.com/pulp-platform/mailbox_unit.git,           version: 1.1.0                                  }
