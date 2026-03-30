@@ -29,3 +29,18 @@ opentitan-cluster:
    parMatrixMul32:
      path: .
      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=parMatrixMul32
+   deeploy/Adder/Adder_tiled:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=deeploy/Adder/Adder_tiled
+   deeploy/Adder/Adder_untiled:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=deeploy/Adder/Adder_untiled
+   deeploy/Attention/Attention_tiled:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=deeploy/Attention/Attention_tiled
+   deeploy/simpleCNN/simpleCNN_tiled:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=deeploy/simpleCNN/simpleCNN_tiled
+   deeploy/TitanCFI/TitanCFI-RQS-s8-small:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=deeploy/TitanCFI/TitanCFI-RQS-s8-small
