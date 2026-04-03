@@ -251,7 +251,7 @@ packages:
     dependencies:
     - axi_slice
   pulp_cluster:
-    revision: 3856719aee82c4c36430e6bf400fe101395f87cb
+    revision: 85d955cba729f31f07c82c30d1b2c006b1479e8a
     version: null
     source:
       Git: https://github.com/FondazioneChipsIT/pulp_cluster.git
@@ -299,10 +299,10 @@ packages:
     - register_interface
     - tech_cells_generic
   redundancy_cells:
-    revision: 6ba6f415a9024decedabaf3f2b45263ff546dabd
+    revision: cb3d8468c564687c1f8f2516b90bd4af05bd052d
     version: null
     source:
-      Git: https://github.com/pulp-platform/redundancy_cells.git
+      Git: https://github.com/FondazioneChipsIT/redundancy_cells.git
     dependencies:
     - common_cells
     - common_verification

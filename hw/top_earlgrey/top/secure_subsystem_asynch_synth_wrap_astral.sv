@@ -936,6 +936,8 @@ module security_island
     HMRSeparateDataVoters: 1,
     HMRSeparateAxiBus: 0,
     HMRNumBusVoters: 1,
+    HMRDmrTimingDivDelays: 2,
+    DMRTimingDivSupported: 1,
     EnableECC: 1,
     ECCInterco: 1,
     iCacheNumBanks: 2,
