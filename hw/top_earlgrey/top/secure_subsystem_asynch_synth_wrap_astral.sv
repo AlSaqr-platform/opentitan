@@ -286,6 +286,7 @@ module security_island
    logic s_clk_cluster, s_clk_ot;
    logic s_mbox2cl_irq;
    logic s_mbox2ibex_irq;
+   logic s_dmr_timing_div_fail;
 
    assign flash_testmode_tieoff = '0;
    assign otp_ext_tieoff = '0;
@@ -1042,7 +1043,8 @@ module security_island
       .async_data_slave_r_data_o       ( async_soc_to_cluster_axi_bus.r_data  ),
       .async_data_slave_b_wptr_o       ( async_soc_to_cluster_axi_bus.b_wptr  ),
       .async_data_slave_b_rptr_i       ( async_soc_to_cluster_axi_bus.b_rptr  ),
-      .async_data_slave_b_data_o       ( async_soc_to_cluster_axi_bus.b_data  )
+      .async_data_slave_b_data_o       ( async_soc_to_cluster_axi_bus.b_data  ),
+      .dmr_timing_diversity_failure_o  ( s_dmr_timing_div_fail                )
    );
 
 // -----------------------------------------------------------------------------------
@@ -1145,6 +1147,7 @@ module security_island
       .idma_axi_req_o               ( axi_idma_req          ),
       .idma_axi_rsp_i               ( axi_idma_rsp          ),
       .irq_mbox_i                   ( s_mbox2ibex_irq       ),
+      .dmr_td_fail_i                ( s_dmr_timing_div_fail ),
       .irq_ibex_i                   ( irq_ibex_sync         ),
       .irq_cfi_req_i                ( cfi_req_irq_i         ),
       .cfi_watermark_irq_i          ( cfi_watermark_irq_i   ),

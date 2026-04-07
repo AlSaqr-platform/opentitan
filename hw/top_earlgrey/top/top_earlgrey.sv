@@ -161,6 +161,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
   output axi_req_t                    tlul2axi_req_o,
   input  axi_rsp_t                    tlul2axi_rsp_i,
   input  logic                        irq_mbox_i,
+  input  logic                        dmr_td_fail_i,
   input  logic                        irq_ibex_i,
   input  logic                        irq_cfi_req_i,
   input  logic                        cfi_watermark_irq_i,
@@ -2965,7 +2966,7 @@ module top_earlgrey import secure_subsystem_synth_astral_pkg::*;
       intr_flash_ctrl_op_done, // IDs [164 +: 1]
       intr_flash_ctrl_rd_lvl, // IDs [163 +: 1]
       intr_flash_ctrl_rd_full, // IDs [162 +: 1]
-      intr_flash_ctrl_prog_lvl, // IDs [161 +: 1]
+      dmr_td_fail_i, // IDs [161 +: 1]
       irq_mbox_i, // IDs [160 +: 1]
       intr_tlul2axi_mbox_irq, // IDs [159 +: 1]
       irq_cfi_req_i, // IDs [158 +: 1]
