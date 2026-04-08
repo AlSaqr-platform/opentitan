@@ -17,9 +17,15 @@ opentitan-cluster:
    mbox_test:
      path: .
      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=mbox_test
-   neureka:
+   neureka/neureka_fs1:
      path: .
-     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=neureka
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=neureka/neureka_fs1
+   neureka/neureka_fs3:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=neureka/neureka_fs3
+   neureka/neureka_fs3_dw:
+     path: .
+     command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=neureka/neureka_fs3_dw
    parMatrixMul8:
      path: .
      command: make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-test=parMatrixMul8
