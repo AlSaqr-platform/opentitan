@@ -1,0 +1,41 @@
+# Copyright lowRISC contributors.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Generate a baremetal application
+
+# Name of the program $(PROGRAM).c will be added as a source file
+PROGRAM = snooper_stress_test
+
+# STANDALONE MODE
+ifneq ($(NO_STANDALONE),)
+PROGRAM_CFLAGS += -DNO_STANDALONE
+PROGRAM_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int -g -O0 -DDEBUG
+endif
+PROGRAM_CFLAGS += -g -O0 -DDEBUG
+
+PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+$(info PROGRAM_DIR is: $(PROGRAM_DIR))
+
+PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+# --- ADDED FOR OPENTITAN LIBRARIES ---
+# Since this Makefile is inside sw/tests/scarv/snooper_stress_test, the OpenTitan root is 4 levels up.
+# abspath resolves the "../../../.." into a clean, absolute path.
+OPENTITAN_DIR := $(abspath $(PROGRAM_DIR)/../../../..)
+
+# Add the OpenTitan root to the include paths
+PROGRAM_CFLAGS += -I$(OPENTITAN_DIR)
+# Add autogen directory so rv_plic_regs.h is found by dif_rv_plic.c
+PROGRAM_CFLAGS += -I$(OPENTITAN_DIR)/hw/top_earlgrey/sw/autogen
+
+# ------------------------------------------------
+
+# Any extra source files to include in the build. Use the upper case .S
+# extension for assembly files
+
+utils_dir = $(PROGRAM_DIR)/inc/
+directories = drivers/inc drivers/src string_lib/inc string_lib/src
+EXTRA_SRCS = $(foreach d, $(directories), -I$(utils_dir)$d)
+
+include ${PROGRAM_DIR}/../../common/common.mk
