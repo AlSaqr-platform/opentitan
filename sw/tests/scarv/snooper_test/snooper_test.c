@@ -160,7 +160,7 @@ int main(void) {
     base = *reg32(BASE_SNPRCFG, CFG_REGS_BASE_REG_OFFSET);
     last = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
 
-    for(int i=base;i<=last;i=i+4) { 
+    for(int i=base;i<last;i=i+4) { 
         printf("%x\n\r", (unsigned int)*reg32(BASE_SNPR, i));
         if (*reg32(BASE_SNPR, i) != instructions[i/4])
             return 1; 
