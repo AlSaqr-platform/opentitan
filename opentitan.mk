@@ -97,7 +97,22 @@ pulpd-sw-build: pulpd-sw-init
 	$(MAKE) pulpd-sw-all
 
 pulpd-sw-clean:
+	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
 	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
+
+.PHONY: ot-sw-build ot-sw-clean
+
+ot-sw-build: $(GENERIC_TESTS)
+
+ot-sw-clean:
+	$(foreach dir, $(GENERIC_TESTS), $(MAKE) -C $(dir $(dir)) distclean;)
+
+.PHONY: sw-build-all sw-clean-all
+
+sw-build-all: ot-sw-build pulpd-sw-build
+
+sw-clean-all: ot-sw-clean pulpd-sw-clean
+
 
 .PHONY: init build sim update clean secure_boot_jtag secure_boot_spi
 

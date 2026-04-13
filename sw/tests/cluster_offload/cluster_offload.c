@@ -22,9 +22,6 @@
 #define OtClkDivReg 0xBF000010
 #define EdnEnAddrReg 0xc1170014
 #define PlicCheckAddrReg 0xC8200004 // CC0
-//// for external mbox irq (TB or integration)
-// #define PlicIntEnAddrReg 0xC8002010 // IE0_4
-// #define PlicPrioAddrReg 0xC800027C // int line 159
 //// for internal mbox irq
 #define PlicIntEnAddrReg 0xC8002014 // IE0_5
 #define PlicPrioAddrReg 0xC8000280  // int line 160
@@ -53,7 +50,6 @@ int main() {
   plic_int_en = (int *) PlicIntEnAddrReg;  // Interrupt Enable reg
 
  *plic_prio   = 1;                   // Set mbox interrupt priority to 1
-//  *plic_int_en = 0x80000000;          // Enable interrupt for interrupt line 159 inside register IE0_4
  *plic_int_en = 0x00000001;          // Enable interrupt for interrupt line 160 inside register IE0_5
 
 
@@ -103,7 +99,6 @@ int main() {
 }
 
 void external_irq_handler(void){
-  // int mbox_id = EXT_MBOX_IRQ_ID; // for external irq on line 159
   int mbox_id = SECD_MBOX_IRQ_ID; // for internal irq on line 160
   int volatile * p_reg, * plic_check;
 
