@@ -3,9 +3,17 @@
 #include <stdint.h>
 #include <time.h>
 #include "utils.h"
-#include "mailboxes.h"
 #ifdef NO_STANDALONE
+#include "mailboxes.h"
 #include "host_uart.h"
+#else
+#define MAILBOX_BASE_ADDR   (ARCHI_SOC_MAILBOXES_ADDR + ARCHI_SOC_MAILBOX_OFFSET)
+#define ARCHI_MAILBOXES_REG0_OFFSET  0x08
+#define ARCHI_MAILBOXES_REG1_OFFSET  0x10
+#define ARCHI_MAILBOXES_REG2_OFFSET  0x14
+#define ARCHI_MAILBOXES_REG3_OFFSET  0x18
+#define ARCHI_MAILBOXES_REG4_OFFSET  0x1C
+#define ARCHI_MAILBOXES_REG5_OFFSET  0x20
 #endif
 
 // memory defines
@@ -22,9 +30,11 @@
 #define OtClkDivReg 0xBF000010
 #define EdnEnAddrReg 0xc1170014
 #define PlicCheckAddrReg 0xC8200004 // CC0
-//// for internal mbox irq
-#define PlicIntEnAddrReg 0xC8002014 // IE0_5
-#define PlicPrioAddrReg 0xC8000280  // int line 160
+#define PlicIntEnAddrReg 0xC8002010 // IE0_4
+#define PlicPrioAddrReg 0xC800027C // int line 159
+// External mailbox
+#define ARCHI_SOC_MAILBOXES_ADDR   0x40000000
+#define ARCHI_SOC_MAILBOX_OFFSET   0x0
 
 int main() {
 
@@ -50,7 +60,7 @@ int main() {
   plic_int_en = (int *) PlicIntEnAddrReg;  // Interrupt Enable reg
 
  *plic_prio   = 1;                   // Set mbox interrupt priority to 1
- *plic_int_en = 0x00000001;          // Enable interrupt for interrupt line 160 inside register IE0_5
+ *plic_int_en = 0x80000000;          // Enable interrupt for interrupt line 159 inside register IE0_4
 
 
   // Configure fetch enable
@@ -75,19 +85,25 @@ int main() {
   *fetch_en = 0x1;
   // wait for mbox doorbell irq
   asm volatile ("wfi");
-  // wait for EOC (redundant)
-  while(!(*eoc));
   *fetch_en = 0x0;
 
   /////////////////
   // Test Check  //
   /////////////////
 
+  #ifdef NO_STANDALONE
   p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER0_OFFSET);
   p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_LETTER1_OFFSET);
   p_reg3 = 0;
   p_reg4 = 0;
   p_reg5 = 0;
+  #else
+  p_reg1 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG0_OFFSET);
+  p_reg2 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG1_OFFSET);
+  p_reg3 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG2_OFFSET);
+  p_reg4 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG3_OFFSET);
+  p_reg5 = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG4_OFFSET);
+  #endif
 
   if(*p_reg1 == 0xBAADC0DE && *p_reg2 == 0xBAADC0DE && *p_reg3 == 0xBAADC0DE && *p_reg4 == 0xBAADC0DE && *p_reg5 == 0xBAADC0DE){
     return 0;
@@ -99,19 +115,24 @@ int main() {
 }
 
 void external_irq_handler(void){
-  int mbox_id = SECD_MBOX_IRQ_ID; // for internal irq on line 160
+  int mbox_id = EXT_MBOX_IRQ_ID; // for external irq on line 159
   int volatile * p_reg, * plic_check;
 
   // start of """Interrupt Service Routine"""
   plic_check = (int *) PlicCheckAddrReg;
   while(*plic_check != mbox_id);   //check whether the intr is the correct one
 
+  #ifdef NO_STANDALONE
   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
  *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_SET
   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_EN_OFFSET);
  *p_reg = 0x00000000;         // clean MAILBOX_IRQ_SND_EN
-  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_CLR_OFFSET);
+   p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_SND_CLR_OFFSET);
  *p_reg = 0x00000001;         // clean MAILBOX_IRQ_SND_CLR
+  #else
+  p_reg = (int *) (MAILBOX_BASE_ADDR + ARCHI_MAILBOXES_REG5_OFFSET);
+ *p_reg = 0x00000000;        //clearing the pending interrupt signal
+  #endif
 
  *plic_check = mbox_id;      //completing interrupt
 
