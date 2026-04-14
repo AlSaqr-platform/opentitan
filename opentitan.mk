@@ -100,11 +100,13 @@ $(PULP_SUBMODULES):
 
 pulpd-sw-build: pulpd-sw-init
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(MAKE) pulpd-sw-all
+	$(foreach test, $(PULP_TEST_DIRS), $(MAKE) -C $(test) all; ) \
+	$(foreach test, $(NEUREKA_TEST_DIRS), $(MAKE) -C $(test) all MODE=1; ) \
+	$(foreach test, $(DEEPLOY_TEST_DIRS), $(MAKE) -C $(test) pulp_nn all; )
 
 pulpd-sw-clean:
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
+	$(foreach test, $(PULP_TEST_DIRS) $(NEUREKA_TEST_DIRS) $(DEEPLOY_TEST_DIRS), $(MAKE) -C $(test) clean;)
 
 .PHONY: ot-sw-build ot-sw-clean
 
