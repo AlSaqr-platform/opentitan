@@ -28,7 +28,7 @@ bazel        := ./bazelisk.sh --output_user_root=$(OT_ROOT)/bazel-build/ build $
 bazel_tests  := $(common_test_path)/$(test_name)
 
 rom_path     := sw/device/silicon_creator/rom
-rom_out_vmem :=$(BAZEL_OUT)/$(rom_path)/rom_with_fake_keys_sim_verilator.39.scr.vmem 
+rom_out_vmem :=$(BAZEL_OUT)/$(rom_path)/rom_with_fake_keys_sim_verilator.39.scr.vmem
 rom_out_dis  :=$(BAZEL_OUT)/$(rom_path)/rom_with_fake_keys_sim_verilator.dis
 rom_dest     :=$(OT_ROOT)/$(common_test_path)/bootrom/
 rom_dis      := boot_rom.dis
@@ -43,49 +43,49 @@ sram_bazel_output_dis := $(BAZEL_OUT)/$(test_path)/$(test_name)_sim_verilator.di
 
 include opentitan.mk
 
-.PHONY: clean-sram  
+.PHONY: clean-sram
 clean-sram:
-	$(shell rm -rf  $(destination))
+	rm -rf  $(destination)
 
 .PHONY:clean-flash
 clean-flash:
-	$(shell rm -rf  $(destination))
+	rm -rf  $(destination)
 
 .PHONY: clean-rom
 clean-rom:
-	$(shell rm -rf  $(rom_dest)/* $(bootrom_sv))
+	rm -rf  $(rom_dest)/* $(bootrom_sv)
 
 .PHONY: bazel-compile-rom
 bazel-compile-rom:
-	$(shell $(bazel) --define DISABLE_VERILATOR_BUILD=true //sw/device/silicon_creator/rom:all)
+	$(bazel) --define DISABLE_VERILATOR_BUILD=true //sw/device/silicon_creator/rom:all
 
 .PHONY: bazel-compile-test
 bazel-compile-test:
-	$(shell $(bazel) --define DISABLE_VERILATOR_BUILD=true //$(bazel_tests):all)
+	$(bazel) --define DISABLE_VERILATOR_BUILD=true //$(bazel_tests):all
 
 .PHONY: compile-bazel-flash
 compile-bazel-flash: bazel-compile-test clean-flash
-	$(shell mkdir -p  $(destination))
-	$(shell cp -r $(flash_bazel_output_vmem) $(destination)/$(test_name)_signed.vmem)
-	$(shell cp -r $(flash_bazel_output_dis)  $(destination)/$(test_name)_signed.dis )
+	mkdir -p  $(destination)
+	cp -r $(flash_bazel_output_vmem) $(destination)/$(test_name)_signed.vmem
+	cp -r $(flash_bazel_output_dis)  $(destination)/$(test_name)_signed.dis
 
 .PHONY: compile-bazel-sram
 compile-bazel-sram:  bazel-compile-test clean-sram
-	$(shell mkdir -p  $(destination))
-	$(shell cp -r $(sram_bazel_output_bin) $(destination)/$(test_name).elf)
-	$(shell cp -r $(sram_bazel_output_dis) $(destination)/$(test_name).dis)
+	mkdir -p  $(destination)
+	cp -r $(sram_bazel_output_bin) $(destination)/$(test_name).elf
+	cp -r $(sram_bazel_output_dis) $(destination)/$(test_name).dis
 
 .PHONY: compile-bazel-rom
 compile-bazel-rom:   bazel-compile-rom clean-rom
-	$(shell cp -r $(rom_out_vmem) $(rom_dest)/$(rom_vmem))
-	$(shell cp -r $(rom_out_dis)  $(rom_dest)/$(rom_dis))
-	$(shell python3 scripts/vmem_scripts/rom/gen_sec_bootrom.py  $(rom_dest)/$(rom_vmem) $(bootrom_sv))
-	$(shell python3 scripts/vmem_scripts/rom/vmem2coe_rom.py  $(rom_dest)/$(rom_vmem) $(rom_dest)/boot_rom.coe)
+	cp -r $(rom_out_vmem) $(rom_dest)/$(rom_vmem)
+	cp -r $(rom_out_dis)  $(rom_dest)/$(rom_dis)
+	python3 scripts/vmem_scripts/rom/gen_sec_bootrom.py  $(rom_dest)/$(rom_vmem) $(bootrom_sv)
+	python3 scripts/vmem_scripts/rom/vmem2coe_rom.py  $(rom_dest)/$(rom_vmem) $(rom_dest)/boot_rom.coe
 
 .PHONY: gen_flash_preload_vmem
 flash-all: compile-bazel-flash
-	$(shell python3 scripts/vmem_scripts/flash/vmem_datawidth_converter.py      $(destination)/$(test_name)_signed.vmem $(destination))
-	$(shell python3 scripts/vmem_scripts/flash/vmem32_to_header32_converter.py  $(destination)/$(test_name)_signed.vmem $(destination))
+	python3 scripts/vmem_scripts/flash/vmem_datawidth_converter.py      $(destination)/$(test_name)_signed.vmem $(destination)
+	python3 scripts/vmem_scripts/flash/vmem32_to_header32_converter.py  $(destination)/$(test_name)_signed.vmem $(destination)
 
 build_bootrom:
-	$(shell python3 scripts/vmem_scripts/rom/gen_sec_bootrom.py  $(rom_dest)/$(rom_vmem) $(bootrom_sv))
+	python3 scripts/vmem_scripts/rom/gen_sec_bootrom.py  $(rom_dest)/$(rom_vmem) $(bootrom_sv)
