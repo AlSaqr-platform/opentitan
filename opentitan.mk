@@ -19,7 +19,7 @@ VSIM ?= vsim
 DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
 TESTS_DIR := sw/tests
-SRAM ?= ${TESTS_DIR}/cluster_offload/cluster_offload.elf
+SRAM ?= ${TESTS_DIR}/scarv/cluster_offload/cluster_offload.elf
 BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
@@ -108,10 +108,11 @@ pulpd-sw-clean:
 
 .PHONY: ot-sw-build ot-sw-clean
 
-ot-sw-build: $(GENERIC_TESTS)
+ot-sw-build:
+	$(foreach dir, $(OT_TESTS), $(MAKE) -C $(dir $(dir)) all;)
 
 ot-sw-clean:
-	$(foreach dir, $(GENERIC_TESTS), $(MAKE) -C $(dir $(dir)) distclean;)
+	$(foreach dir, $(OT_TESTS), $(MAKE) -C $(dir $(dir)) distclean;)
 
 .PHONY: sw-build-all sw-clean-all
 

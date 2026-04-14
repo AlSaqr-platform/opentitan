@@ -1,11 +1,10 @@
-GENERIC_TESTS += $(TESTS_DIR)/cluster_offload/cluster_offload.elf
-GENERIC_TESTS += $(TESTS_DIR)/mbox_ext_irq/mbox_ext_irq.elf
+SCARV_TESTS_DIR := $(TESTS_DIR)/scarv
 
-$(TESTS_DIR)/cluster_offload/cluster_offload.elf:
-	$(MAKE) -C $(TESTS_DIR)/cluster_offload clean all
+SCARV_TEST_NAMES := \
+	cluster_offload \
+	mbox_ext_irq
 
-$(TESTS_DIR)/mbox_ext_irq/mbox_ext_irq.elf:
-	$(MAKE) -C $(TESTS_DIR)/mbox_ext_irq clean all
+OT_TESTS += $(foreach test,$(SCARV_TEST_NAMES),$(SCARV_TESTS_DIR)/$(test)/$(test).elf)
 
 PULP_SW_DIR  := $(PULP_REGR_DIR)
 PULP_TEST_DIRS := $(filter-out %deeploy %neureka, $(wildcard $(PULP_SW_DIR)/opentitan-cluster/*))
