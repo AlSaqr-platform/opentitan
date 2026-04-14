@@ -111,10 +111,10 @@ pulpd-sw-clean:
 .PHONY: ot-sw-build ot-sw-clean
 
 ot-sw-build:
-	$(foreach dir, $(OT_TESTS), $(MAKE) -C $(dir $(dir)) all;)
+	$(foreach test, $(SCARV_TESTS), $(MAKE) compile-bazel-sram target=scarv test_name=$(test);)
 
 ot-sw-clean:
-	$(foreach dir, $(OT_TESTS), $(MAKE) -C $(dir $(dir)) distclean;)
+	$(foreach test, $(SCARV_TESTS), $(MAKE) clean-sram target=scarv test_name=$(test);)
 
 .PHONY: sw-build-all sw-clean-all
 

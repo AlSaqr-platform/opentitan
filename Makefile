@@ -24,7 +24,7 @@ test_name   ?=
 test_path   := $(common_test_path)/$(test_name)
 destination := $(OT_ROOT)/$(test_path)/bazel-out/
 
-bazel        := ./bazelisk.sh --output_user_root=$(OT_ROOT)/bazel-build/ build $(defines)
+bazel        := ./bazelisk.sh --output_user_root=$(OT_ROOT)/bazel-build/ build
 bazel_tests  := $(common_test_path)/$(test_name)
 
 rom_path     := sw/device/silicon_creator/rom
@@ -40,6 +40,8 @@ flash_bazel_output_dis := $(BAZEL_OUT)/$(test_path)/$(test_name)_prog_sim_verila
 
 sram_bazel_output_bin := $(BAZEL_OUT)/$(test_path)/$(test_name)_sim_verilator.elf
 sram_bazel_output_dis := $(BAZEL_OUT)/$(test_path)/$(test_name)_sim_verilator.dis
+
+bazel_defines = $(foreach def, $(defines),--define $(def))
 
 include opentitan.mk
 
@@ -57,11 +59,11 @@ clean-rom:
 
 .PHONY: bazel-compile-rom
 bazel-compile-rom:
-	$(bazel) --define DISABLE_VERILATOR_BUILD=true //sw/device/silicon_creator/rom:all
+	$(bazel) --define DISABLE_VERILATOR_BUILD=true $(bazel_defines) //sw/device/silicon_creator/rom:all
 
 .PHONY: bazel-compile-test
 bazel-compile-test:
-	$(bazel) --define DISABLE_VERILATOR_BUILD=true //$(bazel_tests):all
+	$(bazel) --define DISABLE_VERILATOR_BUILD=true $(bazel_defines) //$(bazel_tests):all
 
 .PHONY: compile-bazel-flash
 compile-bazel-flash: bazel-compile-test clean-flash

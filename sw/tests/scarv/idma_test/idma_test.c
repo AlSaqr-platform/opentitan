@@ -1,6 +1,8 @@
-#include "sw/device/silicon_creator/rom/uart.h"
-#include "sw/device/silicon_creator/rom/string_lib.h"
-#include "sw/tests/common/utils.h"
+// Copyright 2026 ETH Zurich, University of Bologna and Fondazione Chips-IT.
+// Licensed under the Apache License, Version 2.0, see LICENSE for details.
+// SPDX-License-Identifier: Apache-2.0
+
+#include "utils.h"
 
 #define IDMA_BASE      0xfef00000
 #define TCDM_BASE      0xfff00000
