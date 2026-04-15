@@ -23,10 +23,9 @@ ld_library(
 
 cc_library(
     name = "common",
-    srcs = [
-    	"utils.h",
-        "utils.c",
-    ],
+    srcs = ["utils.c"],
+    hdrs = ["utils.h", "mailboxes.h"],
+    includes = ["."],
     target_compatible_with = [OPENTITAN_CPU],
     alwayslink = True,
 )

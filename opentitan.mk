@@ -19,7 +19,7 @@ VSIM ?= vsim
 DPI-LIB ?= work-dpi
 run_script := scripts/opentitan_start.tcl
 TESTS_DIR := sw/tests
-SRAM ?= ${TESTS_DIR}/cluster_offload/cluster_offload.elf
+SRAM ?= ${TESTS_DIR}/scarv/cluster_offload/bazel-out/cluster_offload.elf
 BOOTMODE ?= 0
 QUESTA =
 IDMA_ROOT ?= $(shell $(BENDER) path idma)
@@ -100,18 +100,21 @@ $(PULP_SUBMODULES):
 
 pulpd-sw-build: pulpd-sw-init
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(MAKE) pulpd-sw-all
+	$(foreach test, $(PULP_TEST_DIRS), $(MAKE) -C $(test) all; ) \
+	$(foreach test, $(NEUREKA_TEST_DIRS), $(MAKE) -C $(test) all MODE=1; ) \
+	$(foreach test, $(DEEPLOY_TEST_DIRS), $(MAKE) -C $(test) pulp_nn all; )
 
 pulpd-sw-clean:
 	. $(PULP_RUNTIME_DIR)/configs/opentitan-cluster.sh; \
-	$(foreach dir, $(PULP_TEST_DIRS), $(MAKE) -C $(dir) clean;)
+	$(foreach test, $(PULP_TEST_DIRS) $(NEUREKA_TEST_DIRS) $(DEEPLOY_TEST_DIRS), $(MAKE) -C $(test) clean;)
 
 .PHONY: ot-sw-build ot-sw-clean
 
-ot-sw-build: $(GENERIC_TESTS)
+ot-sw-build:
+	$(foreach test, $(SCARV_TESTS), $(MAKE) compile-bazel-sram target=scarv test_name=$(test);)
 
 ot-sw-clean:
-	$(foreach dir, $(GENERIC_TESTS), $(MAKE) -C $(dir $(dir)) distclean;)
+	$(foreach test, $(SCARV_TESTS), $(MAKE) clean-sram target=scarv test_name=$(test);)
 
 .PHONY: sw-build-all sw-clean-all
 
