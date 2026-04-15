@@ -7,10 +7,10 @@ load("//rules:opentitan.bzl", "opentitan_ram_binary")
 package(default_visibility = ["//visibility:public"])
 
 opentitan_ram_binary(
-    name = "mbox_test_host",
-    srcs = ["mbox_test_host.c"],
-    hdrs = ["mbox_test_host.h"],
-    archive_symbol_prefix = "mbox_test_host",
+    name = "mbox_host",
+    srcs = ["mbox_host.c"],
+    hdrs = ["mbox_host.h"],
+    archive_symbol_prefix = "mbox_host",
     testonly = True,
     deps = [
         "//sw/tests/common:common",

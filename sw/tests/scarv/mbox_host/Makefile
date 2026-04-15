@@ -5,7 +5,7 @@
 # Generate a baremetal application
 
 # Name of the program $(PROGRAM).c will be added as a source file
-PROGRAM = mbox_test_host
+PROGRAM = mbox_host
 
 # STANDALONE MODE
 ifneq ($(NO_STANDALONE),)
