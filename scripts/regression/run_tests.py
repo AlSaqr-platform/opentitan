@@ -8,14 +8,16 @@ import argparse
 
 # 1. Base test lists
 COMPILE_FOLDERS = [
-    "sw/tests/cluster_offload",
+    "sw/tests/scarv/cluster_offload",
     "sw/tests/regression_tests/opentitan-cluster/hello",
     "sw/tests/regression_tests/opentitan-cluster/addressability",
     "sw/tests/regression_tests/opentitan-cluster/idma_test",
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
     "sw/tests/regression_tests/opentitan-cluster/dmr_matmul",
     "sw/tests/regression_tests/opentitan-cluster/ecc_test",
-    "sw/tests/regression_tests/opentitan-cluster/neureka",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs1",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs3",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs3_dw",
     "sw/tests/regression_tests/opentitan-cluster/conv16",
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul8",
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul16",
@@ -36,7 +38,9 @@ RUN_FOLDERS = [
     "sw/tests/regression_tests/opentitan-cluster/mbox_test",
     "sw/tests/regression_tests/opentitan-cluster/dmr_matmul",
     "sw/tests/regression_tests/opentitan-cluster/ecc_test",
-    "sw/tests/regression_tests/opentitan-cluster/neureka",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs1",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs3",
+    "sw/tests/regression_tests/opentitan-cluster/neureka/neureka_fs3_dw",
     "sw/tests/regression_tests/opentitan-cluster/conv16",
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul8",
     "sw/tests/regression_tests/opentitan-cluster/parMatrixMul16",
@@ -56,9 +60,9 @@ COMPILE_PULPNN_COMMAND = "make clean pulp_nn all"
 
 # 3. Command Templates based on simulation type
 RUN_COMMAND_MAP = {
-    "rtl": "make sim_rtl SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
-    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
-    "gate": "make sim_gls_run SRAM=sw/tests/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test"
+    "rtl": "make sim_rtl SRAM=sw/tests/scarv/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
+    "rtl_tech": "make sim_rtl_tech_mem SRAM=sw/tests/scarv/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test",
+    "gate": "make sim_gls_run SRAM=sw/tests/scarv/cluster_offload/cluster_offload.elf cl-bin={}/build/test/test"
 }
 DEFAULT_SIMULATION_TYPE = "rtl"
 
@@ -84,7 +88,7 @@ GATE_BUILD_COMMAND = "make clean sim_gls_compile"
 # 7. OT Test Configuration
 # List of OT tests to be built and run
 OT_TEST_LIST = ["idma_test"]
-OT_TARGET = "opentitan"
+OT_TARGET = "scarv"
 
 # Templates for OT Build and Run
 OT_TEST_BUILD_TEMPLATE = "make compile-bazel-sram test_name={} target={}"
