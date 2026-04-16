@@ -5,11 +5,21 @@
 #include "utils.h"
 #include "host_uart.h"
 
+#ifndef VERBOSE
+#define VERBOSE 0
+#endif
+#define LOG(fmt, ...) do { if (VERBOSE) printf(fmt, ##__VA_ARGS__); } while (0)
+
+// Scratch register offset (relative to HOST_REGS_BASE_ADDR) used for sync
+#define HOST_SCRATCH_4_REG_OFFSET  0x10
+
+// Synchronization values (ibex -> CVA6 via scratch 4)
+#define SYNC_IBEX_READY  0xa5a5a5a5  // ibex interrupt setup done, CVA6 may send mbox message
+
 int main(void) {
-    int volatile * plic_prio, * plic_en;
+  int volatile * plic_prio, * plic_en;
   int volatile * p_reg;
   int a = 0;
-  //printf("Hello World from SCARV!\n\r");
   unsigned val = 0xe0000001;
   asm volatile("csrw mtvec, %0\n" : : "r"(val)); // move irq vector to SRAM base address
 
@@ -25,6 +35,8 @@ int main(void) {
  *plic_prio  = 1;                   // Set mbox interrupt priority to 1
  *plic_en    = 0x80000000;          // Enable interrupt
 
+  // Signal CVA6 that ibex interrupt setup is complete and we are ready to receive
+  *(volatile int *)(HOST_REGS_BASE_ADDR + HOST_SCRATCH_4_REG_OFFSET) = SYNC_IBEX_READY;
 
   while(1)
     asm volatile ("wfi"); // Ready to receive a command from the Agent --> Jump to the External_Irq_Handler
@@ -40,7 +52,7 @@ void external_irq_handler(void)  {
   int volatile * p_reg, * p_reg1, * plic_check, * p_reg2, * p_reg3, * p_reg4, * p_reg5 ;
 
 //   //init pointer to check memory
-  printf("interrut received, entering ISR...\n\r");
+  LOG("interrut received, entering ISR...\n\r");
 
   p_reg1 = (int *) (0x40000180); // mbox 1 LETTER0
 
@@ -64,14 +76,14 @@ void external_irq_handler(void)  {
   a = *p_reg1;
 
   if( a == 0xBAADC0DE){
-    printf("Received expected message from mailbox: 0x%08x\n\r", a);
+    LOG("Received expected message from mailbox: 0x%08x\n\r", a);
      // Loop through mailboxes 0 to 9
   
         // Calculate the base address for mailbox 'i'
         // i << 8 is equivalent to i * 0x100
         
         int mbox_base = 0x40000000 + (7 << 8); 
-        printf("mbox_base %x", mbox_base);
+        LOG("mbox_base %x", mbox_base);
 
         // INT_SND_EN register for the current mailbox (Offset 0x0C)
         p_reg = (volatile  int *) (mbox_base + 0x0C); 
