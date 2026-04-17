@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-
-#ifdef NO_STANDALONE
-
 #include <stdint.h>
 
 #define HOST_UART_BASE_ADDR 0x03002000
@@ -56,5 +53,3 @@ void host_uart_write_str(void *uart_base, void *src, uint32_t len);
 void host_uart_write_flush(void *uart_base);
 
 uint8_t host_uart_read(void *uart_base);
-
-#endif

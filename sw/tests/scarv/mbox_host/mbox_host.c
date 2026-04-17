@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "utils.h"
+#ifdef NO_STANDALONE
 #include "host_uart.h"
+#endif
 
 #ifndef VERBOSE
 #define VERBOSE 0
