@@ -53,3 +53,6 @@ opentitan-cluster:
    wu_ibex:
       path: .
       command: make sim_rtl SRAM=sw/tests/scarv/mbox_ext_irq/bazel-out/mbox_ext_irq.elf cl-test=wu_ibex
+   wu_ibex:
+      path: .
+      command: make sim_rtl SRAM=sw/tests/scarv/mbox_wu_cluster/bazel-out/mbox_wu_cluster.elf cl-test=mbox_wfe_cluster

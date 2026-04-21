@@ -1,8 +1,9 @@
 SCARV_TESTS := \
 	cluster_offload \
-	mbox_host \
+	idma_test \
 	mbox_ext_irq \
-	idma_test
+	mbox_host \
+	mbox_wu_cluster
 
 PULP_SW_DIR  := $(PULP_REGR_DIR)
 PULP_TEST_DIRS := $(filter-out %deeploy %neureka, $(wildcard $(PULP_SW_DIR)/opentitan-cluster/*))

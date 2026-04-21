@@ -8,9 +8,8 @@ package(default_visibility = ["//visibility:public"])
 
 opentitan_ram_binary(
     name = "mbox_wu_cluster",
-    srcs = [
-        "mbox_wu_cluster.c",
-    ],
+    srcs = ["mbox_wu_cluster.c"],
+    hdrs = ["mbox_wu_cluster.h"],
     archive_symbol_prefix = "mbox_wu_cluster",
     testonly = True,
     deps = [
