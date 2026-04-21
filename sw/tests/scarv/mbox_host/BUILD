@@ -15,7 +15,7 @@ config_setting(
 
 opentitan_ram_binary(
     name = "mbox_host",
-    srcs = ["mbox_host.c, "mbox_host.h"],
+    srcs = ["mbox_host.c", "mbox_host.h"],
     hdrs = ["mbox_host.h"],
     includes = ["."],
     copts = [
