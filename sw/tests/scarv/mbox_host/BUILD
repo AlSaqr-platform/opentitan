@@ -15,8 +15,9 @@ config_setting(
 
 opentitan_ram_binary(
     name = "mbox_host",
-    srcs = ["mbox_host.c"],
+    srcs = ["mbox_host.c, "mbox_host.h"],
     hdrs = ["mbox_host.h"],
+    includes = ["."],
     copts = [
     ]
     + select({
@@ -34,5 +35,10 @@ opentitan_ram_binary(
         "//sw/tests/common:common",
         "//sw/tests/common:linker",
         "//sw/tests/common:crt",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:mmio",
+        "//sw/device/lib/dif:rv_plic",
+        "//sw/device/lib/runtime:irq",
+        "//hw/top_earlgrey/sw/autogen:top_earlgrey",
     ],
 )

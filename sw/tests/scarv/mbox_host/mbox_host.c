@@ -3,12 +3,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "utils.h"
-#ifdef NO_STANDALONE
 #include "host_uart.h"
-#endif
+#include "mailboxes.h"
+#include "mbox_host.h"
+
+// OpenTitan Library Includes
+#include "sw/device/lib/dif/dif_rv_plic.h"
+#include "sw/device/lib/base/mmio.h"
+#include "sw/device/lib/runtime/irq.h"
+
+// Global PLIC Handle
+dif_rv_plic_t plic;
 
 #ifndef VERBOSE
-#define VERBOSE 0
+#define VERBOSE 1
 #endif
 #define LOG(fmt, ...) do { if (VERBOSE) printf(fmt, ##__VA_ARGS__); } while (0)
 
@@ -19,23 +27,18 @@
 #define SYNC_IBEX_READY  0xa5a5a5a5  // ibex interrupt setup done, CVA6 may send mbox message
 
 int main(void) {
-  int volatile * plic_prio, * plic_en;
-  int volatile * p_reg;
-  int a = 0;
-  unsigned val = 0xe0000001;
-  asm volatile("csrw mtvec, %0\n" : : "r"(val)); // move irq vector to SRAM base address
+  LOG("Starting mailbox host test...\n\r");
+  // CPU interrupt configuration using helper routines
+  irq_set_vector_offset(0xe0000001); // Sets mtvec (Base address 0xe0000000 + Vectored mode 1)
+  irq_global_ctrl(true);             // Sets mstatus MIE bit (Global interrupt enable)
+  irq_external_ctrl(true);           // Sets mie MEIE bit (External interrupt enable)
 
-  unsigned val_1 = 0x00001808;      // Set global interrupt enable in ibex regs
-  unsigned val_2 = 0x00000800;      // Set external interrupts
-
-  asm volatile("csrw  mstatus, %0\n" : : "r"(val_1));
-  asm volatile("csrw  mie, %0\n"     : : "r"(val_2));
-
-  plic_prio  = (int *) 0xC800027C;  // Priority reg
-  plic_en    = (int *) 0xC8002010;  // Enable reg
-
- *plic_prio  = 1;                   // Set mbox interrupt priority to 1
- *plic_en    = 0x80000000;          // Enable interrupt
+  // PLIC peripheral configuration
+  plic.base_addr = mmio_region_from_addr(0xC8000000);
+  (void)dif_rv_plic_reset(&plic);
+  (void)dif_rv_plic_target_set_threshold(&plic, 0, 0);                  // Unmask interrupts above priority 0
+  (void)dif_rv_plic_irq_set_priority(&plic, 159, 1);                    // Set mbox IRQ 159 to priority 1
+  (void)dif_rv_plic_irq_set_enabled(&plic, 159, 0, kDifToggleEnabled);  // Enable mbox IRQ 159 for target 0
 
   // Signal CVA6 that ibex interrupt setup is complete and we are ready to receive
   *(volatile int *)(HOST_REGS_BASE_ADDR + HOST_SCRATCH_4_REG_OFFSET) = SYNC_IBEX_READY;
@@ -47,60 +50,52 @@ int main(void) {
 
 }
 
-void external_irq_handler(void)  {
+void external_irq_handler(void) {
 
-  int mbox_id = 159;
-  int a, b, c, e, d;
-  int volatile * p_reg, * p_reg1, * plic_check, * p_reg2, * p_reg3, * p_reg4, * p_reg5 ;
+  dif_rv_plic_irq_id_t irq_id;
+  volatile int *p_reg;
 
-//   //init pointer to check memory
-  LOG("interrut received, entering ISR...\n\r");
+  LOG("interrupt received, entering ISR...\n\r");
 
-  p_reg1 = (int *) (0x40000180); // mbox 1 LETTER0
-
-  // start of """Interrupt Service Routine"""
-
-  plic_check = (int *) 0xC8200004;
-  while(*plic_check != mbox_id); //check wether the intr is the correct one
-
-  p_reg = (int *) (0x40000104); // mbox 1 INT_SND_SET
- *p_reg = 0x00000000; //clearing the pending interrupt signal
-
-  p_reg = (int *) (0x4000010C); // mbox 1 INT_SND_EN
- *p_reg = 0x00000000; // disable irq
-
-  p_reg = (int *) (0x40000108); // mbox 1 INT_SND_CLR
- *p_reg = 0x00000001; // raise irq completion (mbox side)
-
- *plic_check = mbox_id; // completing interrupt (plic side)
-
-  // check mbox content
-  a = *p_reg1;
-
-  if( a == 0xBAADC0DE){
-    LOG("Received expected message from mailbox: 0x%08x\n\r", a);
-     // Loop through mailboxes 0 to 9
-  
-        // Calculate the base address for mailbox 'i'
-        // i << 8 is equivalent to i * 0x100
-        
-        int mbox_base = 0x40000000 + (7 << 8); 
-        LOG("mbox_base %x", mbox_base);
-
-        // INT_SND_EN register for the current mailbox (Offset 0x0C)
-        p_reg = (volatile  int *) (mbox_base + 0x0C); 
-        *p_reg = 0x00000001;
-
-        // INT_SND_SET register for the current mailbox (Offset 0x04)
-        p_reg = (volatile  int *) (mbox_base + 0x04); 
-        *p_reg = 0x00000001;
-    
-      // completion interrupt to ariane agent if msg = expected msg
-    //   p_reg = (int *) (0x4000070C); // mbox 7 INT_SND_EN
-    //  *p_reg = 0x00000001;
-    //   // completion interrupt to ariane agent if msg = expected msg
-    //   p_reg = (int *) (0x40000704); // mbox 7 INT_SND_SET
-    //  *p_reg = 0x00000001;
+  // Claim the interrupt via PLIC library and verify it is the expected one
+  if (dif_rv_plic_irq_claim(&plic, 0, &irq_id) != kDifOk || irq_id != MBOX_IRQ_ID) {
+    LOG("Unexpected or failed IRQ claim: %d\n\r", (int)irq_id);
+    if (irq_id != 0)
+      (void)dif_rv_plic_irq_complete(&plic, 0, irq_id);
+    return;
   }
-  return;
+
+  LOG("IRQ %d claimed, handling interrupt...\n\r", (int)irq_id);
+
+  // Mailbox 1: clear and disable incoming interrupt, raise mbox-side completion
+  const uintptr_t mbox1_base = MBOX_BASE_ADDR + (1 * MBOX_STRIDE);
+
+  p_reg = (volatile int *)(mbox1_base + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
+  *p_reg = 0x00000000; // clear pending interrupt signal
+
+  p_reg = (volatile int *)(mbox1_base + ARCHI_MAILBOX_IRQ_SND_EN_OFFSET);
+  *p_reg = 0x00000000; // disable irq
+
+  p_reg = (volatile int *)(mbox1_base + ARCHI_MAILBOX_IRQ_SND_CLR_OFFSET);
+  *p_reg = 0x00000001; // raise irq completion (mbox side)
+
+  // Complete the interrupt on the PLIC side
+  (void)dif_rv_plic_irq_complete(&plic, 0, irq_id);
+
+  // Check mailbox content
+  int a = *(volatile int *)(mbox1_base + ARCHI_MAILBOX_LETTER0_OFFSET);
+
+  if (a == 0xBAADC0DE) {
+    LOG("Received expected message from mailbox: 0x%08x\n\r", a);
+
+    // Send completion interrupt to CVA6 agent via mailbox 7
+    const uintptr_t mbox7_base = MBOX_BASE_ADDR + (7 * MBOX_STRIDE);
+    LOG("mbox7_base %x\n\r", (unsigned int)mbox7_base);
+
+    p_reg = (volatile int *)(mbox7_base + ARCHI_MAILBOX_IRQ_SND_EN_OFFSET);
+    *p_reg = 0x00000001;
+
+    p_reg = (volatile int *)(mbox7_base + ARCHI_MAILBOX_IRQ_SND_SET_OFFSET);
+    *p_reg = 0x00000001;
+  }
 }
