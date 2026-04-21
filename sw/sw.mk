@@ -1,5 +1,6 @@
 SCARV_TESTS := \
 	cluster_offload \
+	mbox_host \
 	mbox_ext_irq \
 	idma_test
 

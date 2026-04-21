@@ -12,6 +12,10 @@ load(
 )
 load("//rules:cross_platform.bzl", "dual_cc_library", "dual_inputs")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+config_setting(
+    name = "no_standalone",
+    values = {"define": "NO_STANDALONE=1"},
+)
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,8 +27,16 @@ ld_library(
 
 cc_library(
     name = "common",
-    srcs = ["utils.c"],
-    hdrs = ["utils.h", "mailboxes.h"],
+    srcs = ["utils.c", "host_uart.c"],
+    hdrs = ["utils.h", "mailboxes.h","host_uart.h"],
+    copts = [
+    ]
+    + select({
+        ":no_standalone": [
+            "-DNO_STANDALONE",
+        ],
+        "//conditions:default": [],
+    }),
     includes = ["."],
     target_compatible_with = [OPENTITAN_CPU],
     alwayslink = True,
