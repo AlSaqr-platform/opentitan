@@ -1,4 +1,4 @@
-// Copyright 2024 ETH Zurich, University of Bologna and Fondazione Chips-IT.
+// Copyright 2026 Fondazione Chips-IT.
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -152,7 +152,7 @@ int main(void) {
     }
 
     // CVA6 has finished dummy; drain and verify any remaining entries.
-    new_last = stable_last();
+    new_last = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
     LOG("[secd] dummy done: entries so far=%d final_last=0x%x\n\r",
            dummy_entry_count, (unsigned)new_last);
     while (drain_ptr != new_last) {

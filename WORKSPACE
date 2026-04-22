@@ -108,3 +108,9 @@ hooks_repo(name = "manufacturer_test_hooks")
 # The nonhermetic_repo imports environment variables needed to run vivado.
 load("//rules:nonhermetic.bzl", "nonhermetic_repo")
 nonhermetic_repo(name = "nonhermetic")
+
+# Cheshire SW register headers — resolved dynamically via the CHS_ROOT env var,
+# which is set to `bender path cheshire` in the Carfield build (carfield.mk).
+# For standalone OpenTitan builds, export CHS_ROOT=/path/to/cheshire manually.
+load("//rules:cheshire.bzl", "cheshire_sw_repo")
+cheshire_sw_repo(name = "cheshire_sw")

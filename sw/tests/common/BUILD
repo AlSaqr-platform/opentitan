@@ -50,3 +50,13 @@ cc_library(
     target_compatible_with = [OPENTITAN_CPU],
     alwayslink = True,
 )
+
+cc_library(
+    name = "regs",
+    # Headers are sourced from the Cheshire repository via the @cheshire_sw
+    # external repository, which is resolved at build time through the CHS_ROOT
+    # environment variable (set to `bender path cheshire` in the Carfield build).
+    # No files are hardcoded or duplicated inside OpenTitan.
+    deps = ["@cheshire_sw//:regs"],
+    target_compatible_with = [OPENTITAN_CPU],
+)
