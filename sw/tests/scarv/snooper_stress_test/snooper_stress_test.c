@@ -43,23 +43,6 @@ void clear_register_bit(void *base_addr, uint32_t reg_offset, uint32_t bit_posit
     *reg32(base_addr, reg_offset) = reg_value;
 }
 
-
-static inline int stable_last(void) {
-    int val, stable_count;
-    val = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
-    // stable_count = 0;
-    // while (stable_count < 64) {
-    //     int cur = *reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
-    //     if (cur == val) {
-    //         stable_count++;
-    //     } else {
-    //         val = cur;
-    //         stable_count = 0;
-    //     }
-    // }
-    return val;
-}
-
 int main(void) {
     LOG("[secd] snooper_stress_test: start\n\r");
 

@@ -10,9 +10,8 @@ PROGRAM = snooper_stress_test
 # STANDALONE MODE
 ifneq ($(NO_STANDALONE),)
 PROGRAM_CFLAGS += -DNO_STANDALONE
-PROGRAM_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int -g -O0 -DDEBUG
+PROGRAM_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int
 endif
-PROGRAM_CFLAGS += -g -O0 -DDEBUG
 
 PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 $(info PROGRAM_DIR is: $(PROGRAM_DIR))
