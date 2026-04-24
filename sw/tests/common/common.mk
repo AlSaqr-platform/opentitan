@@ -8,6 +8,9 @@ COMMON_SRCS = $(wildcard $(COMMON_DIR)/*.c)
 INCS := -I$(COMMON_DIR)
 ifeq ($(NO_STANDALONE),)
 COMMON_SRCS := $(filter-out $(wildcard $(COMMON_DIR)/host_*.c), $(COMMON_SRCS))
+ifneq ($(CHS_ROOT),)
+INCS += -I$(CHS_ROOT)/sw/include
+endif
 endif
 
 # ARCH = rv32im # to disable compressed instructions
