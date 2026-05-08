@@ -28,7 +28,7 @@ ld_library(
 cc_library(
     name = "common",
     srcs = ["utils.c", "host_uart.c"],
-    hdrs = ["utils.h", "mailboxes.h", "host_uart.h", "idma.h"],
+    hdrs = ["utils.h", "mailboxes.h", "host_uart.h", "idma.h", "cfi_va_pa_table.h"],
     copts = [
     ]
     + select({
