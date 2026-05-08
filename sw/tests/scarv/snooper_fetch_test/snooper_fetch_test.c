@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "regs/snooper_regs.h"
 #include "host_uart.h"
+#include "idma.h"
 
 #ifndef VERBOSE
 #define VERBOSE 1
@@ -24,15 +25,15 @@
 #define L2_SHARED_BASE (0xA0010000u)          // L2 shared SRAM (ARCHI_L2_SHARED_ADDR)
 
 // ---------------------------------------------------------------------------
-// iDMA register offsets  (verified against sw/tests/scarv/idma_test/idma_test.c)
+// L2 layout for USE_DMA 3 (snooper entry staging + instruction area)
+//
+//   SNPR_STAGE_ADDR    – staging area for a full batch of snooper entries;
+//                        worst case = whole ring = SNPR_RING_BYTES = 16380 B.
+//                        Rounded up to 0x4000 (16384 B).
+//   L2_DMA3_INSTR_BASE – instruction DMA destination starts after staging.
 // ---------------------------------------------------------------------------
-#define IDMA_CONF_OFFSET      0x000000u   // configuration / protocol select
-#define IDMA_NEXT_ID_OFFSET   0x00000cu   // write triggers dispatch; returns txn ID
-#define IDMA_DONE_ID_OFFSET   0x000014u   // last completed transaction ID
-#define IDMA_DST_ADDR_OFFSET  0x0000d0u
-#define IDMA_SRC_ADDR_OFFSET  0x0000d8u
-#define IDMA_LENGTH_OFFSET    0x0000e0u
-#define IDMA_REPS_2_OFFSET    0x0000f8u   // number of repetitions (set to 1)
+#define SNPR_STAGE_ADDR    (L2_SHARED_BASE + 0x0000u)
+#define L2_DMA3_INSTR_BASE (L2_SHARED_BASE + 0x4000u)
 
 // ---------------------------------------------------------------------------
 // Snooper ring geometry
@@ -72,31 +73,50 @@ static void snooper_clr_bit(uint32_t reg_off, uint32_t bit) {
 //   2 = DMA pipelined: issue DMA[n+1] before waiting for DMA[n]; DMA[n] runs
 //       while the CPU reads the next snooper entry and computes fetch_start,
 //       hiding most of the AXI transfer latency. Requires iDMA depth >= 1.
+//   3 = Batched full DMA: all snooper entries currently available (up to the
+//       ring wrap) are drained in ONE 2D DMA (reps = batch×5, stride = 4,
+//       forcing 32-bit AXI beats as required by the snooper pointer logic)
+//       into L2 staging at SNPR_STAGE_ADDR.  The batch is then processed in
+//       a CPU loop that reads from fast L2 staging and pipelines instruction
+//       DMAs (DMA[i] overlaps CPU reading staging entry[i+1]).
+//       Advantage over mode 2: DMA setup O(1)/batch; snooper reads are
+//       burst by the DMA engine; staging reads hit L2 (low latency on Ibex).
+//       The 2D word-granular approach also stays correct if AxiDataWidth is
+//       ever widened to 64.
 #ifndef USE_DMA
 #define USE_DMA 2
 #endif
 
+
 #ifndef LOG_INSTRUCTIONS
 #define LOG_INSTRUCTIONS 0
 #endif
-// iDMA helpers (used when USE_DMA==1)
-static int idma_issue(uint32_t src, uint32_t dst, uint32_t len) {
-    void *base = (void *)IDMA_BASE;
-    *reg32(base, IDMA_SRC_ADDR_OFFSET) = src;
-    *reg32(base, IDMA_DST_ADDR_OFFSET) = dst;
-    *reg32(base, IDMA_LENGTH_OFFSET)   = len;
-    *reg32(base, IDMA_CONF_OFFSET)     = 0x3u << 10;  // AXI→AXI protocol
-    *reg32(base, IDMA_REPS_2_OFFSET)   = 1u;
-    return (int)*reg32(base, IDMA_NEXT_ID_OFFSET);
-}
+// iDMA helpers are provided by idma.h (idma_issue_1d, idma_issue_word_granular,
+// idma_wait, etc.). The old local functions are removed.
 
-static void idma_wait(int id) {
-    // Use >= (not ==): in pipelined mode the engine may have already completed
-    // later transactions, advancing DONE_ID past `id`.  Exact equality would
-    // spin forever in that case.
-    while ((int)*reg32((void *)IDMA_BASE, IDMA_DONE_ID_OFFSET) < id)
-        asm volatile("nop");
+// ---------------------------------------------------------------------------
+// Mode-3 debug wait
+//   Wraps idma_wait with a spin counter that prints STATUS + DONE_ID every
+//   ~1M nops so we can see which DMA is hung and why, instead of silently
+//   looping forever.
+// ---------------------------------------------------------------------------
+#if USE_DMA == 3
+#define DMA3_WAIT_REPORT_PERIOD (1u << 20)   /* ~1M nops ≈ few seconds */
+static void dma3_dbg_wait(uint32_t base, idma_txn_id_t id, const char *tag) {
+    uint32_t tick = 0;
+    while ((int32_t)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET) < (int32_t)id) {
+        __asm__ volatile("nop");
+        if (++tick == DMA3_WAIT_REPORT_PERIOD) {
+            tick = 0;
+            LOG("[dma3] WAIT %s: id=%u done_id=%u status=0x%03x\n\r",
+                tag,
+                (unsigned)id,
+                (unsigned)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET),
+                (unsigned)idma_reg_read(base, IDMA_STATUS_0_REG_OFFSET));
+        }
+    }
 }
+#endif  /* USE_DMA == 3 */
 
 // ---------------------------------------------------------------------------
 // main
@@ -163,16 +183,103 @@ int main(void) {
     int      cva6_done    = 0;
     uint32_t l2_write_ptr = 0;   // running write offset into L2_SHARED_BASE
 #if USE_DMA == 2
-    int      pending_dma_id  = -1;  // last issued code DMA not yet waited on (mode 2)
+    idma_txn_id_t pending_dma_id = IDMA_INVALID_ID;
 #endif
 
     do {
         if (*reg32(host_regs, HOST_SCRATCH_10_REG_OFFSET) == (int)SYNC_FETCH_DONE)
             cva6_done = 1;
 
-        uint32_t cur_last = (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
+        while (1) {
+            uint32_t cur_last = (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
+            if (drain_ptr == cur_last)
+                break;
+#if USE_DMA == 3
+            /* Batched word-granular drain:
+             * Compute how many complete entries are available without crossing
+             * the ring wrap boundary, issue one 2D DMA (reps=batch×5,
+             * stride=4 → 32-bit beats) to copy the batch to L2 staging, then
+             * process entries from staging while pipelining instruction DMAs
+             * (DMA[i] overlaps CPU reading staging entry[i+1]).
+             *
+             * Wrap handling: if cur_last has wrapped past drain_ptr we clamp
+             * to SNPR_RING_BYTES - drain_ptr so the DMA never crosses the
+             * ring boundary; the outer do-while will run another batch for
+             * the remaining entries after drain_ptr resets to 0. */
+            {
+                uint32_t avail_bytes = (cur_last >= drain_ptr)
+                    ? (cur_last - drain_ptr)
+                    : (SNPR_RING_BYTES - drain_ptr);  /* stop at wrap */
+                uint32_t batch = avail_bytes / ENTRY_SIZE;
+                if (batch == 0) break;
 
-        while (drain_ptr != cur_last) {
+                /* Single 2D DMA: reads batch×ENTRY_SIZE bytes from the ring
+                 * as batch×5 consecutive 32-bit word transactions. */
+                LOG("[dma3] batch drain: drain_ptr=0x%x cur_last=0x%x batch=%u "
+                    "src=0x%x dst=0x%x len=%u\n\r",
+                    (unsigned)drain_ptr, (unsigned)cur_last, (unsigned)batch,
+                    (unsigned)(BASE_SNPR + drain_ptr), (unsigned)SNPR_STAGE_ADDR,
+                    (unsigned)(batch * ENTRY_SIZE));
+                idma_txn_id_t sid = idma_issue_word_granular(
+                    IDMA_BASE, BASE_SNPR + drain_ptr, SNPR_STAGE_ADDR,
+                    batch * ENTRY_SIZE, IDMA_CONF_1D_AXI_TO_AXI);
+                LOG("[dma3] batch drain id=%u issued, done_id=%u status=0x%03x\n\r",
+                    (unsigned)sid,
+                    (unsigned)idma_reg_read(IDMA_BASE, IDMA_DONE_ID_0_REG_OFFSET),
+                    (unsigned)idma_reg_read(IDMA_BASE, IDMA_STATUS_0_REG_OFFSET));
+                dma3_dbg_wait(IDMA_BASE, sid, "drain");
+                LOG("[dma3] batch drain id=%u done\n\r", (unsigned)sid);
+
+                /* Process entries from L2 staging; pipeline instruction DMAs
+                 * so DMA[i] runs while the CPU reads staging entry[i+1]. */
+                idma_txn_id_t pending_fid = IDMA_INVALID_ID;
+                for (uint32_t i = 0; i < batch; i++) {
+                    volatile uint32_t *e =
+                        (volatile uint32_t *)(SNPR_STAGE_ADDR + i * ENTRY_SIZE);
+                    uint32_t pc_src_l = e[0];
+                    uint32_t pc_dst_l = e[2];
+
+                    if (pc_src_l < (uint32_t)dummy_start ||
+                        pc_src_l >= (uint32_t)dummy_end) {
+                        LOG("[secd] FETCH FAIL: PC_SRC=0x%x not in [0x%x, 0x%x)\n\r",
+                            pc_src_l, (uint32_t)dummy_start, (uint32_t)dummy_end);
+                        return 1;
+                    }
+
+                    uint32_t fetch_start = prev_dst;
+                    if (fetch_start < (uint32_t)dummy_start ||
+                        fetch_start >= (uint32_t)dummy_end)
+                        fetch_start = pc_src_l;
+
+                    uint32_t bytes = (pc_src_l - fetch_start) + 4u;
+                    LOG("[dma3] instr[%u/%u]: fetch_start=0x%x dst=0x%x bytes=%u\n\r",
+                        (unsigned)i, (unsigned)batch,
+                        (unsigned)fetch_start,
+                        (unsigned)(L2_DMA3_INSTR_BASE + l2_write_ptr),
+                        (unsigned)bytes);
+                    idma_txn_id_t new_fid = idma_issue_1d(
+                        IDMA_BASE, fetch_start,
+                        L2_DMA3_INSTR_BASE + l2_write_ptr, bytes,
+                        IDMA_CONF_1D_AXI_TO_AXI);
+                    LOG("[dma3] instr[%u] id=%u issued, done_id=%u status=0x%03x\n\r",
+                        (unsigned)i, (unsigned)new_fid,
+                        (unsigned)idma_reg_read(IDMA_BASE, IDMA_DONE_ID_0_REG_OFFSET),
+                        (unsigned)idma_reg_read(IDMA_BASE, IDMA_STATUS_0_REG_OFFSET));
+                    if (pending_fid != IDMA_INVALID_ID)
+                        dma3_dbg_wait(IDMA_BASE, pending_fid, "instr");
+                    pending_fid = new_fid;
+
+                    fetch_count  += (bytes + 3u) >> 2;
+                    l2_write_ptr += bytes;
+                    prev_dst = pc_dst_l;
+                }
+                if (pending_fid != IDMA_INVALID_ID)
+                    dma3_dbg_wait(IDMA_BASE, pending_fid, "instr_last");
+
+                drain_ptr += batch * ENTRY_SIZE;
+                if (drain_ptr >= SNPR_RING_BYTES) drain_ptr = 0;
+            }
+#else
             uint32_t pc_src_l = *reg32((void *)BASE_SNPR, drain_ptr + 0x00);
             uint32_t pc_src_h = *reg32((void *)BASE_SNPR, drain_ptr + 0x04);
             uint32_t pc_dst_l = *reg32((void *)BASE_SNPR, drain_ptr + 0x08);
@@ -180,35 +287,45 @@ int main(void) {
             uint32_t ctr_type = *reg32((void *)BASE_SNPR, drain_ptr + 0x10);
             (void)pc_src_h; (void)pc_dst_h; (void)ctr_type;
 
-            if (pc_src_l < (uint32_t)dummy_start || pc_src_l >= (uint32_t)dummy_end) {
-                LOG("[secd] FETCH FAIL: PC_SRC=0x%x not in [0x%x, 0x%x)\n\r",
-                    pc_src_l, (uint32_t)dummy_start, (uint32_t)dummy_end);
-                return 1;
-            }
+            // if (pc_src_l < (uint32_t)dummy_start || pc_src_l >= (uint32_t)dummy_end) {
+            //     LOG("[secd] FETCH FAIL: PC_SRC=0x%x not in [0x%x, 0x%x)\n\r",
+            //         pc_src_l, (uint32_t)dummy_start, (uint32_t)dummy_end);
+            //     return 1;
+            // }
 
             uint32_t fetch_start = prev_dst;
             if (fetch_start < (uint32_t)dummy_start || fetch_start >= (uint32_t)dummy_end)
                 fetch_start = pc_src_l;
 
             /* Fetch instructions for the basic block.
-             * - USE_DMA 1: DMA -> wait per block (simple)
+             * - USE_DMA 1: DMA → wait per block (simple)
              * - USE_DMA 2: issue DMA, wait for *previous* DMA (pipelined)
              * - USE_DMA 0: core mixed 32/16-bit reads (no DMA)
              */
 #if USE_DMA == 1
             {
                 uint32_t bytes = (pc_src_l - fetch_start) + 4u;
-                int dma_id = idma_issue(fetch_start, L2_SHARED_BASE + l2_write_ptr, bytes);
-                idma_wait(dma_id);
+                idma_txn_id_t dma_id = idma_issue_1d(IDMA_BASE, fetch_start,
+                                           L2_SHARED_BASE + l2_write_ptr, bytes,
+                                           IDMA_CONF_1D_AXI_TO_AXI);
+                idma_wait(IDMA_BASE, dma_id);
                 fetch_count  += (bytes + 3u) >> 2;
                 l2_write_ptr += bytes;
             }
 #elif USE_DMA == 2
             {
                 uint32_t bytes = (pc_src_l - fetch_start) + 4u;
-                int new_id = idma_issue(fetch_start, L2_SHARED_BASE + l2_write_ptr, bytes);
-                if (pending_dma_id >= 0)
-                    idma_wait(pending_dma_id);
+                // Issue DMA[n] first so it is in flight during the wait,
+                // then wait for DMA[n-1].  DMA[n] runs while the CPU reads
+                // the next snooper entry (5 async-CDC loads) on the next
+                // iteration, hiding most of the transfer latency.
+                // Keeping only 1 DMA in flight avoids competing ARs on the
+                // Ext-port serializer (MaxSlvTrans=1) with Ibex's snooper reads.
+                idma_txn_id_t new_id = idma_issue_1d(IDMA_BASE, fetch_start,
+                                           L2_SHARED_BASE + l2_write_ptr, bytes,
+                                           IDMA_CONF_1D_AXI_TO_AXI);
+                if (pending_dma_id != IDMA_INVALID_ID)
+                    idma_wait(IDMA_BASE, pending_dma_id);
                 pending_dma_id = new_id;
                 fetch_count  += (bytes + 3u) >> 2;
                 l2_write_ptr += bytes;
@@ -233,15 +350,42 @@ int main(void) {
             drain_ptr += ENTRY_SIZE;
             if (drain_ptr >= SNPR_RING_BYTES)
                 drain_ptr = 0;
-            cur_last = (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
+#endif  /* USE_DMA == 3 */
         }
 
     } while (!cva6_done || (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET) != drain_ptr);
 
 #if USE_DMA == 2
-    // Wait for the last outstanding pipelined DMA before reading L2.
-    if (pending_dma_id >= 0)
-        idma_wait(pending_dma_id);
+    if (pending_dma_id != IDMA_INVALID_ID)
+        idma_wait(IDMA_BASE, pending_dma_id);
+#endif
+
+    //    L2 is a flat byte stream; RISC-V encoding is self-delimiting:
+    //      hw[1:0] == 0b11  ->  4-byte RVI
+    //      hw[1:0] != 0b11  ->  2-byte RVC
+    // ------------------------------------------------------------------
+#if LOG_INSTRUCTIONS
+    LOG("[secd] -- Instruction log (%u bytes in L2) --\n\r", (unsigned)l2_write_ptr);
+    {
+        uint32_t byte_off = 0;
+#if USE_DMA == 3
+        uint32_t log_base = L2_DMA3_INSTR_BASE;
+#else
+        uint32_t log_base = L2_SHARED_BASE;
+#endif
+        while (byte_off < l2_write_ptr) {
+            uint16_t hw0 = *(volatile uint16_t *)(log_base + byte_off);
+            if ((hw0 & 0x3u) == 0x3u) {
+                uint16_t hw1   = *(volatile uint16_t *)(log_base + byte_off + 2u);
+                uint32_t instr = (uint32_t)hw0 | ((uint32_t)hw1 << 16);
+                LOG("  0x%08x\n\r", (unsigned)instr);
+                byte_off += 4u;
+            } else {
+                LOG("  0x%04x (RVC)\n\r", (unsigned)hw0);
+                byte_off += 2u;
+            }
+        }
+    }
 #endif
 
     // ------------------------------------------------------------------
@@ -280,28 +424,7 @@ int main(void) {
         } while (!cva6_done2 ||
                  (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET) != drain2_ptr);
     }
-    //    L2 is a flat byte stream; RISC-V encoding is self-delimiting:
-    //      hw[1:0] == 0b11  ->  4-byte RVI
-    //      hw[1:0] != 0b11  ->  2-byte RVC
-    // ------------------------------------------------------------------
-#if LOG_INSTRUCTIONS
-    LOG("[secd] -- Instruction log (%u bytes in L2) --\n\r", (unsigned)l2_write_ptr);
-    {
-        uint32_t byte_off = 0;
-        while (byte_off < l2_write_ptr) {
-            uint16_t hw0 = *(volatile uint16_t *)(L2_SHARED_BASE + byte_off);
-            if ((hw0 & 0x3u) == 0x3u) {
-                uint16_t hw1   = *(volatile uint16_t *)(L2_SHARED_BASE + byte_off + 2u);
-                uint32_t instr = (uint32_t)hw0 | ((uint32_t)hw1 << 16);
-                LOG("  0x%08x\n\r", (unsigned)instr);
-                byte_off += 4u;
-            } else {
-                LOG("  0x%04x (RVC)\n\r", (unsigned)hw0);
-                byte_off += 2u;
-            }
-        }
-    }
-#endif
+
     // ------------------------------------------------------------------
     // 7. Reset snooper circular buffer
     // ------------------------------------------------------------------

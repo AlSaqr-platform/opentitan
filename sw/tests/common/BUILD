@@ -28,7 +28,7 @@ ld_library(
 cc_library(
     name = "common",
     srcs = ["utils.c", "host_uart.c"],
-    hdrs = ["utils.h", "mailboxes.h","host_uart.h"],
+    hdrs = ["utils.h", "mailboxes.h", "host_uart.h", "idma.h"],
     copts = [
     ]
     + select({
@@ -60,3 +60,5 @@ cc_library(
     deps = ["@cheshire_sw//:regs"],
     target_compatible_with = [OPENTITAN_CPU],
 )
+
+
