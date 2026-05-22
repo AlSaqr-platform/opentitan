@@ -926,8 +926,13 @@ module security_island
     HwpePresent: 1,
     HwpeCfg: '{NumHwpes: 1, HwpeList: {pulp_cluster_package::NEUREKA}},
     HwpeNumPorts: 9,
+`ifdef PULP_FPGA_EMUL
+    HMRPresent: 0,
+    HMRDmrEnabled: 0,
+`else
     HMRPresent: 1,
     HMRDmrEnabled: 1,
+`endif
     HMRTmrEnabled: 0,
     HMRDmrFIxed: 0,
     HMRTmrFIxed: 0,
@@ -938,7 +943,11 @@ module security_island
     HMRNumBusVoters: 1,
     HMRDmrTimingDivDelays: 2,
     DMRTimingDivSupported: 1,
+`ifdef PULP_FPGA_EMUL
+    EnableECC: 0,
+`else
     EnableECC: 1,
+`endif
     ECCInterco: 1,
     iCacheNumBanks: 2,
     iCacheNumLines: 1,
