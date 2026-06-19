@@ -292,8 +292,38 @@ static inline idma_txn_id_t idma_launch(uint32_t base) {
  *  complete correctly (same logic as idma_wait in snooper_fetch_test).
  */
 static inline void idma_wait(uint32_t base, idma_txn_id_t id) {
-    while ((int32_t)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET) < (int32_t)id)
+    /* If the HW refused the request it returns IDMA_INVALID_ID (0).
+     * Nothing to wait for in that case.
+     */
+    if (id == IDMA_INVALID_ID)
+        return;
+
+    /*
+     * Handle wrap-around correctly.  On some platforms the HW transaction
+     * id is 16 bits (wraps at 65536) — you observed pending=65534 and
+     * a new id=1.  Use a sequence-space compare on the same native
+     * width as the HW counter to determine ordering.
+     *
+     * Default to a 16-bit comparison because the observed symptom shows
+     * a 65536 wrap. If your platform uses a different width, define
+     * `IDMA_TXN_ID_BITS` at compile time (e.g. -DIDMA_TXN_ID_BITS=32).
+     */
+#ifndef IDMA_TXN_ID_BITS
+#define IDMA_TXN_ID_BITS 16
+#endif
+
+#if IDMA_TXN_ID_BITS == 16
+    while ((int16_t)((uint16_t)id - (uint16_t)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET)) > 0)
         __asm__ volatile("nop");
+#elif IDMA_TXN_ID_BITS == 32
+    while ((int32_t)((uint32_t)id - (uint32_t)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET)) > 0)
+        __asm__ volatile("nop");
+#else
+    /* Fallback: 32-bit compare covers most cases; consider defining
+     * IDMA_TXN_ID_BITS to the actual HW width for correctness. */
+    while ((int32_t)((uint32_t)id - (uint32_t)idma_reg_read(base, IDMA_DONE_ID_0_REG_OFFSET)) > 0)
+        __asm__ volatile("nop");
+#endif
 }
 
 /** Poll until the engine is fully idle (all status bits clear). */

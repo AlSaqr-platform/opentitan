@@ -8,35 +8,12 @@
 //
 // Differences from snooper_fetch_test.c (bare-metal)
 // ---------------------------------------------------
-//  1. SYNC PROTOCOL  — uses scratch 12/13 (CFI_SCRATCH_LAUNCHER_OFF /
-//     CFI_SCRATCH_IBEX_OFF) instead of scratch 10/11.  No dummy_start/end
-//     in scratch regs; the shared VA→PA table carries that information.
-//
-//  2. SNOOPER RANGES — set to *virtual* addresses (tbl->va_range_start/end)
-//     because Linux MMU is on: the snooper taps the CVA6 pipeline before
-//     TLB and therefore logs virtual PCs.
-//
-//  3. MODE BITS      — enables U_MODE_BIT (bit 0) for user-space apps.
-//     Enabling S_MODE_BIT (bit 1) additionally monitors kernel/supervisor
-//     code (optional, typically not needed for application CFI).
-//
-//  4. VA→PA LOOKUP   — before every iDMA fetch, calls cfi_va_to_pa() to
-//     translate the virtual fetch_start into a physical address.
-//     Byte count is still computed in VA space (valid as long as the basic
-//     block stays within a single physically-contiguous page run — holds
-//     for all normal compiled code; see cfi_va_pa_table.h for details).
-//
-//  5. DONE CONDITION — detects SYNC_APP_DONE from the launcher instead of
-//     SYNC_FETCH_DONE from a bare-metal CVA6 test.
-//
-//  6. SINGLE RUN     — no second measurement run; the launcher exits after
-//     the app, and Ibex exits after draining the ring completely.
-//
-// DMA mode
-// --------
-//  Only USE_DMA 2 (pipelined, one in-flight) is implemented here; it is the
-//  best single-channel mode for latency hiding without competing ARs on the
-//  serialiser.  Extend to mode 3 (batched) if throughput becomes the limit.
+//  1. SYNC PROTOCOL  — scratch 12/13; VA→PA table carries range info.
+//  2. SNOOPER RANGES — virtual addresses (MMU on; snooper taps pre-TLB PC).
+//  3. MODE BITS      — U_MODE_BIT for user-space; add S_MODE_BIT for kernel.
+//  4. VA→PA LOOKUP   — cfi_va_to_pa() called before every iDMA fetch.
+//  5. DONE CONDITION — SYNC_APP_DONE from launcher (not SYNC_FETCH_DONE).
+//  6. SINGLE RUN     — no second pass; drain ring then exit.
 
 #include <stdint.h>
 #include "utils.h"
@@ -67,7 +44,17 @@
 // Printed before the DONE line as a full timeline breakdown.
 // Adds ~14 csrr mcycle reads per entry (~56 cycles overhead when enabled).
 #ifndef ENABLE_STATS
-#define ENABLE_STATS 1
+#define ENABLE_STATS 0
+#endif
+
+// Set to N>0 to record the last N branch PCs for post-mortem; 0 to disable.
+#ifndef PRINT_LAST_TRACES
+#define PRINT_LAST_TRACES 3
+#endif
+
+// Set to 1 to decode and print every instruction word fetched to L2 after drain.
+#ifndef LOG_INSTRUCTIONS
+#define LOG_INSTRUCTIONS 0
 #endif
 
 // ---------------------------------------------------------------------------
@@ -77,8 +64,17 @@
 #define BASE_SNPR      (0x16000000u)
 #define IDMA_BASE      (0xfef00000u)
 #define L2_SHARED_BASE (0xA0010000u)   // instruction DMA destination
+#define L2_BUF_SIZE    4096u           // bytes per double-buffer slot (must fit largest basic block)
 
 // CFI_TABLE_PHYS_BASE is defined in cfi_va_pa_table.h (0xA0000000)
+
+// ---------------------------------------------------------------------------
+// Last-trace circular buffer (filled during drain loop, printed before DONE)
+// ---------------------------------------------------------------------------
+#if PRINT_LAST_TRACES > 0
+typedef struct { uint32_t src_l, src_h, dst_l, dst_h; } last_trace_t;
+static last_trace_t last_trace_buf[PRINT_LAST_TRACES];
+#endif
 
 // ---------------------------------------------------------------------------
 // Snooper ring geometry
@@ -86,11 +82,11 @@
 #define SNPR_RING_BYTES    16380u
 #define ENTRY_SIZE         20u
 
-// Halt level in bytes written to the register — derive entry count from it
-// so the software depth counters always stay in sync with hardware.
-#define HALT_LEVEL_BYTES   16300u          // written to CFG_REGS_HALT_LEVEL_REG_OFFSET
-#define HALT_LEVEL_ENTRIES (HALT_LEVEL_BYTES / ENTRY_SIZE)  // 400 entries
-#define HALT_HYSTERESIS    100u                 // entries below threshold before re-arming
+#define HALT_LEVEL_BYTES   16000u          // upper threshold (bytes)
+#define HALT_LEVEL_ENTRIES (HALT_LEVEL_BYTES / ENTRY_SIZE)
+// Two-threshold hysteresis: lower halt_lvl to DRAIN_TARGET_BYTES on halt to keep halt_o
+// asserted until the ring genuinely drains (snooping_engine.sv is combinational: no HW hysteresis).
+#define DRAIN_TARGET_BYTES  8000u          // lower threshold: restore halt_lvl after draining here
 #define OVERFLOW_GRACE     10u                  // entries above threshold before flagging overflow
 
 // ---------------------------------------------------------------------------
@@ -112,6 +108,10 @@ int main(void) {
     // ------------------------------------------------------------------
     while (*reg32(host_regs, CFI_SCRATCH_LAUNCHER_OFF) != (int)SYNC_TABLE_PUBLISHED)
         ;
+    // Acknowledge consumption so the next run's handshake starts from a
+    // known-zero state rather than seeing stale SYNC_TABLE_PUBLISHED.
+    *reg32(host_regs, CFI_SCRATCH_LAUNCHER_OFF) = 0u;
+    fence();
 
     // Sanity-check the table header.
     if (tbl->ready != CFI_TABLE_READY_MAGIC || tbl->magic != CFI_TABLE_MAGIC) {
@@ -130,22 +130,16 @@ int main(void) {
         (unsigned)tbl->num_segs);
 
     // ------------------------------------------------------------------
-    // 1b. Copy VA→PA table into local TCDM.
-    //     cfi_va_to_pa() is called once per ring entry; keeping the table
-    //     in local memory avoids an AXI round-trip to the shared SPM on
-    //     every lookup (num_segs accesses per entry at SPM latency).
-    //     The copy is small (sizeof(cfi_va_pa_table_t) = 540 bytes) and
-    //     done once before the drain loop starts.
+    // 1b. Copy VA→PA table into local TCDM (avoids per-entry AXI round-trips).
     // ------------------------------------------------------------------
     static cfi_va_pa_table_t local_tbl;
     {
-        idma_txn_id_t copy_id = idma_issue_1d(
-            IDMA_BASE,
-            CFI_TABLE_PHYS_BASE,
-            (uint32_t)&local_tbl,
-            sizeof(cfi_va_pa_table_t),
-            IDMA_CONF_1D_AXI_TO_AXI);
-        idma_wait(IDMA_BASE, copy_id);
+        volatile const uint8_t *src = (volatile const uint8_t *)CFI_TABLE_PHYS_BASE;
+        uint8_t *dst = (uint8_t *)&local_tbl;
+        uint32_t i;
+        for (i = 0; i < (uint32_t)sizeof(cfi_va_pa_table_t); ++i)
+            dst[i] = src[i];
+        fence();
     }
 
     // ------------------------------------------------------------------
@@ -197,17 +191,7 @@ int main(void) {
     // LOG("[secd] Snooper armed. Application running.\n\r");
 
     // ------------------------------------------------------------------
-    // 4. Drain loop (pipelined DMA, USE_DMA-2 style)
-    //
-    //    KEY DIFFERENCE from bare-metal:
-    //    - pc_src_l / pc_dst_l / prev_dst_va are all *virtual* addresses.
-    //    - Before issuing the DMA we translate: PA = cfi_va_to_pa(tbl, VA).
-    //    - Byte count is computed in VA space (pc_src_l - fetch_start_va)
-    //      which equals the byte count in PA space as long as the basic
-    //      block does not cross a physical page boundary (see header).
-    //
-    //    DONE CONDITION: launcher sets SYNC_APP_DONE when the monitored
-    //    process exits.  We drain any remaining ring entries before exiting.
+    // 4. Drain loop (pipelined DMA, one in-flight).
     // ------------------------------------------------------------------
     uint32_t drain_ptr        = 0;
     uint32_t fetch_count      = 0;
@@ -223,13 +207,29 @@ int main(void) {
     uint32_t stat_dma_wait_cyc    = 0;  // idma_wait() residual stall on prev DMA
     uint32_t stat_entry_total_cyc = 0;  // full non-skip entry (entry start → drain_ptr advance)
 #endif
-    uint32_t halt_count      = 0;  // number of times ring depth crossed halt threshold
-    int      in_halt         = 0;  // edge-detect state
-    int      overflow_suspected = 0; // depth exceeded halt+10 grace → halt may not have protected
+    uint32_t halt_count      = 0;  // number of times depth crossed HALT_LEVEL_BYTES
+    int      in_halt         = 0;  // edge-detect for halt_count (software side)
+    int      hw_halt_phase   = 0;  // 1 while halt_lvl register is lowered to DRAIN_TARGET_BYTES
+    int      overflow_suspected    = 0; // depth exceeded halt+grace → halt may not have protected
+    // Freeze diagnostics: did CVA6 resume and produce new entries after the last halt?
+    int      sync_done_received         = 0;  // 0 = exited via idle-disable
+    int      cvax_resumed_after_halt    = 0;
+    uint32_t last_halt_release_cur_last = 0;
     uint32_t prev_dst_va_l = 0;  // initialise to 0 so first entry always falls back to pc_src
     uint32_t prev_dst_va_h = 0;
-    uint32_t l2_write_ptr = 0;
+    uint32_t buf_idx   = 0u; // double-buffer index (0 or 1)
+    uint32_t last_bytes = 0u; // byte count of most-recent DMA (for LOG_INSTRUCTIONS)
     int      app_done     = 0;
+#if PRINT_LAST_TRACES > 0
+    uint32_t trace_head  = 0;  // next write slot (circular)
+    uint32_t trace_total = 0;  // total instructions recorded
+#endif
+    // Idle-disable: sustained empty ring → cut halt_en+RANGE_2 before CVA6 enters exit().
+    // FAST fires quickly after heavy halting to prevent a halt during glibc LR/SC (futex deadlock).
+    // NOSYNC is a long watchdog for runs that never triggered halt.
+    uint32_t idle_polls   = 0;
+#define IDLE_DISABLE_POLLS_FAST    9000u     // ~10.8 ms at 50 MHz, post-halt freeze guard
+#define IDLE_DISABLE_POLLS_NOSYNC  2000000u  // ~2.4 s at 50 MHz, watchdog for hung launchers
 
     // Cycle counter — Ibex mcycle is a 64-bit CSR; read low 32 bits only.
     // Wrap-around at 2^32 cycles (~42 s at 100 MHz); sufficient for any single run.
@@ -250,6 +250,7 @@ int main(void) {
         if (!app_done &&
             *reg32(host_regs, CFI_SCRATCH_LAUNCHER_OFF) == (int)SYNC_APP_DONE) {
             app_done = 1;
+            sync_done_received = 1;
             // Stop accepting new entries so LAST freezes and the ring drains cleanly.
             *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &=
                 ~(1u << CFG_REGS_CTRL_PC_RANGE_2_BIT);
@@ -260,8 +261,34 @@ int main(void) {
         // every entry available in this snapshot instead of paying it per entry.
         uint32_t cur_last =
             (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_LAST_REG_OFFSET);
-        if (drain_ptr == cur_last)
+        if (drain_ptr == cur_last) {
+            if (!app_done) {
+                ++idle_polls;
+                uint32_t threshold = (halt_count > 0 && max_ring_depth_bytes >= HALT_LEVEL_BYTES / 2)
+                                     ? IDLE_DISABLE_POLLS_FAST : IDLE_DISABLE_POLLS_NOSYNC;
+                if (idle_polls >= threshold) {
+                    // Disable core_halt_en first so halt_o cannot assert between
+                    // the two writes even if a stale entry is still in the ring.
+                    *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &=
+                        ~(1u << CFG_REGS_CTRL_CORE_HALT_EN_BIT);
+                    fence();
+                    *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &=
+                        ~(1u << CFG_REGS_CTRL_PC_RANGE_2_BIT);
+                    fence();
+                    app_done = 1;
+                    LOG("[secd] idle-disable: halt+RANGE_2 off entry=%u halts=%u fast=%d resume=%d\n\r",
+                        (unsigned)entry_count, (unsigned)halt_count,
+                        (int)(threshold == IDLE_DISABLE_POLLS_FAST),
+                        (halt_count > 0) ? cvax_resumed_after_halt : 1);
+                }
+            }
             continue;
+        }
+        idle_polls = 0;  // reset on every batch with new entries
+
+        if (!hw_halt_phase && halt_count > 0 && !cvax_resumed_after_halt &&
+            cur_last != last_halt_release_cur_last)
+            cvax_resumed_after_halt = 1;
 
         // Depth tracking in byte domain: avoids __udivsi3 (~35 cyc, no HW
         // divider on Ibex) every entry.  One divide per batch for batch_entries.
@@ -272,19 +299,34 @@ int main(void) {
             max_ring_depth_bytes = depth_bytes;
         if (depth_bytes >= HALT_LEVEL_BYTES + OVERFLOW_GRACE * ENTRY_SIZE)
             overflow_suspected = 1;
-        if (depth_bytes >= HALT_LEVEL_BYTES) {
+
+        if (!hw_halt_phase && depth_bytes >= HALT_LEVEL_BYTES) {
+            *reg32(BASE_SNPRCFG, CFG_REGS_HALT_LEVEL_REG_OFFSET) = DRAIN_TARGET_BYTES;
+            fence();
+            hw_halt_phase = 1;
             if (!in_halt) { halt_count++; in_halt = 1; }
-        } else if (depth_bytes < HALT_LEVEL_BYTES - HALT_HYSTERESIS * ENTRY_SIZE) {
+        } else if (hw_halt_phase && depth_bytes < DRAIN_TARGET_BYTES) {
+            *reg32(BASE_SNPRCFG, CFG_REGS_HALT_LEVEL_REG_OFFSET) = HALT_LEVEL_BYTES;
+            fence();
+            hw_halt_phase = 0;
             in_halt = 0;
+            last_halt_release_cur_last = cur_last;
+            cvax_resumed_after_halt    = 0;
         }
 
         uint32_t batch_entries = depth_bytes / ENTRY_SIZE;
 
+        // Flush in-flight DMA eagerly while halted to avoid blocking ring reads.
+        int fast_drain = hw_halt_phase;
+#if ENABLE_FETCH
+        if (fast_drain && pending_dma_id != IDMA_INVALID_ID) {
+            idma_wait(IDMA_BASE, pending_dma_id);
+            pending_dma_id = IDMA_INVALID_ID;
+        }
+#endif
+
         for (uint32_t i = 0; i < batch_entries; i++) {
-            // Read one snooper entry.  All 5 words must be consumed in order —
-            // each 32-bit AXI read advances the snooper's internal read pointer.
-            // ctr_type is deferred to after idma_issue_1d so its ~30-cycle
-            // latency overlaps with the descriptor write.
+            // Read one snooper entry (5 words in order); ctr_type deferred to overlap DMA issue.
 #if ENABLE_STATS
             uint32_t _s0, _s1, _t_entry;
             asm volatile ("csrr %0, mcycle" : "=r"(_t_entry));
@@ -311,9 +353,7 @@ int main(void) {
                 fetch_start_va_h = pc_src_h;
             }
 
-            // Translate fetch_start to PA for the DMA source address.
-            // pc_src is hardware-guaranteed in-range (snooper range filter) so a
-            // second cfi_va_to_pa call for pc_src is unnecessary.
+            // Translate fetch_start VA→PA for DMA; pc_src is HW-guaranteed in-range.
 #if ENABLE_STATS
             asm volatile ("csrr %0, mcycle" : "=r"(_s0));
 #endif
@@ -328,6 +368,14 @@ int main(void) {
             // Skip DMA if fetch_start VA→PA translation missed (returns 0).
             if (fetch_start_pa == 0u) {
                 (void)*reg32((void *)BASE_SNPR, drain_ptr + 0x10); // consume ctr_type
+#if PRINT_LAST_TRACES > 0
+                last_trace_buf[trace_head].src_l = pc_src_l;
+                last_trace_buf[trace_head].src_h = pc_src_h;
+                last_trace_buf[trace_head].dst_l = pc_dst_l;
+                last_trace_buf[trace_head].dst_h = pc_dst_h;
+                if (++trace_head >= (uint32_t)PRINT_LAST_TRACES) trace_head = 0;
+                trace_total++;
+#endif
                 prev_dst_va_l = pc_dst_l;
                 prev_dst_va_h = pc_dst_h;
                 drain_ptr += ENTRY_SIZE;
@@ -336,8 +384,6 @@ int main(void) {
                 continue; // skip stats: don't pollute averages with degenerate entries
             }
 
-            // Accumulate ring_read and va_to_pa only for non-skip entries so all
-            // per-phase stats share the same denominator (dma_count).
 #if ENABLE_STATS
             stat_ring_read_cyc += _ring_this;
             stat_va_to_pa_cyc  += _vatopa_this;
@@ -359,15 +405,14 @@ int main(void) {
                 asm volatile ("csrr %0, mcycle" : "=r"(_s0));
 #endif
                 idma_set_addrs(IDMA_BASE, fetch_start_pa,
-                               L2_SHARED_BASE + l2_write_ptr, bytes);
+                               L2_SHARED_BASE + buf_idx * L2_BUF_SIZE, bytes);
                 idma_txn_id_t new_id = idma_launch(IDMA_BASE);
 #if ENABLE_STATS
                 asm volatile ("csrr %0, mcycle" : "=r"(_s1));
                 stat_dma_issue_cyc += _s1 - _s0;
                 asm volatile ("csrr %0, mcycle" : "=r"(_s0));
 #endif
-                // Consume ctr_type: pointer advance is mandatory; latency overlaps
-                // with DMA descriptor propagation rather than blocking issue.
+                // Consume ctr_type while DMA descriptor propagates.
                 (void)*reg32((void *)BASE_SNPR, drain_ptr + 0x10);
 #if ENABLE_STATS
                 asm volatile ("csrr %0, mcycle" : "=r"(_s1));
@@ -382,13 +427,22 @@ int main(void) {
 #endif
                 pending_dma_id = new_id;
             }
-            fetch_count  += (bytes + 3u) >> 2;
-            l2_write_ptr += bytes;
+            fetch_count += (bytes + 3u) >> 2;
+            last_bytes   = bytes;
+            buf_idx     ^= 1u;
 #else
             (void)*reg32((void *)BASE_SNPR, drain_ptr + 0x10); // consume ctr_type
             fetch_count  += (bytes + 3u) >> 2;
 #endif
 
+#if PRINT_LAST_TRACES > 0
+            last_trace_buf[trace_head].src_l = pc_src_l;
+            last_trace_buf[trace_head].src_h = pc_src_h;
+            last_trace_buf[trace_head].dst_l = pc_dst_l;
+            last_trace_buf[trace_head].dst_h = pc_dst_h;
+            if (++trace_head >= (uint32_t)PRINT_LAST_TRACES) trace_head = 0;
+            trace_total++;
+#endif
             prev_dst_va_l = pc_dst_l;
             prev_dst_va_h = pc_dst_h;
             drain_ptr  += ENTRY_SIZE;
@@ -417,11 +471,38 @@ int main(void) {
 #endif
     uint32_t ms = cycles / (IBEX_FREQ_MHZ * 1000u);
     // ------------------------------------------------------------------
-    // 5. Reset snooper ring.
+    // 5. Reset snooper: disable halt_en first, pulse cnt_rst, zero CTRL.
     // ------------------------------------------------------------------
+    *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &= ~(1u << CFG_REGS_CTRL_CORE_HALT_EN_BIT);
+    fence();
     *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) |=  (1u << CFG_REGS_CTRL_CNT_RST_BIT);
+    fence();
     *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &= ~(1u << CFG_REGS_CTRL_CNT_RST_BIT);
+    fence();
+    *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) = 0u;
+    fence();
 
+#if PRINT_LAST_TRACES > 0
+    {
+        uint32_t count = (trace_total < (uint32_t)PRINT_LAST_TRACES)
+                       ? trace_total : (uint32_t)PRINT_LAST_TRACES;
+        uint32_t start = (trace_total < (uint32_t)PRINT_LAST_TRACES)
+                       ? 0u : trace_head;
+        LOG("[secd] last %u branches (of %u total) — freeze inside bb starting at dst:\n\r",
+            (unsigned)count, (unsigned)trace_total);
+        for (uint32_t k = 0; k < count; k++) {
+            uint32_t idx = start + k;
+            if (idx >= (uint32_t)PRINT_LAST_TRACES)
+                idx -= (uint32_t)PRINT_LAST_TRACES;
+            LOG("[secd]   [%5u] src=0x%x_%08x  dst=0x%x_%08x\n\r",
+                (unsigned)(trace_total - count + k),
+                (unsigned)last_trace_buf[idx].src_h,
+                (unsigned)last_trace_buf[idx].src_l,
+                (unsigned)last_trace_buf[idx].dst_h,
+                (unsigned)last_trace_buf[idx].dst_l);
+        }
+    }
+#endif
 #if ENABLE_STATS
     {
         uint32_t n = entry_count ? entry_count : 1u;
@@ -443,11 +524,33 @@ int main(void) {
         LOG("[secd]   total_entry avg=%4u cyc\n\r",                             (unsigned)avg_total);
     }
 #endif
-    LOG("[secd] snooper_fetch_linux: entries=%u fetched=%u words, max_depth=%u halts=%u cycles=%u ms=%u fetch=%d halt=%d%s DONE\n\r",
+#if LOG_INSTRUCTIONS
+    LOG("[secd] -- Instruction log (last buf=%u, %u bytes) --\n\r",
+        (unsigned)(buf_idx ^ 1u), (unsigned)last_bytes);
+    {
+        uint32_t base_off = (buf_idx ^ 1u) * L2_BUF_SIZE;
+        uint32_t byte_off = 0;
+        while (byte_off < last_bytes) {
+            uint16_t hw0 = *(volatile uint16_t *)(L2_SHARED_BASE + base_off + byte_off);
+            if ((hw0 & 0x3u) == 0x3u) {
+                uint16_t hw1   = *(volatile uint16_t *)(L2_SHARED_BASE + base_off + byte_off + 2u);
+                uint32_t instr = (uint32_t)hw0 | ((uint32_t)hw1 << 16);
+                LOG("  0x%08x\n\r", (unsigned)instr);
+                byte_off += 4u;
+            } else {
+                LOG("  0x%04x (RVC)\n\r", (unsigned)hw0);
+                byte_off += 2u;
+            }
+        }
+    }
+#endif
+    LOG("[secd] snooper_fetch_linux: entries=%u fetched=%u words, max_depth=%u halts=%u cycles=%u ms=%u fetch=%d halt=%d sync=%d resume=%d%s DONE\n\r",
         (unsigned)entry_count, (unsigned)fetch_count,
         (unsigned)(max_ring_depth_bytes / ENTRY_SIZE), (unsigned)halt_count,
         (unsigned)cycles, (unsigned)ms,
         ENABLE_FETCH, ENABLE_HALT,
+        sync_done_received,
+        (halt_count > 0) ? cvax_resumed_after_halt : 1,
         overflow_suspected ? " OVERFLOW_RISK" : "");
     return 0;
 }

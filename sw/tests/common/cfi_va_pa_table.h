@@ -137,7 +137,7 @@ static inline uint32_t cfi_va_to_pa(volatile const cfi_va_pa_table_t *tbl,
         if (va_l >= base && va_l < end)
             return tbl->seg[i].pa_base + (va_l - base);
     }
-    return va_l;  // identity fallback — correct in bare-metal (VA == PA)
+    return 0u;  // no match: return 0 so callers can detect translation failure
 }
 #endif  /* !__linux__ */
 
