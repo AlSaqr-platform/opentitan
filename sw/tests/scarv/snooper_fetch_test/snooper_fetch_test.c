@@ -91,6 +91,21 @@ static void snooper_clr_bit(uint32_t reg_off, uint32_t bit) {
 #ifndef LOG_INSTRUCTIONS
 #define LOG_INSTRUCTIONS 0
 #endif
+
+// Set to N>0 to record the last N branch-source PCs and print them after run 1.
+// Useful for post-mortem debugging: shows the instructions captured just before hang.
+// Set to 0 to disable (saves N×8 bytes of static memory).
+#ifndef PRINT_LAST_TRACES
+#define PRINT_LAST_TRACES 32
+#endif
+// ---------------------------------------------------------------------------
+// Last-trace circular buffer (filled during run-1 drain, printed after it)
+// ---------------------------------------------------------------------------
+#if PRINT_LAST_TRACES > 0
+typedef struct { uint32_t pc_l, pc_h; } last_trace_t;
+static last_trace_t last_trace_buf[PRINT_LAST_TRACES];
+#endif
+
 // iDMA helpers are provided by idma.h (idma_issue_1d, idma_issue_word_granular,
 // idma_wait, etc.). The old local functions are removed.
 
@@ -182,6 +197,10 @@ int main(void) {
     uint32_t prev_dst     = (uint32_t)dummy_start;
     int      cva6_done    = 0;
     uint32_t l2_write_ptr = 0;   // running write offset into L2_SHARED_BASE
+#if PRINT_LAST_TRACES > 0
+    uint32_t trace_head  = 0;
+    uint32_t trace_total = 0;
+#endif
 #if USE_DMA == 2
     idma_txn_id_t pending_dma_id = IDMA_INVALID_ID;
 #endif
@@ -272,6 +291,12 @@ int main(void) {
                     fetch_count  += (bytes + 3u) >> 2;
                     l2_write_ptr += bytes;
                     prev_dst = pc_dst_l;
+#if PRINT_LAST_TRACES > 0
+                    last_trace_buf[trace_head].pc_l = pc_src_l;
+                    last_trace_buf[trace_head].pc_h = 0u;
+                    if (++trace_head >= (uint32_t)PRINT_LAST_TRACES) trace_head = 0;
+                    trace_total++;
+#endif
                 }
                 if (pending_fid != IDMA_INVALID_ID)
                     dma3_dbg_wait(IDMA_BASE, pending_fid, "instr_last");
@@ -346,6 +371,12 @@ int main(void) {
                 }
             }
 #endif
+#if PRINT_LAST_TRACES > 0
+            last_trace_buf[trace_head].pc_l = pc_src_l;
+            last_trace_buf[trace_head].pc_h = pc_src_h;
+            if (++trace_head >= (uint32_t)PRINT_LAST_TRACES) trace_head = 0;
+            trace_total++;
+#endif
             prev_dst = pc_dst_l;
             drain_ptr += ENTRY_SIZE;
             if (drain_ptr >= SNPR_RING_BYTES)
@@ -360,6 +391,25 @@ int main(void) {
         idma_wait(IDMA_BASE, pending_dma_id);
 #endif
 
+#if PRINT_LAST_TRACES > 0
+    {
+        uint32_t count = (trace_total < (uint32_t)PRINT_LAST_TRACES)
+                       ? trace_total : (uint32_t)PRINT_LAST_TRACES;
+        uint32_t start = (trace_total < (uint32_t)PRINT_LAST_TRACES)
+                       ? 0u : trace_head;
+        LOG("[secd] last %u instructions (of %u total):\n\r",
+            (unsigned)count, (unsigned)trace_total);
+        for (uint32_t k = 0; k < count; k++) {
+            uint32_t idx = start + k;
+            if (idx >= (uint32_t)PRINT_LAST_TRACES)
+                idx -= (uint32_t)PRINT_LAST_TRACES;
+            LOG("[secd]   [%5u] pc=0x%x_%08x\n\r",
+                (unsigned)(trace_total - count + k),
+                (unsigned)last_trace_buf[idx].pc_h,
+                (unsigned)last_trace_buf[idx].pc_l);
+        }
+    }
+#endif
     //    L2 is a flat byte stream; RISC-V encoding is self-delimiting:
     //      hw[1:0] == 0b11  ->  4-byte RVI
     //      hw[1:0] != 0b11  ->  2-byte RVC
