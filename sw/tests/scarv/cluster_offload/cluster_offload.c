@@ -13,7 +13,7 @@
 // Cluster entry point override and iteration count — adjust per test.
 // Set CLUSTER_ENTRY_ADDR to a non-zero address to override the cluster's
 // default entry _start (0xA0008080). Set to 0 to keep the default.
-#define CLUSTER_ENTRY_ADDR  0
+#define CLUSTER_ENTRY_ADDR  0x0
 #define NUM_ITERATIONS      4
 
 // SoC peripheral addresses
@@ -22,6 +22,12 @@
 #define EdnEnAddrReg           0xC1170014
 
 static dif_rv_plic_t plic;
+
+// Set by external_irq_handler once the cluster SND doorbell is acknowledged.
+static volatile int doorbell_seen;
+
+// Total number of genuine cluster doorbells serviced.
+static volatile int doorbell_count;
 
 int main(void) {
   volatile int *fetch_en        = (volatile int *)ClusterFetchEnableReg;
@@ -48,49 +54,47 @@ int main(void) {
   // Enable entropy distribution network
   *(volatile int *)EdnEnAddrReg = 0x9996;
 
-  // Override the cluster entry point if requested
-#if CLUSTER_ENTRY_ADDR
-  *mailbox_letter0 = ARCHI_MAILBOX_ENTRY_LOAD;
-  *mailbox_letter1 = CLUSTER_ENTRY_ADDR;
-#endif
-
-  // Arm the RCV mailbox event. On a fresh boot the cluster event unit is not
-  // yet initialised so this fires harmlessly. After a host-only PC reset the
-  // cluster is already be sitting in pos_wait_forever(), in which case this
-  // wakes it without needing an additional RCV arm inside the loop.
-  mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_EN_OFFSET);
-  *mailbox_reg = 0x1;
-  mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_SET_OFFSET);
-  *mailbox_reg = 0x1;
+  // Enable the cluster clock and instruction fetch for the whole test. The
+  // RCV/SND mailbox handshake now provides all run-to-run synchronisation, so
+  // the cluster clock no longer needs to be gated between iterations.
+  *cluster_en = 0x1;
+  *fetch_en   = 0x1;
 
   for (int i = 0; i < NUM_ITERATIONS; i++) {
-    *cluster_en = 0x1;
-    *fetch_en   = 0x1;
-
-    asm volatile("wfi");
-
-    *cluster_en = 0x0;
-
-    if (*mailbox_letter0 != 0) {
-      had_error = 1;
-      printf("Iteration %d: cluster returned error 0x%x\r\n", i, *mailbox_letter0);
-    }
-
-    if (i < NUM_ITERATIONS - 1) {
 #if CLUSTER_ENTRY_ADDR
-      *mailbox_letter0 = ARCHI_MAILBOX_ENTRY_LOAD;
-      *mailbox_letter1 = CLUSTER_ENTRY_ADDR;
+    // Point the cluster at the requested entry point for this run.
+    *mailbox_letter0 = ARCHI_MAILBOX_ENTRY_LOAD;
+    *mailbox_letter1 = CLUSTER_ENTRY_ADDR;
 #endif
 
-      for (volatile int j = 0; j < 1000; j++);
+    mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_EN_OFFSET);
+    *mailbox_reg = 0x1;
+    mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_SET_OFFSET);
+    *mailbox_reg = 0x1;
 
-      *cluster_en = 0x1;
+    // Wait for the completion doorbell. wfi can wake for other reasons, so spin
+    // until external_irq_handler confirms the mailbox IRQ was serviced.
+    doorbell_seen = 0;
+    do {
+      asm volatile("wfi");
+    } while (!doorbell_seen);
 
-      mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_EN_OFFSET);
-      *mailbox_reg = 0x1;
-      mailbox_reg  = (volatile int *)(MAILBOX_BASE_ADDR + ARCHI_MAILBOX_IRQ_RCV_SET_OFFSET);
-      *mailbox_reg = 0x1;
+    // LETTER0 now holds the cluster return value. Read it, then neutralise the
+    // register: it is reused as the OT->cluster entry token (== 0x1), so a stale
+    // return value of 1 would be misread as a reload command on the next run.
+    int retval = *mailbox_letter0;
+    *mailbox_letter0 = 0;
+
+    if (retval != 0) {
+      had_error = 1;
+      printf("Iteration %d: cluster returned error 0x%x\r\n", i, retval);
     }
+  }
+
+  if (doorbell_count != NUM_ITERATIONS) {
+    had_error = 1;
+    printf("Doorbell mismatch: serviced=%d expected=%d\r\n",
+           doorbell_count, NUM_ITERATIONS);
   }
 
   return had_error;
@@ -114,4 +118,8 @@ void external_irq_handler(void) {
   *mailbox_reg = 0x1;
 
   (void)dif_rv_plic_irq_complete(&plic, 0, irq_id);
+
+  // Signal the main loop that a genuine cluster doorbell was serviced.
+  doorbell_count++;
+  doorbell_seen = 1;
 }
