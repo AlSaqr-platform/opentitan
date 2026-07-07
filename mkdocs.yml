@@ -1,0 +1,44 @@
+# Copyright 2026 Fondazione Chips-IT.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+site_name: Security Island
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.expand
+    - navigation.tracking
+    - navigation.sections
+    - navigation.indexes
+    - navigation.footer
+
+plugins:
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      skip_classes:
+        - custom-skip-class-name
+      auto_caption: false
+      caption_position: bottom
+
+repo_url: https://github.com/AlSaqr-platform/opentitan
+repo_name: AlSaqr-platform/opentitan
+
+nav:
+  - Home:
+    - index.md
+    - Getting Started: gs.md
+  - Specification: spec.md
+  - Verification: ver.md
+  - User Manual: um.md
+  - Checklist: cl.md
+  - Release Notes: rn.md
+  - About: about.md
