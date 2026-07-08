@@ -10,7 +10,7 @@ Security Island.
 
 ### Scope
 
-The verification targets the cluster instantiated inside the top-level of the `Security Island` in RTL simulation.
+The verification targets the `Security Island` in RTL simulation, testing mainly the performance of the cluster under several use cases and the communication via mailboxes.
 
 ### Out of Scope
 
@@ -20,7 +20,9 @@ The verification targets the cluster instantiated inside the top-level of the `S
 ### Test Plan Table
 
 #### Root-of-Trust (Opentitan)
-The following list of tests are executed by Ibex core and are mainly used to verify the correct communication via mailboxes, which are used both to communicate between the cluster and the RoT, but also to communicate with what is outside of the Security Island. Also one test is targeting the Snooper, which is connected to Ibex core to perform Control Flow Integrity algorithms.
+The following list of tests are executed by Ibex core and are mainly used to verify the correct communication via mailboxes, which are used both to communicate between the cluster and the RoT, but also to communicate with what is outside of the Security Island.
+
+Also one test is targeting the Snooper, which is connected to Ibex core to perform Control Flow Integrity algorithms.
 
 These tests can be found here: "sw/tests/scarv".
 
@@ -143,23 +145,22 @@ hw/tb/
 └── testbench_asynch_astral.sv # Top-level testbench
 ```
 
+### Testbench Top (`testbench_asynch_astral`)**
 
-### Key Components
+The testbench generates clocks and resets for all the instances.
+It also instantiates the jtag drivers.
 
-**Testbench Top (`testbench_asynch_astral`)**
-
-some blocks that are used to test the DUT as if it was integrated in a bigger SoC.
+#### Testbench Components
+The testbench instantiates some blocks that are used to test the DUT as if it was integrated in a bigger SoC.
 These blocks are:
 - L2 memory bank (`axi_sim_mem_intf`)
 - mailbox unit (`axi_scmi_mailbox`)
 - mock uart (`mock_uart_axi`) to allow debug with prints during simulation
 
-These components also require:
+To work properly, these components also require:
 - 2 axi bus (`AXI_BUS`), together with an axi dw converter (`axi_dw_converter`) and an axi cdc (`axi_cdc_dst`)
 - axi xbar (`axi_xbar`) to connect axi req/rsp from/to all these components
 
-The testbench generates clocks and resets for all the instances.
-It also instantiates the jtag drivers.
 
 **NOTE on Infineon Flash Memory Model**
 
@@ -172,3 +173,17 @@ This VIP is used only if the `#define VIPS` is present.
     By running `make init` or `make $(OT_ROOT)/hw/tb/vips`, you accept those terms. See the `Makefile` for the exact download source and license details.
 
 ---
+
+## Tech simulation
+
+These targets are related to simulations that require non-free tech cells such as memory cuts, standard cells and IO cells.
+
+The available targets are reported below but are accessible only if you have access to the Chips-IT gitlab repository with the non-free tech cells.
+
+| Target | Description |
+|---|---|
+| `tech-init` | Clone tech cells from internal non-free resources — **not required for normal use** |
+| `build_tech_mem` | Compile RTL hw files for simulation, including RTL models for the tech cells models |
+| `sim_rtl_tech_mem` | Run RTL simulation, including RTL models for the tech cells models |
+| `sim_gls_compile` | Compile the top-level netlist, including RTL models for the tech cells models |
+| `sim_gls_run` | Run simulation with the top-level netlist, including RTL models for the tech cells models |

@@ -472,10 +472,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#key-components" class="md-nav__link">
+  <a href="#testbench-top-testbench_asynch_astral" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Components
+        Testbench Top (testbench_asynch_astral)**
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testbench Top (testbench_asynch_astral)**">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testbench-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testbench Components
       
     </span>
   </a>
@@ -484,6 +496,22 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tech-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tech simulation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -720,10 +748,22 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#key-components" class="md-nav__link">
+  <a href="#testbench-top-testbench_asynch_astral" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Components
+        Testbench Top (testbench_asynch_astral)**
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testbench Top (testbench_asynch_astral)**">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testbench-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testbench Components
       
     </span>
   </a>
@@ -732,6 +772,22 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tech-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tech simulation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -761,7 +817,7 @@ Security Island.</p>
 <hr />
 <h2 id="test-plan">Test Plan</h2>
 <h3 id="scope">Scope</h3>
-<p>The verification targets the cluster instantiated inside the top-level of the <code>Security Island</code> in RTL simulation.</p>
+<p>The verification targets the <code>Security Island</code> in RTL simulation, testing mainly the performance of the cluster under several use cases and the communication via mailboxes.</p>
 <h3 id="out-of-scope">Out of Scope</h3>
 <ul>
 <li>Post-synthesis / gate-level simulation</li>
@@ -769,7 +825,8 @@ Security Island.</p>
 </ul>
 <h3 id="test-plan-table">Test Plan Table</h3>
 <h4 id="root-of-trust-opentitan">Root-of-Trust (Opentitan)</h4>
-<p>The following list of tests are executed by Ibex core and are mainly used to verify the correct communication via mailboxes, which are used both to communicate between the cluster and the RoT, but also to communicate with what is outside of the Security Island. Also one test is targeting the Snooper, which is connected to Ibex core to perform Control Flow Integrity algorithms.</p>
+<p>The following list of tests are executed by Ibex core and are mainly used to verify the correct communication via mailboxes, which are used both to communicate between the cluster and the RoT, but also to communicate with what is outside of the Security Island.</p>
+<p>Also one test is targeting the Snooper, which is connected to Ibex core to perform Control Flow Integrity algorithms.</p>
 <p>These tests can be found here: "sw/tests/scarv".</p>
 <table>
 <thead>
@@ -980,18 +1037,18 @@ make sim_rtl SRAM=sw/tests/scarv/mbox_wu_cluster/bazel-out/mbox_wu_cluster.elf c
     └── s25fs256s.v # Infineon Flash Memory model
 └── testbench_asynch_astral.sv # Top-level testbench
 </code></pre>
-<h3 id="key-components">Key Components</h3>
-<p><strong>Testbench Top (<code>testbench_asynch_astral</code>)</strong></p>
-<p>some blocks that are used to test the DUT as if it was integrated in a bigger SoC.
+<h3 id="testbench-top-testbench_asynch_astral">Testbench Top (<code>testbench_asynch_astral</code>)**</h3>
+<p>The testbench generates clocks and resets for all the instances.
+It also instantiates the jtag drivers.</p>
+<h4 id="testbench-components">Testbench Components</h4>
+<p>The testbench instantiates some blocks that are used to test the DUT as if it was integrated in a bigger SoC.
 These blocks are:
 - L2 memory bank (<code>axi_sim_mem_intf</code>)
 - mailbox unit (<code>axi_scmi_mailbox</code>)
 - mock uart (<code>mock_uart_axi</code>) to allow debug with prints during simulation</p>
-<p>These components also require:
+<p>To work properly, these components also require:
 - 2 axi bus (<code>AXI_BUS</code>), together with an axi dw converter (<code>axi_dw_converter</code>) and an axi cdc (<code>axi_cdc_dst</code>)
 - axi xbar (<code>axi_xbar</code>) to connect axi req/rsp from/to all these components</p>
-<p>The testbench generates clocks and resets for all the instances.
-It also instantiates the jtag drivers.</p>
 <p><strong>NOTE on Infineon Flash Memory Model</strong></p>
 <p>The <code>hw/tb/vips/</code> directory contains the Infineon <code>s25fs256s</code> Flash Memory simulation model.</p>
 <p>This VIP is used only if the <code>#define VIPS</code> is present.</p>
@@ -999,6 +1056,39 @@ It also instantiates the jtag drivers.</p>
     This model is <strong>proprietary</strong> and subject to Infineon's non-free license terms.
     By running <code>make init</code> or <code>make $(OT_ROOT)/hw/tb/vips</code>, you accept those terms. See the <code>Makefile</code> for the exact download source and license details.</p>
 <hr />
+<h2 id="tech-simulation">Tech simulation</h2>
+<p>These targets are related to simulations that require non-free tech cells such as memory cuts, standard cells and IO cells.</p>
+<p>The available targets are reported below but are accessible only if you have access to the Chips-IT gitlab repository with the non-free tech cells.</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tech-init</code></td>
+<td>Clone tech cells from internal non-free resources — <strong>not required for normal use</strong></td>
+</tr>
+<tr>
+<td><code>build_tech_mem</code></td>
+<td>Compile RTL hw files for simulation, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_rtl_tech_mem</code></td>
+<td>Run RTL simulation, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_gls_compile</code></td>
+<td>Compile the top-level netlist, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_gls_run</code></td>
+<td>Run simulation with the top-level netlist, including RTL models for the tech cells models</td>
+</tr>
+</tbody>
+</table>
 
 
 

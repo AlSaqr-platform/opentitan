@@ -94,11 +94,8 @@ Run `make <target>` from the repository root:
 |---|---|
 | `sw-build-all` | Compile all firmware tests inside these folders: sw/tests/scarv and sw/tests/regression_tests/opentitan_cluster |
 | `build` | Compile hw files for simulation |
-| `build_tech_mem` | Compile hw files for simulation, including the tech cells models such as memory cuts, clock gating cells and others |
 | `opt_rtl` | Optimize hw files for simulation |
 | `sim_rtl` | Run simulation |
-| `sim_rtl_tech_mem` | Run simulation including the tech cells models such as memory cuts, clock gating cells and others |
-| `tech-init` | Clone tech cells from internal non-free resources — **not required for normal use** |
 
 ---
 
