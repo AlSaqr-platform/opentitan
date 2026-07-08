@@ -504,6 +504,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#tech-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tech simulation
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -766,6 +777,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tech-simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tech simulation
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1034,6 +1056,39 @@ These blocks are:
     This model is <strong>proprietary</strong> and subject to Infineon's non-free license terms.
     By running <code>make init</code> or <code>make $(OT_ROOT)/hw/tb/vips</code>, you accept those terms. See the <code>Makefile</code> for the exact download source and license details.</p>
 <hr />
+<h2 id="tech-simulation">Tech simulation</h2>
+<p>These targets are related to simulations that require non-free tech cells such as memory cuts, standard cells and IO cells.</p>
+<p>The available targets are reported below but are accessible only if you have access to the Chips-IT gitlab repository with the non-free tech cells.</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tech-init</code></td>
+<td>Clone tech cells from internal non-free resources — <strong>not required for normal use</strong></td>
+</tr>
+<tr>
+<td><code>build_tech_mem</code></td>
+<td>Compile RTL hw files for simulation, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_rtl_tech_mem</code></td>
+<td>Run RTL simulation, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_gls_compile</code></td>
+<td>Compile the top-level netlist, including RTL models for the tech cells models</td>
+</tr>
+<tr>
+<td><code>sim_gls_run</code></td>
+<td>Run simulation with the top-level netlist, including RTL models for the tech cells models</td>
+</tr>
+</tbody>
+</table>
 
 
 
