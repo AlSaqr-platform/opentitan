@@ -1,6 +1,6 @@
 # Security Island
 
-The security island, based on the [OpenTitan project](https://opentitan.org/book/doc/introduction.html), serves as the Hardware Root-of-Trust (HWRoT) of the platform. It handles *secure boot* and system integrity monitoring fully in HW through cryptographic acceleration services.
+The Security Island, based on the [OpenTitan project](https://opentitan.org/book/doc/introduction.html), serves as the Hardware Root-of-Trust (HWRoT) of the platform. It handles *secure boot* and system integrity monitoring fully in HW through cryptographic acceleration services.
 
 ## Overview
 The documentation is organized as follows:

@@ -53,7 +53,7 @@ cd opentitan
 
 ### 2. Initialize the repo
 
-As first think, you need to load in you shell the environment variables for the required tools. If you are working on CHIPS-IT servers, you can run this command:
+As first step, you need to load in you shell the environment variables for the required tools. If you are working on CHIPS-IT servers, you can run this command:
 
 ```bash
 module load questa/2025.3 bender/0.28.2
@@ -105,9 +105,14 @@ Run `make <target>` from the repository root:
 ## Running a Simulation
 
 Before running a simulation you need to compile the binary files for the sw test.
-You also need to load the environment variables for the gcc compilers, adding them to the
+You also need to load the environment variables for the gcc compilers:
 ```bash
 module load pulp-gcc/1.0.16 riscv-gcc/15.1.0 questa/2025.3 bender/0.28.2
+```
+
+Before building or running sw, you always need to source this configuration file inside your working shell:
+```bash
+source sw/tests/pulp-runtime/configs/opentitan-cluster.sh
 ```
 
 Then you can build all the tests using this command
