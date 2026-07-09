@@ -19,5 +19,10 @@ opentitan_ram_binary(
         "//sw/tests/common:common",
         "//sw/tests/common:linker",
         "//sw/tests/common:crt",
+        "//sw/device/lib/base:memory",
+        "//sw/device/lib/base:mmio",
+        "//sw/device/lib/dif:rv_plic",
+        "//sw/device/lib/runtime:irq",
+        "//hw/top_earlgrey/sw/autogen:top_earlgrey",
     ],
 )

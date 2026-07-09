@@ -1,7 +1,7 @@
 [submodule "sw/tests/pulp-runtime"]
 	path = sw/tests/pulp-runtime
 	url = https://github.com/FondazioneChipsIT/pulp-runtime.git
-	branch = scarv-devel
+	branch = pr/mbox_cluster_ctrl
 [submodule "sw/tests/regression_tests"]
 	path = sw/tests/regression_tests
 	url = https://github.com/FondazioneChipsIT/regression_tests.git
