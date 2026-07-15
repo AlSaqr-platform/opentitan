@@ -14,7 +14,7 @@
 // Set CLUSTER_ENTRY_ADDR to a non-zero address to override the cluster's
 // default entry _start (0xA0008080). Set to 0 to keep the default.
 #define CLUSTER_ENTRY_ADDR  0x0
-#define NUM_ITERATIONS      4
+#define NUM_ITERATIONS      0
 
 // SoC peripheral addresses
 #define ClusterFetchEnableReg  0xBF000000

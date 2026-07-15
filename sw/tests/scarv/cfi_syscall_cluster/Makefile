@@ -1,0 +1,16 @@
+# Copyright lowRISC contributors.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Generate a baremetal application
+
+# Name of the program $(PROGRAM).c will be added as a source file
+PROGRAM = cfi_syscall_cluster
+# STANDALONE MODE
+ifneq ($(NO_STANDALONE),)
+PROGRAM_CFLAGS += -DNO_STANDALONE
+PROGRAM_CFLAGS += -Wno-int-conversion -Wno-implicit-function-declaration -Wno-incompatible-pointer-types -Wno-implicit-int
+endif
+PROGRAM_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+include ${PROGRAM_DIR}/../../common/common.mk

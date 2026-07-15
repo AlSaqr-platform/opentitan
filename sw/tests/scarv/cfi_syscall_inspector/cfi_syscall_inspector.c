@@ -71,7 +71,7 @@
 // words) to UART after the monitored app exits.  Requires ENABLE_FETCH=1;
 // has no effect when ENABLE_FETCH=0.
 #ifndef DUMP_FETCH
-#define DUMP_FETCH 0
+#define DUMP_FETCH 1
 #endif
 
 // Set to 1 to collect per-phase cycle statistics across all inspect_window()
@@ -81,7 +81,7 @@
 // Overhead in the gap between phases: 5 fixed csrr reads + 6 per DMA entry.
 // Calibrated at runtime; subtracted from the reported overhead line.
 #ifndef ENABLE_STATS
-#define ENABLE_STATS 1
+#define ENABLE_STATS 0
 #endif
 
 // ---------------------------------------------------------------------------
@@ -182,6 +182,33 @@ static void inspect_window(void) {
         rptr = cur_last - use_bytes;
     else
         rptr = SNPR_RING_BYTES - (use_bytes - cur_last);
+
+    // ---- DEBUG: snooper pointer trace (set DEBUG_PTR 0 to silence) ----------
+    //   last : write pointer  (advances on every recorded branch)
+    //   base : oldest pointer  (advances only after the ring has wrapped once)
+    //   dl   : bytes recorded since the previous syscall (0 => nothing captured)
+    //   ctrl : CTRL readback  (bit0=U_MODE, bit5=PC_RANGE_2 must stay set)
+    // If last/dl never change, CVA6 stopped feeding CTR records — the ring is
+    // fine, the input stream stopped.  If ctrl drops bit0/bit5, the enables got
+    // auto-cleared (trigger).  If last climbs but the window is stale, the
+    // seek/read is wrong.
+#ifndef DEBUG_PTR
+#define DEBUG_PTR 1
+#endif
+#if DEBUG_PTR
+    {
+        static uint32_t dbg_prev = 0, dbg_n = 0;
+        uint32_t base = (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_BASE_REG_OFFSET);
+        uint32_t ctrl = (uint32_t)*reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET);
+        uint32_t dl   = (cur_last >= dbg_prev)
+                        ? (cur_last - dbg_prev)
+                        : (SNPR_RING_BYTES - dbg_prev + cur_last);
+        LOG("[insp] #%u last=0x%x base=0x%x dl=%u depth=%u n=%u rptr=0x%x ctrl=0x%08x\n\r",
+            (unsigned)dbg_n, (unsigned)cur_last, (unsigned)base, (unsigned)dl,
+            (unsigned)depth, (unsigned)n, (unsigned)rptr, (unsigned)ctrl);
+        dbg_prev = cur_last; dbg_n++;
+    }
+#endif
 
     // Read the window entries.  Ring memory is random-accessible via AXI
     // offset into BASE_SNPR — we can seek freely without affecting LAST.
@@ -476,6 +503,11 @@ int main(void) {
     *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) |=
         (1u << CFG_REGS_CTRL_U_MODE_BIT) |
         (1u << CFG_REGS_CTRL_PC_RANGE_2_BIT);
+    // Trace mode = ADDRESS (0): 20-byte PC_SRC/PC_DST/CTR_TYPE records, matching
+    // ENTRY_SIZE.  Set explicitly (clear the field) rather than relying on the
+    // zeroed CTRL above — mirrors snooper_fetch_linux.c.
+    *reg32(BASE_SNPRCFG, CFG_REGS_CTRL_REG_OFFSET) &=
+        ~(CFG_REGS_CTRL_TRACE_MODE_MASK << CFG_REGS_CTRL_TRACE_MODE_OFFSET);
     // Explicitly leave CORE_HALT_EN = 0 and WATERMARK_EN = 0.
     fence();
 
