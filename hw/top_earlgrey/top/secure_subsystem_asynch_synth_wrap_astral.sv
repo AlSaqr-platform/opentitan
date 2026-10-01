@@ -945,10 +945,11 @@ module security_island
     DMRTimingDivSupported: 1,
 `ifdef PULP_FPGA_EMUL
     EnableECC: 0,
+    ECCInterco: 0,
 `else
     EnableECC: 1,
-`endif
     ECCInterco: 1,
+`endif
     iCacheNumBanks: 2,
     iCacheNumLines: 1,
     iCacheNumWays: 4,
