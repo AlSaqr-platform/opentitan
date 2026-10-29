@@ -9,6 +9,14 @@
 `ifndef OT_PRIM_ASSERT_SV
 `define OT_PRIM_ASSERT_SV
 
+// Compatibility with pulp-platform's common_cells/assertions.svh. That header defines many of
+// the macros below too, with one more optional parameter at the end: a description (__desc).
+// Every such macro here accepts it as well, and ignores it.
+// common_cells sorts out the two headers itself when it sees lowRISC's original guard,
+// PRIM_ASSERT_SV. It does not know OT_PRIM_ASSERT_SV, so with this file the order of the two
+// headers decides which definitions stand. In one compilation unit, as in a Verilator build,
+// the calls written for the other header then still work.
+
 ///////////////////
 // Helper macros //
 ///////////////////
@@ -107,17 +115,17 @@
 //////////////////////////////
 
 // Assert that signal is an active-high pulse with pulse length of 1 clock cycle
-`define ASSERT_PULSE(__name, __sig, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST) \
+`define ASSERT_PULSE(__name, __sig, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST, __desc = "") \
   `ASSERT(__name, $rose(__sig) |=> !(__sig), __clk, __rst)
 
 // Assert that a property is true only when an enable signal is set.  It can be called as a module
 // (or interface) body item.
-`define ASSERT_IF(__name, __prop, __enable, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST) \
+`define ASSERT_IF(__name, __prop, __enable, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST, __desc = "") \
   `ASSERT(__name, (__enable) |-> (__prop), __clk, __rst)
 
 // Assert that signal has a known value (each bit is either '0' or '1') after reset if enable is
 // set.  It can be called as a module (or interface) body item.
-`define ASSERT_KNOWN_IF(__name, __sig, __enable, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST) \
+`define ASSERT_KNOWN_IF(__name, __sig, __enable, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST, __desc = "") \
   `ASSERT_KNOWN(__name``KnownEnable, __enable, __clk, __rst)                                               \
   `ASSERT_IF(__name, !$isunknown(__sig), __enable, __clk, __rst)
 
@@ -130,14 +138,14 @@
 
 // ASSUME_FPV
 // Assume a concurrent property during formal verification only.
-`define ASSUME_FPV(__name, __prop, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST) \
+`define ASSUME_FPV(__name, __prop, __clk = `ASSERT_DEFAULT_CLK, __rst = `ASSERT_DEFAULT_RST, __desc = "") \
 `ifdef FPV_ON                                                                                \
    `ASSUME(__name, __prop, __clk, __rst)                                                     \
 `endif
 
 // ASSUME_I_FPV
 // Assume a concurrent property during formal verification only.
-`define ASSUME_I_FPV(__name, __prop) \
+`define ASSUME_I_FPV(__name, __prop, __desc = "") \
 `ifdef FPV_ON                        \
    `ASSUME_I(__name, __prop)         \
 `endif
